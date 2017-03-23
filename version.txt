@@ -1,0 +1,14 @@
+branch=refs/heads/master
+buildTimestamp=2017-03-23 08:45:14 +0000
+buildVersion=174
+commitId=
+hostname=zaiping.local
+isSnapshot=true
+javaVersion=1.8.0_91
+majorVersion=0
+minorVersion=1
+osName=Mac OS X
+osVersion=10.11.6
+project=APT
+username=zma
+version=0.1.174

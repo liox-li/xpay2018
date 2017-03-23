@@ -1,0 +1,102 @@
+import org.gradle.internal.os.OperatingSystem
+
+def commitId='unknown'
+def branch=System.getenv('GIT_BRANCH')
+
+// get branch
+if(branch == null) { 
+	def headRef = file(".git/HEAD").text
+	branch = headRef.replaceAll('ref: ', '').trim()
+}
+
+//get commit id
+try{
+    def p = "git rev-parse HEAD".execute()
+    p.waitFor()
+    commitId = p.text
+}catch(Exception e){
+    e.printStackTrace()
+    println "getting commit id failed"
+}
+
+def buildInfo = ""
+def hostName
+try {
+	hostName = InetAddress.localHost.hostName
+} catch (UnknownHostException e) {
+	hostName = "unknown"
+}
+
+
+
+
+
+def timestampFormat = new java.text.SimpleDateFormat('yyyy-MM-dd HH:mm:ss Z')
+timestampFormat.timeZone = TimeZone.getTimeZone("UTC")
+
+
+Properties properties = new Properties()
+properties.load(new FileInputStream(rootProject.file("version.txt")))
+def majorVersion = properties.get("majorVersion");
+def minorVersion = properties.get("minorVersion");
+def buildVersion = properties.get("buildVersion");
+
+def updatedBuildVersion = buildVersion.toInteger() + 1;
+
+def buildTimestamp = new Date();
+def buildTime = timestampFormat.format(buildTimestamp)
+
+
+def isSnapshot = true
+//if (finalRelease) {
+//	// use version base
+//} else if (rcNumber != null) {
+//	version += "-rc-$rcNumber"
+//} else {
+//	isSnapshot = true
+//	version += "-$buildTimestamp"
+//}
+
+
+def data = [
+	branch: branch,
+	commitId: commitId,
+	version: majorVersion + "." + minorVersion + "." + updatedBuildVersion,
+	isSnapshot: isSnapshot,
+	buildTimestamp: buildTime,
+	username: System.properties["user.name"],
+	hostname: hostName,
+	javaVersion: System.properties["java.version"],
+	osName: System.properties["os.name"],
+	osVersion: System.properties["os.version"],
+	project: 'APT',
+	majorVersion: majorVersion,
+	minorVersion: minorVersion,
+	buildVersion: updatedBuildVersion,
+]
+def content = data.entrySet().collect { "$it.key=$it.value" }.sort().join("\n")
+
+
+println "Versioning: $content";
+
+//write the new verison into root file
+def originalVersionFile = rootProject.file("version.txt");
+
+originalVersionFile.write(content)
+
+
+if (!isSnapshot) {
+	// commit the version base file into stash
+	//git commit -m "Automatic build"
+	def baos = new ByteArrayOutputStream()
+	def execResult = exec {
+		ignoreExitValue = true
+		commandLine = ["git", "commit", "-m", "\"Automatic build\""]
+//		commandLine = ["git", "log", "-1", "--format=%H"]
+		if (OperatingSystem.current().windows) {
+			commandLine = ["cmd", "/c"] + commandLine
+		}
+
+		standardOutput = baos
+	}
+}
