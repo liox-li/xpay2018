@@ -1,0 +1,2 @@
+# xpay
+init xpay
