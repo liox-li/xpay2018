@@ -1,6 +1,6 @@
 package com.xpay.pay.proxy;
 
-public class PayRequest {
+public class OrderRequest {
 	private String busi_code;
 	private String dev_id;
 	private String oper_id;
@@ -10,6 +10,8 @@ public class PayRequest {
 	private String raw_data;
 	private String auth_code;
 	private String down_trade_no;
+	private String trade_no;
+	private TradeNoType trade_no_type;
 	private String subject;
 	private GoodBean[] good_details;
 	
@@ -85,6 +87,22 @@ public class PayRequest {
 		this.down_trade_no = down_trade_no;
 	}
 
+	public String getTrade_no() {
+		return trade_no;
+	}
+
+	public void setTrade_no(String trade_no) {
+		this.trade_no = trade_no;
+	}
+
+	public TradeNoType getTrade_no_type() {
+		return trade_no_type;
+	}
+
+	public void setTrade_no_type(TradeNoType trade_no_type) {
+		this.trade_no_type = trade_no_type;
+	}
+
 	public String getSubject() {
 		return subject;
 	}
@@ -112,7 +130,7 @@ public class PayRequest {
 	}
 	
 	public enum Method {
-		MicroPay("pay", "micropay"), UnifiedOrder("pay", "unifiedorder");;
+		MicroPay("pay", "micropay"), UnifiedOrder("pay", "unifiedorder"), Query("pay", "query");;
 		
 		String module;
 		String method;
@@ -120,6 +138,16 @@ public class PayRequest {
 		Method(String module, String method) {
 			this.module = module;
 			this.method = method;
+		}
+	}
+	
+	public enum TradeNoType {
+		MiaoFu(1), Gateway(2);
+		
+		int id;
+		
+		TradeNoType(int id) {
+			this.id = id;
 		}
 	}
 	

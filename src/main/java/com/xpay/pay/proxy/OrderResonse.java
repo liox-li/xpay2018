@@ -1,10 +1,10 @@
 package com.xpay.pay.proxy;
 
-import com.xpay.pay.proxy.PayRequest.PayChannel;
+import com.xpay.pay.proxy.OrderRequest.PayChannel;
 
-public class PayResponse {
+public class OrderResonse {
 	private String code;
-	private TradeBean date;
+	private TradeBean data;
 	
 	public String getCode() {
 		return code;
@@ -16,13 +16,13 @@ public class PayResponse {
 	}
 
 
-	public TradeBean getDate() {
-		return date;
+	public TradeBean getData() {
+		return data;
 	}
 
 
-	public void setDate(TradeBean date) {
-		this.date = date;
+	public void setData(TradeBean date) {
+		this.data = date;
 	}
 
 	public class TradeBean {
