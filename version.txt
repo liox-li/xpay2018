@@ -1,6 +1,6 @@
 branch=refs/heads/master
-buildTimestamp=2017-03-23 08:45:14 +0000
-buildVersion=174
+buildTimestamp=2017-03-24 05:10:42 +0000
+buildVersion=177
 commitId=
 hostname=zaiping.local
 isSnapshot=true
@@ -11,4 +11,4 @@ osName=Mac OS X
 osVersion=10.11.6
 project=APT
 username=zma
-version=0.1.174
+version=0.1.177
