@@ -1,8 +1,8 @@
 package com.xpay.pay.proxy;
 
-import com.xpay.pay.proxy.OrderRequest.PayChannel;
+import com.xpay.pay.proxy.PaymentRequest.PayChannel;
 
-public class OrderResonse {
+public class PaymentResponse {
 	private String code;
 	private TradeBean data;
 	

@@ -17,13 +17,13 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.xpay.pay.proxy.OrderRequest.Method;
+import com.xpay.pay.proxy.PaymentRequest.Method;
 import com.xpay.pay.util.AppConfig;
 import com.xpay.pay.util.CryptoUtils;
 import com.xpay.pay.util.JsonUtils;
 
 @Component
-public class MiaoFuProxy implements IOrderProxy {
+public class MiaoFuProxy implements IPaymentProxy {
 	protected final Logger logger = LogManager.getLogger("AccessLog");
 	@Autowired
 	RestTemplate miaofuProxy;
@@ -33,16 +33,16 @@ public class MiaoFuProxy implements IOrderProxy {
 	private static final String appSecret = config.getProperty("provider.app.secret");
 
 	@Override
-	public OrderResonse microPay(OrderRequest orderRequest) {
+	public PaymentResponse microPay(PaymentRequest orderRequest) {
 		String url = buildUrl(Method.MicroPay, orderRequest);
 		System.out.println("microPay POST: " + url);
 		long l = System.currentTimeMillis();
-		OrderResonse response = null;
+		PaymentResponse response = null;
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 			HttpEntity<?> httpEntity = new HttpEntity<>(headers);
-			response = miaofuProxy.exchange(url, HttpMethod.POST, httpEntity, OrderResonse.class).getBody();
+			response = miaofuProxy.exchange(url, HttpMethod.POST, httpEntity, PaymentResponse.class).getBody();
 			logger.info("microPay result: " + response.getCode() + ", took "
 					+ (System.currentTimeMillis() - l) + "ms");
 		} catch (RestClientException e) {
@@ -53,16 +53,16 @@ public class MiaoFuProxy implements IOrderProxy {
 	}
 	
 	@Override
-	public OrderResonse placeOrder(OrderRequest orderRequest) {
+	public PaymentResponse unifiedOrder(PaymentRequest orderRequest) {
 		String url = buildUrl(Method.UnifiedOrder, orderRequest);
 		System.out.println("unifiedOrder POST: " + url);
 		long l = System.currentTimeMillis();
-		OrderResonse response = null;
+		PaymentResponse response = null;
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 			HttpEntity<?> httpEntity = new HttpEntity<>(headers);
-			response = miaofuProxy.exchange(url, HttpMethod.POST, httpEntity, OrderResonse.class).getBody();
+			response = miaofuProxy.exchange(url, HttpMethod.POST, httpEntity, PaymentResponse.class).getBody();
 			logger.info("unifiedOrder result: " + response.getCode() + ", took "
 					+ (System.currentTimeMillis() - l) + "ms");
 		} catch (RestClientException e) {
@@ -73,16 +73,16 @@ public class MiaoFuProxy implements IOrderProxy {
 	}
 	
 	@Override
-	public OrderResonse query(OrderRequest orderRequest) {
+	public PaymentResponse query(PaymentRequest orderRequest) {
 		String url = buildUrl(Method.Query, orderRequest);
 		System.out.println("query POST: " + url);
 		long l = System.currentTimeMillis();
-		OrderResonse response = null;
+		PaymentResponse response = null;
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 			HttpEntity<?> httpEntity = new HttpEntity<>(headers);
-			response = miaofuProxy.exchange(url, HttpMethod.POST, httpEntity, OrderResonse.class).getBody();
+			response = miaofuProxy.exchange(url, HttpMethod.POST, httpEntity, PaymentResponse.class).getBody();
 			logger.info("query result: " + response.getCode() + ", took "
 					+ (System.currentTimeMillis() - l) + "ms");
 		} catch (RestClientException e) {
@@ -92,7 +92,7 @@ public class MiaoFuProxy implements IOrderProxy {
 		return response;
 	}
 	
-	private String buildUrl(Method method, OrderRequest orderRequest) {
+	private String buildUrl(Method method, PaymentRequest orderRequest) {
 		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseEndpoint).path("/"+method.module+"/"+method.method);
 		List<KeyValuePair> keyPairs = getKeyPairs(orderRequest);
 		for(KeyValuePair pair : keyPairs) {
@@ -104,7 +104,7 @@ public class MiaoFuProxy implements IOrderProxy {
 		return url;
 	}
 	
-	private List<KeyValuePair> getKeyPairs(OrderRequest orderRequest) {
+	private List<KeyValuePair> getKeyPairs(PaymentRequest orderRequest) {
 		if(orderRequest == null) {
 			return null;
 		}
@@ -166,9 +166,10 @@ public class MiaoFuProxy implements IOrderProxy {
 			builder.queryParam(pair.getKey(), pair.getValue());
 		}
 		builder.queryParam("APP_SECRET", appSecret);
-		String params = builder.build().encode().toString().substring(1);
+		String params = builder.build().toString().substring(1);
+		System.out.println("sorted params: "+params);
 		String md5 = CryptoUtils.md5(params);
-		
+		System.out.println("md5 upper: "+md5.toUpperCase());
 		return md5 == null? null:md5.toUpperCase();
 		
 	}

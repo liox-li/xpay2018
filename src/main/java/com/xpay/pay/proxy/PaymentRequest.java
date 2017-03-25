@@ -1,6 +1,6 @@
 package com.xpay.pay.proxy;
 
-public class OrderRequest {
+public class PaymentRequest {
 	private String busi_code;
 	private String dev_id;
 	private String oper_id;

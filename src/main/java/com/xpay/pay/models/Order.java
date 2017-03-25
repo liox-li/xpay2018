@@ -1,21 +1,31 @@
 package com.xpay.pay.models;
 
-import com.xpay.pay.proxy.OrderRequest.GoodBean;
-import com.xpay.pay.proxy.OrderRequest.PayChannel;
+import com.xpay.pay.proxy.PaymentRequest.GoodBean;
+import com.xpay.pay.proxy.PaymentRequest.PayChannel;
 
 public class Order {
-	private String orderNum;
+	private String appId;
 	private String storeId;
 	private String storeName;
 	private String operator;
-	private String deviceId;
+	private String deviceInfo;
 	private PayChannel payChannel; 
-	private String amount;
-	private String undiscountableAmount;
+	private String ip;
+	private String totalFee;
+	private String attach;
+	private String orderNo;
+	private String sellerOrderNo;
 	private String orderSubject;
+	private String orderDesc;
 	private GoodBean[] orderItems;
-	private String sellerData;
-	
+	private String notifyUrl;
+	private String orderTime; //yyyyMMddHHmmss
+	public String getAppId() {
+		return appId;
+	}
+	public void setAppId(String appId) {
+		this.appId = appId;
+	}
 	public String getStoreId() {
 		return storeId;
 	}
@@ -28,17 +38,17 @@ public class Order {
 	public void setStoreName(String storeName) {
 		this.storeName = storeName;
 	}
-	public String getDeviceId() {
-		return deviceId;
-	}
-	public void setDeviceId(String deviceId) {
-		this.deviceId = deviceId;
-	}
 	public String getOperator() {
 		return operator;
 	}
 	public void setOperator(String operator) {
 		this.operator = operator;
+	}
+	public String getDeviceInfo() {
+		return deviceInfo;
+	}
+	public void setDeviceInfo(String deviceInfo) {
+		this.deviceInfo = deviceInfo;
 	}
 	public PayChannel getPayChannel() {
 		return payChannel;
@@ -46,29 +56,35 @@ public class Order {
 	public void setPayChannel(PayChannel payChannel) {
 		this.payChannel = payChannel;
 	}
-	public String getAmount() {
-		return amount;
+	public String getIp() {
+		return ip;
 	}
-	public void setAmount(String amount) {
-		this.amount = amount;
+	public void setIp(String ip) {
+		this.ip = ip;
 	}
-	public String getUndiscountableAmount() {
-		return undiscountableAmount;
+	public String getTotalFee() {
+		return totalFee;
 	}
-	public void setUndiscountableAmount(String undiscountableAmount) {
-		this.undiscountableAmount = undiscountableAmount;
+	public void setTotalFee(String totalFee) {
+		this.totalFee = totalFee;
 	}
-	public String getSellerData() {
-		return sellerData;
+	public String getAttach() {
+		return attach;
 	}
-	public void setSellerData(String sellerData) {
-		this.sellerData = sellerData;
+	public void setAttach(String attach) {
+		this.attach = attach;
 	}
-	public String getOrderNum() {
-		return orderNum;
+	public String getOrderNo() {
+		return orderNo;
 	}
-	public void setOrderNum(String orderNum) {
-		this.orderNum = orderNum;
+	public void setOrderNo(String orderNo) {
+		this.orderNo = orderNo;
+	}
+	public String getSellerOrderNo() {
+		return sellerOrderNo;
+	}
+	public void setSellerOrderNo(String sellerOrderNo) {
+		this.sellerOrderNo = sellerOrderNo;
 	}
 	public String getOrderSubject() {
 		return orderSubject;
@@ -76,10 +92,30 @@ public class Order {
 	public void setOrderSubject(String orderSubject) {
 		this.orderSubject = orderSubject;
 	}
+	public String getOrderDesc() {
+		return orderDesc;
+	}
+	public void setOrderDesc(String orderDesc) {
+		this.orderDesc = orderDesc;
+	}
 	public GoodBean[] getOrderItems() {
 		return orderItems;
 	}
 	public void setOrderItems(GoodBean[] orderItems) {
 		this.orderItems = orderItems;
 	}
+	public String getNotifyUrl() {
+		return notifyUrl;
+	}
+	public void setNotifyUrl(String notifyUrl) {
+		this.notifyUrl = notifyUrl;
+	}
+	public String getOrderTime() {
+		return orderTime;
+	}
+	public void setOrderTime(String orderTime) {
+		this.orderTime = orderTime;
+	}
+	
+	
 }
