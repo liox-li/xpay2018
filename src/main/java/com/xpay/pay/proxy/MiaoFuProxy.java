@@ -19,19 +19,19 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.xpay.pay.proxy.PaymentRequest.Method;
 import com.xpay.pay.util.AppConfig;
-import com.xpay.pay.util.CommonUtils;
 import com.xpay.pay.util.CryptoUtils;
 import com.xpay.pay.util.JsonUtils;
 
 @Component
 public class MiaoFuProxy implements IPaymentProxy {
 	protected final Logger logger = LogManager.getLogger("AccessLog");
-	@Autowired
-	RestTemplate miaofuProxy;
 	private static final AppConfig config = AppConfig.MiaoFuCponfig;
 	private static final String baseEndpoint = config.getProperty("provider.endpoint");
 	private static final String appId = config.getProperty("provider.app.id");
 	private static final String appSecret = config.getProperty("provider.app.secret");
+
+	@Autowired
+	RestTemplate miaofuProxy;
 
 	@Override
 	public PaymentResponse microPay(PaymentRequest orderRequest) {

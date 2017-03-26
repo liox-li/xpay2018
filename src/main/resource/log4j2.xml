@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration name="planner-service-logger">
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36}:%L - %msg%n" />
+		</Console>
+		
+		<RollingFile name="ApplicationLogFile"
+			fileName="${sys:catalina.base}/logs/planner.log" filePattern="${sys:catalina.home}/logs/xpay.log.%d{yyyy-MM-dd}">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36}:%L - %msg%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1"
+					modulate="true" />
+			</Policies>
+		</RollingFile>
+		
+		<RollingFile name="AccessLogFile"
+            fileName="${sys:catalina.base}/logs/access.log" filePattern="${sys:catalina.home}/logs/access.log.%d{yyyy-MM-dd}">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36}:%L - %msg%n" />
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"
+                    modulate="true" />
+            </Policies>
+        </RollingFile>
+        
+        <RollingFile name="PerformanceLogFile"
+            fileName="${sys:catalina.base}/logs/performance.log" filePattern="${sys:catalina.home}/logs/perf.log.%d{yyyy-MM-dd}">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36}:%L - %msg%n" />
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"
+                    modulate="true" />
+            </Policies>
+        </RollingFile>
+	</Appenders>
+	
+	<Loggers>
+		<Logger name="com.xpay.pay" level="info" additivity="false">
+			<AppenderRef ref="ApplicationLogFile" />
+		</Logger>
+		<Logger name="AccessLog" level="info" additivity="false">
+            <AppenderRef ref="AccessLogFile" />
+        </Logger>
+       <Logger name="PerformanceLog" level="info" additivity="false">
+			<AppenderRef ref="PerformanceLogFile" />
+		</Logger>
+		<Root level="warn" additivity="false">
+			<AppenderRef ref="ApplicationLogFile" />
+		</Root>
+	</Loggers>
+</Configuration>

@@ -25,17 +25,10 @@
         
 
 	<context:component-scan base-package="com.xpay.pay" />
-	<mvc:interceptors>
-		<mvc:interceptor>
-			<mvc:mapping path="/**" />
-			<bean class="com.xpay.controller.filter.AccessLogEventInterceptor" />
-		</mvc:interceptor>
-	</mvc:interceptors>
-
 	<mvc:annotation-driven>
 		<mvc:message-converters>
 			<bean
-				class="com.xpay.controller.JacksonHttpMessageConverter"></bean>
+				class="com.xpay.pay.util.JacksonHttpMessageConverter"></bean>
 		</mvc:message-converters>
 	</mvc:annotation-driven>
 
@@ -57,5 +50,6 @@
 
 	<!-- Enable scanning of spring @Configuration classes -->
 	<context:annotation-config />
-
+	
+	<import resource="spring-restful.xml" />
 </beans>
