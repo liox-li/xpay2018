@@ -13,19 +13,35 @@ public class MiaoFuProxyTest extends BaseSpringJunitTest {
 	private MiaoFuProxy proxy;
 	
 	@Test
-	public void testPlaceOrder() {
+	public void testUnifiedOrder() {
 		PaymentRequest request = new PaymentRequest();
 		request.setBusi_code("T2017032319251974486873");
 		request.setDev_id("1908a92d7d33");
 		request.setPay_channel(PayChannel.ALIPAY);
-		request.setAmount("0.00");
+		request.setAmount("0.01");
 		request.setDown_trade_no("58237477024932JrfDWLbLWR");
-		request.setSubject("华素传媒测试门店");
+		request.setSubject("测试门店1");
 		request.setRaw_data("1.0.5");
-		request.setUndiscountable_amount("0.00");
+		request.setUndiscountable_amount("0.01");
 		request.setOper_id("104");
 		PaymentResponse response = proxy.unifiedOrder(request);
-		System.out.println("response code: "+ response.getCode());
+		System.out.println("response code: "+ response.getCode()+" "+response.getMsg());
+	}
+	
+	@Test
+	public void testUnifiedOrderExample() {
+		PaymentRequest request = new PaymentRequest();
+		request.setBusi_code("T2016060516001813420315");
+		request.setDev_id("1908a92d7d33");
+		request.setPay_channel(PayChannel.ALIPAY);
+		request.setAmount("0.01");
+		request.setDown_trade_no("5124");
+		request.setSubject("华素传媒测试门店");
+		request.setRaw_data("1.0.5.105");
+		request.setUndiscountable_amount("0.00");
+		request.setOper_id("105");
+		PaymentResponse response = proxy.unifiedOrder(request);
+		System.out.println("response code: "+ response.getCode()+" "+response.getMsg());
 	}
 	
 	@Test

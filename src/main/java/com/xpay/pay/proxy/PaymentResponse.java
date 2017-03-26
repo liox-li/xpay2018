@@ -4,6 +4,7 @@ import com.xpay.pay.proxy.PaymentRequest.PayChannel;
 
 public class PaymentResponse {
 	private String code;
+	private String msg;
 	private TradeBean data;
 	
 	public String getCode() {
@@ -13,6 +14,16 @@ public class PaymentResponse {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+
+	public String getMsg() {
+		return msg;
+	}
+
+
+	public void setMsg(String msg) {
+		this.msg = msg;
 	}
 
 

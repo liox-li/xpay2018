@@ -19,6 +19,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.xpay.pay.proxy.PaymentRequest.Method;
 import com.xpay.pay.util.AppConfig;
+import com.xpay.pay.util.CommonUtils;
 import com.xpay.pay.util.CryptoUtils;
 import com.xpay.pay.util.JsonUtils;
 
@@ -63,7 +64,7 @@ public class MiaoFuProxy implements IPaymentProxy {
 			headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 			HttpEntity<?> httpEntity = new HttpEntity<>(headers);
 			response = miaofuProxy.exchange(url, HttpMethod.POST, httpEntity, PaymentResponse.class).getBody();
-			logger.info("unifiedOrder result: " + response.getCode() + ", took "
+			logger.info("unifiedOrder result: " + response.getCode()+" "+response.getMsg() + ", took "
 					+ (System.currentTimeMillis() - l) + "ms");
 		} catch (RestClientException e) {
 			logger.info("unifiedOrder failed, took " + (System.currentTimeMillis() - l) + "ms", e);
@@ -83,7 +84,7 @@ public class MiaoFuProxy implements IPaymentProxy {
 			headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 			HttpEntity<?> httpEntity = new HttpEntity<>(headers);
 			response = miaofuProxy.exchange(url, HttpMethod.POST, httpEntity, PaymentResponse.class).getBody();
-			logger.info("query result: " + response.getCode() + ", took "
+			logger.info("query result: " + response.getCode() + " "+response.getMsg()+", took "
 					+ (System.currentTimeMillis() - l) + "ms");
 		} catch (RestClientException e) {
 			logger.info("query failed, took " + (System.currentTimeMillis() - l) + "ms", e);
@@ -100,7 +101,7 @@ public class MiaoFuProxy implements IPaymentProxy {
 		}
 		String sign = signature(keyPairs, appSecret);
 		builder.queryParam("sign", sign);
-		String url = builder.build().encode().toString();	
+		String url = builder.build().toString();	
 		return url;
 	}
 	
@@ -151,6 +152,7 @@ public class MiaoFuProxy implements IPaymentProxy {
 		}
 		keyPairs.add(new KeyValuePair("app_id", appId));
 		keyPairs.add(new KeyValuePair("timestamp", String.valueOf(System.currentTimeMillis()/1000)));
+		//keyPairs.add(new KeyValuePair("timestamp", "1489463214"));
 		keyPairs.add(new KeyValuePair("version", "v3"));
 
 		return keyPairs;
@@ -167,6 +169,7 @@ public class MiaoFuProxy implements IPaymentProxy {
 		}
 		builder.queryParam("APP_SECRET", appSecret);
 		String params = builder.build().toString().substring(1);
+		//String encoded = CommonUtils.iso88591(CommonUtils.utf8(params));
 		System.out.println("sorted params: "+params);
 		String md5 = CryptoUtils.md5(params);
 		System.out.println("md5 upper: "+md5.toUpperCase());

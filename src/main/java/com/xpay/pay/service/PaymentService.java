@@ -13,18 +13,27 @@ import com.xpay.pay.proxy.PaymentResponse.TradeBean;
 @Service
 public class PaymentService {
 	@Autowired 
-	private IPaymentProxy orderProxy;
+	private IPaymentProxy paymentProxy;
 	
 	 public Bill unifiedOrder(Order order) {
-		 PaymentRequest request = toOrderRequest(order);
+		 PaymentRequest request = toPaymentRequest(order);
 		 
-		 PaymentResponse response = orderProxy.unifiedOrder(request);
+		 PaymentResponse response = paymentProxy.unifiedOrder(request);
+		 
+		 Bill bill = toBill(order, response);
+		 return bill;
+	 }
+	 
+	 public Bill query(Order order) {
+		 PaymentRequest request = toPaymentRequest(order);
+		 
+		 PaymentResponse response = paymentProxy.query(request);
 		 
 		 Bill bill = toBill(order, response);
 		 return bill;
 	 }
 
-	private PaymentRequest toOrderRequest(Order order) {
+	private PaymentRequest toPaymentRequest(Order order) {
 		PaymentRequest request = new PaymentRequest();
 		request.setBusi_code(order.getStoreId());
 		request.setDev_id(order.getDeviceInfo());
