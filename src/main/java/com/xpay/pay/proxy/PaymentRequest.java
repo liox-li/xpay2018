@@ -1,5 +1,7 @@
 package com.xpay.pay.proxy;
 
+import java.util.Arrays;
+
 public class PaymentRequest {
 	private String busi_code;
 	private String dev_id;
@@ -126,6 +128,15 @@ public class PaymentRequest {
 		
 		PayChannel(int id) {
 			this.id = String.valueOf(id);
+		}
+
+		public static PayChannel fromValue(String val) {
+			PayChannel[] channels = PayChannel.values();
+			return Arrays.stream(channels).filter(x -> x.getId().equals(val)).findFirst().orElse(ALL);
+		}
+		
+		public String getId() {
+			return id;
 		}
 	}
 	

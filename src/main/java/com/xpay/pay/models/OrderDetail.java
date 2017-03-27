@@ -1,15 +1,13 @@
-package com.xpay.pay.rest.contract;
+package com.xpay.pay.models;
 
 import com.xpay.pay.proxy.PaymentRequest.GoodBean;
 
 public class OrderDetail {
 	private String storeName;
 	private String operator;
-	private String sellerOrderNo;
-	private String orderSubject;
+	private String orderSubject = "No Subject";
 	private String orderDesc;
 	private GoodBean[] orderItems;
-	private String attach;
 	public String getStoreName() {
 		return storeName;
 	}
@@ -21,12 +19,6 @@ public class OrderDetail {
 	}
 	public void setOperator(String operator) {
 		this.operator = operator;
-	}
-	public String getSellerOrderNo() {
-		return sellerOrderNo;
-	}
-	public void setSellerOrderNo(String sellerOrderNo) {
-		this.sellerOrderNo = sellerOrderNo;
 	}
 	public String getOrderSubject() {
 		return orderSubject;
@@ -46,12 +38,5 @@ public class OrderDetail {
 	public void setOrderItems(GoodBean[] orderItems) {
 		this.orderItems = orderItems;
 	}
-	public String getAttach() {
-		return attach;
-	}
-	public void setAttach(String attach) {
-		this.attach = attach;
-	}
-	
 	
 }

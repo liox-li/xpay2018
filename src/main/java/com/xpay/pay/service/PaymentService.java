@@ -31,26 +31,23 @@ public class PaymentService {
 		return bill;
 	}
 
-	public Bill query(Order order) {
-		PaymentRequest request = toPaymentRequest(order);
-
-		PaymentResponse response = paymentProxy.query(request);
-
-		Bill bill = toBill(order, response);
-		return bill;
+	public Bill query(String orderNo) {
+		return null;
 	}
 
 	private PaymentRequest toPaymentRequest(Order order) {
 		PaymentRequest request = new PaymentRequest();
 		request.setBusi_code(order.getStoreId());
 		request.setDev_id(order.getDeviceId());
-		request.setOper_id(order.getOperator());
 		request.setPay_channel(order.getPayChannel());
 		request.setAmount(order.getTotalFee());
 		request.setRaw_data(order.getAttach());
-		request.setDown_trade_no(order.getSellerOrderNo());
-		request.setSubject(order.getOrderSubject());
-		request.setGood_details(order.getOrderItems());
+		request.setDown_trade_no(order.getOrderNo());
+		if(order.getOrderDetail()!=null) {
+			request.setOper_id(order.getOrderDetail().getOperator());
+			request.setSubject(order.getOrderDetail().getOrderSubject());
+			request.setGood_details(order.getOrderDetail().getOrderItems());
+		}
 		return request;
 	}
 
@@ -63,10 +60,12 @@ public class PaymentService {
 		}
 		TradeBean trade = response.getData();
 		Bill bill = new Bill();
-		bill.setOrderNo(order.getOrderNo());
-		bill.setOrderDetail(order);
 		bill.setCodeUrl(trade.getCode_url());
 		bill.setPrepayId(trade.getPrepay_id());
+		bill.setOrderNo(order.getOrderNo());
+		bill.setGatewayOrderNo(trade.getTrade_no());
+		bill.setOrderStatus(trade.getTrade_status());
+		bill.setOrder(order);
 		return bill;
 	}
 }

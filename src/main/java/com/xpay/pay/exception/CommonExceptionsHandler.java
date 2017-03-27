@@ -33,7 +33,7 @@ public class CommonExceptionsHandler {
 
 	/**
 	 * 
-	 * mbaasExceptionHandler
+	 * ExceptionHandler
 	 * 
 	 * @param e
 	 * @return

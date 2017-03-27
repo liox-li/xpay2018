@@ -1,5 +1,7 @@
 package com.xpay.pay.rest;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,9 +15,10 @@ import com.xpay.pay.exception.ApplicationException;
 import com.xpay.pay.exception.GatewayException;
 import com.xpay.pay.models.Bill;
 import com.xpay.pay.models.Order;
+import com.xpay.pay.models.OrderDetail;
 import com.xpay.pay.proxy.PaymentRequest.PayChannel;
 import com.xpay.pay.rest.contract.BaseResponse;
-import com.xpay.pay.rest.contract.OrderDetail;
+import com.xpay.pay.rest.contract.OrderResponse;
 import com.xpay.pay.service.PaymentService;
 
 @RestController
@@ -25,9 +28,9 @@ public class PaymentRestService {
 	private PaymentService paymentService;
 
 	@RequestMapping(value = "/unifiedorder ", method = RequestMethod.POST)
-	public BaseResponse<Bill> unifiedOrder(
+	public BaseResponse<OrderResponse> unifiedOrder(
 			@RequestParam String storeId,
-			@RequestParam PayChannel payChannel, // ALIPAY(1), WECHAT(2)
+			@RequestParam String payChannel, // ALIPAY("1"), WECHAT("2")
 			@RequestParam String totalFee, // <=3000yuan
 			@RequestParam String orderTime, // yyyyMMddHHmmss
 			@RequestParam(required = false) String deviceId,
@@ -37,25 +40,19 @@ public class PaymentRestService {
 
 		Order order = new Order();
 		order.setStoreId(storeId);
-		order.setPayChannel(payChannel);
+		order.setPayChannel(PayChannel.fromValue(payChannel));
 		order.setDeviceId(deviceId);
 		order.setIp(ip);
 		order.setTotalFee(totalFee);
 		order.setOrderTime(orderTime);
 		order.setNotifyUrl(notifyUrl);
-		if (orderDetail != null) {
-			order.setStoreName(orderDetail.getStoreName());
-			order.setOperator(orderDetail.getOperator());
-			order.setSellerOrderNo(orderDetail.getSellerOrderNo());
-			order.setOrderSubject(orderDetail.getOrderSubject());
-			order.setOrderDesc(orderDetail.getOrderDesc());
-			order.setOrderItems(orderDetail.getOrderItems());
-			order.setAttach(orderDetail.getAttach());
-		}
-		BaseResponse<Bill> response = new BaseResponse<Bill>();
+		order.setOrderDetail(orderDetail);
+		order.setOrderNo(UUID.randomUUID().toString());
+		BaseResponse<OrderResponse> response = new BaseResponse<OrderResponse>();
 		try {
 			Bill bill = paymentService.unifiedOrder(order);
-			response.setData(bill);
+			OrderResponse orderResponse = toOrderResponse(bill);
+			response.setData(orderResponse);
 		} catch (GatewayException e) {
 			response.setStatus(ApplicationConstants.STATUS_BAD_GATEWAY);
 			response.setCode(e.getCode());
@@ -80,10 +77,22 @@ public class PaymentRestService {
 		order.setIp(ip);
 		order.setOrderNo(orderNo);
 		// order.setPayChannel(payChannel);
-		Bill bill = paymentService.query(order);
+		Bill bill = paymentService.query(orderNo);
 		BaseResponse<Bill> response = new BaseResponse<Bill>();
 		response.setData(bill);
 		return response;
+	}
+
+	private OrderResponse toOrderResponse(Bill bill) {
+		OrderResponse result = new OrderResponse();
+		result.setOrderNo(bill.getOrderNo());
+		result.setStoreId(bill.getOrder().getStoreId());
+		result.setSellerOrderNo(bill.getOrder().getSellerOrderNo());
+		result.setCodeUrl(bill.getCodeUrl());
+		result.setPrepayId(bill.getPrepayId());
+		result.setOrderStatus(bill.getOrderStatus());
+		result.setAttach(bill.getOrder().getAttach());
+		return result;
 	}
 
 }

@@ -1,12 +1,16 @@
 package com.xpay.pay.models;
 
+import com.xpay.pay.proxy.PaymentResponse.TradeStatus;
+
 
 
 public class Bill {
 	private String orderNo;
+	private String gatewayOrderNo;
 	private String prepayId;
 	private String codeUrl;
-	private Order orderDetail;
+	private TradeStatus orderStatus;
+	private Order order;
 	
 	public String getOrderNo() {
 		return orderNo;
@@ -14,11 +18,11 @@ public class Bill {
 	public void setOrderNo(String orderNo) {
 		this.orderNo = orderNo;
 	}
-	public Order getOrderDetail() {
-		return orderDetail;
+	public String getGatewayOrderNo() {
+		return gatewayOrderNo;
 	}
-	public void setOrderDetail(Order orderDetail) {
-		this.orderDetail = orderDetail;
+	public void setGatewayOrderNo(String gatewayOrderNo) {
+		this.gatewayOrderNo = gatewayOrderNo;
 	}
 	public String getPrepayId() {
 		return prepayId;
@@ -31,6 +35,18 @@ public class Bill {
 	}
 	public void setCodeUrl(String codeUrl) {
 		this.codeUrl = codeUrl;
+	}
+	public TradeStatus getOrderStatus() {
+		return orderStatus;
+	}
+	public void setOrderStatus(TradeStatus orderStatus) {
+		this.orderStatus = orderStatus;
+	}
+	public Order getOrder() {
+		return order;
+	}
+	public void setOrder(Order order) {
+		this.order = order;
 	}
 	
 	

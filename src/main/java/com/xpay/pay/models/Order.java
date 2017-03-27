@@ -1,25 +1,27 @@
 package com.xpay.pay.models;
 
-import com.xpay.pay.proxy.PaymentRequest.GoodBean;
 import com.xpay.pay.proxy.PaymentRequest.PayChannel;
 
 public class Order {
+	private String orderNo;
 	private String appId;
 	private String storeId;
-	private String storeName;
-	private String operator;
-	private String deviceId;
-	private String ip;
 	private PayChannel payChannel; 
 	private String totalFee;
-	private String attach;
-	private String orderNo;
-	private String sellerOrderNo;
-	private String orderSubject = "No Subject";
-	private String orderDesc;
-	private GoodBean[] orderItems;
-	private String notifyUrl;
 	private String orderTime; //yyyyMMddHHmmss
+	private String sellerOrderNo;
+	private String attach;
+	private String deviceId;
+	private String ip;
+	private String notifyUrl;
+	private OrderDetail orderDetail;
+	
+	public String getOrderNo() {
+		return orderNo;
+	}
+	public void setOrderNo(String orderNo) {
+		this.orderNo = orderNo;
+	}
 	public String getAppId() {
 		return appId;
 	}
@@ -31,30 +33,6 @@ public class Order {
 	}
 	public void setStoreId(String storeId) {
 		this.storeId = storeId;
-	}
-	public String getStoreName() {
-		return storeName;
-	}
-	public void setStoreName(String storeName) {
-		this.storeName = storeName;
-	}
-	public String getOperator() {
-		return operator;
-	}
-	public void setOperator(String operator) {
-		this.operator = operator;
-	}
-	public String getDeviceId() {
-		return deviceId;
-	}
-	public void setDeviceId(String deviceId) {
-		this.deviceId = deviceId;
-	}
-	public String getIp() {
-		return ip;
-	}
-	public void setIp(String ip) {
-		this.ip = ip;
 	}
 	public PayChannel getPayChannel() {
 		return payChannel;
@@ -68,17 +46,11 @@ public class Order {
 	public void setTotalFee(String totalFee) {
 		this.totalFee = totalFee;
 	}
-	public String getAttach() {
-		return attach;
+	public String getOrderTime() {
+		return orderTime;
 	}
-	public void setAttach(String attach) {
-		this.attach = attach;
-	}
-	public String getOrderNo() {
-		return orderNo;
-	}
-	public void setOrderNo(String orderNo) {
-		this.orderNo = orderNo;
+	public void setOrderTime(String orderTime) {
+		this.orderTime = orderTime;
 	}
 	public String getSellerOrderNo() {
 		return sellerOrderNo;
@@ -86,23 +58,23 @@ public class Order {
 	public void setSellerOrderNo(String sellerOrderNo) {
 		this.sellerOrderNo = sellerOrderNo;
 	}
-	public String getOrderSubject() {
-		return orderSubject;
+	public String getAttach() {
+		return attach;
 	}
-	public void setOrderSubject(String orderSubject) {
-		this.orderSubject = orderSubject;
+	public void setAttach(String attach) {
+		this.attach = attach;
 	}
-	public String getOrderDesc() {
-		return orderDesc;
+	public String getDeviceId() {
+		return deviceId;
 	}
-	public void setOrderDesc(String orderDesc) {
-		this.orderDesc = orderDesc;
+	public void setDeviceId(String deviceId) {
+		this.deviceId = deviceId;
 	}
-	public GoodBean[] getOrderItems() {
-		return orderItems;
+	public String getIp() {
+		return ip;
 	}
-	public void setOrderItems(GoodBean[] orderItems) {
-		this.orderItems = orderItems;
+	public void setIp(String ip) {
+		this.ip = ip;
 	}
 	public String getNotifyUrl() {
 		return notifyUrl;
@@ -110,12 +82,10 @@ public class Order {
 	public void setNotifyUrl(String notifyUrl) {
 		this.notifyUrl = notifyUrl;
 	}
-	public String getOrderTime() {
-		return orderTime;
+	public OrderDetail getOrderDetail() {
+		return orderDetail;
 	}
-	public void setOrderTime(String orderTime) {
-		this.orderTime = orderTime;
+	public void setOrderDetail(OrderDetail orderDetail) {
+		this.orderDetail = orderDetail;
 	}
-	
-	
 }

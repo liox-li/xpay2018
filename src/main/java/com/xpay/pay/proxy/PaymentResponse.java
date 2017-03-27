@@ -249,6 +249,19 @@ public class PaymentResponse {
 	public enum TradeStatus {
 		SUCCESS, REFUND, REVOKED, NOTPAY, USERPAYING
 	}
+	
+	public enum OrderStatus {
+		SUCCESS(0), REFUND(1), REVOKED(2), USERPAYING(3), NOTPAY(4);
+		int value;
+		
+		OrderStatus(int value) {
+			this.value = value;
+		}
+		
+		public int getValue() {
+			return value;
+		}
+	}
 
 	public enum PayType {
 		MICROPAY, NATIVE, JSAPI
