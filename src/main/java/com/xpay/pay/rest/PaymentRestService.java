@@ -68,7 +68,7 @@ public class PaymentRestService {
 		return response;
 	}
 
-	@RequestMapping(value = "/orders/{orderNo} ", method = RequestMethod.GET)
+	@RequestMapping(value = "/query/{orderNo} ", method = RequestMethod.GET)
 	public BaseResponse<Bill> query(
 			@PathVariable String orderNo,
 			@RequestParam String storeId,
