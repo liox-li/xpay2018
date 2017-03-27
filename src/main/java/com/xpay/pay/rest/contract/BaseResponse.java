@@ -1,7 +1,7 @@
 /**
  * Copyright (c) 2014, Blackboard Inc. All Rights Reserved.
  */
-package com.xpay.pay.rest;
+package com.xpay.pay.rest.contract;
 
 import com.xpay.pay.ApplicationConstants;
 
@@ -19,7 +19,7 @@ public class BaseResponse<DTO> {
 	public static final BaseResponse FORBIDDEN = new BaseResponse(ApplicationConstants.STATUS_FORBIDDEN, "Forbidden");
 	public static final BaseResponse SERVER_ERROR = new BaseResponse(ApplicationConstants.STATUS_INTERNAL_SERVER_ERROR,"Internal server error");
 	protected Integer status = ApplicationConstants.STATUS_OK;
-	protected Integer code;
+	protected String code;
 	protected String message;
 	protected String developerMessage;
 	protected DTO data;
@@ -44,11 +44,11 @@ public class BaseResponse<DTO> {
 		this.status = status;
 	}
 
-	public Integer getCode() {
+	public String getCode() {
 		return code;
 	}
 
-	public void setCode(Integer code) {
+	public void setCode(String code) {
 		this.code = code;
 	}
 	public String getMessage() {

@@ -8,14 +8,13 @@ public class Order {
 	private String storeId;
 	private String storeName;
 	private String operator;
-	private String deviceInfo;
+	private String deviceId;
 	private PayChannel payChannel; 
-	private String ip;
 	private String totalFee;
 	private String attach;
 	private String orderNo;
 	private String sellerOrderNo;
-	private String orderSubject;
+	private String orderSubject = "No Subject";
 	private String orderDesc;
 	private GoodBean[] orderItems;
 	private String notifyUrl;
@@ -44,23 +43,17 @@ public class Order {
 	public void setOperator(String operator) {
 		this.operator = operator;
 	}
-	public String getDeviceInfo() {
-		return deviceInfo;
+	public String getDeviceId() {
+		return deviceId;
 	}
-	public void setDeviceInfo(String deviceInfo) {
-		this.deviceInfo = deviceInfo;
+	public void setDeviceId(String deviceId) {
+		this.deviceId = deviceId;
 	}
 	public PayChannel getPayChannel() {
 		return payChannel;
 	}
 	public void setPayChannel(PayChannel payChannel) {
 		this.payChannel = payChannel;
-	}
-	public String getIp() {
-		return ip;
-	}
-	public void setIp(String ip) {
-		this.ip = ip;
 	}
 	public String getTotalFee() {
 		return totalFee;

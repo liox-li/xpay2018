@@ -2,7 +2,7 @@ package com.xpay.pay;
 
 public class ApplicationConstants {
 	// Error Codes
-	public static final int CODE_COMMON = 0;
+	public static final String CODE_COMMON = "0";
 
 	public static final int STATUS_OK = 200;
 

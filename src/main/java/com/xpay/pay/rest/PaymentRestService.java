@@ -7,10 +7,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.xpay.pay.ApplicationConstants;
+import com.xpay.pay.exception.ApplicationException;
+import com.xpay.pay.exception.GatewayException;
 import com.xpay.pay.models.Bill;
 import com.xpay.pay.models.Order;
-import com.xpay.pay.proxy.PaymentRequest.GoodBean;
 import com.xpay.pay.proxy.PaymentRequest.PayChannel;
+import com.xpay.pay.rest.contract.BaseResponse;
+import com.xpay.pay.rest.contract.OrderDetail;
 import com.xpay.pay.service.PaymentService;
 
 @RestController
@@ -19,55 +23,58 @@ public class PaymentRestService {
 	@Autowired
 	private PaymentService paymentService;
 	
-	@RequestMapping(value = "/unifiedorder ", method = RequestMethod.PUT)
+	@RequestMapping(value = "/unifiedorder ", method = RequestMethod.POST)
 	public BaseResponse<Bill> unifiedOrder(
 			@RequestParam String storeId,
 			@RequestParam PayChannel payChannel,
-			@RequestParam String ip,
+			@RequestParam String deviceId,
 			@RequestParam String totalFee,
 			@RequestParam String orderTime, // yyyyMMddHHmmss
-			@RequestParam(required = false) String storeName,
-			@RequestParam(required = false) String operator,
-			@RequestParam(required = false) String deviceInfo,
-			@RequestParam(required = false) String sellerOrderNo,
-			@RequestBody(required = false) String orderSubject,
-			@RequestBody(required = false) String orderDesc,
-			@RequestBody(required = false) GoodBean[] orderItems,
 			@RequestParam(required = false) String notifyUrl,
-			@RequestParam(required = false) String attach) {
+			@RequestBody(required = false) OrderDetail orderDetail) {
 		
 		Order order = new Order();
 		order.setStoreId(storeId);
-		order.setStoreName(storeName);
-		order.setOperator(operator);
-		order.setDeviceInfo(deviceInfo);
 		order.setPayChannel(payChannel);
-		order.setIp(ip);
+		order.setDeviceId(deviceId);
 		order.setTotalFee(totalFee);
-		order.setAttach(attach);
-		order.setSellerOrderNo(sellerOrderNo);
-		order.setOrderSubject(orderSubject);
-		order.setOrderDesc(orderDesc);
-		order.setOrderItems(orderItems);
-		order.setNotifyUrl(notifyUrl);
 		order.setOrderTime(orderTime);
-		
-		Bill bill = paymentService.unifiedOrder(order);
+		order.setNotifyUrl(notifyUrl);
+		if(orderDetail != null) {
+			order.setStoreName(orderDetail.getStoreName());
+			order.setOperator(orderDetail.getOperator());
+			order.setSellerOrderNo(orderDetail.getSellerOrderNo());
+			order.setOrderSubject(orderDetail.getOrderSubject());
+			order.setOrderDesc(orderDetail.getOrderDesc());
+			order.setOrderItems(orderDetail.getOrderItems());
+			order.setAttach(orderDetail.getAttach());
+		}
 		BaseResponse<Bill> response = new BaseResponse<Bill>();
-		response.setData(bill);
+		try {
+			Bill bill = paymentService.unifiedOrder(order);
+			response.setData(bill);
+		} catch(GatewayException e) {
+			response.setStatus(ApplicationConstants.STATUS_BAD_GATEWAY);
+			response.setCode(e.getCode());
+			response.setMessage(e.getMessage());
+		} catch(ApplicationException e) {
+			response.setStatus(ApplicationConstants.STATUS_INTERNAL_SERVER_ERROR);
+			response.setCode(e.getCode());
+			response.setMessage(e.getMessage());
+		}
 		return response;
 	}
 	
 	@RequestMapping(value = "/query ", method = RequestMethod.GET)
 	public BaseResponse<Bill> query(
 			@RequestParam String storeId,
-			@RequestParam String ip,
+			@RequestParam String deviceId,
 			@RequestParam String orderNo,
 			@RequestParam PayChannel payChannel
 			) {
 		Order order = new Order();
 		order.setStoreId(storeId);
-		order.setIp(ip);
+		order.setDeviceId(deviceId);
 		order.setOrderNo(orderNo);
 		order.setPayChannel(payChannel);
 		Bill bill = paymentService.query(order);
