@@ -43,7 +43,7 @@
        <Logger name="PerformanceLog" level="info" additivity="false">
 			<AppenderRef ref="PerformanceLogFile" />
 		</Logger>
-		<Root level="warn" additivity="false">
+		<Root level="info" additivity="false">
 			<AppenderRef ref="ApplicationLogFile" />
 		</Root>
 	</Loggers>

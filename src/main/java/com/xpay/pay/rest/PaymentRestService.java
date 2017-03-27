@@ -1,6 +1,7 @@
 package com.xpay.pay.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -67,10 +68,10 @@ public class PaymentRestService {
 		return response;
 	}
 
-	@RequestMapping(value = "/query ", method = RequestMethod.GET)
+	@RequestMapping(value = "/orders/{orderNo} ", method = RequestMethod.GET)
 	public BaseResponse<Bill> query(
+			@PathVariable String orderNo,
 			@RequestParam String storeId,
-			@RequestParam String orderNo,
 			@RequestParam(required = false) String deviceId,
 			@RequestParam(required = false) String ip) {
 		Order order = new Order();
