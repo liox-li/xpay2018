@@ -63,7 +63,8 @@ public class PaymentService {
 		}
 		TradeBean trade = response.getData();
 		Bill bill = new Bill();
-		bill.setOrder(order);
+		bill.setOrderNo(order.getOrderNo());
+		bill.setOrderDetail(order);
 		bill.setCodeUrl(trade.getCode_url());
 		bill.setPrepayId(trade.getPrepay_id());
 		return bill;

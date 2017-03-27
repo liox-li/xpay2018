@@ -1,15 +1,24 @@
 package com.xpay.pay.models;
 
 
+
 public class Bill {
-	private Order order;
+	private String orderNo;
 	private String prepayId;
 	private String codeUrl;
-	public Order getOrder() {
-		return order;
+	private Order orderDetail;
+	
+	public String getOrderNo() {
+		return orderNo;
 	}
-	public void setOrder(Order order) {
-		this.order = order;
+	public void setOrderNo(String orderNo) {
+		this.orderNo = orderNo;
+	}
+	public Order getOrderDetail() {
+		return orderDetail;
+	}
+	public void setOrderDetail(Order orderDetail) {
+		this.orderDetail = orderDetail;
 	}
 	public String getPrepayId() {
 		return prepayId;

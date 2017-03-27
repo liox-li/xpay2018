@@ -22,25 +22,27 @@ import com.xpay.pay.service.PaymentService;
 public class PaymentRestService {
 	@Autowired
 	private PaymentService paymentService;
-	
+
 	@RequestMapping(value = "/unifiedorder ", method = RequestMethod.POST)
 	public BaseResponse<Bill> unifiedOrder(
 			@RequestParam String storeId,
-			@RequestParam PayChannel payChannel,
-			@RequestParam String deviceId,
-			@RequestParam String totalFee,
+			@RequestParam PayChannel payChannel, // ALIPAY(1), WECHAT(2)
+			@RequestParam String totalFee, // <=3000yuan
 			@RequestParam String orderTime, // yyyyMMddHHmmss
+			@RequestParam(required = false) String deviceId,
+			@RequestParam(required = false) String ip,
 			@RequestParam(required = false) String notifyUrl,
 			@RequestBody(required = false) OrderDetail orderDetail) {
-		
+
 		Order order = new Order();
 		order.setStoreId(storeId);
 		order.setPayChannel(payChannel);
 		order.setDeviceId(deviceId);
+		order.setIp(ip);
 		order.setTotalFee(totalFee);
 		order.setOrderTime(orderTime);
 		order.setNotifyUrl(notifyUrl);
-		if(orderDetail != null) {
+		if (orderDetail != null) {
 			order.setStoreName(orderDetail.getStoreName());
 			order.setOperator(orderDetail.getOperator());
 			order.setSellerOrderNo(orderDetail.getSellerOrderNo());
@@ -53,34 +55,34 @@ public class PaymentRestService {
 		try {
 			Bill bill = paymentService.unifiedOrder(order);
 			response.setData(bill);
-		} catch(GatewayException e) {
+		} catch (GatewayException e) {
 			response.setStatus(ApplicationConstants.STATUS_BAD_GATEWAY);
 			response.setCode(e.getCode());
 			response.setMessage(e.getMessage());
-		} catch(ApplicationException e) {
+		} catch (ApplicationException e) {
 			response.setStatus(ApplicationConstants.STATUS_INTERNAL_SERVER_ERROR);
 			response.setCode(e.getCode());
 			response.setMessage(e.getMessage());
 		}
 		return response;
 	}
-	
+
 	@RequestMapping(value = "/query ", method = RequestMethod.GET)
 	public BaseResponse<Bill> query(
 			@RequestParam String storeId,
-			@RequestParam String deviceId,
 			@RequestParam String orderNo,
-			@RequestParam PayChannel payChannel
-			) {
+			@RequestParam(required = false) String deviceId,
+			@RequestParam(required = false) String ip) {
 		Order order = new Order();
 		order.setStoreId(storeId);
 		order.setDeviceId(deviceId);
+		order.setIp(ip);
 		order.setOrderNo(orderNo);
-		order.setPayChannel(payChannel);
+		// order.setPayChannel(payChannel);
 		Bill bill = paymentService.query(order);
 		BaseResponse<Bill> response = new BaseResponse<Bill>();
 		response.setData(bill);
 		return response;
 	}
-			
+
 }

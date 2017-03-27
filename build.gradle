@@ -144,8 +144,12 @@ war {
 		}
 	}
 	
+	from('./build/WebContent') {
+		include "**"
+	}
+	
 	webInf {
-		from("./src/main/resource/${profile}/") {
+		from("./src/main/resources/envs/${profile}/") {
 			include '*.config'
 			into './classes'
 		}

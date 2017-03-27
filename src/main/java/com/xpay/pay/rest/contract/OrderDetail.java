@@ -5,7 +5,6 @@ import com.xpay.pay.proxy.PaymentRequest.GoodBean;
 public class OrderDetail {
 	private String storeName;
 	private String operator;
-	private String deviceInfo;
 	private String sellerOrderNo;
 	private String orderSubject;
 	private String orderDesc;
@@ -22,12 +21,6 @@ public class OrderDetail {
 	}
 	public void setOperator(String operator) {
 		this.operator = operator;
-	}
-	public String getDeviceInfo() {
-		return deviceInfo;
-	}
-	public void setDeviceInfo(String deviceInfo) {
-		this.deviceInfo = deviceInfo;
 	}
 	public String getSellerOrderNo() {
 		return sellerOrderNo;

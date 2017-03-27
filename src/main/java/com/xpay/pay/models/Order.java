@@ -9,6 +9,7 @@ public class Order {
 	private String storeName;
 	private String operator;
 	private String deviceId;
+	private String ip;
 	private PayChannel payChannel; 
 	private String totalFee;
 	private String attach;
@@ -48,6 +49,12 @@ public class Order {
 	}
 	public void setDeviceId(String deviceId) {
 		this.deviceId = deviceId;
+	}
+	public String getIp() {
+		return ip;
+	}
+	public void setIp(String ip) {
+		this.ip = ip;
 	}
 	public PayChannel getPayChannel() {
 		return payChannel;
