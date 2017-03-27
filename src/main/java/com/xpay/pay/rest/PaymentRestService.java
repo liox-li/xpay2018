@@ -33,6 +33,8 @@ public class PaymentRestService {
 			@RequestParam String payChannel, // ALIPAY("1"), WECHAT("2")
 			@RequestParam String totalFee, // <=3000yuan
 			@RequestParam String orderTime, // yyyyMMddHHmmss
+			@RequestParam(required = false) String sellerOrderNo,
+			@RequestParam(required = false) String attach,
 			@RequestParam(required = false) String deviceId,
 			@RequestParam(required = false) String ip,
 			@RequestParam(required = false) String notifyUrl,
@@ -45,6 +47,8 @@ public class PaymentRestService {
 		order.setIp(ip);
 		order.setTotalFee(totalFee);
 		order.setOrderTime(orderTime);
+		order.setSellerOrderNo(sellerOrderNo);
+		order.setAttach(attach);
 		order.setNotifyUrl(notifyUrl);
 		order.setOrderDetail(orderDetail);
 		order.setOrderNo(UUID.randomUUID().toString());
@@ -90,7 +94,7 @@ public class PaymentRestService {
 		result.setSellerOrderNo(bill.getOrder().getSellerOrderNo());
 		result.setCodeUrl(bill.getCodeUrl());
 		result.setPrepayId(bill.getPrepayId());
-		result.setOrderStatus(bill.getOrderStatus());
+	//	result.setOrderStatus(bill.getOrderStatus());
 		result.setAttach(bill.getOrder().getAttach());
 		return result;
 	}
