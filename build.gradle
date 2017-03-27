@@ -145,7 +145,7 @@ war {
 	}
 	
 	webInf {
-		from("./src/main/resources/envs/") {
+		from("./src/main/resource/${profile}/") {
 			include '*.config'
 			into './classes'
 		}
