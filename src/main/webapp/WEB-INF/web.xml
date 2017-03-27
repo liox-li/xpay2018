@@ -55,7 +55,7 @@
 
 	<servlet-mapping>
 		<servlet-name>pay</servlet-name>
-		<url-pattern>/api/*</url-pattern>
+		<url-pattern>/rest/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>

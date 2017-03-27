@@ -54,7 +54,6 @@ public class HeartbeatServlet extends HttpServlet {
     
     private void printStats(String fileName, HttpServletResponse response) throws Exception
 	{
-		//String fileName = "/Users/markchen/Downloads/mbaas-access-log-20141128.txt";
 		File file = new File(fileName);
 		HashMap<String, StatObject> statMap = new HashMap<String, StatObject>();
 		try {
@@ -65,10 +64,6 @@ public class HeartbeatServlet extends HttpServlet {
 				String  lineTxt = null;
 				while ((lineTxt = bufferedReader.readLine()) != null) {
 					
-					//{"version":"V1.0.1","applicationId":"MBaas","requestId":"08dfa4c6-6ac6-4ee7-b5c2-0656e7c4dd1f","userId":null,"clientId":null,"threadName":"http-nio-8080-exec-25",
-					//"nodeId":"mbaas-elb-dev-104792870.us-east-1.elb.amazonaws.com:8080","remoteIp":"127.0.0.1","bytesSent":"38455","protocol":"HTTP/1.0",
-					//"headers":{"agent":"platform/iPhone OS platform_version/8.1 carrier_code/ carrier_name/ device_name/x86_64 device_id/CDB9788E-0644-43EF-BDD4-2947BDFD7E8C sdk_version/1.0.1 app_name/BBStudent app_version/1.0 timezone/PST","language":"en"},"schema":"AccessLogEvent",
-					//"time":"2014-00-26T12:00:54-0054","responseMillis":"21947","method":"GET","query":null,"path":"/mbaas/api/v1/streams/search","status":"200"}
 					if(lineTxt == null || lineTxt.isEmpty())
 					{
 						continue;
