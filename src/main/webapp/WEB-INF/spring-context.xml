@@ -22,7 +22,13 @@
         
 
 	<context:component-scan base-package="com.xpay.pay" />
-
+	<mvc:annotation-driven>
+		<mvc:message-converters>
+			<bean
+				class="com.xpay.pay.util.JacksonHttpMessageConverter"></bean>
+		</mvc:message-converters>
+	</mvc:annotation-driven>
+	
 	<context:property-placeholder
 		location="file:/usr/local/xpay/*.properties" order="1"
 		ignore-resource-not-found="true" ignore-unresolvable="true" />

@@ -39,7 +39,7 @@ public class CommonExceptionsHandler {
 	 * @return
 	 */
 	@ExceptionHandler(ApplicationException.class)
-	public @ResponseBody ResponseEntity<BaseResponse> aptExceptionHandler(
+	public @ResponseBody ResponseEntity<BaseResponse> applicationExceptionHandler(
 			ApplicationException e) {
 		LOG.error(e.getMessage(), e);
 
@@ -88,13 +88,12 @@ public class CommonExceptionsHandler {
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	public @ResponseBody BaseResponse handleSqlException(SQLException e) {
 		LOG.error(
-				"APT internal server error caused by invalid sql, please try later.",
+				"Xpay internal server error caused by invalid sql, please try later.",
 				e);
 
 		BaseResponse response = new BaseResponse();
 		response.setCode(CODE_COMMON);
 		response.setStatus(STATUS_INTERNAL_SERVER_ERROR);
-		// response.setMessage("APT internal server error caused by invalid sql, please try later.");
 		response.setMessage(e.getMessage());
 		return response;
 	}
@@ -110,11 +109,10 @@ public class CommonExceptionsHandler {
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	public @ResponseBody BaseResponse runtimeExceptionHandler(
 			Throwable throwable) {
-		LOG.error("APT internal server error, please try later.", throwable);
+		LOG.error("Xpay internal server error, please try later.", throwable);
 		BaseResponse response = new BaseResponse();
 		response.setCode(CODE_COMMON);
 		response.setStatus(STATUS_INTERNAL_SERVER_ERROR);
-		// response.setMessage("APT internal server error, please try later.");
 		response.setMessage(throwable.getMessage());
 		return response;
 	}
