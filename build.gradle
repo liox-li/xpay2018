@@ -145,11 +145,10 @@ war {
 	}
 	
 	webInf {
-		from("./src/main/resources/envs/${profile}/") {
-			include '*.properties'
+		from("./src/main/resources/envs/") {
+			include '*.config'
 			into './classes'
-		}	
-        
+		}
 	}
 	
 //	webXml = file("./src/main/resources/envs/${profile}/web.xml")

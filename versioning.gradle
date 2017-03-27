@@ -69,7 +69,7 @@ def data = [
 	javaVersion: System.properties["java.version"],
 	osName: System.properties["os.name"],
 	osVersion: System.properties["os.version"],
-	project: 'APT',
+	project: 'XPAY',
 	majorVersion: majorVersion,
 	minorVersion: minorVersion,
 	buildVersion: updatedBuildVersion,
