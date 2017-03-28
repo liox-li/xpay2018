@@ -132,7 +132,7 @@ public class PaymentRequest {
 
 		public static PayChannel fromValue(String val) {
 			PayChannel[] channels = PayChannel.values();
-			return Arrays.stream(channels).filter(x -> x.getId().equals(val)).findFirst().orElse(ALL);
+			return Arrays.stream(channels).filter(x -> x.getId().equals(val)).findFirst().orElse(null);
 		}
 		
 		public String getId() {

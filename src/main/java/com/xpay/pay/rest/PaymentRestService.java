@@ -2,7 +2,9 @@ package com.xpay.pay.rest;
 
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,9 +19,11 @@ import com.xpay.pay.models.Bill;
 import com.xpay.pay.models.Order;
 import com.xpay.pay.models.OrderDetail;
 import com.xpay.pay.proxy.PaymentRequest.PayChannel;
+import com.xpay.pay.proxy.PaymentResponse.TradeStatus;
 import com.xpay.pay.rest.contract.BaseResponse;
 import com.xpay.pay.rest.contract.OrderResponse;
 import com.xpay.pay.service.PaymentService;
+import com.xpay.pay.util.CommonUtils;
 
 @RestController
 @RequestMapping("/v1/pay")
@@ -39,10 +43,15 @@ public class PaymentRestService {
 			@RequestParam(required = false) String ip,
 			@RequestParam(required = false) String notifyUrl,
 			@RequestBody(required = false) OrderDetail orderDetail) {
-
+		Assert.isTrue(StringUtils.isNoneBlank(storeId, payChannel, totalFee, orderTime), "StoreId, payChannel, totalFee and orderTime can not be null");
+		PayChannel channel = PayChannel.fromValue(payChannel);
+		Assert.notNull(channel,"Unknow pay channel");
+		float fee = CommonUtils.toFloat(totalFee);
+		Assert.isTrue(fee>0 && fee<3000, "Invalid total fee");
+		
 		Order order = new Order();
 		order.setStoreId(storeId);
-		order.setPayChannel(PayChannel.fromValue(payChannel));
+		order.setPayChannel(channel);
 		order.setDeviceId(deviceId);
 		order.setIp(ip);
 		order.setTotalFee(totalFee);
@@ -70,20 +79,32 @@ public class PaymentRestService {
 	}
 
 	@RequestMapping(value = "/query/{orderNo} ", method = RequestMethod.GET)
-	public BaseResponse<Bill> query(
+	public BaseResponse<OrderResponse> query(
 			@PathVariable String orderNo,
 			@RequestParam String storeId,
 			@RequestParam(required = false) String deviceId,
 			@RequestParam(required = false) String ip) {
-		Order order = new Order();
-		order.setStoreId(storeId);
-		order.setDeviceId(deviceId);
-		order.setIp(ip);
-		order.setOrderNo(orderNo);
-		// order.setPayChannel(payChannel);
-		Bill bill = paymentService.query(orderNo);
-		BaseResponse<Bill> response = new BaseResponse<Bill>();
-		response.setData(bill);
+		OrderResponse orderResponse = new OrderResponse();
+		orderResponse.setOrderNo(orderNo);
+		orderResponse.setStoreId(storeId);
+		orderResponse.setOrderStatus(TradeStatus.NOTPAY);
+		BaseResponse<OrderResponse> response = new BaseResponse<OrderResponse>();
+		response.setData(orderResponse);
+		return response;
+	}
+	
+	@RequestMapping(value = "/refund/{orderNo} ", method = RequestMethod.DELETE)
+	public BaseResponse<OrderResponse> refund(
+			@PathVariable String orderNo,
+			@RequestParam String storeId,
+			@RequestParam(required = false) String deviceId,
+			@RequestParam(required = false) String ip) {
+		OrderResponse orderResponse = new OrderResponse();
+		orderResponse.setOrderNo(orderNo);
+		orderResponse.setStoreId(storeId);
+		orderResponse.setOrderStatus(TradeStatus.NOTPAY);
+		BaseResponse<OrderResponse> response = new BaseResponse<OrderResponse>();
+		response.setData(orderResponse);
 		return response;
 	}
 

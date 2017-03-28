@@ -18,4 +18,20 @@ public class CommonUtils {
 			return str;
 		}
 	}
+	
+	public static float toFloat(String val) {
+		try {
+			return Float.valueOf(val);
+		} catch(Exception e) {
+			return Float.MIN_VALUE;
+		}
+	}
+	
+	public static int toInt(String val) {
+		try {
+			return Integer.valueOf(val);
+		} catch(Exception e) {
+			return Integer.MIN_VALUE;
+		}
+	}
 }
