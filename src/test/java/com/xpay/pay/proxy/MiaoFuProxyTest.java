@@ -19,7 +19,7 @@ public class MiaoFuProxyTest extends BaseSpringJunitTest {
 		request.setDev_id("1908a92d7d33");
 		request.setPay_channel(PayChannel.ALIPAY);
 		request.setAmount("0.01");
-		request.setDown_trade_no("58237477024932JrfDWLbLWR");
+		request.setDown_trade_no("158237477024932JrfDWLbLWR");
 		request.setSubject("测试门店1");
 		request.setRaw_data("1.0.5");
 		request.setUndiscountable_amount("0.01");

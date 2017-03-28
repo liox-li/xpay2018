@@ -38,11 +38,6 @@
 
 	<bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
 		<constructor-arg ref="httpClientFactory" />
-		<property name="interceptors">
-			<list>
-				<!-- <bean class="com.blackboard.mbaas.backend.proxy.LearnBackendInterceptor" /> -->
-			</list>
-		</property>
 		<property name="messageConverters">
 		  <list>
 		      <bean class="com.xpay.pay.util.JacksonHttpMessageConverter"></bean>
