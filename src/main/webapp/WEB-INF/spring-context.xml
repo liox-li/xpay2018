@@ -30,9 +30,9 @@
 	</mvc:annotation-driven>
 	
 	<context:property-placeholder
-		location="file:/usr/local/xpay/*.properties" order="1"
+		location="file:/usr/local/xpay/*.config" order="1"
 		ignore-resource-not-found="true" ignore-unresolvable="true" />
-	<context:property-placeholder location="classpath*:*.properties"
+	<context:property-placeholder location="classpath*:*.config"
 		order="2" />
 
 	<!-- i18n -->
@@ -49,4 +49,5 @@
 	<context:annotation-config />
 	
 	<import resource="spring-restful.xml" />
+	<import resource="spring-dao.xml" />
 </beans>

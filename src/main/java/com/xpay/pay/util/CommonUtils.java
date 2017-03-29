@@ -1,6 +1,11 @@
 package com.xpay.pay.util;
 
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Random;
+
+import org.apache.commons.lang3.StringUtils;
 
 public class CommonUtils {
 	public static String iso88591(String str) {
@@ -33,5 +38,31 @@ public class CommonUtils {
 		} catch(Exception e) {
 			return Integer.MIN_VALUE;
 		}
+	}
+
+	// X,2 - appId, 4 - storeId, 17 - yyyyMMddHHmmssSSS, 4 - random
+	private static final char X = 'X';
+	public static String buildOrderNo(int appId, int storeId) {
+		StringBuffer sb = new StringBuffer();
+		sb.append(X);
+		sb.append(StringUtils.leftPad(String.valueOf(appId), 2, "0"));
+		sb.append(StringUtils.leftPad(String.valueOf(storeId), 4, "0"));
+		sb.append(formatNow());
+		sb.append(randomNum(4));
+		return sb.toString();
+	}
+	
+	private static String formatNow() {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		return dateFormat.format(new Date());
+	}
+	
+	private static String randomNum(int len) {
+		StringBuffer sb = new StringBuffer();
+		Random random = new Random();
+		for(int i=0;i<len;i++) {
+			sb.append(random.nextInt(10));
+		}
+		return sb.toString();
 	}
 }

@@ -1,7 +1,5 @@
 package com.xpay.pay.rest;
 
-import java.util.UUID;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
@@ -49,18 +47,9 @@ public class PaymentRestService {
 		float fee = CommonUtils.toFloat(totalFee);
 		Assert.isTrue(fee>0 && fee<3000, "Invalid total fee");
 		
-		Order order = new Order();
-		order.setStoreId(storeId);
-		order.setPayChannel(channel);
-		order.setDeviceId(deviceId);
-		order.setIp(ip);
-		order.setTotalFee(totalFee);
-		order.setOrderTime(orderTime);
-		order.setSellerOrderNo(sellerOrderNo);
-		order.setAttach(attach);
-		order.setNotifyUrl(notifyUrl);
-		order.setOrderDetail(orderDetail);
-		order.setOrderNo(UUID.randomUUID().toString());
+		Order order = paymentService.createOrder(storeId, channel, deviceId, ip, totalFee, orderTime, sellerOrderNo, attach, notifyUrl, orderDetail);
+		Assert.notNull(order,"Create order failed");
+		
 		BaseResponse<OrderResponse> response = new BaseResponse<OrderResponse>();
 		try {
 			Bill bill = paymentService.unifiedOrder(order);

@@ -4,6 +4,8 @@ public class ApplicationConstants {
 	// Error Codes
 	public static final String CODE_COMMON = "0";
 
+	public static final String CODE_ERROR_JSON = "1";
+
 	public static final int STATUS_OK = 200;
 
 	public static final int STATUS_CREATED = 201;
