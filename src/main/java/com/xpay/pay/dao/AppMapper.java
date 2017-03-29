@@ -1,5 +1,7 @@
 package com.xpay.pay.dao;
 
-public interface AppMapper<App> extends BaseMapper<App> {
-	
+import com.xpay.pay.models.App;
+
+public interface AppMapper extends BaseMapper<App> {
+	public App findByKey(String key);
 }

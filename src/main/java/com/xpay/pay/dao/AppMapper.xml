@@ -4,14 +4,14 @@
 
   <resultMap id="AppResultMap" type="com.xpay.pay.models.App">
     <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="app_key" jdbcType="VARCHAR" property="appKey" />
-    <result column="app_secret" jdbcType="VARCHAR" property="appSecret" />
+    <result column="app_key" jdbcType="VARCHAR" property="key" />
+    <result column="app_secret" jdbcType="VARCHAR" property="secret" />
   </resultMap>
   
   <sql id="appColumns">
     id,
-    app_key,
-    app_secret
+    app_key as key,
+    app_secret as secret
   </sql>
 
   <select id="findById" resultMap="AppResultMap">
@@ -19,6 +19,13 @@
     <include refid="appColumns" />
     FROM bill_app
     WHERE bill_app.id = #{id} AND deleted = false
+  </select>
+  
+    <select id="findByKey" resultMap="AppResultMap">
+    SELECT
+    <include refid="appColumns" />
+    FROM bill_app
+    WHERE bill_app.app_key = #{key} AND deleted = false
   </select>
   
    <select id="findAll" resultMap="AppResultMap">
@@ -34,8 +41,8 @@
      app_key, app_secret
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-     	#{appKey,jdbcType=VARCHAR},
-     	#{appSecret,jdbcType=VARCHAR}
+     	#{key,jdbcType=VARCHAR},
+     	#{secret,jdbcType=VARCHAR}
     </trim>
   </insert>
   
@@ -43,10 +50,10 @@
     update bill_app
     <set>
       <if test="appKey != null">
-        app_key = #{appKey,jdbcType=VARCHAR},
+        app_key = #{key,jdbcType=VARCHAR},
       </if>
       <if test="appSecret != null">
-        app_secret = #{appSecret,jdbcType=VARCHAR},
+        app_secret = #{secret,jdbcType=VARCHAR},
       </if>
       update_date = now()
     </set>

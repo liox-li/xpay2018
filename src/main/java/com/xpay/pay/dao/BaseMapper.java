@@ -3,7 +3,7 @@ package com.xpay.pay.dao;
 import java.util.List;
 
 public interface BaseMapper<E> {
-	public E findById(ID id);
+	public E findById(long id);
 
 	public List<E> findAll();
 
@@ -11,5 +11,5 @@ public interface BaseMapper<E> {
 
 	boolean updateById(E record);
 
-	boolean deleteById(ID id);
+	boolean deleteById(long id);
 }
