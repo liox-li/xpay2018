@@ -1,6 +1,5 @@
 package com.xpay.pay.dao;
 
-
 public interface BaseMapper<E> {
 	public E findById(long id);
 
