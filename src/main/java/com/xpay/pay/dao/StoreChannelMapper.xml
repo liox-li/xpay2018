@@ -3,6 +3,7 @@
 <mapper namespace="com.xpay.pay.dao.StoreChannelMapper">
 
   <resultMap id="StoreChannelResultMap" type="com.xpay.pay.models.StoreChannel">
+    <result column="id" jdbcType="BIGINT" property="id" />
     <result column="store_id" jdbcType="BIGINT" property="storeId" />
     <result column="ext_store_id" jdbcType="VARCHAR" property="extStoreId" />
     <result column="payment_gateway" jdbcType="VARCHAR" property="paymentGateway" />

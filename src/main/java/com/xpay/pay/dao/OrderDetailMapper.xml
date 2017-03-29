@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xpay.pay.dao.OrderDetailMapper">
+
+  <resultMap id="OrderDetailResultMap" type="com.xpay.pay.dao.entity.OrderDetail">
+    <result column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="store_name" jdbcType="VARCHAR" property="storeName" />
+    <result column="operator" jdbcType="VARCHAR" property="operator" />
+   	<result column="subject" jdbcType="VARCHAR" property="subject" />
+   	<result column="description" jdbcType="VARCHAR" property="desc" />
+   	<result column="items" jdbcType="VARCHAR" property="itemsJson" />
+  </resultMap>
+  
+  <sql id="orderDetailColumns">
+  	order_id,
+    store_name,
+    operator,
+    subject,
+    description,
+    items
+  </sql>
+
+  <select id="findByOrderId" resultMap="OrderDetailResultMap">
+    SELECT
+    <include refid="orderDetailColumns" />
+    FROM bill_order_detail
+    WHERE bill_order_detail.order_id = #{orderId} AND deleted = false
+  </select>
+
+  <insert id="insert"  parameterType="com.xpay.pay.dao.entity.OrderDetail">
+    insert into bill_order_detail
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      order_id,
+      <if test="storeName != null">
+        store_name,
+      </if>
+      <if test="operator != null">
+        operator,
+      </if>
+      <if test="subject != null">
+        subject,
+      </if>
+      <if test="desc != null">
+        description,
+      </if>
+      <if test="itemsJson != null">
+        items,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      #{orderId,jdbcType=BIGINT},
+      <if test="storeName != null">
+        #{storeName,jdbcType=VARCHAR},
+      </if>
+      <if test="operator != null">
+         #{operator,jdbcType=VARCHAR},
+      </if>
+      <if test="subject != null">
+        #{subject,jdbcType=VARCHAR},
+      </if>
+      <if test="desc != null">
+        #{desc,jdbcType=VARCHAR},
+      </if>
+      <if test="itemsJson != null">
+        #{itemsJson,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+</mapper>

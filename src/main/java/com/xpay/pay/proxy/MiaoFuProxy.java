@@ -36,7 +36,7 @@ public class MiaoFuProxy implements IPaymentProxy {
 	@Override
 	public PaymentResponse microPay(PaymentRequest orderRequest) {
 		String url = buildUrl(Method.MicroPay, orderRequest);
-		System.out.println("microPay POST: " + url);
+		logger.info("microPay POST: " + url);
 		long l = System.currentTimeMillis();
 		PaymentResponse response = null;
 		try {
@@ -56,7 +56,7 @@ public class MiaoFuProxy implements IPaymentProxy {
 	@Override
 	public PaymentResponse unifiedOrder(PaymentRequest orderRequest) {
 		String url = buildUrl(Method.UnifiedOrder, orderRequest);
-		System.out.println("unifiedOrder POST: " + url);
+		logger.info("unifiedOrder POST: " + url);
 		long l = System.currentTimeMillis();
 		PaymentResponse response = null;
 		try {
@@ -76,7 +76,7 @@ public class MiaoFuProxy implements IPaymentProxy {
 	@Override
 	public PaymentResponse query(PaymentRequest orderRequest) {
 		String url = buildUrl(Method.Query, orderRequest);
-		System.out.println("query POST: " + url);
+		logger.info("query POST: " + url);
 		long l = System.currentTimeMillis();
 		PaymentResponse response = null;
 		try {
@@ -169,10 +169,9 @@ public class MiaoFuProxy implements IPaymentProxy {
 		}
 		builder.queryParam("APP_SECRET", appSecret);
 		String params = builder.build().toString().substring(1);
-		//String encoded = CommonUtils.iso88591(CommonUtils.utf8(params));
-		System.out.println("sorted params: "+params);
+		logger.debug("sorted params: "+params);
 		String md5 = CryptoUtils.md5(params);
-		System.out.println("md5 upper: "+md5.toUpperCase());
+		logger.debug("md5 upper: "+md5.toUpperCase());
 		return md5 == null? null:md5.toUpperCase();
 		
 	}
