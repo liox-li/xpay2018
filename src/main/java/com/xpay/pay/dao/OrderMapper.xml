@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xpay.pay.dao.OrderMapper">
+
+  <resultMap id="OrderResultMap" type="com.xpay.pay.dao.entity.Order">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="order_no" jdbcType="VARCHAR" property="orderNo" />
+    <result column="app_id" jdbcType="BIGINT" property="appId" />
+    <result column="store_id" jdbcType="BIGINT" property="storeId" />
+    <result column="store_channel" jdbcType="BIGINT" property="storeChannelId" />
+    <result column="total_fee" jdbcType="VARCHAR" property="totalFee" />
+    <result column="order_time" jdbcType="VARCHAR" property="orderTime" />
+    <result column="pay_channel" jdbcType="INTEGER" property="payChannel" />
+    <result column="seller_order_no" jdbcType="VARCHAR" property="sellerOrderNo" />
+    <result column="ext_order_no" jdbcType="VARCHAR" property="extOrderNo" />
+    <result column="attach" jdbcType="VARCHAR" property="attach" />
+    <result column="device_id" jdbcType="VARCHAR" property="deviceId" />
+    <result column="ip" jdbcType="VARCHAR" property="ip" />
+    <result column="notify_url" jdbcType="VARCHAR" property="notifyUrl" />
+    <result column="code_url" jdbcType="VARCHAR" property="codeUrl" />
+    <result column="prepay_id" jdbcType="VARCHAR" property="prepayId" />
+    <result column="status" jdbcType="VARCHAR" property="status" />          
+  </resultMap>
+  
+  <sql id="orderColumns">
+    id,
+    order_no,
+    app_id,
+    store_id,
+    store_channel,
+    total_fee,
+    order_time,
+    pay_channel,
+    seller_order_no,
+    ext_order_no,
+    attach,
+    device_id,
+    ip,
+    notify_url,
+    code_url,
+    prepay_id,
+    status
+  </sql>
+
+  <select id="findById" resultMap="OrderResultMap">
+    SELECT
+    <include refid="orderColumns" />
+    FROM bill_order
+    WHERE bill_order.id = #{id} AND deleted = false
+  </select>
+  
+  <select id="findByOrderNo" resultMap="OrderResultMap">
+    SELECT
+    <include refid="orderColumns" />
+    FROM bill_order
+    WHERE bill_order.order_no = #{orderNo} AND deleted = false
+  </select>
+  
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.dao.entity.Order">
+    insert into bill_order
+   <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="orderNo != null">
+        order_no,
+      </if>
+      <if test="appId != null">
+        app_id,
+      </if>
+      <if test="storeId != null">
+        store_id,
+      </if>
+      <if test="storeChannelId != null">
+        store_channel,
+      </if>
+      <if test="totalFee != null">
+        total_fee,
+      </if>
+      <if test="orderTime != null">
+        order_time,
+      </if>
+      <if test="payChannel != null">
+        pay_channel,
+      </if>
+      <if test="sellerOrderNo != null">
+        seller_order_no,
+      </if>
+      <if test="extOrderNo != null">
+        ext_order_no,
+      </if>
+      <if test="attach != null">
+        attach,
+      </if>
+      <if test="deviceId != null">
+        device_id,
+      </if>
+      <if test="ip != null">
+        ip,
+      </if>
+      <if test="notifyUrl != null">
+        notify_url,
+      </if>
+      <if test="codeUrl != null">
+        code_url,
+      </if>
+      <if test="prepayId != null">
+        prepay_id,
+      </if>
+      <if test="status != null">
+        status,
+      </if>  
+   </trim>
+   <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="orderNo != null">
+        #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="appId != null">
+      	#{appId,jdbcType=BIGINT},
+      </if>
+      <if test="storeId != null">
+        #{storeId,jdbcType=BIGINT},
+      </if>
+      <if test="storeChannelId != null">
+         #{storeChannelId,jdbcType=BIGINT},
+      </if>
+      <if test="totalFee != null">
+        #{totalFee,jdbcType=VARCHAR},
+      </if>
+      <if test="orderTime != null">
+        #{orderTime,jdbcType=VARCHAR},
+      </if>
+      <if test="payChannel != null">
+        #{payChannel,jdbcType=VARCHAR},
+      </if>
+      <if test="sellerOrderNo != null">
+        #{sellerOrderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="extOrderNo != null">
+        #{extOrderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="attach != null">
+        #{attach,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceId != null">
+        #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="ip != null">
+        #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="notifyUrl != null">
+        #{notifyUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="codeUrl != null">
+        #{codeUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="prepayId != null">
+        #{prepayId,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=VARCHAR},
+      </if>       
+    </trim>
+  </insert> 
+     
+  <update id="updateById" parameterType="com.xpay.pay.dao.entity.Order">
+    update bill_order
+    <set>
+      <if test="extOrderNo != null">
+        ext_order_no = #{extOrderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="codeUrl != null">
+        code_url = #{codeUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="prepayId != null">
+       prepay_id =  #{prepayId,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=VARCHAR},
+      </if> 
+      update_date = now()
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+      and deleted = false
+  </update>
+  
+  <update id="deleteById">
+    update bill_order
+    <set>
+      deleted = true,
+      update_date = now()
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+      and deleted = false
+  </update>
+  
+</mapper>

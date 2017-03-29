@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xpay.pay.dao.StoreChannelMapper">
+
+  <resultMap id="StoreChannelResultMap" type="com.xpay.pay.models.StoreChannel">
+    <result column="store_id" jdbcType="BIGINT" property="storeId" />
+    <result column="ext_store_id" jdbcType="VARCHAR" property="extStoreId" />
+    <result column="payment_gateway" jdbcType="VARCHAR" property="paymentGateway" />
+  </resultMap>
+  
+  <sql id="storeChannelColumns">
+  	id,
+    store_id,
+    ext_store_id,
+    payment_gateway
+  </sql>
+
+  <select id="findById" resultMap="StoreChannelResultMap">
+    SELECT
+    <include refid="storeChannelColumns" />
+    FROM bill_store_channel
+    WHERE bill_store_channel.id = #{id} AND deleted = false
+  </select>
+
+  <select id="findByStoreId" resultMap="StoreChannelResultMap">
+    SELECT
+    <include refid="storeChannelColumns" />
+    FROM bill_store_channel
+    WHERE bill_store_channel.store_id = #{storeId} AND deleted = false
+  </select>
+  
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.models.StoreChannel">
+    insert into bill_store_channel
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+     store_id, ext_store_id, payment_gateway
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+     	#{storeId,jdbcType=BIGINT},
+     	#{extStoreId,jdbcType=VARCHAR},
+     	#{paymentGateway,jdbcType=VARCHAR}
+    </trim>
+  </insert>
+  
+   <update id="updateById" parameterType="com.xpay.pay.models.StoreChannel">
+    update bill_store_channel
+     <set>
+      <if test="storeId != null">
+        store_id = #{storeId,jdbcType=BIGINT},
+      </if>
+      <if test="extStoreId != null">
+        ext_store_id = #{extStoreId,jdbcType=VARCHAR},
+      </if>
+      <if test="paymentGateway != null">
+       payment_gateway =  #{paymentGateway,jdbcType=VARCHAR},
+      </if>
+      update_date = now()
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+        and deleted = false
+  </update>
+  
+  <update id="deleteById">
+    update bill_store_channel
+    <set>
+      deleted = true,
+      update_date = now()
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+        and deleted = false
+  </update>
+  
+</mapper>

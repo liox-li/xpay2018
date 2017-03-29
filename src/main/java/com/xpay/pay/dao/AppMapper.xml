@@ -21,7 +21,7 @@
     WHERE bill_app.id = #{id} AND deleted = false
   </select>
   
-    <select id="findByKey" resultMap="AppResultMap">
+  <select id="findByKey" resultMap="AppResultMap">
     SELECT
     <include refid="appColumns" />
     FROM bill_app
@@ -35,7 +35,7 @@
     WHERE deleted = false
   </select>
   
-  <insert id="insert" parameterType="com.xpay.pay.models.App">
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.models.App">
     insert into bill_app
     <trim prefix="(" suffix=")" suffixOverrides=",">
      app_key, app_secret
@@ -49,10 +49,10 @@
   <update id="updateById" parameterType="com.xpay.pay.models.App">
     update bill_app
     <set>
-      <if test="appKey != null">
+      <if test="key != null">
         app_key = #{key,jdbcType=VARCHAR},
       </if>
-      <if test="appSecret != null">
+      <if test="secret != null">
         app_secret = #{secret,jdbcType=VARCHAR},
       </if>
       update_date = now()

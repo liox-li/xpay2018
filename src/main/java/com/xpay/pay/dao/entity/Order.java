@@ -1,22 +1,25 @@
-package com.xpay.pay.models;
+package com.xpay.pay.dao.entity;
 
-import com.xpay.pay.proxy.PaymentRequest.PayChannel;
+import com.xpay.pay.proxy.PaymentResponse.TradeStatus;
 
 public class Order {
 	private long id;
 	private String orderNo;
-	private String appId;
-	private String storeId;
-	private PayChannel payChannel; 
+	private long appId;
+	private long storeId;
+	private long storeChannelId;
 	private String totalFee;
-	private String orderTime; //yyyyMMddHHmmss
+	private String orderTime;
 	private String sellerOrderNo;
+	private String extOrderNo;
+	private int payChannel;
 	private String attach;
 	private String deviceId;
 	private String ip;
 	private String notifyUrl;
-	private OrderDetail orderDetail;
-	
+	private String codeUrl;
+	private String prepayId;
+	private TradeStatus status;
 	public long getId() {
 		return id;
 	}
@@ -29,23 +32,23 @@ public class Order {
 	public void setOrderNo(String orderNo) {
 		this.orderNo = orderNo;
 	}
-	public String getAppId() {
+	public long getAppId() {
 		return appId;
 	}
-	public void setAppId(String appId) {
+	public void setAppId(long appId) {
 		this.appId = appId;
 	}
-	public String getStoreId() {
+	public long getStoreId() {
 		return storeId;
 	}
-	public void setStoreId(String storeId) {
+	public void setStoreId(long storeId) {
 		this.storeId = storeId;
 	}
-	public PayChannel getPayChannel() {
-		return payChannel;
+	public long getStoreChannelId() {
+		return storeChannelId;
 	}
-	public void setPayChannel(PayChannel payChannel) {
-		this.payChannel = payChannel;
+	public void setStoreChannelId(long storeChannelId) {
+		this.storeChannelId = storeChannelId;
 	}
 	public String getTotalFee() {
 		return totalFee;
@@ -64,6 +67,18 @@ public class Order {
 	}
 	public void setSellerOrderNo(String sellerOrderNo) {
 		this.sellerOrderNo = sellerOrderNo;
+	}
+	public String getExtOrderNo() {
+		return extOrderNo;
+	}
+	public void setExtOrderNo(String extOrderNo) {
+		this.extOrderNo = extOrderNo;
+	}
+	public int getPayChannel() {
+		return payChannel;
+	}
+	public void setPayChannel(int payChannel) {
+		this.payChannel = payChannel;
 	}
 	public String getAttach() {
 		return attach;
@@ -89,10 +104,23 @@ public class Order {
 	public void setNotifyUrl(String notifyUrl) {
 		this.notifyUrl = notifyUrl;
 	}
-	public OrderDetail getOrderDetail() {
-		return orderDetail;
+	public String getCodeUrl() {
+		return codeUrl;
 	}
-	public void setOrderDetail(OrderDetail orderDetail) {
-		this.orderDetail = orderDetail;
+	public void setCodeUrl(String codeUrl) {
+		this.codeUrl = codeUrl;
 	}
+	public String getPrepayId() {
+		return prepayId;
+	}
+	public void setPrepayId(String prepayId) {
+		this.prepayId = prepayId;
+	}
+	public TradeStatus getStatus() {
+		return status;
+	}
+	public void setStatus(TradeStatus status) {
+		this.status = status;
+	}
+	
 }

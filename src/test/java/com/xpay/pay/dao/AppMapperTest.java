@@ -19,6 +19,7 @@ public class AppMapperTest extends BaseSpringJunitTest {
 		app.setSecret("456");
 		
 		appMapper.insert(app);
+		System.out.println(app.getId());
 	}
 	
 	@Test
