@@ -1,6 +1,6 @@
 package com.xpay.pay.model;
 
-import com.xpay.pay.proxy.PaymentResponse.TradeStatus;
+import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 
 
 
@@ -9,7 +9,7 @@ public class Bill {
 	private String gatewayOrderNo;
 	private String prepayId;
 	private String codeUrl;
-	private TradeStatus orderStatus;
+	private OrderStatus orderStatus;
 	private Order order;
 	
 	public String getOrderNo() {
@@ -36,10 +36,10 @@ public class Bill {
 	public void setCodeUrl(String codeUrl) {
 		this.codeUrl = codeUrl;
 	}
-	public TradeStatus getOrderStatus() {
+	public OrderStatus getOrderStatus() {
 		return orderStatus;
 	}
-	public void setOrderStatus(TradeStatus orderStatus) {
+	public void setOrderStatus(OrderStatus orderStatus) {
 		this.orderStatus = orderStatus;
 	}
 	public Order getOrder() {

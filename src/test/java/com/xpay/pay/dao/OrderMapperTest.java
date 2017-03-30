@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.xpay.pay.BaseSpringJunitTest;
 import com.xpay.pay.model.Order;
 import com.xpay.pay.proxy.PaymentRequest.PayChannel;
-import com.xpay.pay.proxy.PaymentResponse.TradeStatus;
+import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 
 public class OrderMapperTest extends BaseSpringJunitTest {
 	@Autowired
@@ -49,7 +49,7 @@ public class OrderMapperTest extends BaseSpringJunitTest {
 		order.setIp("1207.0.0.1");
 		order.setNotifyUrl("http://localhost:8080/xpay/rest/v1/pay/notify/12a");
 		order.setCodeUrl("http://ali.pay.com/asdfv");
-		order.setStatus(TradeStatus.NOTPAY);
+		order.setStatus(OrderStatus.NOTPAY);
 		mapper.updateById(order);
 	}
 }

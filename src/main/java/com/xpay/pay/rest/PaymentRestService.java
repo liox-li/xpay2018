@@ -18,9 +18,10 @@ import com.xpay.pay.model.Order;
 import com.xpay.pay.model.OrderDetail;
 import com.xpay.pay.model.Store;
 import com.xpay.pay.proxy.PaymentRequest.PayChannel;
-import com.xpay.pay.proxy.PaymentResponse.TradeStatus;
+import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.rest.contract.BaseResponse;
 import com.xpay.pay.rest.contract.OrderResponse;
+import com.xpay.pay.service.OrderService;
 import com.xpay.pay.service.PaymentService;
 import com.xpay.pay.service.StoreService;
 import com.xpay.pay.util.CommonUtils;
@@ -32,6 +33,8 @@ public class PaymentRestService extends AuthRestService {
 	private PaymentService paymentService;
 	@Autowired
 	private StoreService storeService;
+	@Autowired
+	private OrderService orderService;
 
 	@RequestMapping(value = "/unifiedorder ", method = RequestMethod.POST)
 	public BaseResponse<OrderResponse> unifiedOrder(
@@ -53,17 +56,23 @@ public class PaymentRestService extends AuthRestService {
 		
 		Store store = storeService.findByCode(storeId);
 		String orderNo = CommonUtils.buildOrderNo(getApp().getId(), store.getId());
-		
+		if(orderDetail != null) {
+			orderService.insert(orderDetail);
+		}
 		BaseResponse<OrderResponse> response = new BaseResponse<OrderResponse>();
 		Order order = null;
+		Bill bill = null;
 		do {
-			order = paymentService.createOrder(orderNo, store, channel, deviceId, ip, totalFee, orderTime, sellerOrderNo, attach, notifyUrl, orderDetail);
+			order = paymentService.createOrder(orderNo, store, channel, deviceId, ip, totalFee, orderTime, sellerOrderNo, attach, notifyUrl, orderDetail.getId());
 			Assert.notNull(order,"Create order failed");
 			
 			try {
-				Bill bill = paymentService.unifiedOrder(order);
-				OrderResponse orderResponse = toOrderResponse(bill);
-				response.setData(orderResponse);
+				bill = paymentService.unifiedOrder(order);
+				if(bill!=null) {
+					OrderResponse orderResponse = toOrderResponse(bill);
+					response.setData(orderResponse);
+					return response;
+				}
 			} catch (GatewayException e) {
 				response.setStatus(ApplicationConstants.STATUS_BAD_GATEWAY);
 				response.setCode(e.getCode());
@@ -72,10 +81,14 @@ public class PaymentRestService extends AuthRestService {
 				response.setStatus(ApplicationConstants.STATUS_INTERNAL_SERVER_ERROR);
 				response.setCode(e.getCode());
 				response.setMessage(e.getMessage());
+			} finally {
+				paymentService.updateBill(order, bill);
 			}
 		} while(order != null);
 		
-		return response;
+		throw new GatewayException("-1", "No avaiable payment gateway");
+
+		
 	}
 
 	@RequestMapping(value = "/query/{orderNo} ", method = RequestMethod.GET)
@@ -87,7 +100,7 @@ public class PaymentRestService extends AuthRestService {
 		OrderResponse orderResponse = new OrderResponse();
 		orderResponse.setOrderNo(orderNo);
 		orderResponse.setStoreId(storeId);
-		orderResponse.setOrderStatus(TradeStatus.NOTPAY);
+		orderResponse.setOrderStatus(OrderStatus.NOTPAY);
 		BaseResponse<OrderResponse> response = new BaseResponse<OrderResponse>();
 		response.setData(orderResponse);
 		return response;
@@ -102,7 +115,7 @@ public class PaymentRestService extends AuthRestService {
 		OrderResponse orderResponse = new OrderResponse();
 		orderResponse.setOrderNo(orderNo);
 		orderResponse.setStoreId(storeId);
-		orderResponse.setOrderStatus(TradeStatus.NOTPAY);
+		orderResponse.setOrderStatus(OrderStatus.NOTPAY);
 		BaseResponse<OrderResponse> response = new BaseResponse<OrderResponse>();
 		response.setData(orderResponse);
 		return response;
@@ -115,7 +128,7 @@ public class PaymentRestService extends AuthRestService {
 		result.setSellerOrderNo(bill.getOrder().getSellerOrderNo());
 		result.setCodeUrl(bill.getCodeUrl());
 		result.setPrepayId(bill.getPrepayId());
-	//	result.setOrderStatus(bill.getOrderStatus());
+		result.setOrderStatus(bill.getOrderStatus());
 		result.setAttach(bill.getOrder().getAttach());
 		return result;
 	}

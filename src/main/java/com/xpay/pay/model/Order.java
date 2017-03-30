@@ -1,7 +1,7 @@
 package com.xpay.pay.model;
 
 import com.xpay.pay.proxy.PaymentRequest.PayChannel;
-import com.xpay.pay.proxy.PaymentResponse.TradeStatus;
+import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 
 public class Order {
 	private long id;
@@ -20,7 +20,7 @@ public class Order {
 	private String notifyUrl;
 	private String codeUrl;
 	private String prepayId;
-	private TradeStatus status;
+	private OrderStatus status;
 	private Long detailId;
 	private OrderDetail orderDetail;
 	private App app;
@@ -121,10 +121,10 @@ public class Order {
 	public void setPrepayId(String prepayId) {
 		this.prepayId = prepayId;
 	}
-	public TradeStatus getStatus() {
+	public OrderStatus getStatus() {
 		return status;
 	}
-	public void setStatus(TradeStatus status) {
+	public void setStatus(OrderStatus status) {
 		this.status = status;
 	}
 	public Long getDetailId() {

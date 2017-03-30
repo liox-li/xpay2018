@@ -11,13 +11,13 @@ import com.xpay.pay.exception.Assert;
 import com.xpay.pay.exception.GatewayException;
 import com.xpay.pay.model.Bill;
 import com.xpay.pay.model.Order;
-import com.xpay.pay.model.OrderDetail;
 import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
 import com.xpay.pay.proxy.IPaymentProxy;
 import com.xpay.pay.proxy.PaymentRequest;
 import com.xpay.pay.proxy.PaymentRequest.PayChannel;
 import com.xpay.pay.proxy.PaymentResponse;
+import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.proxy.PaymentResponse.TradeBean;
 
 @Service
@@ -30,11 +30,12 @@ public class PaymentService {
 	public Order createOrder(String orderNo, Store store, PayChannel channel,
 			String deviceId, String ip, String totalFee, String orderTime,
 			String sellerOrderNo, String attach, String notifyUrl,
-			OrderDetail orderDetail) {
+			long orderDetailId) {
 		StoreChannel storeChannel = orderService.findUnusedChannel(store, orderNo);
 		Assert.notNull(storeChannel, "No avaiable store channel");
 		
 		Order order = new Order();
+		order.setOrderNo(orderNo);
 		order.setStoreId(store.getId());
 		order.setStoreChannelId(storeChannel.getId());
 		order.setPayChannel(channel);
@@ -45,8 +46,7 @@ public class PaymentService {
 		order.setSellerOrderNo(sellerOrderNo);
 		order.setAttach(attach);
 		order.setNotifyUrl(notifyUrl);
-		order.setOrderDetail(orderDetail);
-		order.setOrderNo(orderNo);
+		order.setDetailId(orderDetailId);
 		orderService.insert(order);
 		
 		return order;
@@ -61,7 +61,19 @@ public class PaymentService {
 		Assert.notBlank(bill.getCodeUrl(),
 				ApplicationConstants.STATUS_BAD_GATEWAY, NO_RESPONSE,
 				response.getMsg());
+		
 		return bill;
+	}
+	
+	public boolean updateBill(Order order, Bill bill) {
+		if(bill == null) {
+			order.setStatus(OrderStatus.CHANNEL_ERROR);
+		} else {
+			order.setCodeUrl(bill.getCodeUrl());
+			order.setPrepayId(bill.getPrepayId());
+			order.setStatus(bill.getOrderStatus());
+		}
+		return orderService.update(order);
 	}
 
 	public Bill query(String orderNo) {

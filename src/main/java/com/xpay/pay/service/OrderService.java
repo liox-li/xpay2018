@@ -11,6 +11,7 @@ import org.springframework.util.Assert;
 import com.xpay.pay.dao.OrderDetailMapper;
 import com.xpay.pay.dao.OrderMapper;
 import com.xpay.pay.model.Order;
+import com.xpay.pay.model.OrderDetail;
 import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
 import com.xpay.pay.util.CommonUtils;
@@ -50,5 +51,13 @@ public class OrderService {
 	
 	public boolean insert(Order order) {
 		return orderMapper.insert(order);
+	}
+	
+	public boolean insert(OrderDetail orderDetail) {
+		return orderDetailMapper.insert(orderDetail);
+	}
+
+	public boolean update(Order order) {
+		return orderMapper.updateById(order);
 	}
 }

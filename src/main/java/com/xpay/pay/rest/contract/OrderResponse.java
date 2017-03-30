@@ -1,6 +1,6 @@
 package com.xpay.pay.rest.contract;
 
-import com.xpay.pay.proxy.PaymentResponse.TradeStatus;
+import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 
 public class OrderResponse {
 	private String orderNo;
@@ -8,7 +8,7 @@ public class OrderResponse {
 	private String sellerOrderNo;
 	private String codeUrl;
 	private String prepayId;
-	private TradeStatus orderStatus;
+	private OrderStatus orderStatus;
 	private String attach;
 	public String getOrderNo() {
 		return orderNo;
@@ -40,10 +40,10 @@ public class OrderResponse {
 	public void setPrepayId(String prepayId) {
 		this.prepayId = prepayId;
 	}
-	public TradeStatus getOrderStatus() {
+	public OrderStatus getOrderStatus() {
 		return orderStatus;
 	}
-	public void setOrderStatus(TradeStatus orderStatus) {
+	public void setOrderStatus(OrderStatus orderStatus) {
 		this.orderStatus = orderStatus;
 	}
 	public String getAttach() {

@@ -38,7 +38,7 @@ public class PaymentResponse {
 
 	public class TradeBean {
 		private String trade_no;
-		private TradeStatus trade_status;
+		private OrderStatus trade_status;
 		private PayType pay_type;
 		private PayChannel pay_channel;
 		private int total_amount;
@@ -69,11 +69,11 @@ public class PaymentResponse {
 			this.trade_no = trade_no;
 		}
 
-		public TradeStatus getTrade_status() {
+		public OrderStatus getTrade_status() {
 			return trade_status;
 		}
 
-		public void setTrade_status(TradeStatus trade_status) {
+		public void setTrade_status(OrderStatus trade_status) {
 			this.trade_status = trade_status;
 		}
 
@@ -245,13 +245,9 @@ public class PaymentResponse {
 			this.prepay_id = prepay_id;
 		}
 	}
-
-	public enum TradeStatus {
-		SUCCESS, REFUND, REVOKED, NOTPAY, USERPAYING
-	}
 	
 	public enum OrderStatus {
-		SUCCESS(0), REFUND(1), REVOKED(2), USERPAYING(3), NOTPAY(4);
+		SUCCESS(0), REFUND(1), REVOKED(2), USERPAYING(3), NOTPAY(4), CHANNEL_ERROR(-1);
 		int value;
 		
 		OrderStatus(int value) {
