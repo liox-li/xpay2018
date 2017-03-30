@@ -6,12 +6,22 @@
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="code" jdbcType="VARCHAR" property="code" />
     <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="bail" jdbcType="NUMERIC" property="bail" />
+    <result column="non_bail" jdbcType="NUMERIC" property="nonBail" />
+    <result column="bar" jdbcType="NUMERIC" property="bar" />
+    <result column="bail_percentage" jdbcType="INTEGER" property="bailPercentage" />
+    <result column="rotation_type" jdbcType="INTEGER" property="rotationType" />
   </resultMap>
   
   <sql id="storeColumns">
     id,
     code,
-    name
+    name,
+    bail,
+    non_bail,
+    bar,
+    bail_percentage,
+    rotation_type
   </sql>
 
   <select id="findById" resultMap="StoreResultMap">

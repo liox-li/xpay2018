@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.xpay.pay.ApplicationConstants;
 import com.xpay.pay.exception.ApplicationException;
 import com.xpay.pay.exception.GatewayException;
-import com.xpay.pay.model.App;
 import com.xpay.pay.model.Bill;
 import com.xpay.pay.model.Order;
 import com.xpay.pay.model.OrderDetail;

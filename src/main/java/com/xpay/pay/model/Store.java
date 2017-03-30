@@ -6,6 +6,11 @@ public class Store {
 	private int id;
 	private String code;
 	private String name;
+	private float bail;
+	private float nonBail;
+	private float bar;
+	private int bailPercentage;
+	private RotationType rotationType;
 	private List<StoreChannel> channels;
 	
 	public int getId() {
@@ -32,5 +37,38 @@ public class Store {
 	public void setChannels(List<StoreChannel> channels) {
 		this.channels = channels;
 	}
-	
+	public float getBail() {
+		return bail;
+	}
+	public void setBail(float bail) {
+		this.bail = bail;
+	}
+	public float getNonBail() {
+		return nonBail;
+	}
+	public void setNonBail(float nonBail) {
+		this.nonBail = nonBail;
+	}
+	public float getBar() {
+		return bar;
+	}
+	public void setBar(float bar) {
+		this.bar = bar;
+	}
+	public int getBailPercentage() {
+		return bailPercentage;
+	}
+	public void setBailPercentage(int bailPercentage) {
+		this.bailPercentage = bailPercentage;
+	}
+	public RotationType getRotationType() {
+		return rotationType;
+	}
+	public void setRotationType(RotationType rotationType) {
+		this.rotationType = rotationType;
+	}
+
+	public enum RotationType {
+		RoundRobin, FirstOneFirst
+	}
 }

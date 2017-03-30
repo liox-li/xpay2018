@@ -9,7 +9,7 @@ import com.xpay.pay.exception.Assert;
 import com.xpay.pay.model.App;
 
 public abstract class AuthRestService {
-	@Autowired
+//	@Autowired
 	private HttpServletRequest request;
 	
 	protected App getApp() {
