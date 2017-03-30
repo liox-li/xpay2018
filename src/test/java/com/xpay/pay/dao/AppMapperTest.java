@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.xpay.pay.BaseSpringJunitTest;
-import com.xpay.pay.models.App;
+import com.xpay.pay.model.App;
 
 public class AppMapperTest extends BaseSpringJunitTest {
 	@Autowired

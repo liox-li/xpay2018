@@ -2,9 +2,11 @@ package com.xpay.pay.util;
 
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Random;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 public class CommonUtils {
@@ -38,6 +40,13 @@ public class CommonUtils {
 		} catch(Exception e) {
 			return Integer.MIN_VALUE;
 		}
+	}
+	
+	public static <E> boolean in(Collection<E> coll, E e) {
+		if(CollectionUtils.isEmpty(coll)) {
+			return false;
+		}
+		return coll.contains(e);
 	}
 
 	// X,2 - appId, 4 - storeId, 17 - yyyyMMddHHmmssSSS, 4 - random

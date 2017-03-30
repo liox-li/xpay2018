@@ -13,25 +13,29 @@ import org.springframework.web.bind.annotation.RestController;
 import com.xpay.pay.ApplicationConstants;
 import com.xpay.pay.exception.ApplicationException;
 import com.xpay.pay.exception.GatewayException;
-import com.xpay.pay.models.Bill;
-import com.xpay.pay.models.Order;
-import com.xpay.pay.models.OrderDetail;
+import com.xpay.pay.model.Bill;
+import com.xpay.pay.model.Order;
+import com.xpay.pay.model.OrderDetail;
+import com.xpay.pay.model.Store;
 import com.xpay.pay.proxy.PaymentRequest.PayChannel;
 import com.xpay.pay.proxy.PaymentResponse.TradeStatus;
 import com.xpay.pay.rest.contract.BaseResponse;
 import com.xpay.pay.rest.contract.OrderResponse;
 import com.xpay.pay.service.PaymentService;
+import com.xpay.pay.service.StoreService;
 import com.xpay.pay.util.CommonUtils;
 
 @RestController
 @RequestMapping("/v1/pay")
-public class PaymentRestService {
+public class PaymentRestService extends AuthRestService {
 	@Autowired
 	private PaymentService paymentService;
+	@Autowired
+	private StoreService storeService;
 
 	@RequestMapping(value = "/unifiedorder ", method = RequestMethod.POST)
 	public BaseResponse<OrderResponse> unifiedOrder(
-			@RequestParam String storeId,
+			@RequestParam String storeId,   //Store.code
 			@RequestParam String payChannel, // ALIPAY("1"), WECHAT("2")
 			@RequestParam String totalFee, // <=3000yuan
 			@RequestParam String orderTime, // yyyyMMddHHmmss
@@ -47,23 +51,30 @@ public class PaymentRestService {
 		float fee = CommonUtils.toFloat(totalFee);
 		Assert.isTrue(fee>0 && fee<3000, "Invalid total fee");
 		
-		Order order = paymentService.createOrder(storeId, channel, deviceId, ip, totalFee, orderTime, sellerOrderNo, attach, notifyUrl, orderDetail);
-		Assert.notNull(order,"Create order failed");
+		Store store = storeService.findByCode(storeId);
+		String orderNo = CommonUtils.buildOrderNo(getApp().getId(), store.getId());
 		
 		BaseResponse<OrderResponse> response = new BaseResponse<OrderResponse>();
-		try {
-			Bill bill = paymentService.unifiedOrder(order);
-			OrderResponse orderResponse = toOrderResponse(bill);
-			response.setData(orderResponse);
-		} catch (GatewayException e) {
-			response.setStatus(ApplicationConstants.STATUS_BAD_GATEWAY);
-			response.setCode(e.getCode());
-			response.setMessage(e.getMessage());
-		} catch (ApplicationException e) {
-			response.setStatus(ApplicationConstants.STATUS_INTERNAL_SERVER_ERROR);
-			response.setCode(e.getCode());
-			response.setMessage(e.getMessage());
-		}
+		Order order = null;
+		do {
+			order = paymentService.createOrder(orderNo, store, channel, deviceId, ip, totalFee, orderTime, sellerOrderNo, attach, notifyUrl, orderDetail);
+			Assert.notNull(order,"Create order failed");
+			
+			try {
+				Bill bill = paymentService.unifiedOrder(order);
+				OrderResponse orderResponse = toOrderResponse(bill);
+				response.setData(orderResponse);
+			} catch (GatewayException e) {
+				response.setStatus(ApplicationConstants.STATUS_BAD_GATEWAY);
+				response.setCode(e.getCode());
+				response.setMessage(e.getMessage());
+			} catch (ApplicationException e) {
+				response.setStatus(ApplicationConstants.STATUS_INTERNAL_SERVER_ERROR);
+				response.setCode(e.getCode());
+				response.setMessage(e.getMessage());
+			}
+		} while(order != null);
+		
 		return response;
 	}
 
@@ -100,7 +111,7 @@ public class PaymentRestService {
 	private OrderResponse toOrderResponse(Bill bill) {
 		OrderResponse result = new OrderResponse();
 		result.setOrderNo(bill.getOrderNo());
-		result.setStoreId(bill.getOrder().getStoreId());
+		result.setStoreId(bill.getOrder().getStore().getCode());
 		result.setSellerOrderNo(bill.getOrder().getSellerOrderNo());
 		result.setCodeUrl(bill.getCodeUrl());
 		result.setPrepayId(bill.getPrepayId());

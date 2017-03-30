@@ -1,18 +1,19 @@
-package com.xpay.pay.dao.entity;
+package com.xpay.pay.model;
 
+import com.xpay.pay.proxy.PaymentRequest.PayChannel;
 import com.xpay.pay.proxy.PaymentResponse.TradeStatus;
 
 public class Order {
 	private long id;
 	private String orderNo;
-	private long appId;
+	private int appId;
 	private long storeId;
 	private long storeChannelId;
 	private String totalFee;
 	private String orderTime;
 	private String sellerOrderNo;
 	private String extOrderNo;
-	private int payChannel;
+	private PayChannel payChannel;
 	private String attach;
 	private String deviceId;
 	private String ip;
@@ -20,6 +21,9 @@ public class Order {
 	private String codeUrl;
 	private String prepayId;
 	private TradeStatus status;
+	private OrderDetail orderDetail;
+	private App app;
+	private Store store;
 	public long getId() {
 		return id;
 	}
@@ -32,10 +36,10 @@ public class Order {
 	public void setOrderNo(String orderNo) {
 		this.orderNo = orderNo;
 	}
-	public long getAppId() {
+	public int getAppId() {
 		return appId;
 	}
-	public void setAppId(long appId) {
+	public void setAppId(int appId) {
 		this.appId = appId;
 	}
 	public long getStoreId() {
@@ -74,10 +78,10 @@ public class Order {
 	public void setExtOrderNo(String extOrderNo) {
 		this.extOrderNo = extOrderNo;
 	}
-	public int getPayChannel() {
+	public PayChannel getPayChannel() {
 		return payChannel;
 	}
-	public void setPayChannel(int payChannel) {
+	public void setPayChannel(PayChannel payChannel) {
 		this.payChannel = payChannel;
 	}
 	public String getAttach() {
@@ -122,5 +126,22 @@ public class Order {
 	public void setStatus(TradeStatus status) {
 		this.status = status;
 	}
-	
+	public OrderDetail getOrderDetail() {
+		return orderDetail;
+	}
+	public void setOrderDetail(OrderDetail orderDetail) {
+		this.orderDetail = orderDetail;
+	}
+	public App getApp() {
+		return app;
+	}
+	public void setApp(App app) {
+		this.app = app;
+	}
+	public Store getStore() {
+		return store;
+	}
+	public void setStore(Store store) {
+		this.store = store;
+	}
 }

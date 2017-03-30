@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.xpay.pay.dao.StoreMapper">
 
-  <resultMap id="StoreResultMap" type="com.xpay.pay.models.Store">
+  <resultMap id="StoreResultMap" type="com.xpay.pay.model.Store">
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="code" jdbcType="VARCHAR" property="code" />
     <result column="name" jdbcType="VARCHAR" property="name" />
@@ -35,7 +35,7 @@
     WHERE deleted = false
   </select>
   
-  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.models.Store">
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.Store">
     insert into bill_store
     <trim prefix="(" suffix=")" suffixOverrides=",">
      code, name
@@ -46,7 +46,7 @@
     </trim>
   </insert>
   
-  <update id="updateById" parameterType="com.xpay.pay.models.Store">
+  <update id="updateById" parameterType="com.xpay.pay.model.Store">
     update bill_store
     <set>
       <if test="code != null">

@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.xpay.pay.BaseSpringJunitTest;
-import com.xpay.pay.dao.entity.OrderDetail;
+import com.xpay.pay.model.OrderDetail;
 
 public class OrderDetailMapperTest extends BaseSpringJunitTest {
 	@Autowired

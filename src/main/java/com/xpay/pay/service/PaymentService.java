@@ -3,17 +3,17 @@ package com.xpay.pay.service;
 import static com.xpay.pay.proxy.IPaymentProxy.NO_RESPONSE;
 import static com.xpay.pay.proxy.IPaymentProxy.SUCCESS;
 
-import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.xpay.pay.ApplicationConstants;
 import com.xpay.pay.exception.Assert;
 import com.xpay.pay.exception.GatewayException;
-import com.xpay.pay.models.Bill;
-import com.xpay.pay.models.Order;
-import com.xpay.pay.models.OrderDetail;
+import com.xpay.pay.model.Bill;
+import com.xpay.pay.model.Order;
+import com.xpay.pay.model.OrderDetail;
+import com.xpay.pay.model.Store;
+import com.xpay.pay.model.StoreChannel;
 import com.xpay.pay.proxy.IPaymentProxy;
 import com.xpay.pay.proxy.PaymentRequest;
 import com.xpay.pay.proxy.PaymentRequest.PayChannel;
@@ -24,13 +24,19 @@ import com.xpay.pay.proxy.PaymentResponse.TradeBean;
 public class PaymentService {
 	@Autowired
 	private IPaymentProxy paymentProxy;
+	@Autowired
+	private OrderService orderService;
 
-	public Order createOrder(String storeId, PayChannel channel,
+	public Order createOrder(String orderNo, Store store, PayChannel channel,
 			String deviceId, String ip, String totalFee, String orderTime,
 			String sellerOrderNo, String attach, String notifyUrl,
 			OrderDetail orderDetail) {
+		StoreChannel storeChannel = orderService.findUnusedChannel(store, orderNo);
+		Assert.notNull(storeChannel, "No avaiable store channel");
+		
 		Order order = new Order();
-		order.setStoreId(storeId);
+		order.setStoreId(store.getId());
+		order.setStoreChannelId(storeChannel.getId());
 		order.setPayChannel(channel);
 		order.setDeviceId(deviceId);
 		order.setIp(ip);
@@ -40,9 +46,11 @@ public class PaymentService {
 		order.setAttach(attach);
 		order.setNotifyUrl(notifyUrl);
 		order.setOrderDetail(orderDetail);
-		order.setOrderNo(UUID.randomUUID().toString());
+		order.setOrderNo(orderNo);
+		orderService.insert(order);
+		
 		return order;
-	}
+	} 
 
 	public Bill unifiedOrder(Order order) {
 		PaymentRequest request = toPaymentRequest(order);
@@ -62,7 +70,7 @@ public class PaymentService {
 
 	private PaymentRequest toPaymentRequest(Order order) {
 		PaymentRequest request = new PaymentRequest();
-		request.setBusi_code(order.getStoreId());
+		request.setBusi_code(order.getStore().getCode());
 		request.setDev_id(order.getDeviceId());
 		request.setPay_channel(order.getPayChannel());
 		request.setAmount(order.getTotalFee());
@@ -70,7 +78,7 @@ public class PaymentService {
 		request.setDown_trade_no(order.getOrderNo());
 		if (order.getOrderDetail() != null) {
 			request.setOper_id(order.getOrderDetail().getOperator());
-			request.setSubject(order.getOrderDetail().getOrderSubject());
+			request.setSubject(order.getOrderDetail().getSubject());
 			request.setGood_details(order.getOrderDetail().getOrderItems());
 		}
 		return request;

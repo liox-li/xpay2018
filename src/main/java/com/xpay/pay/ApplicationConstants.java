@@ -32,4 +32,7 @@ public class ApplicationConstants {
 
 	public static final int STATUS_GATEWAY_TIMEOUT = 504;
 
+	public static final String HEADER_OAUTH = "Authorization";
+	public static final String ATTRIBUTE_APP = "APP";
+
 }

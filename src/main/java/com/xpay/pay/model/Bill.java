@@ -1,4 +1,4 @@
-package com.xpay.pay.models;
+package com.xpay.pay.model;
 
 import com.xpay.pay.proxy.PaymentResponse.TradeStatus;
 

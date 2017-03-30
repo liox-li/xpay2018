@@ -1,10 +1,13 @@
 package com.xpay.pay.dao;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.xpay.pay.BaseSpringJunitTest;
-import com.xpay.pay.dao.entity.Order;
+import com.xpay.pay.model.Order;
+import com.xpay.pay.proxy.PaymentRequest.PayChannel;
 import com.xpay.pay.proxy.PaymentResponse.TradeStatus;
 
 public class OrderMapperTest extends BaseSpringJunitTest {
@@ -20,7 +23,7 @@ public class OrderMapperTest extends BaseSpringJunitTest {
 		order.setStoreChannelId(100);
 		order.setTotalFee("0.01");
 		order.setOrderTime("20170329142345");
-		order.setPayChannel(1);
+		order.setPayChannel(PayChannel.ALIPAY);
 		mapper.insert(order);
 	}
 	
@@ -32,8 +35,8 @@ public class OrderMapperTest extends BaseSpringJunitTest {
 	
 	@Test
 	public void testFindByOrderNo() {
-		Order order = mapper.findByOrderNo("123");
-		System.out.println(order.getOrderNo());
+		List<Order> orders = mapper.findByOrderNo("123");
+		System.out.println(orders.size());
 	}
 	
 	@Test

@@ -6,8 +6,8 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.xpay.pay.BaseSpringJunitTest;
-import com.xpay.pay.models.StoreChannel;
-import com.xpay.pay.models.StoreChannel.PaymentGateway;
+import com.xpay.pay.model.StoreChannel;
+import com.xpay.pay.model.StoreChannel.PaymentGateway;
 
 public class StoreChannelMapperTest extends BaseSpringJunitTest {
 	@Autowired

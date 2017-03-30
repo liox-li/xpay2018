@@ -1,13 +1,13 @@
-package com.xpay.pay.models;
+package com.xpay.pay.model;
 
 public class App {
-	private long id;
+	private int id;
 	private String key;
 	private String secret;
-	public long getId() {
+	public int getId() {
 		return id;
 	}
-	public void setId(long id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 	public String getKey() {

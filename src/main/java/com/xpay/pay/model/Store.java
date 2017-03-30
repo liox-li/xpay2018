@@ -1,4 +1,4 @@
-package com.xpay.pay.models;
+package com.xpay.pay.model;
 
 import java.util.List;
 
@@ -7,6 +7,7 @@ public class Store {
 	private String code;
 	private String name;
 	private List<StoreChannel> channels;
+	
 	public int getId() {
 		return id;
 	}
@@ -31,4 +32,5 @@ public class Store {
 	public void setChannels(List<StoreChannel> channels) {
 		this.channels = channels;
 	}
+	
 }

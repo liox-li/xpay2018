@@ -1,7 +1,9 @@
 package com.xpay.pay.dao;
 
-import com.xpay.pay.dao.entity.Order;
+import java.util.List;
+
+import com.xpay.pay.model.Order;
 
 public interface OrderMapper extends BaseMapper<Order> {
-	Order findByOrderNo(String orderNo);
+	List<Order> findByOrderNo(String orderNo);
 }

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.xpay.pay.dao.OrderDetailMapper">
 
-  <resultMap id="OrderDetailResultMap" type="com.xpay.pay.dao.entity.OrderDetail">
+  <resultMap id="OrderDetailResultMap" type="com.xpay.pay.model.OrderDetail">
     <result column="order_id" jdbcType="BIGINT" property="orderId" />
     <result column="store_name" jdbcType="VARCHAR" property="storeName" />
     <result column="operator" jdbcType="VARCHAR" property="operator" />
@@ -27,7 +27,7 @@
     WHERE bill_order_detail.order_id = #{orderId} AND deleted = false
   </select>
 
-  <insert id="insert"  parameterType="com.xpay.pay.dao.entity.OrderDetail">
+  <insert id="insert"  parameterType="com.xpay.pay.model.OrderDetail">
     insert into bill_order_detail
     <trim prefix="(" suffix=")" suffixOverrides=",">
       order_id,

@@ -1,12 +1,17 @@
-package com.xpay.pay.dao.entity;
+package com.xpay.pay.model;
+
+import com.xpay.pay.proxy.PaymentRequest.GoodBean;
+import com.xpay.pay.util.JsonUtils;
 
 public class OrderDetail {
 	private long orderId;
 	private String storeName;
 	private String operator;
-	private String subject;
-	private String desc;
+	private String subject = "No Subject";
+	private GoodBean[] orderItems;
 	private String itemsJson;
+	private String desc;
+	
 	public long getOrderId() {
 		return orderId;
 	}
@@ -31,18 +36,24 @@ public class OrderDetail {
 	public void setSubject(String subject) {
 		this.subject = subject;
 	}
-	public String getDesc() {
-		return desc;
+	public GoodBean[] getOrderItems() {
+		return orderItems;
 	}
-	public void setDesc(String desc) {
-		this.desc = desc;
+	public void setOrderItems(GoodBean[] orderItems) {
+		this.orderItems = orderItems;
+		itemsJson = JsonUtils.toJson(this.orderItems);
 	}
 	public String getItemsJson() {
 		return itemsJson;
 	}
 	public void setItemsJson(String itemsJson) {
 		this.itemsJson = itemsJson;
+		this.orderItems = JsonUtils.fromJson(itemsJson, GoodBean[].class);
 	}
-	
-	
+	public String getDesc() {
+		return desc;
+	}
+	public void setDesc(String desc) {
+		this.desc = desc;
+	}
 }

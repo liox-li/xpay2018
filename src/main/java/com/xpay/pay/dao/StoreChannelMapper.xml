@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.xpay.pay.dao.StoreChannelMapper">
 
-  <resultMap id="StoreChannelResultMap" type="com.xpay.pay.models.StoreChannel">
+  <resultMap id="StoreChannelResultMap" type="com.xpay.pay.model.StoreChannel">
     <result column="id" jdbcType="BIGINT" property="id" />
     <result column="store_id" jdbcType="BIGINT" property="storeId" />
     <result column="ext_store_id" jdbcType="VARCHAR" property="extStoreId" />
@@ -30,7 +30,7 @@
     WHERE bill_store_channel.store_id = #{storeId} AND deleted = false
   </select>
   
-  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.models.StoreChannel">
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.StoreChannel">
     insert into bill_store_channel
     <trim prefix="(" suffix=")" suffixOverrides=",">
      store_id, ext_store_id, payment_gateway
@@ -42,7 +42,7 @@
     </trim>
   </insert>
   
-   <update id="updateById" parameterType="com.xpay.pay.models.StoreChannel">
+   <update id="updateById" parameterType="com.xpay.pay.model.StoreChannel">
     update bill_store_channel
      <set>
       <if test="storeId != null">

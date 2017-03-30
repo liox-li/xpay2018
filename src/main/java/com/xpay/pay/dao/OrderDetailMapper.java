@@ -2,7 +2,7 @@ package com.xpay.pay.dao;
 
 import java.util.List;
 
-import com.xpay.pay.dao.entity.OrderDetail;
+import com.xpay.pay.model.OrderDetail;
 
 public interface OrderDetailMapper {
 	public void insert(OrderDetail orderDetail);

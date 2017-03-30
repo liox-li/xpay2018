@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.xpay.pay.dao.OrderMapper">
 
-  <resultMap id="OrderResultMap" type="com.xpay.pay.dao.entity.Order">
+  <resultMap id="OrderResultMap" type="com.xpay.pay.model.Order">
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="order_no" jdbcType="VARCHAR" property="orderNo" />
     <result column="app_id" jdbcType="BIGINT" property="appId" />
@@ -56,7 +56,7 @@
     WHERE bill_order.order_no = #{orderNo} AND deleted = false
   </select>
   
-  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.dao.entity.Order">
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.Order">
     insert into bill_order
    <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="orderNo != null">
@@ -160,7 +160,7 @@
     </trim>
   </insert> 
      
-  <update id="updateById" parameterType="com.xpay.pay.dao.entity.Order">
+  <update id="updateById" parameterType="com.xpay.pay.model.Order">
     update bill_order
     <set>
       <if test="extOrderNo != null">
