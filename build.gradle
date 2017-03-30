@@ -153,6 +153,11 @@ war {
 			include '*.config'
 			into './classes'
 		}
+		
+		from("./src/main/java/com/xpay/pay/dao/") {
+			include '*.xml'
+			into './classes/com/xpay/pay/dao'
+		}
 	}
 	
 //	webXml = file("./src/main/resources/envs/${profile}/web.xml")

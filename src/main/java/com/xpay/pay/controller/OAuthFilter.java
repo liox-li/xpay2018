@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.util.KeyValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.xpay.pay.ApplicationConstants;
 import com.xpay.pay.exception.AuthException;
@@ -27,6 +28,8 @@ public class OAuthFilter implements Filter {
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
+		SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this,
+	            filterConfig.getServletContext());
 	}
 
 	@Override
@@ -58,7 +61,7 @@ public class OAuthFilter implements Filter {
 		String[] keyPairs = oauth.substring(6).split(",");
 		KeyValuePair consumerKey = Arrays.stream(keyPairs).map(x -> {
 			String[] strArr = x.split("=");
-			return new KeyValuePair(strArr[0],strArr[1]);
+			return new KeyValuePair(strArr[0],strArr[1].substring(1, strArr[1].length()-1));
 		}).filter(k -> CONSUMER_KEY.equals(k.getKey())).findAny().orElse(null);
 		if(consumerKey == null || StringUtils.isBlank(consumerKey.getValue())) {
 			return null;
