@@ -29,7 +29,7 @@ public class OrderMapperTest extends BaseSpringJunitTest {
 	
 	@Test
 	public void testFindById() {
-		Order order = mapper.findById(1001);
+		Order order = mapper.findById(1000);
 		System.out.println(order.getOrderNo());
 	}
 	
@@ -41,7 +41,7 @@ public class OrderMapperTest extends BaseSpringJunitTest {
 	
 	@Test
 	public void testUpdate() {
-		Order order = mapper.findById(1001);
+		Order order = mapper.findById(1002);
 		order.setSellerOrderNo("456");
 		order.setExtOrderNo("12a");
 		order.setAttach("att=123");

@@ -4,7 +4,7 @@ import com.xpay.pay.proxy.PaymentRequest.GoodBean;
 import com.xpay.pay.util.JsonUtils;
 
 public class OrderDetail {
-	private long orderId;
+	private long id;
 	private String storeName;
 	private String operator;
 	private String subject = "No Subject";
@@ -12,11 +12,11 @@ public class OrderDetail {
 	private String itemsJson;
 	private String desc;
 	
-	public long getOrderId() {
-		return orderId;
+	public long getId() {
+		return id;
 	}
-	public void setOrderId(long orderId) {
-		this.orderId = orderId;
+	public void setId(long id) {
+		this.id = id;
 	}
 	public String getStoreName() {
 		return storeName;

@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS bill_order (
 	store_channel BIGINT NOT NULL,
 	total_fee varchar(10) NOT NULL,
 	order_time varchar(14) NOT NULL,
-	pay_channel INT NOT NULL,
+	pay_channel varchar(16) NOT NULL,
 	seller_order_no varchar(64),
 	ext_order_no varchar(64),
 	attach varchar(256),
@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS bill_order (
 	code_url varchar(256),
 	prepay_id varchar(64),
 	status varchar(16),
+	detail_id BIGINT,
 	create_date TIMESTAMP WITH TIME ZONE NOT NULL default now(), 
 	update_date TIMESTAMP WITH TIME ZONE NOT NULL default now(),
 	deleted boolean DEFAULT FALSE
@@ -58,7 +59,7 @@ ALTER SEQUENCE bill_order_id_seq RESTART 1000;
 CREATE INDEX idx_order_no ON bill_order(order_no); 
 
 CREATE TABLE IF NOT EXISTS bill_order_detail (
-	order_id BIGINT NOT NULL,
+	id BIGSERIAL PRIMARY KEY,
 	store_name varchar(64),
 	operator varchar(64),
 	subject varchar(64),
@@ -68,4 +69,4 @@ CREATE TABLE IF NOT EXISTS bill_order_detail (
 	update_date TIMESTAMP WITH TIME ZONE NOT NULL default now(),
 	deleted boolean DEFAULT FALSE
 );
-CREATE INDEX idx_order_detial_id ON bill_order_detail(order_id); 
+ALTER SEQUENCE bill_order_detail_id_seq RESTART 1000;

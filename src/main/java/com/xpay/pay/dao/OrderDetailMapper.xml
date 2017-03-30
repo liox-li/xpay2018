@@ -3,7 +3,7 @@
 <mapper namespace="com.xpay.pay.dao.OrderDetailMapper">
 
   <resultMap id="OrderDetailResultMap" type="com.xpay.pay.model.OrderDetail">
-    <result column="order_id" jdbcType="BIGINT" property="orderId" />
+    <id column="id" jdbcType="BIGINT" property="id" />
     <result column="store_name" jdbcType="VARCHAR" property="storeName" />
     <result column="operator" jdbcType="VARCHAR" property="operator" />
    	<result column="subject" jdbcType="VARCHAR" property="subject" />
@@ -12,7 +12,7 @@
   </resultMap>
   
   <sql id="orderDetailColumns">
-  	order_id,
+  	id,
     store_name,
     operator,
     subject,
@@ -20,17 +20,16 @@
     items
   </sql>
 
-  <select id="findByOrderId" resultMap="OrderDetailResultMap">
+  <select id="findById" resultMap="OrderDetailResultMap">
     SELECT
     <include refid="orderDetailColumns" />
     FROM bill_order_detail
-    WHERE bill_order_detail.order_id = #{orderId} AND deleted = false
+    WHERE bill_order_detail.id = #{id} AND deleted = false
   </select>
 
-  <insert id="insert"  parameterType="com.xpay.pay.model.OrderDetail">
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.OrderDetail">
     insert into bill_order_detail
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      order_id,
       <if test="storeName != null">
         store_name,
       </if>
@@ -48,7 +47,6 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      #{orderId,jdbcType=BIGINT},
       <if test="storeName != null">
         #{storeName,jdbcType=VARCHAR},
       </if>

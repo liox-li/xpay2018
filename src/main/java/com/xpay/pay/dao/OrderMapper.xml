@@ -19,7 +19,8 @@
     <result column="notify_url" jdbcType="VARCHAR" property="notifyUrl" />
     <result column="code_url" jdbcType="VARCHAR" property="codeUrl" />
     <result column="prepay_id" jdbcType="VARCHAR" property="prepayId" />
-    <result column="status" jdbcType="VARCHAR" property="status" />          
+    <result column="status" jdbcType="VARCHAR" property="status" />  
+    <result column="detail_id" jdbcType="BIGINT" property="detailId" />          
   </resultMap>
   
   <sql id="orderColumns">
@@ -39,7 +40,8 @@
     notify_url,
     code_url,
     prepay_id,
-    status
+    status,
+    detail_id
   </sql>
 
   <select id="findById" resultMap="OrderResultMap">
@@ -107,6 +109,9 @@
       <if test="status != null">
         status,
       </if>  
+      <if test="detailId != null">
+        detail_id,
+      </if>  
    </trim>
    <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="orderNo != null">
@@ -156,7 +161,10 @@
       </if>
       <if test="status != null">
         #{status,jdbcType=VARCHAR},
-      </if>       
+      </if>    
+      <if test="detailId != null">
+        #{detailId,jdbcType=BIGINT},
+      </if>      
     </trim>
   </insert> 
      

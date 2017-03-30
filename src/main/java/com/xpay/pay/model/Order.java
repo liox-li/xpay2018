@@ -21,6 +21,7 @@ public class Order {
 	private String codeUrl;
 	private String prepayId;
 	private TradeStatus status;
+	private Long detailId;
 	private OrderDetail orderDetail;
 	private App app;
 	private Store store;
@@ -125,6 +126,12 @@ public class Order {
 	}
 	public void setStatus(TradeStatus status) {
 		this.status = status;
+	}
+	public Long getDetailId() {
+		return detailId;
+	}
+	public void setDetailId(Long detailId) {
+		this.detailId = detailId;
 	}
 	public OrderDetail getOrderDetail() {
 		return orderDetail;
