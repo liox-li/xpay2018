@@ -92,6 +92,26 @@ public class MiaoFuProxy implements IPaymentProxy {
 		}
 		return response;
 	}
+
+	@Override
+	public PaymentResponse refund(PaymentRequest orderRequest) {
+		String url = buildUrl(Method.Refund, orderRequest);
+		logger.info("refund POST: " + url);
+		long l = System.currentTimeMillis();
+		PaymentResponse response = null;
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+			HttpEntity<?> httpEntity = new HttpEntity<>(headers);
+			response = miaofuProxy.exchange(url, HttpMethod.POST, httpEntity, PaymentResponse.class).getBody();
+			logger.info("refund result: " + response.getCode() + " "+response.getMsg()+", took "
+					+ (System.currentTimeMillis() - l) + "ms");
+		} catch (RestClientException e) {
+			logger.info("refund failed, took " + (System.currentTimeMillis() - l) + "ms", e);
+			throw e;
+		}
+		return response;
+	}
 	
 	private String buildUrl(Method method, PaymentRequest orderRequest) {
 		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseEndpoint).path("/"+method.module+"/"+method.method);

@@ -10,4 +10,6 @@ public interface IPaymentProxy {
 	
 	public PaymentResponse query(PaymentRequest orderRequest);
 	
+	public PaymentResponse refund(PaymentRequest orderRequest);
+	
 }

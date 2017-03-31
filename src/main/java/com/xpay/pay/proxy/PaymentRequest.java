@@ -141,7 +141,7 @@ public class PaymentRequest {
 	}
 	
 	public enum Method {
-		MicroPay("pay", "micropay"), UnifiedOrder("pay", "unifiedorder"), Query("pay", "query");;
+		MicroPay("pay", "micropay"), UnifiedOrder("pay", "unifiedorder"), Query("pay", "query"), Refund("pay", "refund");;
 		
 		String module;
 		String method;

@@ -118,6 +118,21 @@ public class PaymentService {
 			return toBill(order);
 		}
 	}
+	
+	public Bill refund(String orderNo, String storeCode) {
+		Order order = orderService.findActiveByOrderNo(orderNo);
+		Assert.isTrue(storeCode.equals(order.getStore().getCode()), "No such order found for the store");
+		
+		if(!order.isSettle()) {
+			PaymentRequest paymentRequest = toQueryRequest(order);
+			paymentRequest.setTrade_no_type(TradeNoType.Gateway);
+			PaymentResponse response = paymentProxy.refund(paymentRequest);
+			Bill bill = toBill(order, response);
+			return bill;
+		} else {
+			return toBill(order);
+		}
+	}
 
 	private PaymentRequest toPaymentRequest(Order order) {
 		PaymentRequest request = new PaymentRequest();

@@ -52,4 +52,16 @@ public class MiaoFuProxyTest extends BaseSpringJunitTest {
 		PaymentResponse response = proxy.query(request);
 		System.out.println("response code: "+ response.getCode()+" "+response.getMsg());
 	}
+	
+	@Test
+	public void testRefund() {
+		PaymentRequest request = new PaymentRequest();
+		request.setBusi_code("T2017032319251974486873");
+		request.setTrade_no("632033114100328792187");
+		//request.setDown_trade_no("X0100100201703311657578703");
+		request.setPay_channel(PayChannel.ALIPAY);
+		request.setTrade_no_type(TradeNoType.MiaoFu);
+		PaymentResponse response = proxy.query(request);
+		System.out.println("response code: "+ response.getCode()+" "+response.getMsg());
+	}
 }

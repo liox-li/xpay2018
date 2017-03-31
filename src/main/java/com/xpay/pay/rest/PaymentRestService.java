@@ -123,12 +123,20 @@ public class PaymentRestService extends AuthRestService {
 			@RequestParam String storeId,
 			@RequestParam(required = false) String deviceId,
 			@RequestParam(required = false) String ip) {
+		Assert.isTrue(StringUtils.isNoneBlank(orderNo, storeId), "OrderNo and storeId can not be null");
+		Bill bill = paymentService.refund(orderNo, storeId);
+		
+		BaseResponse<OrderResponse> response = new BaseResponse<OrderResponse>();
 		OrderResponse orderResponse = new OrderResponse();
 		orderResponse.setOrderNo(orderNo);
 		orderResponse.setStoreId(storeId);
-		orderResponse.setOrderStatus(OrderStatus.NOTPAY);
-		BaseResponse<OrderResponse> response = new BaseResponse<OrderResponse>();
+		orderResponse.setSellerOrderNo(bill.getOrder().getSellerOrderNo());
+		orderResponse.setCodeUrl(bill.getCodeUrl());
+		orderResponse.setPrepayId(bill.getPrepayId());
+		orderResponse.setOrderStatus(bill.getOrderStatus());
+		orderResponse.setAttach(bill.getOrder().getAttach());
 		response.setData(orderResponse);
+		
 		return response;
 	}
 
