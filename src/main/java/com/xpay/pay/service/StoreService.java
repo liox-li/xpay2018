@@ -32,4 +32,8 @@ public class StoreService {
 		store.setChannels(channels);
 		return store;
 	}
+	
+	public boolean updateById(Store store) {
+		return storeMapper.updateById(store);
+	}
 }

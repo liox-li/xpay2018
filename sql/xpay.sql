@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS bill_store (
 	bar NUMERIC NOT NULL default 1000,
 	bail_percentage SMALLINT NOT NULL default 10,
 	rotation_type varchar(16) NOT NULL default 'RoundRobin',
+	rotation_index SMALLINT NOT NULL default 1,
 	create_date TIMESTAMP WITH TIME ZONE NOT NULL default now(), 
 	update_date TIMESTAMP WITH TIME ZONE NOT NULL default now(),
 	deleted boolean DEFAULT FALSE

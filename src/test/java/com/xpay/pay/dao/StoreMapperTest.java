@@ -45,6 +45,8 @@ public class StoreMapperTest extends BaseSpringJunitTest {
 	public void testUpdate() {
 		Store store = mapper.findById(100);
 		store.setName("Updated");
+		store.setBail(100.01f);
+		store.setRotationIndex(2);
 		mapper.updateById(store);
 		store = mapper.findById(100);
 		System.out.println(store.getName());

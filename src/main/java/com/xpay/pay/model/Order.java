@@ -58,6 +58,10 @@ public class Order {
 	public String getTotalFee() {
 		return totalFee;
 	}
+	
+	public float getTotalFeeAsFloat() {
+		return Float.valueOf(totalFee);
+	}
 	public void setTotalFee(String totalFee) {
 		this.totalFee = totalFee;
 	}

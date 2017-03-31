@@ -3,72 +3,125 @@ package com.xpay.pay.model;
 import java.util.List;
 
 public class Store {
-	private int id;
+	private long id;
 	private String code;
 	private String name;
-	private float bail;
-	private float nonBail;
-	private float bar;
-	private int bailPercentage;
+	private Float bail;
+	private Float nonBail;
+	private Float bar;
+	private Integer bailPercentage;
 	private RotationType rotationType;
+	private Integer rotationIndex;
 	private List<StoreChannel> channels;
-	
-	public int getId() {
+
+	public long getId() {
 		return id;
 	}
-	public void setId(int id) {
+
+
+	public void setId(long id) {
 		this.id = id;
 	}
+
+
 	public String getCode() {
 		return code;
 	}
+
+
 	public void setCode(String code) {
 		this.code = code;
 	}
+
+
 	public String getName() {
 		return name;
 	}
+
+
 	public void setName(String name) {
 		this.name = name;
 	}
-	public List<StoreChannel> getChannels() {
-		return channels;
-	}
-	public void setChannels(List<StoreChannel> channels) {
-		this.channels = channels;
-	}
-	public float getBail() {
+
+
+	public Float getBail() {
 		return bail;
 	}
-	public void setBail(float bail) {
+
+
+	public void setBail(Float bail) {
 		this.bail = bail;
 	}
-	public float getNonBail() {
+
+
+	public Float getNonBail() {
 		return nonBail;
 	}
-	public void setNonBail(float nonBail) {
+
+
+	public void setNonBail(Float nonBail) {
 		this.nonBail = nonBail;
 	}
-	public float getBar() {
+
+
+	public Float getBar() {
 		return bar;
 	}
-	public void setBar(float bar) {
+
+
+	public void setBar(Float bar) {
 		this.bar = bar;
 	}
-	public int getBailPercentage() {
+
+
+	public Integer getBailPercentage() {
 		return bailPercentage;
 	}
-	public void setBailPercentage(int bailPercentage) {
+
+
+	public void setBailPercentage(Integer bailPercentage) {
 		this.bailPercentage = bailPercentage;
 	}
+
+
 	public RotationType getRotationType() {
 		return rotationType;
 	}
+
+
 	public void setRotationType(RotationType rotationType) {
 		this.rotationType = rotationType;
 	}
 
+
+	public Integer getRotationIndex() {
+		return rotationIndex;
+	}
+
+
+	public void setRotationIndex(Integer rotationIndex) {
+		this.rotationIndex = rotationIndex;
+	}
+
+
+	public List<StoreChannel> getChannels() {
+		return channels;
+	}
+
+
+	public void setChannels(List<StoreChannel> channels) {
+		this.channels = channels;
+	}
+
+
 	public enum RotationType {
 		RoundRobin, FirstOneFirst
+	}
+	
+	public boolean isNextBailPay() {
+		if(this.nonBail <= this.bar) {
+			return false;
+		}
+		return this.bail * 100 / (this.nonBail - this.bar) <= this.bailPercentage;
 	}
 }

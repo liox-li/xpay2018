@@ -26,12 +26,20 @@ public class PaymentService {
 	private IPaymentProxy paymentProxy;
 	@Autowired
 	private OrderService orderService;
+	@Autowired
+	private StoreService storeService;
 
 	public Order createOrder(String orderNo, Store store, PayChannel channel,
 			String deviceId, String ip, String totalFee, String orderTime,
 			String sellerOrderNo, String attach, String notifyUrl,
 			long orderDetailId) {
-		StoreChannel storeChannel = orderService.findUnusedChannel(store, orderNo);
+		StoreChannel storeChannel = null;
+		boolean isNextBailPay = store.isNextBailPay();
+		if(isNextBailPay) {
+			storeChannel = orderService.findUnusedChannel(this.findBailStore(), orderNo);
+		} else {
+			storeChannel = orderService.findUnusedChannel(store, orderNo);
+		}
 		Assert.notNull(storeChannel, "No avaiable store channel");
 		
 		Order order = new Order();
@@ -75,6 +83,19 @@ public class PaymentService {
 		}
 		return orderService.update(order);
 	}
+	
+	public boolean updateBail(Store store, Bill bill) {
+		if(bill != null) {
+			boolean isBail = bill.getOrder().getStoreChannelId()<1000;
+			if(isBail) {
+				store.setBail(store.getBail() + bill.getOrder().getTotalFeeAsFloat());
+			} else {
+				store.setNonBail(store.getNonBail() + bill.getOrder().getTotalFeeAsFloat());
+			}
+			return storeService.updateById(store);
+		}
+		return true;
+	}
 
 	public Bill query(String orderNo) {
 		return null;
@@ -113,4 +134,11 @@ public class PaymentService {
 		bill.setOrder(order);
 		return bill;
 	}
+	
+
+	private static final int BAIL_STORE_ID=1;
+	public Store findBailStore() {
+		return storeService.findById(BAIL_STORE_ID);
+	}
+
 }

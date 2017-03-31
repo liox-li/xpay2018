@@ -51,13 +51,22 @@ public class CommonUtils {
 
 	// X,2 - appId, 4 - storeId, 17 - yyyyMMddHHmmssSSS, 4 - random
 	private static final char X = 'X';
-	public static String buildOrderNo(int appId, int storeId) {
+	public static String buildOrderNo(int appId, long storeId) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(X);
 		sb.append(StringUtils.leftPad(String.valueOf(appId), 2, "0"));
 		sb.append(StringUtils.leftPad(String.valueOf(storeId), 4, "0"));
 		sb.append(formatNow());
 		sb.append(randomNum(4));
+		return sb.toString();
+	}
+	
+	private static final char T = 'T';
+	public static String buildStoreCode() {
+		StringBuffer sb = new StringBuffer();
+		sb.append(T);
+		sb.append(formatNow());
+		sb.append(randomNum(3));
 		return sb.toString();
 	}
 	
