@@ -81,6 +81,7 @@ public class PaymentService {
 		if(bill == null) {
 			order.setStatus(OrderStatus.CHANNEL_ERROR);
 		} else {
+			order.setExtOrderNo(bill.getGatewayOrderNo());
 			order.setCodeUrl(bill.getCodeUrl());
 			order.setPrepayId(bill.getPrepayId());
 			order.setStatus(bill.getOrderStatus());
@@ -101,8 +102,17 @@ public class PaymentService {
 		return true;
 	}
 
-	public Bill query(String orderNo) {
-		return null;
+	public Bill query(String orderNo, String storeCode) {
+		Order order = orderService.findActiveByOrderNo(orderNo);
+		Assert.isTrue(storeCode.equals(order.getStore().getCode()), "No such order found for the store");
+		
+		if(!order.isSettle()) {
+			PaymentResponse response = paymentProxy.query(toPaymentRequest(order));
+			Bill bill = toBill(order, response);
+			return bill;
+		} else {
+			return toBill(order);
+		}
 	}
 
 	private PaymentRequest toPaymentRequest(Order order) {
@@ -135,6 +145,17 @@ public class PaymentService {
 		bill.setOrderNo(order.getOrderNo());
 		bill.setGatewayOrderNo(trade.getTrade_no());
 		bill.setOrderStatus(trade.getTrade_status());
+		bill.setOrder(order);
+		return bill;
+	}
+	
+	private Bill toBill(Order order) {
+		Bill bill = new Bill();
+		bill.setCodeUrl(order.getCodeUrl());
+		bill.setPrepayId(order.getPrepayId());
+		bill.setOrderNo(order.getOrderNo());
+		bill.setGatewayOrderNo(order.getExtOrderNo());
+		bill.setOrderStatus(order.getStatus());
 		bill.setOrder(order);
 		return bill;
 	}

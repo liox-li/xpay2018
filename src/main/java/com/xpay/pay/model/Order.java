@@ -174,4 +174,7 @@ public class Order {
 			this.storeId = store.getId();
 		}
 	}
+	public boolean isSettle() {
+		return !OrderStatus.USERPAYING.equals(this.status) && !OrderStatus.NOTPAY.equals(this.status);
+	}
 }

@@ -14,6 +14,7 @@ import com.xpay.pay.model.Order;
 import com.xpay.pay.model.OrderDetail;
 import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
+import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.util.CommonUtils;
 
 @Service
@@ -35,6 +36,16 @@ public class OrderService {
 			order.setStore(storeService.findById(order.getStoreId()));
 		}
 		return orders;
+	}
+	
+	public Order findActiveByOrderNo(String orderNo) {
+		List<Order> orders = orderMapper.findByOrderNo(orderNo);
+		Assert.notNull(orders, "Order not found - " + orderNo);
+		Order order = orders.stream().filter(x -> !x.getStatus().equals(OrderStatus.CHANNEL_ERROR)).findAny().orElse(null);
+		order.setApp(appService.findById(order.getAppId()));
+		order.setStore(storeService.findById(order.getStoreId()));
+		order.setStoreChannel(storeService.findStoreChannelById(order.getStoreChannelId()));
+		return order;
 	}
 
 	public StoreChannel findUnusedChannel(Store store, String orderNo) {

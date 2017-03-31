@@ -39,4 +39,8 @@ public class StoreService {
 	public boolean updateById(Store store) {
 		return storeMapper.updateById(store);
 	}
+	
+	public StoreChannel findStoreChannelById(long id) {
+		return storeChannelMapper.findById(id);
+	}
 }
