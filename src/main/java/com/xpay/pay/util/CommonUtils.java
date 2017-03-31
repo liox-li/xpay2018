@@ -49,12 +49,12 @@ public class CommonUtils {
 		return coll.contains(e);
 	}
 
-	// X,2 - appId, 4 - storeId, 17 - yyyyMMddHHmmssSSS, 4 - random
+	// X,3 - appId, 4 - storeId, 14 - yyyyMMddHHmmss, 4 - random
 	private static final char X = 'X';
 	public static String buildOrderNo(int appId, long storeId) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(X);
-		sb.append(StringUtils.leftPad(String.valueOf(appId), 2, "0"));
+		sb.append(StringUtils.leftPad(String.valueOf(appId), 3, "0"));
 		sb.append(StringUtils.leftPad(String.valueOf(storeId), 4, "0"));
 		sb.append(formatNow());
 		sb.append(randomNum(4));
@@ -71,7 +71,7 @@ public class CommonUtils {
 	}
 	
 	private static String formatNow() {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 		return dateFormat.format(new Date());
 	}
 	

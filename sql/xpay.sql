@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS bill_store_channel (
 	id BIGSERIAL PRIMARY KEY,
 	store_id BIGINT NOT NULL,
 	ext_store_id varchar(32) NOT NULL,
-	priority INT NOT null,
+	priority INT NOT null default 1,
 	payment_gateway varchar(16) NOT NULL,
 	create_date TIMESTAMP WITH TIME ZONE NOT NULL default now(), 
 	update_date TIMESTAMP WITH TIME ZONE NOT NULL default now(),
