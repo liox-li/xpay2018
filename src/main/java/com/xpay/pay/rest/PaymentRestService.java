@@ -19,7 +19,6 @@ import com.xpay.pay.model.Order;
 import com.xpay.pay.model.OrderDetail;
 import com.xpay.pay.model.Store;
 import com.xpay.pay.proxy.PaymentRequest.PayChannel;
-import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.rest.contract.BaseResponse;
 import com.xpay.pay.rest.contract.OrderResponse;
 import com.xpay.pay.service.OrderService;

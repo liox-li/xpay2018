@@ -123,11 +123,16 @@ public class PaymentService {
 		Order order = orderService.findActiveByOrderNo(orderNo);
 		Assert.isTrue(storeCode.equals(order.getStore().getCode()), "No such order found for the store");
 		
-		if(!order.isSettle()) {
+		if(!order.isRefundable()) {
 			PaymentRequest paymentRequest = toQueryRequest(order);
 			paymentRequest.setTrade_no_type(TradeNoType.Gateway);
 			PaymentResponse response = paymentProxy.refund(paymentRequest);
+			
 			Bill bill = toBill(order, response);
+			if(OrderStatus.REFUND.equals(bill.getOrderStatus()) || OrderStatus.REVOKED.equals(bill.getOrderStatus())) {
+				order.setStatus(bill.getOrderStatus());
+				orderService.update(order);
+			}
 			return bill;
 		} else {
 			return toBill(order);

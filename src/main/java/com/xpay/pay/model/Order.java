@@ -177,4 +177,8 @@ public class Order {
 	public boolean isSettle() {
 		return !OrderStatus.USERPAYING.equals(this.status) && !OrderStatus.NOTPAY.equals(this.status);
 	}
+	
+	public boolean isRefundable() {
+		return OrderStatus.SUCCESS.equals(this.status) || OrderStatus.USERPAYING.equals(this.status);
+	}
 }
