@@ -86,7 +86,7 @@ public class PaymentService {
 	
 	public boolean updateBail(Store store, Bill bill) {
 		if(bill != null) {
-			boolean isBail = bill.getOrder().getStoreChannelId()<1000;
+			boolean isBail = bill.getOrder().getStoreChannelId()<100;
 			if(isBail) {
 				store.setBail(store.getBail() + bill.getOrder().getTotalFeeAsFloat());
 			} else {
