@@ -13,8 +13,8 @@ public class PaymentRequest {
 	private String auth_code;
 	private String down_trade_no;
 	private String trade_no;
-	private TradeNoType trade_no_type = TradeNoType.Gateway;
-	private String subject = "No Subject";
+	private TradeNoType trade_no_type;
+	private String subject;
 	private GoodBean[] good_details;
 	
 	public String getBusi_code() {

@@ -18,6 +18,7 @@ import com.xpay.pay.model.StoreChannel;
 import com.xpay.pay.proxy.IPaymentProxy;
 import com.xpay.pay.proxy.PaymentRequest;
 import com.xpay.pay.proxy.PaymentRequest.PayChannel;
+import com.xpay.pay.proxy.PaymentRequest.TradeNoType;
 import com.xpay.pay.proxy.PaymentResponse;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.proxy.PaymentResponse.TradeBean;
@@ -66,7 +67,8 @@ public class PaymentService {
 
 	public Bill unifiedOrder(Order order) {
 		PaymentRequest request = toPaymentRequest(order);
-
+		String subject = order.getOrderDetail() == null?"No Subject":order.getOrderDetail().getSubject();
+		request.setSubject(subject);
 		PaymentResponse response = paymentProxy.unifiedOrder(request);
 
 		Bill bill = toBill(order, response);
@@ -107,7 +109,9 @@ public class PaymentService {
 		Assert.isTrue(storeCode.equals(order.getStore().getCode()), "No such order found for the store");
 		
 		if(!order.isSettle()) {
-			PaymentResponse response = paymentProxy.query(toPaymentRequest(order));
+			PaymentRequest paymentRequest = toQueryRequest(order);
+			paymentRequest.setTrade_no_type(TradeNoType.Gateway);
+			PaymentResponse response = paymentProxy.query(paymentRequest);
 			Bill bill = toBill(order, response);
 			return bill;
 		} else {
@@ -128,6 +132,17 @@ public class PaymentService {
 			request.setSubject(order.getOrderDetail().getSubject());
 			request.setGood_details(order.getOrderDetail().getOrderItems());
 		}
+		return request;
+	}
+	
+	private PaymentRequest toQueryRequest(Order order) {
+		PaymentRequest request = new PaymentRequest();
+		
+		request.setBusi_code(order.getStoreChannel().getExtStoreId());
+		request.setPay_channel(order.getPayChannel());
+		request.setDown_trade_no(order.getOrderNo());
+		request.setTrade_no_type(TradeNoType.Gateway);
+
 		return request;
 	}
 

@@ -50,6 +50,6 @@ public class MiaoFuProxyTest extends BaseSpringJunitTest {
 		request.setPay_channel(PayChannel.ALIPAY);
 		request.setTrade_no_type(TradeNoType.Gateway);
 		PaymentResponse response = proxy.query(request);
-		System.out.println("response code: "+ response.getCode());
+		System.out.println("response code: "+ response.getCode()+" "+response.getMsg());
 	}
 }
