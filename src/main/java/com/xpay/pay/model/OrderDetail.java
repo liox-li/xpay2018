@@ -7,7 +7,7 @@ public class OrderDetail {
 	private long id;
 	private String storeName;
 	private String operator;
-	private String subject = "No Subject";
+	private String subject;
 	private GoodBean[] orderItems;
 	private String itemsJson;
 	private String desc;

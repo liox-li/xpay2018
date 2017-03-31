@@ -8,6 +8,7 @@ public class Order {
 	private String orderNo;
 	private int appId;
 	private long storeId;
+	private StoreChannel storeChannel;
 	private long storeChannelId;
 	private String totalFee;
 	private String orderTime;
@@ -48,6 +49,15 @@ public class Order {
 	}
 	public void setStoreId(long storeId) {
 		this.storeId = storeId;
+	}
+	public StoreChannel getStoreChannel() {
+		return storeChannel;
+	}
+	public void setStoreChannel(StoreChannel storeChannel) {
+		this.storeChannel = storeChannel;
+		if(storeChannel!=null) {
+			this.storeChannelId = storeChannel.getId();
+		}
 	}
 	public long getStoreChannelId() {
 		return storeChannelId;
@@ -142,17 +152,26 @@ public class Order {
 	}
 	public void setOrderDetail(OrderDetail orderDetail) {
 		this.orderDetail = orderDetail;
+		if(orderDetail!=null) {
+			this.detailId = orderDetail.getId();
+		}
 	}
 	public App getApp() {
 		return app;
 	}
 	public void setApp(App app) {
 		this.app = app;
+		if(app!=null) {
+			this.appId = app.getId();
+		}
 	}
 	public Store getStore() {
 		return store;
 	}
 	public void setStore(Store store) {
 		this.store = store;
+		if(store!=null) {
+			this.storeId = store.getId();
+		}
 	}
 }

@@ -16,14 +16,12 @@ public class MiaoFuProxyTest extends BaseSpringJunitTest {
 	public void testUnifiedOrder() {
 		PaymentRequest request = new PaymentRequest();
 		request.setBusi_code("T2017032319251974486873");
-		request.setDev_id("1908a92d7d33");
-		request.setPay_channel(PayChannel.ALIPAY);
+		request.setDev_id("1213");
+		request.setPay_channel(PayChannel.WECHAT);
 		request.setAmount("0.01");
-		request.setDown_trade_no("158237477024932JrfDWLbLWR");
-		request.setSubject("测试门店1");
-		request.setRaw_data("1.0.5");
-		request.setUndiscountable_amount("0.01");
-		request.setOper_id("104");
+		request.setDown_trade_no("X110101201703311115387831581");
+		request.setSubject("No Subject");
+		request.setRaw_data("atach");
 		PaymentResponse response = proxy.unifiedOrder(request);
 		System.out.println("response code: "+ response.getCode()+" "+response.getMsg());
 	}

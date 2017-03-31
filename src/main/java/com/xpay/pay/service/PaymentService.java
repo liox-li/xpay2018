@@ -9,8 +9,10 @@ import org.springframework.stereotype.Service;
 import com.xpay.pay.ApplicationConstants;
 import com.xpay.pay.exception.Assert;
 import com.xpay.pay.exception.GatewayException;
+import com.xpay.pay.model.App;
 import com.xpay.pay.model.Bill;
 import com.xpay.pay.model.Order;
+import com.xpay.pay.model.OrderDetail;
 import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
 import com.xpay.pay.proxy.IPaymentProxy;
@@ -29,10 +31,10 @@ public class PaymentService {
 	@Autowired
 	private StoreService storeService;
 
-	public Order createOrder(String orderNo, Store store, PayChannel channel,
+	public Order createOrder(App app, String orderNo, Store store, PayChannel channel,
 			String deviceId, String ip, String totalFee, String orderTime,
 			String sellerOrderNo, String attach, String notifyUrl,
-			long orderDetailId) {
+			OrderDetail orderDetail) {
 		StoreChannel storeChannel = null;
 		boolean isNextBailPay = store.isNextBailPay();
 		if(isNextBailPay) {
@@ -43,9 +45,11 @@ public class PaymentService {
 		Assert.notNull(storeChannel, "No avaiable store channel");
 		
 		Order order = new Order();
+		order.setApp(app);
 		order.setOrderNo(orderNo);
+		order.setStore(store);
 		order.setStoreId(store.getId());
-		order.setStoreChannelId(storeChannel.getId());
+		order.setStoreChannel(storeChannel);
 		order.setPayChannel(channel);
 		order.setDeviceId(deviceId);
 		order.setIp(ip);
@@ -54,7 +58,7 @@ public class PaymentService {
 		order.setSellerOrderNo(sellerOrderNo);
 		order.setAttach(attach);
 		order.setNotifyUrl(notifyUrl);
-		order.setDetailId(orderDetailId);
+		order.setOrderDetail(orderDetail);
 		orderService.insert(order);
 		
 		return order;
@@ -103,7 +107,7 @@ public class PaymentService {
 
 	private PaymentRequest toPaymentRequest(Order order) {
 		PaymentRequest request = new PaymentRequest();
-		request.setBusi_code(order.getStore().getCode());
+		request.setBusi_code(order.getStoreChannel().getExtStoreId());
 		request.setDev_id(order.getDeviceId());
 		request.setPay_channel(order.getPayChannel());
 		request.setAmount(order.getTotalFee());

@@ -14,7 +14,7 @@ public class PaymentRequest {
 	private String down_trade_no;
 	private String trade_no;
 	private TradeNoType trade_no_type;
-	private String subject;
+	private String subject = "No Subject";
 	private GoodBean[] good_details;
 	
 	public String getBusi_code() {

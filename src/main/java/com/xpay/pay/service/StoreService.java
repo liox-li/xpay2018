@@ -2,6 +2,7 @@ package com.xpay.pay.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -12,7 +13,9 @@ import com.xpay.pay.model.StoreChannel;
 
 @Service
 public class StoreService {
+	@Autowired
 	protected StoreMapper storeMapper;
+	@Autowired
 	protected StoreChannelMapper storeChannelMapper;
 	
 	public Store findByCode(String code) {

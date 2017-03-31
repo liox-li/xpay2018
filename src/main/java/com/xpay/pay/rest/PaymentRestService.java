@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.xpay.pay.ApplicationConstants;
 import com.xpay.pay.exception.ApplicationException;
 import com.xpay.pay.exception.GatewayException;
+import com.xpay.pay.model.App;
 import com.xpay.pay.model.Bill;
 import com.xpay.pay.model.Order;
 import com.xpay.pay.model.OrderDetail;
@@ -55,7 +56,8 @@ public class PaymentRestService extends AuthRestService {
 		Assert.isTrue(fee>0 && fee<3000, "Invalid total fee");
 		
 		Store store = storeService.findByCode(storeId);
-		String orderNo = CommonUtils.buildOrderNo(getApp().getId(), store.getId());
+		App app = getApp();
+		String orderNo = CommonUtils.buildOrderNo(app.getId(), store.getId());
 		if(orderDetail != null) {
 			orderService.insert(orderDetail);
 		}
@@ -63,7 +65,7 @@ public class PaymentRestService extends AuthRestService {
 		Order order = null;
 		Bill bill = null;
 		do {
-			order = paymentService.createOrder(orderNo, store, channel, deviceId, ip, totalFee, orderTime, sellerOrderNo, attach, notifyUrl, orderDetail.getId());
+			order = paymentService.createOrder(app, orderNo, store, channel, deviceId, ip, totalFee, orderTime, sellerOrderNo, attach, notifyUrl, orderDetail);
 			Assert.notNull(order,"Create order failed");
 			
 			try {
