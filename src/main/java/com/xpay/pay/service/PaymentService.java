@@ -67,8 +67,6 @@ public class PaymentService {
 
 	public Bill unifiedOrder(Order order) {
 		PaymentRequest request = toPaymentRequest(order);
-		String subject = order.getOrderDetail() == null?"No Subject":order.getOrderDetail().getSubject();
-		request.setSubject(subject);
 		PaymentResponse response = paymentProxy.unifiedOrder(request);
 
 		Bill bill = toBill(order, response);
@@ -139,6 +137,7 @@ public class PaymentService {
 		}
 	}
 
+	private static final String DEFAULT_SUBJECT = "订单";
 	private PaymentRequest toPaymentRequest(Order order) {
 		PaymentRequest request = new PaymentRequest();
 		request.setBusi_code(order.getStoreChannel().getExtStoreId());
@@ -147,10 +146,13 @@ public class PaymentService {
 		request.setAmount(order.getTotalFee());
 		request.setRaw_data(order.getAttach());
 		request.setDown_trade_no(order.getOrderNo());
+	
 		if (order.getOrderDetail() != null) {
 			request.setOper_id(order.getOrderDetail().getOperator());
 			request.setSubject(order.getOrderDetail().getSubject());
 			request.setGood_details(order.getOrderDetail().getOrderItems());
+		} else {
+			request.setSubject(DEFAULT_SUBJECT);
 		}
 		return request;
 	}
