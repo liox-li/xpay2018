@@ -2,6 +2,7 @@ package com.xpay.pay.controller;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -16,10 +17,8 @@ import net.oauth.OAuth;
 import net.oauth.OAuthAccessor;
 import net.oauth.OAuthConsumer;
 import net.oauth.OAuthMessage;
-import net.oauth.OAuthServiceProvider;
 import net.oauth.SimpleOAuthValidator;
 import net.oauth.server.OAuthServlet;
-import net.oauth.signature.RSA_SHA1;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.util.KeyValuePair;
@@ -38,6 +37,9 @@ import com.xpay.pay.util.JsonUtils;
 public class OAuthFilter implements Filter {
 	@Autowired
 	protected AppService appService;
+	private static final SimpleOAuthValidator validator=new SimpleOAuthValidator();
+	private static AtomicLong lastReleaseTime = new AtomicLong(System.currentTimeMillis());
+	private static final long releasePeriod = 3600000;  // one hour
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
@@ -62,20 +64,11 @@ public class OAuthFilter implements Filter {
 			}	
 		} catch (ApplicationException e) {
 			printErrorResponse(response, e);
-		}
-	}
-
-	private static final SimpleOAuthValidator validator=new SimpleOAuthValidator();
-	private void checkOAuth(HttpServletRequest httpRequest, App app) {
-		OAuthMessage message=OAuthServlet.getMessage(httpRequest,null);
-		OAuthConsumer consumer=new OAuthConsumer(null, app.getKey(), app.getSecret(), null);
-		consumer.setProperty(OAuth.OAUTH_SIGNATURE_METHOD, OAuth.HMAC_SHA1);
-		OAuthAccessor accessor=new OAuthAccessor(consumer);
-		
-		try {
-			validator.validateMessage(message,accessor);
-		} catch (Exception e) {
-			throw new AuthException("401", e.getMessage());
+		} finally {
+			if(System.currentTimeMillis()- lastReleaseTime.get()>releasePeriod) {
+				validator.releaseGarbage();
+				lastReleaseTime.set(System.currentTimeMillis());
+			}
 		}
 	}
 
@@ -104,6 +97,19 @@ public class OAuthFilter implements Filter {
 		}
 		App app = appService.findByKey(consumerKey.getValue());
 		return app;
+	}
+	
+	private void checkOAuth(HttpServletRequest httpRequest, App app) {
+		OAuthMessage message=OAuthServlet.getMessage(httpRequest,null);
+		OAuthConsumer consumer=new OAuthConsumer(null, app.getKey(), app.getSecret(), null);
+		consumer.setProperty(OAuth.OAUTH_SIGNATURE_METHOD, OAuth.HMAC_SHA1);
+		OAuthAccessor accessor=new OAuthAccessor(consumer);
+		
+		try {
+			validator.validateMessage(message,accessor);
+		} catch (Exception e) {
+			throw new AuthException("401", e.getMessage());
+		}
 	}
 
 	private void printErrorResponse(ServletResponse response,
