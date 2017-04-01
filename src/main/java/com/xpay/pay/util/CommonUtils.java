@@ -49,15 +49,17 @@ public class CommonUtils {
 		return coll.contains(e);
 	}
 
-	// X,3 - appId, 4 - storeId, 14 - yyyyMMddHHmmss, 4 - random
+	// X,3 - appId, 4 - storeId, 17 - yyyyMMddHHmmssSSS, 3 - random
+	private static final String TimePattern17 = "yyyyMMddHHmmssSSS";
+	private static final String timePattern14 = "yyyyMMddHHmmss";
 	private static final char X = 'X';
 	public static String buildOrderNo(int appId, long storeId) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(X);
 		sb.append(StringUtils.leftPad(String.valueOf(appId), 3, "0"));
 		sb.append(StringUtils.leftPad(String.valueOf(storeId), 4, "0"));
-		sb.append(formatNow());
-		sb.append(randomNum(4));
+		sb.append(formatNow(TimePattern17));
+		sb.append(randomNum(3));
 		return sb.toString();
 	}
 	
@@ -65,13 +67,13 @@ public class CommonUtils {
 	public static String buildStoreCode() {
 		StringBuffer sb = new StringBuffer();
 		sb.append(T);
-		sb.append(formatNow());
+		sb.append(formatNow(timePattern14));
 		sb.append(randomNum(3));
 		return sb.toString();
 	}
 	
-	private static String formatNow() {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+	private static String formatNow(String pattern) {
+		SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
 		return dateFormat.format(new Date());
 	}
 	
