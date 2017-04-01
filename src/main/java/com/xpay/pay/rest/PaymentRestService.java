@@ -25,6 +25,7 @@ import com.xpay.pay.service.OrderService;
 import com.xpay.pay.service.PaymentService;
 import com.xpay.pay.service.StoreService;
 import com.xpay.pay.util.CommonUtils;
+import com.xpay.pay.util.IDGenerator;
 
 @RestController
 @RequestMapping("/v1/pay")
@@ -56,7 +57,7 @@ public class PaymentRestService extends AuthRestService {
 		
 		Store store = storeService.findByCode(storeId);
 		App app = getApp();
-		String orderNo = CommonUtils.buildOrderNo(app.getId(), store.getId());
+		String orderNo = IDGenerator.buildOrderNo(app.getId(), store.getId());
 		if(orderDetail != null) {
 			orderService.insert(orderDetail);
 		}
