@@ -1,14 +1,11 @@
 package com.xpay.pay.model;
 
-import com.xpay.pay.proxy.PaymentRequest.GoodBean;
-import com.xpay.pay.util.JsonUtils;
 
 public class OrderDetail {
 	private long id;
 	private String storeName;
 	private String operator;
 	private String subject;
-	private GoodBean[] orderItems;
 	private String itemsJson;
 	private String desc;
 	
@@ -36,19 +33,11 @@ public class OrderDetail {
 	public void setSubject(String subject) {
 		this.subject = subject;
 	}
-	public GoodBean[] getOrderItems() {
-		return orderItems;
-	}
-	public void setOrderItems(GoodBean[] orderItems) {
-		this.orderItems = orderItems;
-		itemsJson = JsonUtils.toJson(this.orderItems);
-	}
 	public String getItemsJson() {
 		return itemsJson;
 	}
 	public void setItemsJson(String itemsJson) {
 		this.itemsJson = itemsJson;
-		this.orderItems = JsonUtils.fromJson(itemsJson, GoodBean[].class);
 	}
 	public String getDesc() {
 		return desc;

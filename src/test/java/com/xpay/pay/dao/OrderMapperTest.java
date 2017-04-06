@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.xpay.pay.BaseSpringJunitTest;
 import com.xpay.pay.model.Order;
-import com.xpay.pay.proxy.PaymentRequest.PayChannel;
+import com.xpay.pay.proxy.IPaymentProxy.PayChannel;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 
 public class OrderMapperTest extends BaseSpringJunitTest {

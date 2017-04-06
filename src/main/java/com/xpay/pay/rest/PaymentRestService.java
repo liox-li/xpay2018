@@ -18,8 +18,8 @@ import com.xpay.pay.model.Bill;
 import com.xpay.pay.model.Order;
 import com.xpay.pay.model.OrderDetail;
 import com.xpay.pay.model.Store;
-import com.xpay.pay.proxy.PaymentRequest.Method;
-import com.xpay.pay.proxy.PaymentRequest.PayChannel;
+import com.xpay.pay.proxy.IPaymentProxy.Method;
+import com.xpay.pay.proxy.IPaymentProxy.PayChannel;
 import com.xpay.pay.rest.contract.BaseResponse;
 import com.xpay.pay.rest.contract.OrderResponse;
 import com.xpay.pay.service.OrderService;
@@ -201,6 +201,7 @@ public class PaymentRestService extends AuthRestService {
 		result.setSellerOrderNo(bill.getOrder().getSellerOrderNo());
 		result.setCodeUrl(bill.getCodeUrl());
 		result.setPrepayId(bill.getPrepayId());
+		result.setPayInfo(bill.getPayInfo());
 		result.setOrderStatus(bill.getOrderStatus());
 		result.setAttach(bill.getOrder().getAttach());
 		return result;

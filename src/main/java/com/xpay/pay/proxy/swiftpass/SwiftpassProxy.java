@@ -23,12 +23,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.xpay.pay.ApplicationConstants;
 import com.xpay.pay.exception.GatewayException;
+import com.xpay.pay.model.Bill;
 import com.xpay.pay.proxy.IPaymentProxy;
 import com.xpay.pay.proxy.PaymentRequest;
-import com.xpay.pay.proxy.PaymentRequest.Method;
-import com.xpay.pay.proxy.PaymentRequest.PayChannel;
 import com.xpay.pay.proxy.PaymentResponse;
-import com.xpay.pay.proxy.PaymentResponse.TradeBean;
+import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.util.AppConfig;
 import com.xpay.pay.util.CryptoUtils;
 import com.xpay.pay.util.IDGenerator;
@@ -46,18 +45,18 @@ public class SwiftpassProxy implements IPaymentProxy {
 	private RestTemplate swiftPassProxy;
 
 	@Override
-	public PaymentResponse nativePay(PaymentRequest paymentRequest) {
+	public PaymentResponse nativePay(PaymentRequest request) {
 		String url = baseEndpoint;
 		logger.info("unifiedOrder POST: " + url);
 		HttpPost httpPost = new HttpPost(baseEndpoint);
 		CloseableHttpResponse response = null;
 		CloseableHttpClient client = null;
 		try {
-			SwiftpassRequest request = toSwiftpassRequest(paymentRequest);
-			String sign = signature(Method.NativePay, request, appSecret);
-			request.setSign(sign);
+			SwiftpassRequest swiftRequest = toSwiftpassRequest(request);
+			String sign = signature(Method.NativePay, swiftRequest, appSecret);
+			swiftRequest.setSign(sign);
 			List<KeyValuePair> keyPairs = this.getKeyPairs(Method.NativePay,
-					request);
+					swiftRequest);
 			String xml = XmlUtils.toXml(keyPairs);
 			StringEntity entityParams = new StringEntity(xml, "utf-8");
 			httpPost.setEntity(entityParams);
@@ -83,24 +82,24 @@ public class SwiftpassProxy implements IPaymentProxy {
 
 	
 	@Override
-	public PaymentResponse query(PaymentRequest orderRequest) {
+	public PaymentResponse query(PaymentRequest request) {
 		throw new java.lang.UnsupportedOperationException();
 	}
 
 	@Override
-	public PaymentResponse refund(PaymentRequest orderRequest) {
+	public PaymentResponse refund(PaymentRequest request) {
 		throw new java.lang.UnsupportedOperationException();
 	}
 
 	private SwiftpassRequest toSwiftpassRequest(PaymentRequest paymentRequest) {
 		SwiftpassRequest request = new SwiftpassRequest();
-		request.setMch_id(paymentRequest.getBusi_code());
-		request.setOut_trade_no(paymentRequest.getDown_trade_no());
-		request.setDevice_info(paymentRequest.getDev_id());
+		request.setMch_id(paymentRequest.getExtStoreId());
+		request.setOut_trade_no(paymentRequest.getOrderNo());
+		request.setDevice_info(paymentRequest.getDeviceId());
 		request.setBody(paymentRequest.getSubject());
 		request.setAttach(paymentRequest.getAttach());
-		request.setTotal_fee((int) (Float.valueOf(paymentRequest.getAmount()) * 100));
-		request.setMch_create_ip(paymentRequest.getIp());
+		request.setTotal_fee((int) (paymentRequest.getTotalFeeAsFloat() * 100));
+		request.setMch_create_ip(paymentRequest.getServerIp());
 		request.setNotify_url(paymentRequest.getNotifyUrl());
 		request.setNonce_str(IDGenerator.buildKey(10));
 		return request;
@@ -110,23 +109,22 @@ public class SwiftpassProxy implements IPaymentProxy {
 		byte[] bytes = EntityUtils.toByteArray(httpEntity);
 		Map<String, String> params = XmlUtils.fromXml(bytes, "utf-8");
 		boolean checkSign = checkParam(params, appSecret);
-		PaymentResponse response = new PaymentResponse();
-		if(checkSign) {
-			response.setCode(params.get("result_code"));
-			response.setMsg(params.get("err_msg"));
-			TradeBean bean = response.new TradeBean();
-			bean.setBusi_code(params.get("mch_id"));
-			bean.setDev_id(params.get("device_info"));
-			bean.setCode_url(params.get("pay_info"));
-			bean.setTrade_no(params.get("transaction_id"));
-			bean.setPay_channel(PayChannel.WECHAT);
-			response.setData(bean);
-		} else {
-			response.setCode("-1");
-			response.setMsg("Invalid signature");
+		
+		if(!checkSign || !PaymentResponse.SUCCESS.equals(params.get("status")) || !PaymentResponse.SUCCESS.equals(params.get("result_code"))) {
+			String code = params.get("result_code");
+			String msg = params.get("err_msg");
+			throw new GatewayException(code, msg);
 		}
+		PaymentResponse response = new PaymentResponse();
+		response.setCode(PaymentResponse.SUCCESS);
+		Bill bill = new Bill();
+		bill.setPayInfo(params.get("pay_info"));
+		bill.setCodeUrl(params.get("code_url"));
+		bill.setOrderNo(params.get("out_trade_no"));
+		bill.setGatewayOrderNo(params.get("transaction_id"));
+		bill.setOrderStatus(OrderStatus.NOTPAY);
+		response.setBill(bill);
 		return response;
-
 	}
 
 	private String signature(Method method, SwiftpassRequest request,
@@ -217,13 +215,13 @@ public class SwiftpassProxy implements IPaymentProxy {
 	}
 
 	@Override
-	public PaymentResponse unifiedOrder(PaymentRequest orderRequest) {
+	public PaymentResponse unifiedOrder(PaymentRequest request) {
 		throw new java.lang.UnsupportedOperationException();
 	}
 	
 
 	@Override
-	public PaymentResponse microPay(PaymentRequest paymentRequest) {
+	public PaymentResponse microPay(PaymentRequest request) {
 		throw new java.lang.UnsupportedOperationException();
 	}
 

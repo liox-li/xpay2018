@@ -13,13 +13,13 @@ public class SwiftpassProxyTest extends BaseSpringJunitTest {
 	@Test
 	public void testNativePay() {
 		PaymentRequest request = new PaymentRequest();
-		request.setBusi_code("755437000006");
-		request.setDev_id("1213");
-		request.setAmount("10");
-		request.setDown_trade_no("X110101201703311115387831581");
+		request.setExtStoreId("755437000006");
+		request.setDeviceId("1213");
+		request.setTotalFee("10");
+		request.setOrderNo("X110101201703311115387831581");
 		request.setSubject("No Subject");
-		request.setRaw_data("atach");
-		request.setIp("100.234.1.1");
+		request.setAttach("atach");
+		request.setServerIp("100.234.1.1");
 		request.setNotifyUrl("http://100.234.1.1/xpay/notify/X110101201703311115387831581");
 		PaymentResponse response = proxy.nativePay(request);
 		System.out.println("response code: "+ response.getCode()+" "+response.getMsg());

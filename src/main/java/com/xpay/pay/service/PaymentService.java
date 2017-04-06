@@ -1,14 +1,12 @@
 package com.xpay.pay.service;
 
 import static com.xpay.pay.proxy.IPaymentProxy.NO_RESPONSE;
-import static com.xpay.pay.proxy.IPaymentProxy.SUCCESS;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.xpay.pay.ApplicationConstants;
 import com.xpay.pay.exception.Assert;
-import com.xpay.pay.exception.GatewayException;
 import com.xpay.pay.model.App;
 import com.xpay.pay.model.Bill;
 import com.xpay.pay.model.Order;
@@ -17,14 +15,12 @@ import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
 import com.xpay.pay.model.StoreChannel.PaymentGateway;
 import com.xpay.pay.proxy.IPaymentProxy;
+import com.xpay.pay.proxy.IPaymentProxy.Method;
+import com.xpay.pay.proxy.IPaymentProxy.PayChannel;
 import com.xpay.pay.proxy.PaymentProxyFactory;
 import com.xpay.pay.proxy.PaymentRequest;
-import com.xpay.pay.proxy.PaymentRequest.Method;
-import com.xpay.pay.proxy.PaymentRequest.PayChannel;
-import com.xpay.pay.proxy.PaymentRequest.TradeNoType;
 import com.xpay.pay.proxy.PaymentResponse;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
-import com.xpay.pay.proxy.PaymentResponse.TradeBean;
 
 @Service
 public class PaymentService {
@@ -73,28 +69,28 @@ public class PaymentService {
 	} 
 
 	public Bill unifiedOrder(Order order) {
-		PaymentRequest request = toPaymentRequest(order);
+		PaymentRequest request = this.toPaymentRequest(order);
 		IPaymentProxy paymentProxy = paymentProxyFactory.getPaymentProxy(order.getStoreChannel().getPaymentGateway());
 		PaymentResponse response = paymentProxy.unifiedOrder(request);
 
-		Bill bill = toBill(order, response);
+		Bill bill = response.getBill();
 		Assert.notBlank(bill.getCodeUrl(),
 				ApplicationConstants.STATUS_BAD_GATEWAY, NO_RESPONSE,
 				response.getMsg());
-		
+		bill.setOrder(order);
 		return bill;
 	}
 	
 	public Bill nativePay(Order order) {
-		PaymentRequest request = toPaymentRequest(order);
+		PaymentRequest request = this.toPaymentRequest(order);
 		IPaymentProxy paymentProxy = paymentProxyFactory.getPaymentProxy(order.getStoreChannel().getPaymentGateway());
 		PaymentResponse response = paymentProxy.nativePay(request);
 
-		Bill bill = toBill(order, response);
-		Assert.notBlank(bill.getCodeUrl(),
+		Bill bill = response.getBill();
+		Assert.notBlank(bill.getPayInfo(),
 				ApplicationConstants.STATUS_BAD_GATEWAY, NO_RESPONSE,
 				response.getMsg());
-		
+		bill.setOrder(order);
 		return bill;
 	}
 	
@@ -129,10 +125,10 @@ public class PaymentService {
 		
 		if(!order.isSettle()) {
 			PaymentRequest paymentRequest = toQueryRequest(order);
-			paymentRequest.setTrade_no_type(TradeNoType.Gateway);
 			IPaymentProxy paymentProxy = paymentProxyFactory.getPaymentProxy(order.getStoreChannel().getPaymentGateway());
 			PaymentResponse response = paymentProxy.query(paymentRequest);
-			Bill bill = toBill(order, response);
+			Bill bill = response.getBill();
+			bill.setOrder(order);
 			return bill;
 		} else {
 			return toBill(order);
@@ -145,15 +141,15 @@ public class PaymentService {
 		
 		if(!order.isRefundable()) {
 			PaymentRequest paymentRequest = toQueryRequest(order);
-			paymentRequest.setTrade_no_type(TradeNoType.Gateway);
 			IPaymentProxy paymentProxy = paymentProxyFactory.getPaymentProxy(order.getStoreChannel().getPaymentGateway());
 			PaymentResponse response = paymentProxy.refund(paymentRequest);
 			
-			Bill bill = toBill(order, response);
+			Bill bill = response.getBill();
 			if(OrderStatus.REFUND.equals(bill.getOrderStatus()) || OrderStatus.REVOKED.equals(bill.getOrderStatus())) {
 				order.setStatus(bill.getOrderStatus());
 				orderService.update(order);
 			}
+			bill.setOrder(order);
 			return bill;
 		} else {
 			return toBill(order);
@@ -165,22 +161,19 @@ public class PaymentService {
 	private static final String DEFAULT_NOTIFY_URL = "http://106.14.47.193/xpay/notify/";
 	private PaymentRequest toPaymentRequest(Order order) {
 		PaymentRequest request = new PaymentRequest();
-		request.setBusi_code(order.getStoreChannel().getExtStoreId());
-		request.setDev_id(order.getDeviceId());
-		request.setPay_channel(order.getPayChannel());
-		request.setAmount(order.getTotalFee());
-		request.setRaw_data(order.getAttach());
-		request.setDown_trade_no(order.getOrderNo());
+		request.setExtStoreId(order.getStoreChannel().getExtStoreId());
+		request.setDeviceId(order.getDeviceId());
+		request.setPayChannel(order.getPayChannel());
+		request.setTotalFee(order.getTotalFee());
+		request.setAttach(order.getAttach());
+		request.setOrderNo(order.getOrderNo());
 		if(PaymentGateway.SWIFTPASS.equals(order.getStoreChannel().getPaymentGateway())) {
-			request.setIp(LOCAL_ID);
+			request.setServerIp(LOCAL_ID);
 			request.setNotifyUrl(DEFAULT_NOTIFY_URL+order.getStoreChannel().getPaymentGateway());
 		}
 		
-		
 		if (order.getOrderDetail() != null) {
-			request.setOper_id(order.getOrderDetail().getOperator());
 			request.setSubject(order.getOrderDetail().getSubject());
-			request.setGood_details(order.getOrderDetail().getOrderItems());
 		} else {
 			request.setSubject(DEFAULT_SUBJECT);
 		}
@@ -190,32 +183,13 @@ public class PaymentService {
 	private PaymentRequest toQueryRequest(Order order) {
 		PaymentRequest request = new PaymentRequest();
 		
-		request.setBusi_code(order.getStoreChannel().getExtStoreId());
-		request.setPay_channel(order.getPayChannel());
-		request.setDown_trade_no(order.getOrderNo());
-		request.setTrade_no_type(TradeNoType.Gateway);
-
+		request.setExtStoreId(order.getStoreChannel().getExtStoreId());
+		request.setPayChannel(order.getPayChannel());
+		request.setOrderNo(order.getOrderNo());
+	
 		return request;
 	}
 
-	private Bill toBill(Order order, PaymentResponse response) {
-		if (response == null || !SUCCESS.equals(response.getCode())
-				|| response.getData() == null) {
-			String code = response == null ? NO_RESPONSE : response.getCode();
-			String msg = response == null ? "No response" : response.getMsg();
-			throw new GatewayException(code, msg);
-		}
-		TradeBean trade = response.getData();
-		Bill bill = new Bill();
-		bill.setCodeUrl(trade.getCode_url());
-		bill.setPrepayId(trade.getPrepay_id());
-		bill.setOrderNo(order.getOrderNo());
-		bill.setGatewayOrderNo(trade.getTrade_no());
-		bill.setOrderStatus(trade.getTrade_status());
-		bill.setOrder(order);
-		return bill;
-	}
-	
 	private Bill toBill(Order order) {
 		Bill bill = new Bill();
 		bill.setCodeUrl(order.getCodeUrl());

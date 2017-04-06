@@ -1,6 +1,6 @@
 package com.xpay.pay.model;
 
-import com.xpay.pay.proxy.PaymentRequest.PayChannel;
+import com.xpay.pay.proxy.IPaymentProxy.PayChannel;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 
 public class Order {
