@@ -198,4 +198,9 @@ public class MiaoFuProxy implements IPaymentProxy {
 		return md5 == null? null:md5.toUpperCase();
 		
 	}
+
+	@Override
+	public PaymentResponse nativePay(PaymentRequest paymentRequest) {
+		throw new java.lang.UnsupportedOperationException();
+	}
 }

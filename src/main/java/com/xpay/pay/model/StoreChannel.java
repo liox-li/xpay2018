@@ -39,6 +39,6 @@ public class StoreChannel {
 	}
 
 	public enum PaymentGateway {
-		MIAOFU;
+		MIAOFU, SWIFTPASS;
 	}
 }

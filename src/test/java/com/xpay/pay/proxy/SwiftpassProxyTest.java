@@ -21,7 +21,7 @@ public class SwiftpassProxyTest extends BaseSpringJunitTest {
 		request.setRaw_data("atach");
 		request.setIp("100.234.1.1");
 		request.setNotifyUrl("http://100.234.1.1/xpay/notify/X110101201703311115387831581");
-		PaymentResponse response = proxy.navtivePay(request);
+		PaymentResponse response = proxy.nativePay(request);
 		System.out.println("response code: "+ response.getCode()+" "+response.getMsg());
 	}
 }

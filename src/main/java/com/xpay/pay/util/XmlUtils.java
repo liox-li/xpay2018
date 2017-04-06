@@ -1,6 +1,7 @@
 package com.xpay.pay.util;
 
 import java.io.ByteArrayInputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,7 +11,6 @@ import org.apache.logging.log4j.core.util.KeyValuePair;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import org.gradle.jarjar.com.google.common.collect.Maps;
 import org.xml.sax.InputSource;
 
 public class XmlUtils {
@@ -40,7 +40,7 @@ public class XmlUtils {
 	
 	@SuppressWarnings("unchecked")
 	private static Map<String, String> element2Map(Element root) {
-		Map<String, String> map = Maps.newHashMap();
+		Map<String, String> map = new HashMap<String, String>();
 		List<Element> elements = root.elements();
 		if (elements != null && CollectionUtils.isNotEmpty(elements)) {
 			for (Element element : elements) {

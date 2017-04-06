@@ -1,6 +1,7 @@
 package com.xpay.pay.proxy.swiftpass;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +26,9 @@ import com.xpay.pay.exception.GatewayException;
 import com.xpay.pay.proxy.IPaymentProxy;
 import com.xpay.pay.proxy.PaymentRequest;
 import com.xpay.pay.proxy.PaymentRequest.Method;
+import com.xpay.pay.proxy.PaymentRequest.PayChannel;
 import com.xpay.pay.proxy.PaymentResponse;
+import com.xpay.pay.proxy.PaymentResponse.TradeBean;
 import com.xpay.pay.util.AppConfig;
 import com.xpay.pay.util.CryptoUtils;
 import com.xpay.pay.util.IDGenerator;
@@ -35,16 +38,15 @@ import com.xpay.pay.util.XmlUtils;
 public class SwiftpassProxy implements IPaymentProxy {
 	protected final Logger logger = LogManager.getLogger("AccessLog");
 	private static final AppConfig config = AppConfig.SwirfPassConfig;
-	private static final String baseEndpoint = config
-			.getProperty("provider.endpoint");
+	private static final String baseEndpoint = config.getProperty("provider.endpoint");
 	private static final String appId = config.getProperty("provider.app.id");
-	private static final String appSecret = config
-			.getProperty("provider.app.secret");
+	private static final String appSecret = config.getProperty("provider.app.secret");
 
 	@Autowired
 	private RestTemplate swiftPassProxy;
 
-	public PaymentResponse navtivePay(PaymentRequest paymentRequest) {
+	@Override
+	public PaymentResponse nativePay(PaymentRequest paymentRequest) {
 		String url = baseEndpoint;
 		logger.info("unifiedOrder POST: " + url);
 		HttpPost httpPost = new HttpPost(baseEndpoint);
@@ -82,14 +84,12 @@ public class SwiftpassProxy implements IPaymentProxy {
 	
 	@Override
 	public PaymentResponse query(PaymentRequest orderRequest) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new java.lang.UnsupportedOperationException();
 	}
 
 	@Override
 	public PaymentResponse refund(PaymentRequest orderRequest) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new java.lang.UnsupportedOperationException();
 	}
 
 	private SwiftpassRequest toSwiftpassRequest(PaymentRequest paymentRequest) {
@@ -108,10 +108,23 @@ public class SwiftpassProxy implements IPaymentProxy {
 
 	private PaymentResponse toPaymentResponse(HttpEntity httpEntity) throws Exception {
 		byte[] bytes = EntityUtils.toByteArray(httpEntity);
-		Map<String, String> map = XmlUtils.fromXml(bytes, "utf-8");
+		Map<String, String> params = XmlUtils.fromXml(bytes, "utf-8");
+		boolean checkSign = checkParam(params, appSecret);
 		PaymentResponse response = new PaymentResponse();
-		response.setCode(map.get("result_code"));
-		response.setMsg(map.get("err_msg"));
+		if(checkSign) {
+			response.setCode(params.get("result_code"));
+			response.setMsg(params.get("err_msg"));
+			TradeBean bean = response.new TradeBean();
+			bean.setBusi_code(params.get("mch_id"));
+			bean.setDev_id(params.get("device_info"));
+			bean.setCode_url(params.get("pay_info"));
+			bean.setTrade_no(params.get("transaction_id"));
+			bean.setPay_channel(PayChannel.WECHAT);
+			response.setData(bean);
+		} else {
+			response.setCode("-1");
+			response.setMsg("Invalid signature");
+		}
 		return response;
 
 	}
@@ -130,8 +143,32 @@ public class SwiftpassProxy implements IPaymentProxy {
 		String md5 = CryptoUtils.md5(params);
 		logger.debug("md5 upper: " + md5.toUpperCase());
 		return md5 == null ? null : md5.toUpperCase();
-
 	}
+	
+	private boolean checkParam(Map<String,String> params,String key){
+        boolean result = false;
+        if(params.containsKey("sign")){
+            String sign = params.get("sign");
+            params.remove("sign");
+            String preStr = buildPayParams(params);
+            String signRecieve = CryptoUtils.md5(preStr+"&key=" + key);
+            result = sign.equalsIgnoreCase(signRecieve);
+        }
+        return result;
+    }
+	
+	private String buildPayParams(Map<String, String> payParams){
+		StringBuffer sb = new StringBuffer();
+        List<String> keys = new ArrayList<String>(payParams.keySet());
+        Collections.sort(keys);
+        for(String key : keys){
+            sb.append(key).append("=");
+                sb.append(payParams.get(key));
+            sb.append("&");
+        }
+        sb.setLength(sb.length() - 1);
+        return sb.toString();
+    }
 
 	private List<KeyValuePair> getKeyPairs(Method method,
 			SwiftpassRequest paymentRequest) {
