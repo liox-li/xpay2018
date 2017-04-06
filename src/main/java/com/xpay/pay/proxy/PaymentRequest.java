@@ -16,7 +16,10 @@ public class PaymentRequest {
 	private TradeNoType trade_no_type;
 	private String subject;
 	private GoodBean[] good_details;
-	
+	private String ip;
+	private String attach;
+	private String notifyUrl;
+	private String sign;
 	public String getBusi_code() {
 		return busi_code;
 	}
@@ -121,6 +124,40 @@ public class PaymentRequest {
 		this.good_details = good_details;
 	}
 
+	public String getAttach() {
+		return attach;
+	}
+
+	public void setAttach(String attach) {
+		this.attach = attach;
+	}
+
+	public String getNotifyUrl() {
+		return notifyUrl;
+	}
+
+	public void setNotifyUrl(String notifyUrl) {
+		this.notifyUrl = notifyUrl;
+	}
+
+	public String getIp() {
+		return ip;
+	}
+
+	public void setIp(String ip) {
+		this.ip = ip;
+	}
+
+	public String getSign() {
+		return sign;
+	}
+
+	public void setSign(String sign) {
+		this.sign = sign;
+	}
+
+
+
 	public enum PayChannel {
 		ALL(0), ALIPAY(1), WECHAT(2), CASH(3), CREDITCARD(4);
 		
@@ -141,15 +178,30 @@ public class PaymentRequest {
 	}
 	
 	public enum Method {
-		MicroPay("pay", "micropay"), UnifiedOrder("pay", "unifiedorder"), Query("pay", "query"), Refund("pay", "refund");;
+		NativePay("", "","pay.weixin.raw.app"), MicroPay("pay", "micropay","unsupported"), UnifiedOrder("pay", "unifiedorder","unified.trade.pay"), Query("pay", "query", "unified.trade.query"), Refund("pay", "refund", "unified.trade.refund");
 		
 		String module;
 		String method;
+		String service;
 		
-		Method(String module, String method) {
+		Method(String module, String method, String service) {
 			this.module = module;
 			this.method = method;
+			this.service = service;
 		}
+		
+		public String getModule() {
+			return this.module;
+		}
+		
+		public String getMethod() {
+			return this.method;
+		}
+		
+		public String getService() {
+			return this.service;
+		}
+
 	}
 	
 	public enum TradeNoType {
@@ -159,6 +211,10 @@ public class PaymentRequest {
 		
 		TradeNoType(int id) {
 			this.id = id;
+		}
+		
+		public int getId() {
+			return this.id;
 		}
 	}
 	

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.xpay.pay.BaseSpringJunitTest;
 import com.xpay.pay.proxy.PaymentRequest.PayChannel;
 import com.xpay.pay.proxy.PaymentRequest.TradeNoType;
+import com.xpay.pay.proxy.miaofu.MiaoFuProxy;
 
 
 public class MiaoFuProxyTest extends BaseSpringJunitTest {

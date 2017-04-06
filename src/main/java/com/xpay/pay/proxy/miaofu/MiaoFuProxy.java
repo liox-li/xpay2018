@@ -1,4 +1,4 @@
-package com.xpay.pay.proxy;
+package com.xpay.pay.proxy.miaofu;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +17,9 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.xpay.pay.proxy.IPaymentProxy;
+import com.xpay.pay.proxy.PaymentRequest;
+import com.xpay.pay.proxy.PaymentResponse;
 import com.xpay.pay.proxy.PaymentRequest.Method;
 import com.xpay.pay.util.AppConfig;
 import com.xpay.pay.util.CryptoUtils;
@@ -25,7 +28,7 @@ import com.xpay.pay.util.JsonUtils;
 @Component
 public class MiaoFuProxy implements IPaymentProxy {
 	protected final Logger logger = LogManager.getLogger("AccessLog");
-	private static final AppConfig config = AppConfig.MiaoFuCponfig;
+	private static final AppConfig config = AppConfig.MiaoFuConfig;
 	private static final String baseEndpoint = config.getProperty("provider.endpoint");
 	private static final String appId = config.getProperty("provider.app.id");
 	private static final String appSecret = config.getProperty("provider.app.secret");
@@ -114,7 +117,7 @@ public class MiaoFuProxy implements IPaymentProxy {
 	}
 	
 	private String buildUrl(Method method, PaymentRequest orderRequest) {
-		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseEndpoint).path("/"+method.module+"/"+method.method);
+		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseEndpoint).path("/"+method.getModule()+"/"+method.getMethod());
 		List<KeyValuePair> keyPairs = getKeyPairs(orderRequest);
 		for(KeyValuePair pair : keyPairs) {
 			builder.queryParam(pair.getKey(), pair.getValue());
@@ -141,7 +144,7 @@ public class MiaoFuProxy implements IPaymentProxy {
 			keyPairs.add(new KeyValuePair("oper_id", orderRequest.getOper_id()));
 		}
 		if(orderRequest.getPay_channel()!=null) {
-			keyPairs.add(new KeyValuePair("pay_channel", orderRequest.getPay_channel().id));
+			keyPairs.add(new KeyValuePair("pay_channel", orderRequest.getPay_channel().getId()));
 		}
 		if(StringUtils.isNotBlank(orderRequest.getAmount())) {
 			keyPairs.add(new KeyValuePair("amount", String.valueOf(orderRequest.getAmount())));
@@ -162,7 +165,7 @@ public class MiaoFuProxy implements IPaymentProxy {
 			keyPairs.add(new KeyValuePair("trade_no", orderRequest.getTrade_no()));
 		}
 		if(orderRequest.getTrade_no_type()!=null) {
-			keyPairs.add(new KeyValuePair("trade_no_type", String.valueOf(orderRequest.getTrade_no_type().id)));
+			keyPairs.add(new KeyValuePair("trade_no_type", String.valueOf(orderRequest.getTrade_no_type().getId())));
 		}
 		if(StringUtils.isNotBlank(orderRequest.getSubject())) {
 			keyPairs.add(new KeyValuePair("subject", orderRequest.getSubject()));

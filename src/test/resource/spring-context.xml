@@ -21,7 +21,7 @@
         http://www.springframework.org/schema/util/spring-util.xsd">
         
 
-	<context:component-scan base-package="com.xpay.pay" />
+	<context:component-scan base-package="com.xpay.pay.proxy" />
 	<mvc:annotation-driven>
 		<mvc:message-converters>
 			<bean

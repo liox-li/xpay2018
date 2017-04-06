@@ -25,7 +25,9 @@ public class AppConfig {
 	private static final Logger LOG = LogManager.getLogger(AppConfig.class);
 	private Properties properties;
 	
-	public static final AppConfig MiaoFuCponfig = new AppConfig(load("miaofu.config"));
+	public static final AppConfig MiaoFuConfig = new AppConfig(load("miaofu.config"));
+	
+	public static final AppConfig SwirfPassConfig = new AppConfig(load("swiftpass.config"));
 	
 	public AppConfig(Properties properties) {
 		this.properties = properties;

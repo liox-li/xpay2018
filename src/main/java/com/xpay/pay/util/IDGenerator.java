@@ -34,7 +34,7 @@ public class IDGenerator {
 		return sb.toString();
 	}
 
-	private static final String symbols = "abcdefghijklmnopqrstuvwxyzABCDEFGJKLMNPRSTUVWXYZ0123456789-_";
+	private static final String symbols = "abcdefghijklmnopqrstuvwxyzABCDEFGJKLMNPRSTUVWXYZ0123456789";
 
 	public static final String buildKey(int length) {
 		Random secureRandomProvider = new SecureRandom();
