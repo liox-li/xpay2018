@@ -103,6 +103,7 @@ public class MiaoFuProxy implements IPaymentProxy {
 
 	@Override
 	public PaymentResponse refund(PaymentRequest request) {
+		request.setTotalFee(null);
 		request.setTradeNoType(TradeNoType.Gateway);
 		String url = buildUrl(Method.Refund, request);
 		logger.info("refund POST: " + url);

@@ -135,6 +135,7 @@ public class PaymentService {
 		
 		if(!order.isRefundable()) {
 			PaymentRequest paymentRequest = toQueryRequest(order);
+			paymentRequest.setTotalFee(order.getTotalFee());
 			IPaymentProxy paymentProxy = paymentProxyFactory.getPaymentProxy(order.getStoreChannel().getPaymentGateway());
 			PaymentResponse response = paymentProxy.refund(paymentRequest);
 			
@@ -181,7 +182,6 @@ public class PaymentService {
 		request.setExtStoreId(order.getStoreChannel().getExtStoreId());
 		request.setPayChannel(order.getPayChannel());
 		request.setOrderNo(order.getOrderNo());
-	
 		return request;
 	}
 
