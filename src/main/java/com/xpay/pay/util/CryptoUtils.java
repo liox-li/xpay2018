@@ -1,6 +1,10 @@
 package com.xpay.pay.util;
 
 import java.security.MessageDigest;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class CryptoUtils {
 	public static final String md5(String str) {
@@ -20,7 +24,31 @@ public class CryptoUtils {
 			return null;
 		}
 	}
+	
+	public static boolean checkSignature(Map<String,String> params,String key, String signKey, String keyParam){
+        boolean result = false;
+        if(params.containsKey(signKey)){
+            String sign = params.get(signKey);
+            params.remove(signKey);
+            String preStr = buildPayParams(params);
+            String signRecieve = CryptoUtils.md5(preStr+"&"+keyParam+"=" + key);
+            result = sign.equalsIgnoreCase(signRecieve);
+        }
+        return result;
+    }
 
+	private static String buildPayParams(Map<String, String> payParams){
+		StringBuffer sb = new StringBuffer();
+        List<String> keys = new ArrayList<String>(payParams.keySet());
+        Collections.sort(keys);
+        for(String key : keys){
+            sb.append(key).append("=");
+            sb.append(payParams.get(key));
+            sb.append("&");
+        }
+        sb.setLength(sb.length() - 1);
+        return sb.toString();
+    }
 
 	private static String bytesToHex(byte[] bytes) {
 		StringBuffer md5StrBuff = new StringBuffer();

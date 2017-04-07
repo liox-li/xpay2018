@@ -34,7 +34,7 @@
 	
 	<filter-mapping>
 		<filter-name>OAuthFilter</filter-name>
-		<url-pattern>/*</url-pattern>
+		<url-pattern>/rest/*</url-pattern>
 	</filter-mapping>
 	
 	<listener>
@@ -50,6 +50,12 @@
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
+	
+	<servlet>
+		<servlet-name>PayNotifyServlet</servlet-name>
+		<display-name>PayNotifyServlet</display-name>
+		<servlet-class>com.xpay.pay.controller.PayNotifyServlet</servlet-class>
+	</servlet>
 
 	<servlet>
 		<servlet-name>HeartbeatServlet</servlet-name>
@@ -57,24 +63,18 @@
 		<servlet-class>com.xpay.pay.controller.HeartbeatServlet</servlet-class>
 	</servlet>
 
-	<servlet>
-		<servlet-name>MominotServlet</servlet-name>
-		<display-name>MominotServlet</display-name>
-		<servlet-class>com.xpay.pay.controller.MominotServlet</servlet-class>
-	</servlet>
-
 	<servlet-mapping>
 		<servlet-name>pay</servlet-name>
 		<url-pattern>/rest/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>PayNotifyServlet</servlet-name>
+		<url-pattern>/notify/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>
 		<servlet-name>HeartbeatServlet</servlet-name>
 		<url-pattern>/heartbeat</url-pattern>
-	</servlet-mapping>
-
-	<servlet-mapping>
-		<servlet-name>MominotServlet</servlet-name>
-		<url-pattern>/monitor</url-pattern>
 	</servlet-mapping>
 </web-app>

@@ -1,7 +1,6 @@
 package com.xpay.pay.proxy.swiftpass;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +38,7 @@ public class SwiftpassProxy implements IPaymentProxy {
 	private static final AppConfig config = AppConfig.SwirfPassConfig;
 	private static final String baseEndpoint = config.getProperty("provider.endpoint");
 	private static final String appId = config.getProperty("provider.app.id");
-	private static final String appSecret = config.getProperty("provider.app.secret");
+	public static final String appSecret = config.getProperty("provider.app.secret");
 
 	@Autowired
 	private RestTemplate swiftPassProxy;
@@ -108,7 +107,7 @@ public class SwiftpassProxy implements IPaymentProxy {
 	private PaymentResponse toPaymentResponse(HttpEntity httpEntity) throws Exception {
 		byte[] bytes = EntityUtils.toByteArray(httpEntity);
 		Map<String, String> params = XmlUtils.fromXml(bytes, "utf-8");
-		boolean checkSign = checkParam(params, appSecret);
+		boolean checkSign = CryptoUtils.checkSignature(params, appSecret, "sign", "key");
 		
 		if(!checkSign || !PaymentResponse.SUCCESS.equals(params.get("status")) || !PaymentResponse.SUCCESS.equals(params.get("result_code"))) {
 			String code = params.get("result_code");
@@ -143,31 +142,6 @@ public class SwiftpassProxy implements IPaymentProxy {
 		return md5 == null ? null : md5.toUpperCase();
 	}
 	
-	private boolean checkParam(Map<String,String> params,String key){
-        boolean result = false;
-        if(params.containsKey("sign")){
-            String sign = params.get("sign");
-            params.remove("sign");
-            String preStr = buildPayParams(params);
-            String signRecieve = CryptoUtils.md5(preStr+"&key=" + key);
-            result = sign.equalsIgnoreCase(signRecieve);
-        }
-        return result;
-    }
-	
-	private String buildPayParams(Map<String, String> payParams){
-		StringBuffer sb = new StringBuffer();
-        List<String> keys = new ArrayList<String>(payParams.keySet());
-        Collections.sort(keys);
-        for(String key : keys){
-            sb.append(key).append("=");
-                sb.append(payParams.get(key));
-            sb.append("&");
-        }
-        sb.setLength(sb.length() - 1);
-        return sb.toString();
-    }
-
 	private List<KeyValuePair> getKeyPairs(Method method,
 			SwiftpassRequest paymentRequest) {
 		if (paymentRequest == null) {
