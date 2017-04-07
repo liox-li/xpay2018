@@ -208,9 +208,4 @@ public class MiaoFuProxy implements IPaymentProxy {
 		response.setBill(bill);
 		return response;
 	}
-
-	@Override
-	public PaymentResponse nativePay(PaymentRequest request) {
-		throw new java.lang.UnsupportedOperationException();
-	}
 }
