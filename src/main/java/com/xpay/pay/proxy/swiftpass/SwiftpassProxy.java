@@ -42,6 +42,47 @@ public class SwiftpassProxy implements IPaymentProxy {
 
 	@Autowired
 	private RestTemplate swiftPassProxy;
+	
+	@Override
+	public PaymentResponse unifiedOrder(PaymentRequest request) {
+		CloseableHttpResponse response = null;
+		CloseableHttpClient client = null;
+		long l = System.currentTimeMillis();
+		try {
+			SwiftpassRequest swiftRequest = toSwiftpassRequest(request);
+			String sign = signature(Method.UnifiedOrder, swiftRequest, appSecret);
+			swiftRequest.setSign(sign);
+			List<KeyValuePair> keyPairs = this.getKeyPairs(Method.UnifiedOrder,
+					swiftRequest);
+			String xml = XmlUtils.toXml(keyPairs);
+			StringEntity entityParams = new StringEntity(xml, "utf-8");
+			
+			HttpPost httpPost = new HttpPost(baseEndpoint);
+			httpPost.setEntity(entityParams);
+			logger.info("nativePay POST: "+baseEndpoint+", content: " + xml);
+			
+			client = HttpClients.createDefault();
+			response = client.execute(httpPost);
+			
+			if(response != null && response.getEntity() != null){
+				 PaymentResponse paymentResponse = toPaymentResponse(response.getEntity());
+				 logger.info("nativePay result: " + paymentResponse.getCode()+" "+ paymentResponse.getMsg() + ", took "
+							+ (System.currentTimeMillis() - l) + "ms");
+				 return paymentResponse;
+			}
+		} catch (Exception e) {
+			throw new GatewayException(ApplicationConstants.CODE_ERROR_JSON,e.getMessage());
+		} finally {
+			if(client != null) {
+				try {
+					client.close();
+				} catch(Exception e) {
+					
+				}
+			}
+		}
+		return null;
+	}
 
 	@Override
 	public PaymentResponse nativePay(PaymentRequest request) {
@@ -115,14 +156,14 @@ public class SwiftpassProxy implements IPaymentProxy {
 		boolean checkSign = CryptoUtils.checkSignature(params, appSecret, "sign", "key");
 		
 		if(!checkSign || !PaymentResponse.SUCCESS.equals(params.get("status")) || !PaymentResponse.SUCCESS.equals(params.get("result_code"))) {
-			String code = params.get("result_code");
+			String code = params.get("status");
 			String msg = params.get("err_msg");
 			throw new GatewayException(code, msg);
 		}
 		PaymentResponse response = new PaymentResponse();
 		response.setCode(PaymentResponse.SUCCESS);
 		Bill bill = new Bill();
-		bill.setPayInfo(params.get("pay_info"));
+		bill.setTokenId(params.get("token_id"));
 		bill.setCodeUrl(params.get("code_url"));
 		bill.setOrderNo(params.get("out_trade_no"));
 		bill.setGatewayOrderNo(params.get("transaction_id"));
@@ -192,12 +233,6 @@ public class SwiftpassProxy implements IPaymentProxy {
 		});
 		return keyPairs;
 	}
-
-	@Override
-	public PaymentResponse unifiedOrder(PaymentRequest request) {
-		throw new java.lang.UnsupportedOperationException();
-	}
-	
 
 	@Override
 	public PaymentResponse microPay(PaymentRequest request) {

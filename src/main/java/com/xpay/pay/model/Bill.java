@@ -9,7 +9,7 @@ public class Bill {
 	private String gatewayOrderNo;
 	private String prepayId;
 	private String codeUrl;
-	private String payInfo;
+	private String tokenId;
 	private OrderStatus orderStatus;
 	private Order order;
 	
@@ -37,11 +37,11 @@ public class Bill {
 	public void setCodeUrl(String codeUrl) {
 		this.codeUrl = codeUrl;
 	}
-	public String getPayInfo() {
-		return payInfo;
+	public String getTokenId() {
+		return tokenId;
 	}
-	public void setPayInfo(String payInfo) {
-		this.payInfo = payInfo;
+	public void setTokenId(String tokenId) {
+		this.tokenId = tokenId;
 	}
 	public OrderStatus getOrderStatus() {
 		return orderStatus;

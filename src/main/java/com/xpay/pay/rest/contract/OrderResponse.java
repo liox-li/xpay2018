@@ -7,7 +7,7 @@ public class OrderResponse {
 	private String storeId;
 	private String sellerOrderNo;
 	private String codeUrl;
-	private String payInfo;
+	private String tokenId;
 	private String prepayId;
 	private OrderStatus orderStatus;
 	private String attach;
@@ -53,10 +53,10 @@ public class OrderResponse {
 	public void setAttach(String attach) {
 		this.attach = attach;
 	}
-	public String getPayInfo() {
-		return payInfo;
+	public String getTokenId() {
+		return tokenId;
 	}
-	public void setPayInfo(String payInfo) {
-		this.payInfo = payInfo;
+	public void setTokenId(String tokenId) {
+		this.tokenId = tokenId;
 	}
 }

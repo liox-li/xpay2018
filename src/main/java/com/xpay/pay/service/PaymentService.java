@@ -2,6 +2,7 @@ package com.xpay.pay.service;
 
 import static com.xpay.pay.proxy.IPaymentProxy.NO_RESPONSE;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -76,7 +77,7 @@ public class PaymentService {
 		PaymentResponse response = paymentProxy.unifiedOrder(request);
 
 		Bill bill = response.getBill();
-		Assert.notBlank(bill.getCodeUrl(),
+		Assert.isTrue(!StringUtils.isBlank(bill.getCodeUrl()) || StringUtils.isBlank(bill.getTokenId()),
 				ApplicationConstants.STATUS_BAD_GATEWAY, NO_RESPONSE,
 				response.getMsg());
 		bill.setOrder(order);
@@ -89,7 +90,7 @@ public class PaymentService {
 		PaymentResponse response = paymentProxy.nativePay(request);
 
 		Bill bill = response.getBill();
-		Assert.notBlank(bill.getPayInfo(),
+		Assert.notBlank(bill.getTokenId(),
 				ApplicationConstants.STATUS_BAD_GATEWAY, NO_RESPONSE,
 				response.getMsg());
 		bill.setOrder(order);
@@ -103,7 +104,7 @@ public class PaymentService {
 			order.setExtOrderNo(bill.getGatewayOrderNo());
 			order.setCodeUrl(bill.getCodeUrl());
 			order.setPrepayId(bill.getPrepayId());
-			order.setPayInfo(bill.getPayInfo());
+			order.setTokenId(bill.getTokenId());
 			order.setStatus(bill.getOrderStatus());
 		}
 		return orderService.update(order);

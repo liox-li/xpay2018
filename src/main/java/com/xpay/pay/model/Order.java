@@ -21,7 +21,7 @@ public class Order {
 	private String notifyUrl;
 	private String codeUrl;
 	private String prepayId;
-	private String payInfo;
+	private String tokenId;
 	private OrderStatus status;
 	private Long detailId;
 	private OrderDetail orderDetail;
@@ -137,11 +137,11 @@ public class Order {
 		this.prepayId = prepayId;
 	}
 	
-	public String getPayInfo() {
-		return payInfo;
+	public String getTokenId() {
+		return tokenId;
 	}
-	public void setPayInfo(String payInfo) {
-		this.payInfo = payInfo;
+	public void setTokenId(String tokenId) {
+		this.tokenId = tokenId;
 	}
 	public OrderStatus getStatus() {
 		return status;
