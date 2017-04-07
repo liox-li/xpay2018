@@ -19,6 +19,7 @@
     <result column="notify_url" jdbcType="VARCHAR" property="notifyUrl" />
     <result column="code_url" jdbcType="VARCHAR" property="codeUrl" />
     <result column="prepay_id" jdbcType="VARCHAR" property="prepayId" />
+    <result column="pay_info" jdbcType="VARCHAR" property="payInfo" />
     <result column="status" jdbcType="VARCHAR" property="status" />  
     <result column="detail_id" jdbcType="BIGINT" property="detailId" />          
   </resultMap>
@@ -40,6 +41,7 @@
     notify_url,
     code_url,
     prepay_id,
+    pay_info,
     status,
     detail_id
   </sql>
@@ -106,6 +108,9 @@
       <if test="prepayId != null">
         prepay_id,
       </if>
+      <if test="payInfo != null">
+        pay_info,
+      </if>
       <if test="status != null">
         status,
       </if>  
@@ -159,6 +164,9 @@
       <if test="prepayId != null">
         #{prepayId,jdbcType=VARCHAR},
       </if>
+      <if test="payInfo != null">
+        #{payInfo,jdbcType=VARCHAR},
+      </if>
       <if test="status != null">
         #{status,jdbcType=VARCHAR},
       </if>    
@@ -179,6 +187,9 @@
       </if>
       <if test="prepayId != null">
        prepay_id =  #{prepayId,jdbcType=VARCHAR},
+      </if>
+      <if test="payInfo != null">
+       pay_info =  #{payInfo,jdbcType=VARCHAR},
       </if>
       <if test="status != null">
         status = #{status,jdbcType=VARCHAR},

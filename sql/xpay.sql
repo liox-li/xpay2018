@@ -56,6 +56,7 @@ CREATE TABLE IF NOT EXISTS bill_order (
 	notify_url varchar(256),
 	code_url varchar(256),
 	prepay_id varchar(64),
+	pay_info varchar(2048),
 	status varchar(16),
 	detail_id BIGINT,
 	create_date TIMESTAMP WITH TIME ZONE NOT NULL default now(), 

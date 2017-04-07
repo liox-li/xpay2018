@@ -21,6 +21,8 @@ import com.xpay.pay.proxy.PaymentProxyFactory;
 import com.xpay.pay.proxy.PaymentRequest;
 import com.xpay.pay.proxy.PaymentResponse;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
+import com.xpay.pay.util.AppConfig;
+import com.xpay.pay.util.CommonUtils;
 
 @Service
 public class PaymentService {
@@ -101,6 +103,7 @@ public class PaymentService {
 			order.setExtOrderNo(bill.getGatewayOrderNo());
 			order.setCodeUrl(bill.getCodeUrl());
 			order.setPrepayId(bill.getPrepayId());
+			order.setPayInfo(bill.getPayInfo());
 			order.setStatus(bill.getOrderStatus());
 		}
 		return orderService.update(order);
@@ -156,9 +159,9 @@ public class PaymentService {
 		}
 	}
 
-	private static final String DEFAULT_SUBJECT = "订单";
-	private static final String LOCAL_ID = "106.14.47.193";
-	private static final String DEFAULT_NOTIFY_URL = "http://106.14.47.193/xpay/notify/";
+	private static final String DEFAULT_SUBJECT = AppConfig.XPayConfig.getProperty("order.subject");
+	private static final String LOCAL_ID = CommonUtils.getLocalIP();
+	private static final String DEFAULT_NOTIFY_URL = AppConfig.XPayConfig.getProperty("notify.endpoint");
 	private PaymentRequest toPaymentRequest(Order order) {
 		PaymentRequest request = new PaymentRequest();
 		request.setExtStoreId(order.getStoreChannel().getExtStoreId());
@@ -169,7 +172,7 @@ public class PaymentService {
 		request.setOrderNo(order.getOrderNo());
 		if(PaymentGateway.SWIFTPASS.equals(order.getStoreChannel().getPaymentGateway())) {
 			request.setServerIp(LOCAL_ID);
-			request.setNotifyUrl(DEFAULT_NOTIFY_URL+order.getStoreChannel().getPaymentGateway());
+			request.setNotifyUrl(DEFAULT_NOTIFY_URL+order.getStoreChannel().getPaymentGateway().toString().toLowerCase());
 		}
 		
 		if (order.getOrderDetail() != null) {

@@ -21,6 +21,7 @@ public class Order {
 	private String notifyUrl;
 	private String codeUrl;
 	private String prepayId;
+	private String payInfo;
 	private OrderStatus status;
 	private Long detailId;
 	private OrderDetail orderDetail;
@@ -134,6 +135,13 @@ public class Order {
 	}
 	public void setPrepayId(String prepayId) {
 		this.prepayId = prepayId;
+	}
+	
+	public String getPayInfo() {
+		return payInfo;
+	}
+	public void setPayInfo(String payInfo) {
+		this.payInfo = payInfo;
 	}
 	public OrderStatus getStatus() {
 		return status;

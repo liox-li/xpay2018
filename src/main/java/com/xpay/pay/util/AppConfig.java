@@ -29,6 +29,8 @@ public class AppConfig {
 	
 	public static final AppConfig SwirfPassConfig = new AppConfig(load("swiftpass.config"));
 	
+	public static final AppConfig XPayConfig = new AppConfig(load("xpay.config"));
+	
 	public AppConfig(Properties properties) {
 		this.properties = properties;
 	}
