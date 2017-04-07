@@ -93,13 +93,17 @@ public class PaymentService {
 		return orderService.update(order);
 	}
 	
-	public boolean updateBail(Store store, Bill bill) {
+	public boolean updateBail(Store store, Bill bill, boolean isAdd) {
 		if(bill != null) {
 			boolean isBail = bill.getOrder().getStoreChannelId()<100;
 			if(isBail) {
-				store.setBail(store.getBail() + bill.getOrder().getTotalFeeAsFloat());
+				float newBail = isAdd? store.getBail() + bill.getOrder().getTotalFeeAsFloat()
+						:store.getBail() - bill.getOrder().getTotalFeeAsFloat();
+				store.setBail(newBail);
 			} else {
-				store.setNonBail(store.getNonBail() + bill.getOrder().getTotalFeeAsFloat());
+				float newNonBail = isAdd? store.getNonBail() + bill.getOrder().getTotalFeeAsFloat()
+						:store.getNonBail() - bill.getOrder().getTotalFeeAsFloat();
+				store.setNonBail(newNonBail);
 			}
 			return storeService.updateById(store);
 		}
@@ -132,11 +136,12 @@ public class PaymentService {
 			PaymentResponse response = paymentProxy.refund(paymentRequest);
 			
 			Bill bill = response.getBill();
-			if(OrderStatus.REFUND.equals(bill.getOrderStatus()) || OrderStatus.REVOKED.equals(bill.getOrderStatus())) {
+			if(bill !=null && OrderStatus.REFUND.equals(bill.getOrderStatus()) || OrderStatus.REVOKED.equals(bill.getOrderStatus())) {
+				bill.setOrder(order);
 				order.setStatus(bill.getOrderStatus());
 				orderService.update(order);
+				updateBail(order.getStore(), bill, false);
 			}
-			bill.setOrder(order);
 			return bill;
 		} else {
 			return toBill(order);

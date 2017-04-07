@@ -86,7 +86,7 @@ public class PaymentRestService extends AuthRestService {
 				response.setMessage(e.getMessage());
 			} finally {
 				paymentService.updateBill(order, bill);
-				paymentService.updateBail(store, bill);
+				paymentService.updateBail(store, bill, true);
 			}
 		} while(order != null);
 		

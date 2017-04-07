@@ -1,6 +1,5 @@
 package com.xpay.pay.rest.contract;
 
-import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 
 public class OrderResponse {
 	private String orderNo;
