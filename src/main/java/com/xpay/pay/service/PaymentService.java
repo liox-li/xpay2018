@@ -115,15 +115,18 @@ public class PaymentService {
 		Assert.isTrue(storeCode.equals(order.getStore().getCode()), "No such order found for the store");
 		
 		if(!order.isSettle()) {
-			PaymentRequest paymentRequest = toQueryRequest(order);
-			IPaymentProxy paymentProxy = paymentProxyFactory.getPaymentProxy(order.getStoreChannel().getPaymentGateway());
-			PaymentResponse response = paymentProxy.query(paymentRequest);
-			Bill bill = response.getBill();
-			bill.setOrder(order);
-			return bill;
-		} else {
-			return toBill(order);
-		}
+			try {
+				PaymentRequest paymentRequest = toQueryRequest(order);
+				IPaymentProxy paymentProxy = paymentProxyFactory.getPaymentProxy(order.getStoreChannel().getPaymentGateway());
+				PaymentResponse response = paymentProxy.query(paymentRequest);
+				Bill bill = response.getBill();
+				bill.setOrder(order);
+				return bill;
+			} catch(Exception e) {
+				
+			}
+		} 
+		return toBill(order);
 	}
 	
 	public Bill refund(String orderNo, String storeCode) {
