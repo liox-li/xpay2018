@@ -77,7 +77,7 @@ public class PaymentService {
 		PaymentResponse response = paymentProxy.unifiedOrder(request);
 
 		Bill bill = response.getBill();
-		Assert.isTrue(!StringUtils.isBlank(bill.getCodeUrl()) || StringUtils.isBlank(bill.getTokenId()),
+		Assert.isTrue(!StringUtils.isBlank(bill.getCodeUrl()) || !StringUtils.isBlank(bill.getTokenId()),
 				ApplicationConstants.STATUS_BAD_GATEWAY, NO_RESPONSE,
 				response.getMsg());
 		bill.setOrder(order);

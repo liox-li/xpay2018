@@ -113,7 +113,7 @@ public class SwiftpassProxy implements IPaymentProxy {
 		Map<String, String> params = XmlUtils.fromXml(bytes, "utf-8");
 		boolean checkSign = CryptoUtils.checkSignature(params, appSecret, "sign", "key");
 		
-		if(!checkSign || !PaymentResponse.SUCCESS.equals(params.get("status")) || !PaymentResponse.SUCCESS.equals(params.get("result_code"))) {
+		if(!checkSign || !PaymentResponse.SUCCESS.equals(params.get("status"))) {
 			String code = params.get("status");
 			String msg = params.get("err_msg");
 			throw new GatewayException(code, msg);
