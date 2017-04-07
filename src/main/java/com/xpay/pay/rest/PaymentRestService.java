@@ -92,61 +92,6 @@ public class PaymentRestService extends AuthRestService {
 		
 		throw new GatewayException("-1", "No avaiable payment gateway");		
 	}
-	
-	@RequestMapping(value = "/nativepay ", method = RequestMethod.POST)
-	public BaseResponse<OrderResponse> nativePay(
-			@RequestParam String storeId,   //Store.code
-			@RequestParam String payChannel, // ALIPAY("1"), WECHAT("2")
-			@RequestParam String totalFee, // <=3000yuan
-			@RequestParam String orderTime, // yyyyMMddHHmmss
-			@RequestParam(required = false) String sellerOrderNo,
-			@RequestParam(required = false) String attach,
-			@RequestParam(required = false) String deviceId,
-			@RequestParam(required = false) String ip,
-			@RequestParam(required = false) String notifyUrl,
-			@RequestBody(required = false) OrderDetail orderDetail) {
-		Assert.isTrue(StringUtils.isNoneBlank(storeId, payChannel, totalFee, orderTime), "StoreId, payChannel, totalFee and orderTime can not be null");
-		PayChannel channel = PayChannel.fromValue(payChannel);
-		Assert.notNull(channel,"Unknow pay channel");
-		float fee = CommonUtils.toFloat(totalFee);
-		Assert.isTrue(fee>0 && fee<3000, "Invalid total fee");
-		
-		Store store = storeService.findByCode(storeId);
-		App app = getApp();
-		String orderNo = IDGenerator.buildOrderNo(app.getId(), store.getId());
-		if(orderDetail != null) {
-			orderService.insert(orderDetail);
-		}
-		BaseResponse<OrderResponse> response = new BaseResponse<OrderResponse>();
-		Order order = null;
-		Bill bill = null;
-		do {
-			order = paymentService.createOrder(app, orderNo, store, channel, deviceId, ip, totalFee, orderTime, sellerOrderNo, attach, notifyUrl, orderDetail, Method.NativePay);
-			Assert.notNull(order,"Create order failed");
-			
-			try {
-				bill = paymentService.nativePay(order);
-				if(bill!=null) {
-					OrderResponse orderResponse = toOrderResponse(bill);
-					response.setData(orderResponse);
-					return response;
-				}
-			} catch (GatewayException e) {
-				response.setStatus(ApplicationConstants.STATUS_BAD_GATEWAY);
-				response.setCode(e.getCode());
-				response.setMessage(e.getMessage());
-			} catch (ApplicationException e) {
-				response.setStatus(ApplicationConstants.STATUS_INTERNAL_SERVER_ERROR);
-				response.setCode(e.getCode());
-				response.setMessage(e.getMessage());
-			} finally {
-				paymentService.updateBill(order, bill);
-				paymentService.updateBail(store, bill);
-			}
-		} while(order != null);
-		
-		throw new GatewayException("-1", "No avaiable payment gateway");		
-	}
 
 	@RequestMapping(value = "/query/{orderNo} ", method = RequestMethod.GET)
 	public BaseResponse<OrderResponse> query(

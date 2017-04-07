@@ -6,8 +6,6 @@ public interface IPaymentProxy {
 	public static final String NO_RESPONSE = "-100";
 	public PaymentResponse microPay(PaymentRequest request);
 	
-	public PaymentResponse nativePay(PaymentRequest request);
-	
 	public PaymentResponse unifiedOrder(PaymentRequest request);
 	
 	public PaymentResponse query(PaymentRequest request);

@@ -83,48 +83,6 @@ public class SwiftpassProxy implements IPaymentProxy {
 		}
 		return null;
 	}
-
-	@Override
-	public PaymentResponse nativePay(PaymentRequest request) {
-		CloseableHttpResponse response = null;
-		CloseableHttpClient client = null;
-		long l = System.currentTimeMillis();
-		try {
-			SwiftpassRequest swiftRequest = toSwiftpassRequest(request);
-			String sign = signature(Method.NativePay, swiftRequest, appSecret);
-			swiftRequest.setSign(sign);
-			List<KeyValuePair> keyPairs = this.getKeyPairs(Method.NativePay,
-					swiftRequest);
-			String xml = XmlUtils.toXml(keyPairs);
-			StringEntity entityParams = new StringEntity(xml, "utf-8");
-			
-			HttpPost httpPost = new HttpPost(baseEndpoint);
-			httpPost.setEntity(entityParams);
-			logger.info("nativePay POST: "+baseEndpoint+", content: " + xml);
-			
-			client = HttpClients.createDefault();
-			response = client.execute(httpPost);
-			
-			if(response != null && response.getEntity() != null){
-				 PaymentResponse paymentResponse = toPaymentResponse(response.getEntity());
-				 logger.info("nativePay result: " + paymentResponse.getCode()+" "+ paymentResponse.getMsg() + ", took "
-							+ (System.currentTimeMillis() - l) + "ms");
-				 return paymentResponse;
-			}
-		} catch (Exception e) {
-			throw new GatewayException(ApplicationConstants.CODE_ERROR_JSON,e.getMessage());
-		} finally {
-			if(client != null) {
-				try {
-					client.close();
-				} catch(Exception e) {
-					
-				}
-			}
-		}
-		return null;
-	}
-
 	
 	@Override
 	public PaymentResponse query(PaymentRequest request) {

@@ -84,19 +84,6 @@ public class PaymentService {
 		return bill;
 	}
 	
-	public Bill nativePay(Order order) {
-		PaymentRequest request = this.toPaymentRequest(order);
-		IPaymentProxy paymentProxy = paymentProxyFactory.getPaymentProxy(order.getStoreChannel().getPaymentGateway());
-		PaymentResponse response = paymentProxy.nativePay(request);
-
-		Bill bill = response.getBill();
-		Assert.notBlank(bill.getTokenId(),
-				ApplicationConstants.STATUS_BAD_GATEWAY, NO_RESPONSE,
-				response.getMsg());
-		bill.setOrder(order);
-		return bill;
-	}
-	
 	public boolean updateBill(Order order, Bill bill) {
 		if(bill == null) {
 			order.setStatus(OrderStatus.CHANNEL_ERROR);
