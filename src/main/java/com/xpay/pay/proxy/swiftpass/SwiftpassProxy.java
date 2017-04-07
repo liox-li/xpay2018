@@ -127,7 +127,46 @@ public class SwiftpassProxy implements IPaymentProxy {
 
 	@Override
 	public PaymentResponse refund(PaymentRequest request) {
-		throw new java.lang.UnsupportedOperationException();
+		CloseableHttpResponse response = null;
+		CloseableHttpClient client = null;
+		long l = System.currentTimeMillis();
+		try {
+			SwiftpassRequest swiftRequest = toSwiftpassRequest(request);
+			swiftRequest.setOut_refund_no(swiftRequest.getOut_trade_no().replace('X', 'R'));
+			swiftRequest.setRefund_fee(swiftRequest.getTotal_fee());
+			swiftRequest.setOp_user_id(swiftRequest.getMch_id());
+			String sign = signature(Method.Refund, swiftRequest, appSecret);
+			swiftRequest.setSign(sign);
+			List<KeyValuePair> keyPairs = this.getKeyPairs(Method.Refund,
+					swiftRequest);
+			String xml = XmlUtils.toXml(keyPairs);
+			StringEntity entityParams = new StringEntity(xml, "utf-8");
+			
+			HttpPost httpPost = new HttpPost(baseEndpoint);
+			httpPost.setEntity(entityParams);
+			logger.info("query POST: "+baseEndpoint+", content: " + xml);
+			
+			client = HttpClients.createDefault();
+			response = client.execute(httpPost);
+			
+			if(response != null && response.getEntity() != null){
+				 PaymentResponse paymentResponse = toPaymentResponse(response.getEntity());
+				 logger.info("query result: " + paymentResponse.getCode()+" "+ paymentResponse.getMsg() + ", took "
+							+ (System.currentTimeMillis() - l) + "ms");
+				 return paymentResponse;
+			}
+		} catch (Exception e) {
+			throw new GatewayException(ApplicationConstants.CODE_ERROR_JSON,e.getMessage());
+		} finally {
+			if(client != null) {
+				try {
+					client.close();
+				} catch(Exception e) {
+					
+				}
+			}
+		}
+		return null;
 	}
 
 	private SwiftpassRequest toSwiftpassRequest(PaymentRequest paymentRequest) {
@@ -152,7 +191,7 @@ public class SwiftpassProxy implements IPaymentProxy {
 		logger.info("response: "+ XmlUtils.toXml(params));
 		boolean checkSign = CryptoUtils.checkSignature(params, appSecret, "sign", "key");
 		
-		if(!checkSign || !PaymentResponse.SUCCESS.equals(params.get("status"))) {
+		if(!checkSign || !PaymentResponse.SUCCESS.equals(params.get("status")) || StringUtils.isNotBlank(params.get("err_msg"))) {
 			String code = params.get("status");
 			String msg = params.get("err_msg");
 			throw new GatewayException(code, msg);
@@ -224,6 +263,15 @@ public class SwiftpassProxy implements IPaymentProxy {
 		}
 		if (StringUtils.isNotBlank(paymentRequest.getSign())) {
 			keyPairs.add(new KeyValuePair("sign", paymentRequest.getSign()));
+		}
+		if (StringUtils.isNotBlank(paymentRequest.getOut_refund_no())) {
+			keyPairs.add(new KeyValuePair("out_refund_no", paymentRequest.getOut_refund_no()));
+		}
+		if (StringUtils.isNotBlank(paymentRequest.getOp_user_id())) {
+			keyPairs.add(new KeyValuePair("op_user_id", paymentRequest.getOp_user_id()));
+		}
+		if (StringUtils.isNotBlank(paymentRequest.getRefund_fee())) {
+			keyPairs.add(new KeyValuePair("refund_fee", paymentRequest.getRefund_fee()));
 		}
 		keyPairs.add(new KeyValuePair("service", method.getService()));
 		keyPairs.add(new KeyValuePair("appid", appId));

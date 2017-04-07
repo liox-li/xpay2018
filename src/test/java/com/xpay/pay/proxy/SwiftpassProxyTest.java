@@ -34,4 +34,15 @@ public class SwiftpassProxyTest extends BaseSpringJunitTest {
 		PaymentResponse response = proxy.query(request);
 		System.out.println("response code: "+ response.getCode()+" "+response.getMsg());
 	}
+	
+	@Test
+	public void testRefund() {
+		PaymentRequest request = new PaymentRequest();
+		request.setExtStoreId("755437000006");
+		request.setDeviceId("1213");
+		request.setOrderNo("X011010220170407141421434141");
+		request.setTotalFee("10");
+		PaymentResponse response = proxy.refund(request);
+		System.out.println("response code: "+ response.getCode()+" "+response.getMsg());
+	}
 }
