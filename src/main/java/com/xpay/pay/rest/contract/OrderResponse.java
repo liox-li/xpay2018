@@ -9,7 +9,7 @@ public class OrderResponse {
 	private String codeUrl;
 	private String tokenId;
 	private String prepayId;
-	private OrderStatus orderStatus;
+	private int orderStatus;
 	private String attach;
 	public String getOrderNo() {
 		return orderNo;
@@ -41,10 +41,10 @@ public class OrderResponse {
 	public void setPrepayId(String prepayId) {
 		this.prepayId = prepayId;
 	}
-	public OrderStatus getOrderStatus() {
+	public int getOrderStatus() {
 		return orderStatus;
 	}
-	public void setOrderStatus(OrderStatus orderStatus) {
+	public void setOrderStatus(int orderStatus) {
 		this.orderStatus = orderStatus;
 	}
 	public String getAttach() {

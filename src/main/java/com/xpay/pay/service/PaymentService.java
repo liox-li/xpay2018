@@ -40,14 +40,10 @@ public class PaymentService {
 			OrderDetail orderDetail, Method method) {
 		StoreChannel storeChannel = null;
 		boolean isNextBailPay = store.isNextBailPay();
+		storeChannel = orderService.findUnusedChannel(store, orderNo);
 		if(isNextBailPay) {
-			PaymentGateway gateway = PaymentGateway.MIAOFU;
-			if(Method.NativePay.equals(method)) {
-				gateway = PaymentGateway.SWIFTPASS;
-			}
+			PaymentGateway gateway = storeChannel.getPaymentGateway();
 			storeChannel = orderService.findUnusedChannel(this.findBailStore(gateway), orderNo);
-		} else {
-			storeChannel = orderService.findUnusedChannel(store, orderNo);
 		}
 		Assert.notNull(storeChannel, "No avaiable store channel");
 		
@@ -86,7 +82,7 @@ public class PaymentService {
 	
 	public boolean updateBill(Order order, Bill bill) {
 		if(bill == null) {
-			order.setStatus(OrderStatus.CHANNEL_ERROR);
+			order.setStatus(OrderStatus.PAYERROR);
 		} else {
 			order.setExtOrderNo(bill.getGatewayOrderNo());
 			order.setCodeUrl(bill.getCodeUrl());

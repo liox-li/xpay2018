@@ -109,7 +109,7 @@ public class PaymentRestService extends AuthRestService {
 		orderResponse.setSellerOrderNo(bill.getOrder().getSellerOrderNo());
 		orderResponse.setCodeUrl(bill.getCodeUrl());
 		orderResponse.setPrepayId(bill.getPrepayId());
-		orderResponse.setOrderStatus(bill.getOrderStatus());
+		orderResponse.setOrderStatus(bill.getOrderStatus().getValue());
 		orderResponse.setAttach(bill.getOrder().getAttach());
 		response.setData(orderResponse);
 
@@ -132,7 +132,7 @@ public class PaymentRestService extends AuthRestService {
 		orderResponse.setSellerOrderNo(bill.getOrder().getSellerOrderNo());
 		orderResponse.setCodeUrl(bill.getCodeUrl());
 		orderResponse.setPrepayId(bill.getPrepayId());
-		orderResponse.setOrderStatus(bill.getOrderStatus());
+		orderResponse.setOrderStatus(bill.getOrderStatus().getValue());
 		orderResponse.setAttach(bill.getOrder().getAttach());
 		response.setData(orderResponse);
 		
@@ -147,7 +147,7 @@ public class PaymentRestService extends AuthRestService {
 		result.setCodeUrl(bill.getCodeUrl());
 		result.setPrepayId(bill.getPrepayId());
 		result.setTokenId(bill.getTokenId());
-		result.setOrderStatus(bill.getOrderStatus());
+		result.setOrderStatus(bill.getOrderStatus().getValue());
 		result.setAttach(bill.getOrder().getAttach());
 		return result;
 	}

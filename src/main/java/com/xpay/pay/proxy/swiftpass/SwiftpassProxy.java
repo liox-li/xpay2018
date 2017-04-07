@@ -59,14 +59,14 @@ public class SwiftpassProxy implements IPaymentProxy {
 			
 			HttpPost httpPost = new HttpPost(baseEndpoint);
 			httpPost.setEntity(entityParams);
-			logger.info("nativePay POST: "+baseEndpoint+", content: " + xml);
+			logger.info("unified order POST: "+baseEndpoint+", content: " + xml);
 			
 			client = HttpClients.createDefault();
 			response = client.execute(httpPost);
 			
 			if(response != null && response.getEntity() != null){
 				 PaymentResponse paymentResponse = toPaymentResponse(response.getEntity());
-				 logger.info("nativePay result: " + paymentResponse.getCode()+" "+ paymentResponse.getMsg() + ", took "
+				 logger.info("unified order result: " + paymentResponse.getCode()+" "+ paymentResponse.getMsg() + ", took "
 							+ (System.currentTimeMillis() - l) + "ms");
 				 return paymentResponse;
 			}
@@ -86,7 +86,43 @@ public class SwiftpassProxy implements IPaymentProxy {
 	
 	@Override
 	public PaymentResponse query(PaymentRequest request) {
-		throw new java.lang.UnsupportedOperationException();
+		CloseableHttpResponse response = null;
+		CloseableHttpClient client = null;
+		long l = System.currentTimeMillis();
+		try {
+			SwiftpassRequest swiftRequest = toSwiftpassRequest(request);
+			String sign = signature(Method.Query, swiftRequest, appSecret);
+			swiftRequest.setSign(sign);
+			List<KeyValuePair> keyPairs = this.getKeyPairs(Method.Query,
+					swiftRequest);
+			String xml = XmlUtils.toXml(keyPairs);
+			StringEntity entityParams = new StringEntity(xml, "utf-8");
+			
+			HttpPost httpPost = new HttpPost(baseEndpoint);
+			httpPost.setEntity(entityParams);
+			logger.info("query POST: "+baseEndpoint+", content: " + xml);
+			
+			client = HttpClients.createDefault();
+			response = client.execute(httpPost);
+			
+			if(response != null && response.getEntity() != null){
+				 PaymentResponse paymentResponse = toPaymentResponse(response.getEntity());
+				 logger.info("query result: " + paymentResponse.getCode()+" "+ paymentResponse.getMsg() + ", took "
+							+ (System.currentTimeMillis() - l) + "ms");
+				 return paymentResponse;
+			}
+		} catch (Exception e) {
+			throw new GatewayException(ApplicationConstants.CODE_ERROR_JSON,e.getMessage());
+		} finally {
+			if(client != null) {
+				try {
+					client.close();
+				} catch(Exception e) {
+					
+				}
+			}
+		}
+		return null;
 	}
 
 	@Override
@@ -101,7 +137,9 @@ public class SwiftpassProxy implements IPaymentProxy {
 		request.setDevice_info(paymentRequest.getDeviceId());
 		request.setBody(paymentRequest.getSubject());
 		request.setAttach(paymentRequest.getAttach());
-		request.setTotal_fee((int) (paymentRequest.getTotalFeeAsFloat() * 100));
+		if(StringUtils.isNotBlank(paymentRequest.getTotalFee())) {
+			request.setTotal_fee(String.valueOf((int) (paymentRequest.getTotalFeeAsFloat() * 100)));
+		}
 		request.setMch_create_ip(paymentRequest.getServerIp());
 		request.setNotify_url(paymentRequest.getNotifyUrl());
 		request.setNonce_str(IDGenerator.buildKey(10));
@@ -111,6 +149,7 @@ public class SwiftpassProxy implements IPaymentProxy {
 	private PaymentResponse toPaymentResponse(HttpEntity httpEntity) throws Exception {
 		byte[] bytes = EntityUtils.toByteArray(httpEntity);
 		Map<String, String> params = XmlUtils.fromXml(bytes, "utf-8");
+		logger.info("response: "+ XmlUtils.toXml(params));
 		boolean checkSign = CryptoUtils.checkSignature(params, appSecret, "sign", "key");
 		
 		if(!checkSign || !PaymentResponse.SUCCESS.equals(params.get("status"))) {
@@ -125,7 +164,9 @@ public class SwiftpassProxy implements IPaymentProxy {
 		bill.setCodeUrl(params.get("code_url"));
 		bill.setOrderNo(params.get("out_trade_no"));
 		bill.setGatewayOrderNo(params.get("transaction_id"));
-		bill.setOrderStatus(OrderStatus.NOTPAY);
+		String tradeStatus = params.get("trade_state");
+		OrderStatus orderStatus = StringUtils.isBlank(tradeStatus)?OrderStatus.NOTPAY:OrderStatus.valueOf(tradeStatus);
+		bill.setOrderStatus(orderStatus);
 		response.setBill(bill);
 		return response;
 	}
@@ -170,8 +211,9 @@ public class SwiftpassProxy implements IPaymentProxy {
 		if (StringUtils.isNotBlank(paymentRequest.getAttach())) {
 			keyPairs.add(new KeyValuePair("attach", paymentRequest.getAttach()));
 		}
-		keyPairs.add(new KeyValuePair("total_fee", String
-				.valueOf(paymentRequest.getTotal_fee())));
+		if (StringUtils.isNotBlank(paymentRequest.getTotal_fee())) {
+			keyPairs.add(new KeyValuePair("total_fee", paymentRequest.getTotal_fee()));
+		}
 		if (StringUtils.isNotBlank(paymentRequest.getMch_create_ip())) {
 			keyPairs.add(new KeyValuePair("mch_create_ip", paymentRequest
 					.getMch_create_ip()));

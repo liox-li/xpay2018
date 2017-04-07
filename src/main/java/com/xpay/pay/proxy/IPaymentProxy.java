@@ -32,7 +32,7 @@ public interface IPaymentProxy {
 	}
 	
 	public enum Method {
-		NativePay("", "","pay.weixin.raw.app"), MicroPay("pay", "micropay","unsupported"), UnifiedOrder("pay", "unifiedorder","unified.trade.pay"), Query("pay", "query", "unified.trade.query"), Refund("pay", "refund", "unified.trade.refund");
+		MicroPay("pay", "micropay","unsupported"), UnifiedOrder("pay", "unifiedorder","unified.trade.pay"), Query("pay", "query", "unified.trade.query"), Refund("pay", "refund", "unified.trade.refund");
 		
 		String module;
 		String method;

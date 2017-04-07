@@ -8,7 +8,7 @@ public class SwiftpassRequest {
 	private String device_info;
 	private String body;
 	private String attach;
-	private int total_fee;
+	private String total_fee;
 	private String mch_create_ip;
 	private String notify_url;
 	private String nonce_str;
@@ -49,10 +49,10 @@ public class SwiftpassRequest {
 	public void setAttach(String attach) {
 		this.attach = attach;
 	}
-	public int getTotal_fee() {
+	public String getTotal_fee() {
 		return total_fee;
 	}
-	public void setTotal_fee(int total_fee) {
+	public void setTotal_fee(String total_fee) {
 		this.total_fee = total_fee;
 	}
 	public String getMch_create_ip() {

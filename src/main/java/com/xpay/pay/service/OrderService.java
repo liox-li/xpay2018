@@ -41,7 +41,7 @@ public class OrderService {
 	public Order findActiveByOrderNo(String orderNo) {
 		List<Order> orders = orderMapper.findByOrderNo(orderNo);
 		Assert.notNull(orders, "Order not found - " + orderNo);
-		Order order = orders.stream().filter(x -> !x.getStatus().equals(OrderStatus.CHANNEL_ERROR)).findAny().orElse(null);
+		Order order = orders.stream().filter(x -> !x.getStatus().equals(OrderStatus.PAYERROR)).findAny().orElse(null);
 		order.setApp(appService.findById(order.getAppId()));
 		order.setStore(storeService.findById(order.getStoreId()));
 		order.setStoreChannel(storeService.findStoreChannelById(order.getStoreChannelId()));

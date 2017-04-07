@@ -53,6 +53,9 @@ public class Bill {
 		return order;
 	}
 	public void setOrder(Order order) {
+		if(order!=null) {
+			this.orderNo = order.getOrderNo();
+		}
 		this.order = order;
 	}
 	

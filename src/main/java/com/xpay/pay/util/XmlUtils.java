@@ -38,6 +38,19 @@ public class XmlUtils {
 		return buf.toString();
 	}
 	
+	public static String toXml(Map<String, String> parameters) {
+        StringBuffer sb = new StringBuffer();
+        sb.append("<xml>");
+        for(String key: parameters.keySet()) {
+        	String value = parameters.get(key);
+        	if (StringUtils.isNotBlank(value)) {
+                sb.append("<" + key + ">" + value + "</" + key + ">\n");
+            }
+        }
+        sb.append("</xml>");
+        return sb.toString();
+    }
+	
 	@SuppressWarnings("unchecked")
 	private static Map<String, String> element2Map(Element root) {
 		Map<String, String> map = new HashMap<String, String>();
