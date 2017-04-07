@@ -45,11 +45,9 @@ public class SwiftpassProxy implements IPaymentProxy {
 
 	@Override
 	public PaymentResponse nativePay(PaymentRequest request) {
-		String url = baseEndpoint;
-		logger.info("unifiedOrder POST: " + url);
-		HttpPost httpPost = new HttpPost(baseEndpoint);
 		CloseableHttpResponse response = null;
 		CloseableHttpClient client = null;
+		long l = System.currentTimeMillis();
 		try {
 			SwiftpassRequest swiftRequest = toSwiftpassRequest(request);
 			String sign = signature(Method.NativePay, swiftRequest, appSecret);
@@ -58,11 +56,18 @@ public class SwiftpassProxy implements IPaymentProxy {
 					swiftRequest);
 			String xml = XmlUtils.toXml(keyPairs);
 			StringEntity entityParams = new StringEntity(xml, "utf-8");
+			
+			HttpPost httpPost = new HttpPost(baseEndpoint);
 			httpPost.setEntity(entityParams);
+			logger.info("nativePay POST: "+baseEndpoint+", content: " + xml);
+			
 			client = HttpClients.createDefault();
 			response = client.execute(httpPost);
+			
 			if(response != null && response.getEntity() != null){
 				 PaymentResponse paymentResponse = toPaymentResponse(response.getEntity());
+				 logger.info("nativePay result: " + paymentResponse.getCode()+" "+ paymentResponse.getMsg() + ", took "
+							+ (System.currentTimeMillis() - l) + "ms");
 				 return paymentResponse;
 			}
 		} catch (Exception e) {
