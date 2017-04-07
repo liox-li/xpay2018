@@ -78,3 +78,22 @@ CREATE TABLE IF NOT EXISTS bill_order_detail (
 	deleted boolean DEFAULT FALSE
 );
 ALTER SEQUENCE bill_order_detail_id_seq RESTART 1000;
+
+
+//Init data
+insert into bill_app (id, app_key, app_secret) values (1, 'b471565ef7394b439c00ea47052e', '93039FAF4719BCA16CF51DA9D86D8BCD');
+insert into bill_store (id, code, name, bail, non_bail, bar, bail_percentage) values (1, 'T000', 'Bail Store', 0, 0, 0, 100);
+insert into bill_store (id, code, name, bail, non_bail, bar, bail_percentage) values (2, 'T001', 'Bail Store 1', 0, 0, 0, 100);
+insert into bill_store (code, name) values ('T20070331091523123', '测试商户');
+insert into bill_store (code, name) values ('T20070405151523101', '威富通测试商户');
+insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) values (1, 1, 'T2017032319251974486873', 'MIAOFU');
+insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) values (2, 2, '755437000006', 'SWIFTPASS');
+insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values (100, 'T2017032319251974486873', 'MIAOFU');
+insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values (101, '755437000006', 'SWIFTPASS');
+
+ALTER table bill_app OWNER TO xpay;
+ALTER table bill_store OWNER TO xpay;
+ALTER table bill_store_channel OWNER TO xpay;
+ALTER table bill_order OWNER TO xpay;
+ALTER table bill_order_detail OWNER TO xpay;
+
