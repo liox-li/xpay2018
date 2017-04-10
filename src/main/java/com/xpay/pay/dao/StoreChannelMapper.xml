@@ -29,6 +29,13 @@
     FROM bill_store_channel
     WHERE bill_store_channel.store_id = #{storeId} AND deleted = false
   </select>
+    
+  <select id="findAll" resultMap="StoreChannelResultMap">
+    SELECT
+    <include refid="storeChannelColumns" />
+    FROM bill_store_channel
+    WHERE deleted = false
+  </select>
   
   <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.StoreChannel">
     insert into bill_store_channel
