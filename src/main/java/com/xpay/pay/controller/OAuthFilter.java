@@ -87,7 +87,7 @@ public class OAuthFilter implements Filter {
 		KeyValuePair consumerKey = Arrays
 				.stream(keyPairs)
 				.map(x -> {
-					String[] strArr = x.split("=");
+					String[] strArr = x.trim().split("=");
 					return new KeyValuePair(strArr[0], strArr[1].substring(1,
 							strArr[1].length() - 1));
 				}).filter(k -> CONSUMER_KEY.equals(k.getKey())).findAny()

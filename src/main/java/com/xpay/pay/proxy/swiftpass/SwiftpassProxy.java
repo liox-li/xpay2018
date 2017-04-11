@@ -144,14 +144,14 @@ public class SwiftpassProxy implements IPaymentProxy {
 			
 			HttpPost httpPost = new HttpPost(baseEndpoint);
 			httpPost.setEntity(entityParams);
-			logger.info("query POST: "+baseEndpoint+", content: " + xml);
+			logger.info("refund POST: "+baseEndpoint+", content: " + xml);
 			
 			client = HttpClients.createDefault();
 			response = client.execute(httpPost);
 			
 			if(response != null && response.getEntity() != null){
 				 PaymentResponse paymentResponse = toPaymentResponse(response.getEntity());
-				 logger.info("query result: " + paymentResponse.getCode()+" "+ paymentResponse.getMsg() + ", took "
+				 logger.info("refund result: " + paymentResponse.getCode()+" "+ paymentResponse.getMsg() + ", took "
 							+ (System.currentTimeMillis() - l) + "ms");
 				 return paymentResponse;
 			}

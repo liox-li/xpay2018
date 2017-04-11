@@ -2,6 +2,7 @@ package com.xpay.pay.controller;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -20,7 +21,9 @@ import com.xpay.pay.model.Order;
 import com.xpay.pay.model.StoreChannel.PaymentGateway;
 import com.xpay.pay.proxy.PaymentResponse;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
+import com.xpay.pay.proxy.notify.NotifyProxy;
 import com.xpay.pay.proxy.swiftpass.SwiftpassProxy;
+import com.xpay.pay.rest.contract.OrderResponse;
 import com.xpay.pay.service.OrderService;
 import com.xpay.pay.util.CommonUtils;
 import com.xpay.pay.util.CryptoUtils;
@@ -33,6 +36,8 @@ public class PayNotifyServlet extends HttpServlet {
 	
 	@Autowired
 	protected OrderService orderService;
+	@Autowired
+	protected NotifyProxy notifyProxy;
 	
 	@Override
 	 public void init(ServletConfig config) throws ServletException {
@@ -48,29 +53,48 @@ public class PayNotifyServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	String uri = request.getRequestURI();
-  		String respString = "fail";
+  		
 		response.setCharacterEncoding("utf-8");
 		response.setHeader("Content-type", "text/html;charset=UTF-8");
-
+		NotifyResponse notResp = null;
 		try {
   			if(uri.contains(PaymentGateway.SWIFTPASS.name().toLowerCase())) {
-  				respString = handleSwiftpassNotification(request);
+  				notResp = handleSwiftpassNotification(request);
 	    	}
+  			Order order = notResp.getOrder();
+  			if(order!=null && StringUtils.isNotBlank(order.getNotifyUrl()) && order.isSettle()) {
+  				notify(order);
+  			}
     	} catch (Exception e) {
             e.printStackTrace();
         } finally {
-        	response.getWriter().write(respString);
+        	response.getWriter().write(notResp.getResp());
         } 
     }
 
 
-	private String handleSwiftpassNotification(HttpServletRequest request) throws Exception {
+	private void notify(final Order order) {
+		CompletableFuture.runAsync(() -> {
+			OrderResponse notification = new OrderResponse();
+			notification.setOrderNo(order.getOrderNo());
+			notification.setSellerOrderNo(order.getSellerOrderNo());
+			notification.setStoreId(String.valueOf(order.getStoreId()));
+			notification.setCodeUrl(order.getCodeUrl());
+			notification.setPrepayId(order.getPrepayId());
+			notification.setTokenId(order.getTokenId());
+			notification.setOrderStatus(order.getStatus().getValue());
+			notification.setAttach(order.getAttach());
+			notifyProxy.notify(order.getNotifyUrl(), order.getApp(),notification);
+		});
+	}
+
+	private NotifyResponse handleSwiftpassNotification(HttpServletRequest request) throws Exception {
 		request.setCharacterEncoding("utf-8");
         byte[] buffer = new byte[request.getContentLength()];
         IOUtils.readFully(request.getInputStream(), buffer);
         String content = new String(buffer);
         logger.info("Notify content: " + content);
-        
+        Order order = null;
         String respString = "fail";
         if(StringUtils.isNotBlank(content)){
             Map<String,String> map = XmlUtils.fromXml(content.getBytes(), "utf-8");
@@ -86,8 +110,8 @@ public class PayNotifyServlet extends HttpServlet {
                         if(PaymentResponse.SUCCESS.equals(result_code)){
                           String orderNo = map.get("out_trade_no");
                           String totalFee = map.get("total_fee");
-                          Order order = orderService.findActiveByOrderNo(orderNo);
-                          if(order!=null && CommonUtils.toInt(totalFee) == (int)order.getTotalFeeAsFloat()*100) {
+                          order = orderService.findActiveByOrderNo(orderNo);
+                          if(order!=null && CommonUtils.toInt(totalFee) == (int)(order.getTotalFeeAsFloat()*100)) {
                         	  order.setStatus(OrderStatus.SUCCESS);
                         	  orderService.update(order);
                           }
@@ -97,6 +121,34 @@ public class PayNotifyServlet extends HttpServlet {
                 }
             }
         }
-        return respString;
+        NotifyResponse response = new NotifyResponse(respString, order);
+        return response;
+	}
+	
+	public static class NotifyResponse {
+		private String resp;
+		private Order order;
+		public NotifyResponse(String resp) {
+			this.resp = resp;
+		}
+		
+		public NotifyResponse(String resp, Order order) {
+			this.resp = resp;
+			this.order = order;
+		}
+		public String getResp() {
+			return resp;
+		}
+		public void setResp(String resp) {
+			this.resp = resp;
+		}
+		public Order getOrder() {
+			return order;
+		}
+		public void setOrder(Order order) {
+			this.order = order;
+		}
+		
+		
 	}
 }
