@@ -82,6 +82,7 @@ ALTER SEQUENCE bill_order_detail_id_seq RESTART 1000;
 
 //Init data
 insert into bill_app (id, app_key, app_secret) values (1, 'b471565ef7394b439c00ea47052e', '93039FAF4719BCA16CF51DA9D86D8BCD');
+insert into bill_app (id, app_key, app_secret) values (2, '39ba4501-8e43-403e-b31a-1601963151ab', 'wZAU7CE4pXqPiwbxq1jTuoKp4CGSjC4Drbtfc9My0g9PzRGXS1pYzGUmcGDUKwuX20v4hEWonn1Dr66xrbCtBFXJ');
 insert into bill_store (id, code, name, bail, non_bail, bar, bail_percentage) values (1, 'T000', 'Bail Store', 0, 0, 0, 100);
 insert into bill_store (id, code, name, bail, non_bail, bar, bail_percentage) values (2, 'T001', 'Bail Store 1', 0, 0, 0, 100);
 insert into bill_store (code, name) values ('T20070331091523123', '测试商户');

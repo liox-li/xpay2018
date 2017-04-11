@@ -110,9 +110,10 @@ public class PaymentService {
 		return true;
 	}
 
-	public Bill query(String orderNo, String storeCode) {
+	public Bill query(int appId, String orderNo, String storeCode) {
 		Order order = orderService.findActiveByOrderNo(orderNo);
 		Assert.isTrue(storeCode.equals(order.getStore().getCode()), "No such order found for the store");
+		Assert.isTrue(appId == order.getAppId(), "No such order found under the app");
 		
 		if(!order.isSettle()) {
 			try {
@@ -129,9 +130,10 @@ public class PaymentService {
 		return toBill(order);
 	}
 	
-	public Bill refund(String orderNo, String storeCode) {
+	public Bill refund(int appId, String orderNo, String storeCode) {
 		Order order = orderService.findActiveByOrderNo(orderNo);
 		Assert.isTrue(storeCode.equals(order.getStore().getCode()), "No such order found for the store");
+		Assert.isTrue(appId == order.getAppId(), "No such order found under the app");
 		
 		if(!order.isRefundable()) {
 			PaymentRequest paymentRequest = toQueryRequest(order);

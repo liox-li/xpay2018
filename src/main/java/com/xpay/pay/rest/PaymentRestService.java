@@ -100,8 +100,8 @@ public class PaymentRestService extends AuthRestService {
 			@RequestParam(required = false) String deviceId,
 			@RequestParam(required = false) String ip) {
 		Assert.isTrue(StringUtils.isNoneBlank(orderNo, storeId), "OrderNo and storeId can not be null");
-		Bill bill = paymentService.query(orderNo, storeId);
-
+		Bill bill = paymentService.query(getApp().getId(), orderNo, storeId);
+		
 		BaseResponse<OrderResponse> response = new BaseResponse<OrderResponse>();
 		OrderResponse orderResponse = new OrderResponse();
 		orderResponse.setOrderNo(orderNo);
@@ -123,7 +123,7 @@ public class PaymentRestService extends AuthRestService {
 			@RequestParam(required = false) String deviceId,
 			@RequestParam(required = false) String ip) {
 		Assert.isTrue(StringUtils.isNoneBlank(orderNo, storeId), "OrderNo and storeId can not be null");
-		Bill bill = paymentService.refund(orderNo, storeId);
+		Bill bill = paymentService.refund(getApp().getId(), orderNo, storeId);
 		
 		BaseResponse<OrderResponse> response = new BaseResponse<OrderResponse>();
 		OrderResponse orderResponse = new OrderResponse();
