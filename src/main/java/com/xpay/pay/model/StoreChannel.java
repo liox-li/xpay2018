@@ -39,6 +39,16 @@ public class StoreChannel {
 	}
 
 	public enum PaymentGateway {
-		MIAOFU, SWIFTPASS;
+		MIAOFU(1), SWIFTPASS(2), CHINAUMS(3);
+		
+		int bailStoreId;
+		PaymentGateway(int bailStoreId) {
+			this.bailStoreId = bailStoreId;
+		}
+		
+		public int getBailStoreId() {
+			return this.bailStoreId;
+		}
+		
 	}
 }

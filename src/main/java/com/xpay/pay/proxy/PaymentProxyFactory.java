@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.xpay.pay.model.StoreChannel.PaymentGateway;
+import com.xpay.pay.proxy.chinaums.ChinaUmsProxy;
 import com.xpay.pay.proxy.miaofu.MiaoFuProxy;
 import com.xpay.pay.proxy.swiftpass.SwiftpassProxy;
 
@@ -13,12 +14,16 @@ public class PaymentProxyFactory {
 	private MiaoFuProxy miaoFuProxy;
 	@Autowired
 	private SwiftpassProxy swiftpassProxy;
+	@Autowired
+	private ChinaUmsProxy chinaUmsProxy;
 	
 	public IPaymentProxy getPaymentProxy(PaymentGateway channel) {
 		if(PaymentGateway.MIAOFU.equals(channel)) {
 			return miaoFuProxy;
-		} else {
+		} else if (PaymentGateway.SWIFTPASS.equals(channel)) {
 			return swiftpassProxy;
+		} else {
+			return chinaUmsProxy;
 		}
 	}
 }

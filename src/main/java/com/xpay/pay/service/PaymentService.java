@@ -169,6 +169,9 @@ public class PaymentService {
 			request.setServerIp(LOCAL_ID);
 			request.setNotifyUrl(DEFAULT_NOTIFY_URL+order.getStoreChannel().getPaymentGateway().toString().toLowerCase());
 		}
+		if(PaymentGateway.CHINAUMS.equals(order.getStoreChannel().getPaymentGateway())) {
+			request.setNotifyUrl(DEFAULT_NOTIFY_URL+order.getStoreChannel().getPaymentGateway().toString().toLowerCase());
+		}
 		
 		if (order.getOrderDetail() != null) {
 			request.setSubject(order.getOrderDetail().getSubject());
@@ -198,16 +201,8 @@ public class PaymentService {
 		return bill;
 	}
 	
-
-	private static final int BAIL_MIAOFU_STORE_ID=1;
-	private static final int BAIL_SWIFTPASS_STORE_ID=2;
 	public Store findBailStore(PaymentGateway gateway) {
-		if(PaymentGateway.MIAOFU.equals(gateway)) {
-			return storeService.findById(BAIL_MIAOFU_STORE_ID);
-		} else {
-			return storeService.findById(BAIL_SWIFTPASS_STORE_ID);
-		}
-		
+		return storeService.findById(gateway.getBailStoreId());
 	}
 
 }
