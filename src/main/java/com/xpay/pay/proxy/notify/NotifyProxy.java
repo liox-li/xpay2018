@@ -12,7 +12,9 @@ import org.springframework.web.client.RestTemplate;
 
 import com.xpay.pay.model.App;
 import com.xpay.pay.proxy.OAuth1ApiBinding;
+import com.xpay.pay.rest.contract.BaseResponse;
 import com.xpay.pay.rest.contract.OrderResponse;
+import com.xpay.pay.util.JsonUtils;
 
 @Component
 public class NotifyProxy {
@@ -21,17 +23,19 @@ public class NotifyProxy {
 	private static final int DEFAULT_READ_TIMEOUT = 3000;
 
 	
-	public String notify(String url, App app, OrderResponse request) {
-		logger.info("notify POST: " + url);
-		String response = "fail";
+	@SuppressWarnings("rawtypes")
+	public BaseResponse notify(String url, App app, OrderResponse request) {
+		logger.info("notify POST: " + url+ " "+JsonUtils.toJson(request));
+		BaseResponse response = new BaseResponse();
 		long l = System.currentTimeMillis();
 		try {
 			RestTemplate restTemplate = initRestTemplte(app);
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("Accept", MediaType.TEXT_PLAIN_VALUE);
-			HttpEntity<?> httpEntity = new HttpEntity<>(headers);
-			response = restTemplate.exchange(url, HttpMethod.POST, httpEntity, String.class).getBody();
-			logger.info("notify result: " + response + ", took "
+			HttpEntity<?> httpEntity = new HttpEntity<>(request, headers);
+			
+			response = restTemplate.exchange(url, HttpMethod.POST, httpEntity, BaseResponse.class).getBody();
+			logger.info("notify result: " + JsonUtils.toJson(response) + ", took "
 					+ (System.currentTimeMillis() - l) + "ms");
 		} catch (Exception e) {
 			logger.info("notify failed, took " + (System.currentTimeMillis() - l) + "ms", e);
