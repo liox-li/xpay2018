@@ -11,7 +11,9 @@ import org.apache.commons.lang3.StringUtils;
 public class IDGenerator {
 	// X,3 - appId, 4 - storeId, 17 - yyyyMMddHHmmssSSS, 3 - random
 	private static final String TimePattern17 = "yyyyMMddHHmmssSSS";
-	private static final String timePattern14 = "yyyyMMddHHmmss";
+	private static final String TimePattern14 = "yyyyMMddHHmmss";
+	private static final String TimePatternDate = "yyyy-MM-dd";
+	private static final String TimePatternTime = "yyyy-MM-dd HH:mm:ss";
 	private static final char X = 'X';
 
 	public static String buildOrderNo(int appId, long storeId) {
@@ -29,7 +31,7 @@ public class IDGenerator {
 	public static String buildStoreCode() {
 		StringBuffer sb = new StringBuffer();
 		sb.append(T);
-		sb.append(formatNow(timePattern14));
+		sb.append(formatNow(TimePattern14));
 		sb.append(randomNum(3));
 		return sb.toString();
 	}
@@ -53,6 +55,22 @@ public class IDGenerator {
 		return  buildKey(88);
 	}
 
+	public static final String buildQrCode(String appId) {
+		StringBuffer sb = new StringBuffer();
+		sb.append(appId);
+		sb.append(formatNow(TimePattern17));
+		sb.append(randomNum(7));
+		return sb.toString();
+	}
+	
+	public static String formatTime() {
+		return formatNow(TimePatternTime);
+	}
+	
+	public static String formatDate() {
+		return formatNow(TimePatternDate);
+	}
+	
 	private static String formatNow(String pattern) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
 		return dateFormat.format(new Date());

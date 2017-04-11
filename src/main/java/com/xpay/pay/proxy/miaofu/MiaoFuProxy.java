@@ -37,7 +37,6 @@ public class MiaoFuProxy implements IPaymentProxy {
 	@Autowired
 	RestTemplate miaofuProxy;
 
-	@Override
 	public PaymentResponse microPay(PaymentRequest request) {
 		String url = buildUrl(Method.MicroPay, request);
 		logger.info("microPay POST: " + url);

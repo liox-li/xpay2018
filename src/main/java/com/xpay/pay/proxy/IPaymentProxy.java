@@ -4,8 +4,6 @@ import java.util.Arrays;
 
 public interface IPaymentProxy {
 	public static final String NO_RESPONSE = "-100";
-	public PaymentResponse microPay(PaymentRequest request);
-	
 	public PaymentResponse unifiedOrder(PaymentRequest request);
 	
 	public PaymentResponse query(PaymentRequest request);
@@ -32,16 +30,18 @@ public interface IPaymentProxy {
 	}
 	
 	public enum Method {
-		MicroPay("pay", "micropay","unsupported"), UnifiedOrder("pay", "unifiedorder","unified.trade.pay"), Query("pay", "query", "unified.trade.query"), Refund("pay", "refund", "unified.trade.refund");
+		MicroPay("pay", "micropay","unsupported", "unsupported"), UnifiedOrder("pay", "unifiedorder","unified.trade.pay", "yuedan.getQRCode"), Query("pay", "query", "unified.trade.query", "yuedan.query"), Refund("pay", "refund", "unified.trade.refund", "refund");
 		
 		String module;
 		String method;
 		String service;
+		String msgType;
 		
-		Method(String module, String method, String service) {
+		Method(String module, String method, String service, String msgType) {
 			this.module = module;
 			this.method = method;
 			this.service = service;
+			this.msgType = msgType;
 		}
 		
 		public String getModule() {
@@ -54,6 +54,10 @@ public interface IPaymentProxy {
 		
 		public String getService() {
 			return this.service;
+		}
+		
+		public String getMsgType() {
+			return msgType;
 		}
 	}
 	

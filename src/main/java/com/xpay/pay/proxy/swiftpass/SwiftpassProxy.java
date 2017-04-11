@@ -282,9 +282,4 @@ public class SwiftpassProxy implements IPaymentProxy {
 		return keyPairs;
 	}
 
-	@Override
-	public PaymentResponse microPay(PaymentRequest request) {
-		throw new java.lang.UnsupportedOperationException();
-	}
-
 }
