@@ -122,6 +122,10 @@ public class PaymentService {
 				PaymentResponse response = paymentProxy.query(paymentRequest);
 				Bill bill = response.getBill();
 				bill.setOrder(order);
+				if(bill!=null && !bill.getOrderStatus().equals(order.getStatus())) {
+					order.setStatus(bill.getOrderStatus());
+					orderService.update(order);
+				}
 				return bill;
 			} catch(Exception e) {
 				
