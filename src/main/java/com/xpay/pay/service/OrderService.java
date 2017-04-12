@@ -57,7 +57,7 @@ public class OrderService {
 		List<StoreChannel> channels = store.getChannels();
 
 		StoreChannel channel = channels.stream().filter(x -> !CommonUtils.in(usedChannels, x.getId()))
-				.findFirst().orElse(null);
+				.findAny().orElse(null);
 		return channel;
 	}
 	
