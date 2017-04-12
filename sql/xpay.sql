@@ -83,14 +83,25 @@ ALTER SEQUENCE bill_order_detail_id_seq RESTART 1000;
 //Init data
 insert into bill_app (id, app_key, app_secret) values (1, 'b471565ef7394b439c00ea47052e', '93039FAF4719BCA16CF51DA9D86D8BCD');
 insert into bill_app (id, app_key, app_secret) values (2, '39ba4501-8e43-403e-b31a-1601963151ab', 'wZAU7CE4pXqPiwbxq1jTuoKp4CGSjC4Drbtfc9My0g9PzRGXS1pYzGUmcGDUKwuX20v4hEWonn1Dr66xrbCtBFXJ');
+insert into bill_app (id, app_key, app_secret) values (3, '2dbfa7ce-4af4-4b3e-abed-929fbaa4a2f1', 'eGGtcSaUUf2S55Px3RduyNszYD9mDwpsFBM3FvMa2u48UV7GRl3LX9PUorncnk7sGMtbhFzn7fqobd2tr2uBcJRy');
+
 insert into bill_store (id, code, name, bail, non_bail, bar, bail_percentage) values (1, 'T000', 'Bail Store', 0, 0, 0, 100);
-insert into bill_store (id, code, name, bail, non_bail, bar, bail_percentage) values (2, 'T001', 'Bail Store 1', 0, 0, 0, 100);
-insert into bill_store (code, name) values ('T20070331091523123', '测试商户');
-insert into bill_store (code, name) values ('T20070405151523101', '威富通测试商户');
 insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) values (1, 1, 'T2017032319251974486873', 'MIAOFU');
+
+insert into bill_store (id, code, name, bail, non_bail, bar, bail_percentage) values (2, 'T001', 'Bail Store 1', 0, 0, 0, 100);
 insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) values (2, 2, '755437000006', 'SWIFTPASS');
+
+insert into bill_store (id, code, name, bail, non_bail, bar, bail_percentage) values (3, 'T002', 'Bail Store 2', 0, 0, 0, 100);
+insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) values (3, 3, '898340149000005', 'CHINAUMS');
+
+insert into bill_store (code, name) values ('T20070331091523123', '测试商户');
 insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values (100, 'T2017032319251974486873', 'MIAOFU');
+
+insert into bill_store (code, name) values ('T20070405151523101', '威富通测试商户');
 insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values (101, '755437000006', 'SWIFTPASS');
+
+insert into bill_store (code, name) values ('T20170412143221368', '银商测试商户');
+insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values (102, '898340149000005', 'CHINAUMS');
 
 ALTER table bill_app OWNER TO xpay;
 ALTER table bill_store OWNER TO xpay;

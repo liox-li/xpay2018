@@ -1,5 +1,8 @@
 package com.xpay.pay.rest;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
@@ -55,7 +58,7 @@ public class PaymentRestService extends AuthRestService {
 		Assert.notNull(channel,"Unknow pay channel");
 		float fee = CommonUtils.toFloat(totalFee);
 		Assert.isTrue(fee>0 && fee<3000, "Invalid total fee");
-		
+		String orderDate = validateOrderTime(orderTime);
 		Store store = storeService.findByCode(storeId);
 		App app = getApp();
 		String orderNo = IDGenerator.buildOrderNo(app.getId(), store.getId());
@@ -66,7 +69,7 @@ public class PaymentRestService extends AuthRestService {
 		Order order = null;
 		Bill bill = null;
 		do {
-			order = paymentService.createOrder(app, orderNo, store, channel, deviceId, ip, totalFee, orderTime, sellerOrderNo, attach, notifyUrl, orderDetail, Method.UnifiedOrder);
+			order = paymentService.createOrder(app, orderNo, store, channel, deviceId, ip, totalFee, orderDate, sellerOrderNo, attach, notifyUrl, orderDetail, Method.UnifiedOrder);
 			Assert.notNull(order,"Create order failed");
 			
 			try {
@@ -91,6 +94,16 @@ public class PaymentRestService extends AuthRestService {
 		} while(order != null);
 		
 		throw new GatewayException("-1", "No avaiable payment gateway");		
+	}
+
+	private String validateOrderTime(String orderTime) {
+		SimpleDateFormat timeFormat = new SimpleDateFormat(IDGenerator.TimePattern14);
+		try {
+			timeFormat.parse(orderTime);
+			return orderTime;
+		} catch (ParseException e) {
+			return IDGenerator.formatNow(IDGenerator.TimePattern14);
+		}
 	}
 
 	@RequestMapping(value = "/query/{orderNo} ", method = RequestMethod.GET)

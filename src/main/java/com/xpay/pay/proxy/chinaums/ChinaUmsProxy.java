@@ -125,14 +125,20 @@ public class ChinaUmsProxy implements IPaymentProxy {
 	private ChinaUmsRequest toChinaUmsRequest(Method method, PaymentRequest request) {
 		ChinaUmsRequest chinaUmsRequest = new ChinaUmsRequest();
 		chinaUmsRequest.setMsgSrc(appName);
-		chinaUmsRequest.setRequestTimeStamp(IDGenerator.formatTime());
 		chinaUmsRequest.setMid(request.getExtStoreId());
 		chinaUmsRequest.setInstMid(instMid);
 		chinaUmsRequest.setTid(tId);
 		chinaUmsRequest.setBillNo(request.getOrderNo());
-		chinaUmsRequest.setBillDate(IDGenerator.formatDate());
+		chinaUmsRequest.setRequestTimeStamp(IDGenerator.formatTime());
+		if(Method.UnifiedOrder.equals(method)) {
+			chinaUmsRequest.setBillDate(IDGenerator.formatDate());
+		} else {
+			chinaUmsRequest.setBillDate(IDGenerator.formatDate(IDGenerator.TimePattern14, request.getOrderTime()));
+		}
 		chinaUmsRequest.setBillDesc(request.getSubject());
-		chinaUmsRequest.setTotalAmount(String.valueOf((int)(request.getTotalFeeAsFloat()*100)));
+		if(StringUtils.isNotBlank(request.getTotalFee())) {
+			chinaUmsRequest.setTotalAmount(String.valueOf((int)(request.getTotalFeeAsFloat()*100)));
+		}
 		chinaUmsRequest.setNotifyUrl(request.getNotifyUrl());
 		chinaUmsRequest.setMsgType(method.getMsgType());
 		chinaUmsRequest.setSystemId(appId);

@@ -17,4 +17,11 @@ public class IDGeneratorTest {
 		System.out.println(key);
 		System.out.println(secret);
 	}
+	
+	@Test
+	public void testBuildStoreCode() {
+		String storeCode = IDGenerator.buildStoreCode();
+		
+		System.out.println(storeCode);
+	}
 }

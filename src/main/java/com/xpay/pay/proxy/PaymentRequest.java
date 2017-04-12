@@ -15,6 +15,7 @@ public class PaymentRequest {
 	private String serverIp;
 	private String notifyUrl;
 	private String subject;
+	private String orderTime;
 	public String getExtStoreId() {
 		return extStoreId;
 	}
@@ -78,5 +79,11 @@ public class PaymentRequest {
 	}
 	public void setTradeNoType(TradeNoType tradeNoType) {
 		this.tradeNoType = tradeNoType;
+	}
+	public String getOrderTime() {
+		return orderTime;
+	}
+	public void setOrderTime(String orderTime) {
+		this.orderTime = orderTime;
 	}
 }
