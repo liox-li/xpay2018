@@ -6,13 +6,14 @@ public class ChinaUmsRequest {
 	private String msgType;
 	private String requestTimeStamp;
 	private String mid;
+	private String instMid;
 	private String tid;
 	private String billNo;
 	private String billDate;
 	private String billDesc;
 	private String totalAmount;
+	private String refundAmount;
 	private String notifyUrl;
-	private String qrCodeId;
 	private String sign;
 	public String getSystemId() {
 		return systemId;
@@ -44,6 +45,12 @@ public class ChinaUmsRequest {
 	public void setMid(String mid) {
 		this.mid = mid;
 	}
+	public String getInstMid() {
+		return instMid;
+	}
+	public void setInstMid(String instMid) {
+		this.instMid = instMid;
+	}
 	public String getTid() {
 		return tid;
 	}
@@ -74,17 +81,17 @@ public class ChinaUmsRequest {
 	public void setTotalAmount(String totalAmount) {
 		this.totalAmount = totalAmount;
 	}
+	public String getRefundAmount() {
+		return refundAmount;
+	}
+	public void setRefundAmount(String refundAmount) {
+		this.refundAmount = refundAmount;
+	}
 	public String getNotifyUrl() {
 		return notifyUrl;
 	}
 	public void setNotifyUrl(String notifyUrl) {
 		this.notifyUrl = notifyUrl;
-	}
-	public String getQrCodeId() {
-		return qrCodeId;
-	}
-	public void setQrCodeId(String qrCodeId) {
-		this.qrCodeId = qrCodeId;
 	}
 	public String getSign() {
 		return sign;

@@ -1,8 +1,10 @@
 package com.xpay.pay.proxy.chinaums;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class ChinaUmsResponse {
 	public static final String SUCCESS = "SUCCESS";
-	private String errorCode;
+	private String errCode;
 	private String errMsg;
 	private String msgType;
 	private String mid;
@@ -11,11 +13,12 @@ public class ChinaUmsResponse {
 	private String billDate;
 	private String billQRCode;
 	private String billStatus;
-	public String getErrorCode() {
-		return errorCode;
+	
+	public String getErrCode() {
+		return errCode;
 	}
-	public void setErrorCode(String errorCode) {
-		this.errorCode = errorCode;
+	public void setErrCode(String errCode) {
+		this.errCode = errCode;
 	}
 	public String getErrMsg() {
 		return errMsg;
@@ -64,5 +67,8 @@ public class ChinaUmsResponse {
 	}
 	public void setBillStatus(String billStatus) {
 		this.billStatus = billStatus;
+	}
+	public String getQrCodeId() {
+		return StringUtils.isBlank(this.billQRCode)?null:billQRCode.substring(billQRCode.lastIndexOf("id=")+3);
 	}
 }

@@ -36,20 +36,19 @@ public class ChinaUmsProxy implements IPaymentProxy {
 	private static final String appSecret = config.getProperty("provider.app.secret");
 	private static final String appName = config.getProperty("provider.app.name");
 	private static final String tId = config.getProperty("provider.tid");
+	private static final String instMid = config.getProperty("provider.inst.mid");
 	
 	@Autowired
 	RestTemplate chinaUmsProxy;
 	
 	@Override
 	public PaymentResponse unifiedOrder(PaymentRequest request) {
-		String qrCode = IDGenerator.buildQrCode(appId);
-		String url = baseEndpoint.replace("{qrCodeId}", qrCode);
+		String url = baseEndpoint;
 		logger.info("unifiedOrder POST: " + url);
 		long l = System.currentTimeMillis();
 		PaymentResponse response = null;
 		try {
 			ChinaUmsRequest chinaUmsRequest = this.toChinaUmsRequest(Method.UnifiedOrder,request);
-			chinaUmsRequest.setQrCodeId(qrCode);
 			
 			List<KeyValuePair> keyPairs = this.getKeyPairs(chinaUmsRequest);
 			String sign = this.signature(keyPairs, appSecret);
@@ -59,7 +58,7 @@ public class ChinaUmsProxy implements IPaymentProxy {
 			headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 			HttpEntity<?> httpEntity = new HttpEntity<>(chinaUmsRequest, headers);
 			ChinaUmsResponse chinaUmsResponse = chinaUmsProxy.exchange(url, HttpMethod.POST, httpEntity, ChinaUmsResponse.class).getBody();
-			logger.info("unifiedOrder result: " + chinaUmsResponse.getErrorCode() + " "+chinaUmsResponse.getErrMsg() + ", took "
+			logger.info("unifiedOrder result: " + chinaUmsResponse.getErrCode() + " "+chinaUmsResponse.getErrMsg() + ", took "
 					+ (System.currentTimeMillis() - l) + "ms");
 			response = toPaymentResponse(chinaUmsRequest, chinaUmsResponse);
 		} catch (RestClientException e) {
@@ -71,21 +70,64 @@ public class ChinaUmsProxy implements IPaymentProxy {
 
 	@Override
 	public PaymentResponse query(PaymentRequest request) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public PaymentResponse refund(PaymentRequest request) {
-		// TODO Auto-generated method stub
-		return null;
+		String url = baseEndpoint;
+		logger.info("unifiedOrder POST: " + url);
+		long l = System.currentTimeMillis();
+		PaymentResponse response = null;
+		try {
+			ChinaUmsRequest chinaUmsRequest = this.toChinaUmsRequest(Method.Query,request);
+			
+			List<KeyValuePair> keyPairs = this.getKeyPairs(chinaUmsRequest);
+			String sign = this.signature(keyPairs, appSecret);
+			chinaUmsRequest.setSign(sign);
+			
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+			HttpEntity<?> httpEntity = new HttpEntity<>(chinaUmsRequest, headers);
+			ChinaUmsResponse chinaUmsResponse = chinaUmsProxy.exchange(url, HttpMethod.POST, httpEntity, ChinaUmsResponse.class).getBody();
+			logger.info("unifiedOrder result: " + chinaUmsResponse.getErrCode() + " "+chinaUmsResponse.getErrMsg() + ", took "
+					+ (System.currentTimeMillis() - l) + "ms");
+			response = toPaymentResponse(chinaUmsRequest, chinaUmsResponse);
+		} catch (RestClientException e) {
+			logger.info("microPay failed, took " + (System.currentTimeMillis() - l) + "ms", e);
+			throw e;
+		}
+		return response;
 	}
 	
+	@Override
+	public PaymentResponse refund(PaymentRequest request) {
+		String url = baseEndpoint;
+		logger.info("unifiedOrder POST: " + url);
+		long l = System.currentTimeMillis();
+		PaymentResponse response = null;
+		try {
+			ChinaUmsRequest chinaUmsRequest = this.toChinaUmsRequest(Method.Refund,request);
+			chinaUmsRequest.setRefundAmount(chinaUmsRequest.getTotalAmount());
+			List<KeyValuePair> keyPairs = this.getKeyPairs(chinaUmsRequest);
+			String sign = this.signature(keyPairs, appSecret);
+			chinaUmsRequest.setSign(sign);
+			
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+			HttpEntity<?> httpEntity = new HttpEntity<>(chinaUmsRequest, headers);
+			ChinaUmsResponse chinaUmsResponse = chinaUmsProxy.exchange(url, HttpMethod.POST, httpEntity, ChinaUmsResponse.class).getBody();
+			logger.info("unifiedOrder result: " + chinaUmsResponse.getErrCode() + " "+chinaUmsResponse.getErrMsg() + ", took "
+					+ (System.currentTimeMillis() - l) + "ms");
+			response = toPaymentResponse(chinaUmsRequest, chinaUmsResponse);
+		} catch (RestClientException e) {
+			logger.info("microPay failed, took " + (System.currentTimeMillis() - l) + "ms", e);
+			throw e;
+		}
+		return response;
+	}
+
 	private ChinaUmsRequest toChinaUmsRequest(Method method, PaymentRequest request) {
 		ChinaUmsRequest chinaUmsRequest = new ChinaUmsRequest();
 		chinaUmsRequest.setMsgSrc(appName);
 		chinaUmsRequest.setRequestTimeStamp(IDGenerator.formatTime());
 		chinaUmsRequest.setMid(request.getExtStoreId());
+		chinaUmsRequest.setInstMid(instMid);
 		chinaUmsRequest.setTid(tId);
 		chinaUmsRequest.setBillNo(request.getOrderNo());
 		chinaUmsRequest.setBillDate(IDGenerator.formatDate());
@@ -93,6 +135,7 @@ public class ChinaUmsProxy implements IPaymentProxy {
 		chinaUmsRequest.setTotalAmount(String.valueOf((int)(request.getTotalFeeAsFloat()*100)));
 		chinaUmsRequest.setNotifyUrl(request.getNotifyUrl());
 		chinaUmsRequest.setMsgType(method.getMsgType());
+		chinaUmsRequest.setSystemId(appId);
 		return chinaUmsRequest;
 	}
 	
@@ -128,9 +171,6 @@ public class ChinaUmsProxy implements IPaymentProxy {
 		if (StringUtils.isNotBlank(paymentRequest.getTotalAmount())) {
 			keyPairs.add(new KeyValuePair("totalAmount", paymentRequest.getTotalAmount()));
 		}
-		if (StringUtils.isNotBlank(paymentRequest.getQrCodeId())) {
-			keyPairs.add(new KeyValuePair("qrCodeId", paymentRequest.getQrCodeId()));
-		}
 		if (StringUtils.isNotBlank(paymentRequest.getSystemId())) {
 			keyPairs.add(new KeyValuePair("systemId", paymentRequest.getSystemId()));
 		}
@@ -140,8 +180,14 @@ public class ChinaUmsProxy implements IPaymentProxy {
 		if (StringUtils.isNotBlank(paymentRequest.getNotifyUrl())) {
 			keyPairs.add(new KeyValuePair("notifyUrl", paymentRequest.getNotifyUrl()));
 		}
+		if (StringUtils.isNotBlank(paymentRequest.getInstMid())) {
+			keyPairs.add(new KeyValuePair("instMid", paymentRequest.getInstMid()));
+		}
 		if (StringUtils.isNotBlank(paymentRequest.getMsgType())) {
 			keyPairs.add(new KeyValuePair("msgType", paymentRequest.getMsgType()));
+		}
+		if (StringUtils.isNotBlank(paymentRequest.getRefundAmount())) {
+			keyPairs.add(new KeyValuePair("refundAmount", paymentRequest.getRefundAmount()));
 		}
 		keyPairs.sort((x1, x2) -> {
 			return x1.getKey().compareTo(x2.getKey());
@@ -158,8 +204,7 @@ public class ChinaUmsProxy implements IPaymentProxy {
 		for(KeyValuePair pair : keyPairs) {
 			builder.queryParam(pair.getKey(), pair.getValue());
 		}
-		builder.queryParam("key", appSecret);
-		String params = builder.build().toString().substring(1);
+		String params = builder.build().toString().substring(1)+appSecret;
 		logger.debug("sorted params: "+params);
 		String md5 = CryptoUtils.md5(params);
 		logger.debug("md5 upper: "+md5.toUpperCase());
@@ -167,9 +212,9 @@ public class ChinaUmsProxy implements IPaymentProxy {
 	}
 
 	private PaymentResponse toPaymentResponse(ChinaUmsRequest chinaUmsRequest, ChinaUmsResponse chinaUmsResponse) {
-		if (chinaUmsResponse == null || !ChinaUmsResponse.SUCCESS.equals(chinaUmsResponse.getErrorCode())
+		if (chinaUmsResponse == null || !ChinaUmsResponse.SUCCESS.equals(chinaUmsResponse.getErrCode())
 				|| StringUtils.isBlank(chinaUmsResponse.getBillQRCode())) {
-			String code = chinaUmsResponse == null ? NO_RESPONSE : chinaUmsResponse.getErrorCode();
+			String code = chinaUmsResponse == null ? NO_RESPONSE : chinaUmsResponse.getErrCode();
 			String msg = chinaUmsResponse == null ? "No response" : chinaUmsResponse.getErrMsg();
 			throw new GatewayException(code, msg);
 		}
@@ -178,7 +223,7 @@ public class ChinaUmsProxy implements IPaymentProxy {
 		Bill bill = new Bill();
 		bill.setCodeUrl(chinaUmsResponse.getBillQRCode());
 		bill.setOrderNo(chinaUmsRequest.getBillNo());
-		bill.setGatewayOrderNo(chinaUmsRequest.getQrCodeId());
+		bill.setGatewayOrderNo(chinaUmsResponse.getQrCodeId());
 		bill.setOrderStatus(toOrderStatus(chinaUmsResponse.getBillStatus()));
 		response.setBill(bill);
 		return response;
