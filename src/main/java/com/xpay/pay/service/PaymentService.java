@@ -189,6 +189,7 @@ public class PaymentService {
 		PaymentRequest request = new PaymentRequest();
 		if(PaymentGateway.CHINAUMS.equals(order.getStoreChannel().getPaymentGateway())) {
 			request.setOrderTime(order.getOrderTime());
+			request.setGatewayOrderNo(order.getExtOrderNo());
 		}
 		request.setExtStoreId(order.getStoreChannel().getExtStoreId());
 		request.setPayChannel(order.getPayChannel());

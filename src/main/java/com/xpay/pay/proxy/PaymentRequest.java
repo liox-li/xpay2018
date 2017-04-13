@@ -11,6 +11,7 @@ public class PaymentRequest {
 	private String totalFee;
 	private String attach;
 	private String orderNo;
+	private String gatewayOrderNo;
 	private TradeNoType tradeNoType;
 	private String serverIp;
 	private String notifyUrl;
@@ -55,6 +56,12 @@ public class PaymentRequest {
 	}
 	public void setOrderNo(String orderNo) {
 		this.orderNo = orderNo;
+	}
+	public String getGatewayOrderNo() {
+		return gatewayOrderNo;
+	}
+	public void setGatewayOrderNo(String gatewayOrderNo) {
+		this.gatewayOrderNo = gatewayOrderNo;
 	}
 	public String getServerIp() {
 		return serverIp;

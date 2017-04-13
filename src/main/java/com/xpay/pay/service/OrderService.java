@@ -1,5 +1,6 @@
 package com.xpay.pay.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,7 +58,10 @@ public class OrderService {
 		List<StoreChannel> channels = store.getChannels();
 
 		StoreChannel channel = channels.stream().filter(x -> !CommonUtils.in(usedChannels, x.getId()))
-				.findAny().orElse(null);
+				.collect(Collectors.collectingAndThen(Collectors.toList(), collected -> {
+				      Collections.shuffle(collected);
+				      return collected.stream();
+				  })).findFirst().orElse(null);
 		return channel;
 	}
 	

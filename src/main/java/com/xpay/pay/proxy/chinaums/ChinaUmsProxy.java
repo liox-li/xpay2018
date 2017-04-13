@@ -48,6 +48,7 @@ public class ChinaUmsProxy implements IPaymentProxy {
 		long l = System.currentTimeMillis();
 		PaymentResponse response = null;
 		try {
+			request.setGatewayOrderNo(IDGenerator.buildQrCode(appId));
 			ChinaUmsRequest chinaUmsRequest = this.toChinaUmsRequest(Method.UnifiedOrder,request);
 			
 			List<KeyValuePair> keyPairs = this.getKeyPairs(chinaUmsRequest);
@@ -61,6 +62,7 @@ public class ChinaUmsProxy implements IPaymentProxy {
 			logger.info("unifiedOrder result: " + chinaUmsResponse.getErrCode() + " "+chinaUmsResponse.getErrMsg() + ", took "
 					+ (System.currentTimeMillis() - l) + "ms");
 			response = toPaymentResponse(chinaUmsRequest, chinaUmsResponse);
+			response.getBill().setGatewayOrderNo(request.getGatewayOrderNo());
 		} catch (RestClientException e) {
 			logger.info("microPay failed, took " + (System.currentTimeMillis() - l) + "ms", e);
 			throw e;
@@ -128,7 +130,7 @@ public class ChinaUmsProxy implements IPaymentProxy {
 		chinaUmsRequest.setMid(request.getExtStoreId());
 		chinaUmsRequest.setInstMid(instMid);
 		chinaUmsRequest.setTid(tId);
-		chinaUmsRequest.setBillNo(request.getOrderNo());
+		chinaUmsRequest.setBillNo(request.getGatewayOrderNo());
 		chinaUmsRequest.setRequestTimeStamp(IDGenerator.formatTime());
 		if(Method.UnifiedOrder.equals(method)) {
 			chinaUmsRequest.setBillDate(IDGenerator.formatDate());

@@ -1,5 +1,9 @@
 package com.xpay.pay.util;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.stream.Collectors;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -17,5 +21,16 @@ public class CryptoUtilsTest {
 		String stringSignTemp=str+"&key=192006250b4c09247ec02edce69f6a2d";
 		String sign=CryptoUtils.md5(stringSignTemp).toUpperCase();
 		Assert.assertEquals("9A0A8659F005D6984697E2CA0A9CF3B7", sign);
+	}
+	
+	@Test
+	public void testStream() {
+		for(int i=0;i<1000; i++) {
+			String item = Arrays.asList("1", "2").stream().collect(Collectors.collectingAndThen(Collectors.toList(), collected -> {
+			      Collections.shuffle(collected);
+			      return collected.stream();
+			  })).findFirst().orElse(null);
+			System.out.println(item);
+		}
 	}
 }

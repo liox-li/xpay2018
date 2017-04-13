@@ -94,14 +94,22 @@ insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) val
 insert into bill_store (id, code, name, bail, non_bail, bar, bail_percentage) values (3, 'T002', 'Bail Store 2', 0, 0, 0, 100);
 insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) values (3, 3, '898340149000005', 'CHINAUMS');
 
-insert into bill_store (code, name) values ('T20070331091523123', '测试商户');
-insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values (100, 'T2017032319251974486873', 'MIAOFU');
+insert into bill_store (id, code, name) values (51, 'T20070331091523123', '秒付测试商户');
+insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) values (51, 51, 'T2017032319251974486873', 'MIAOFU');
 
-insert into bill_store (code, name) values ('T20070405151523101', '威富通测试商户');
-insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values (101, '755437000006', 'SWIFTPASS');
+insert into bill_store (id, code, name) values (52, 'T20170412163933306', '威富通测试商户');
+insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) values (52, 52, '755437000006', 'SWIFTPASS');
 
-insert into bill_store (code, name) values ('T20170412143221368', '银商测试商户');
-insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values (102, '898340149000005', 'CHINAUMS');
+insert into bill_store (id, code, name) values (53, 'T20170412143221368', '银商测试商户');
+insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) values (53, 53, '898340149000005', 'CHINAUMS');
+
+insert into bill_store (code, name) values ('T20170412153151533', '池乐');
+insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values (100, '000010105000126', 'MIAOFU');
+insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values (100, '000010105000127', 'MIAOFU');
+
+insert into bill_store (code, name) values ('T20070405151523101', '深圳贝碧嘉');
+insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values (101, '102520441241', 'SWIFTPASS');
+
 
 ALTER table bill_app OWNER TO xpay;
 ALTER table bill_store OWNER TO xpay;
