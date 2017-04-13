@@ -49,6 +49,17 @@ public class OrderService {
 		order.setStoreChannel(storeService.findStoreChannelById(order.getStoreChannelId()));
 		return order;
 	}
+	
+	public Order findActiveByExtOrderNo(String extOrderNo) {
+		List<Order> orders = orderMapper.findByExtOrderNo(extOrderNo);
+		Assert.notNull(orders, "Order not found - " + extOrderNo);
+		Order order = orders.stream().filter(x -> !x.getStatus().equals(OrderStatus.PAYERROR)).findAny().orElse(null);
+		Assert.notNull(order, "Order not found - " + extOrderNo);
+		order.setApp(appService.findById(order.getAppId()));
+		order.setStore(storeService.findById(order.getStoreId()));
+		order.setStoreChannel(storeService.findStoreChannelById(order.getStoreChannelId()));
+		return order;
+	}
 
 	public StoreChannel findUnusedChannel(Store store, String orderNo) {
 		List<Order> orders = this.findByOrderNo(orderNo);

@@ -65,6 +65,7 @@ CREATE TABLE IF NOT EXISTS bill_order (
 );
 ALTER SEQUENCE bill_order_id_seq RESTART 1000;
 CREATE INDEX idx_order_no ON bill_order(order_no); 
+CREATE INDEX idx_ext_order_no ON bill_order(ext_order_no); 
 
 CREATE TABLE IF NOT EXISTS bill_order_detail (
 	id BIGSERIAL PRIMARY KEY,

@@ -27,6 +27,7 @@ import com.xpay.pay.rest.contract.OrderResponse;
 import com.xpay.pay.service.OrderService;
 import com.xpay.pay.util.CommonUtils;
 import com.xpay.pay.util.CryptoUtils;
+import com.xpay.pay.util.JsonUtils;
 import com.xpay.pay.util.XmlUtils;
 
 public class PayNotifyServlet extends HttpServlet {
@@ -57,11 +58,21 @@ public class PayNotifyServlet extends HttpServlet {
 		response.setCharacterEncoding("utf-8");
 		response.setHeader("Content-type", "text/html;charset=UTF-8");
 		NotifyResponse notResp = null;
+		Order order = null;
 		try {
+			request.setCharacterEncoding("utf-8");
+	        byte[] buffer = new byte[request.getContentLength()];
+	        IOUtils.readFully(request.getInputStream(), buffer);
+	        String content = new String(buffer);
+	        logger.info("Notify from "+ uri +"content: " + content);
+	        
   			if(uri.contains(PaymentGateway.SWIFTPASS.name().toLowerCase())) {
-  				notResp = handleSwiftpassNotification(request);
+  				notResp = handleSwiftpassNotification(content);
+  				
+	    	} else if(uri.contains(PaymentGateway.CHINAUMS.name().toLowerCase())) {
+  				notResp = handleChinaUmsNotification(content);
 	    	}
-  			Order order = notResp.getOrder();
+  			order = notResp == null? null: notResp.getOrder();
   			if(order!=null && StringUtils.isNotBlank(order.getNotifyUrl()) && order.isSettle()) {
   				notify(order);
   			}
@@ -72,28 +83,7 @@ public class PayNotifyServlet extends HttpServlet {
         } 
     }
 
-
-	private void notify(final Order order) {
-		CompletableFuture.runAsync(() -> {
-			OrderResponse notification = new OrderResponse();
-			notification.setOrderNo(order.getOrderNo());
-			notification.setSellerOrderNo(order.getSellerOrderNo());
-			notification.setStoreId(String.valueOf(order.getStoreId()));
-			notification.setCodeUrl(order.getCodeUrl());
-			notification.setPrepayId(order.getPrepayId());
-			notification.setTokenId(order.getTokenId());
-			notification.setOrderStatus(order.getStatus().getValue());
-			notification.setAttach(order.getAttach());
-			notifyProxy.notify(order.getNotifyUrl(), order.getApp(),notification);
-		});
-	}
-
-	private NotifyResponse handleSwiftpassNotification(HttpServletRequest request) throws Exception {
-		request.setCharacterEncoding("utf-8");
-        byte[] buffer = new byte[request.getContentLength()];
-        IOUtils.readFully(request.getInputStream(), buffer);
-        String content = new String(buffer);
-        logger.info("Notify content: " + content);
+	private NotifyResponse handleSwiftpassNotification(String content) throws Exception {
         Order order = null;
         String respString = "fail";
         if(StringUtils.isNotBlank(content)){
@@ -114,15 +104,50 @@ public class PayNotifyServlet extends HttpServlet {
                           if(order!=null && CommonUtils.toInt(totalFee) == (int)(order.getTotalFeeAsFloat()*100)) {
                         	  order.setStatus(OrderStatus.SUCCESS);
                         	  orderService.update(order);
+                        	  respString = "success";
                           }
                         } 
                     } 
-                    respString = "success";
+                   
                 }
             }
         }
         NotifyResponse response = new NotifyResponse(respString, order);
         return response;
+	}
+
+	private NotifyResponse handleChinaUmsNotification(String content) {
+		Order order = null;
+        String respString = "fail";
+        
+		ChinaUmsNotification notification = JsonUtils.fromJson(content, ChinaUmsNotification.class);
+		if(notification!=null) {
+			String extOrderNo = notification.getBillNo();
+			order = orderService.findActiveByExtOrderNo(extOrderNo);
+			if(order!=null && CommonUtils.toInt(notification.getTotalAmount()) == (int)(order.getTotalFeeAsFloat()*100) && "PAID".equals(notification.getBillStatus())) {
+          	  order.setStatus(OrderStatus.SUCCESS);
+          	  orderService.update(order);
+          	  respString = "success";
+            }
+			
+		}
+		NotifyResponse response = new NotifyResponse(respString, order);
+	    return response;
+	}
+
+	private void notify(final Order order) {
+		CompletableFuture.runAsync(() -> {
+			OrderResponse notification = new OrderResponse();
+			notification.setOrderNo(order.getOrderNo());
+			notification.setSellerOrderNo(order.getSellerOrderNo());
+			notification.setStoreId(String.valueOf(order.getStoreId()));
+			notification.setCodeUrl(order.getCodeUrl());
+			notification.setPrepayId(order.getPrepayId());
+			notification.setTokenId(order.getTokenId());
+			notification.setOrderStatus(order.getStatus().getValue());
+			notification.setAttach(order.getAttach());
+			notifyProxy.notify(order.getNotifyUrl(), order.getApp(),notification);
+		});
 	}
 	
 	public static class NotifyResponse {
@@ -148,7 +173,103 @@ public class PayNotifyServlet extends HttpServlet {
 		public void setOrder(Order order) {
 			this.order = order;
 		}
+	}
+	
+	public static class ChinaUmsNotification {
+		private String mid;
+		private String tid;
+		private String instMid;
+		private String billNo;
+		private String billQRCode;
+		private String billDate;
+		private String billStatus;
+		private String totalAmount;
+		private BillPayment billPayment;
+		public String getMid() {
+			return mid;
+		}
+		public void setMid(String mid) {
+			this.mid = mid;
+		}
+		public String getTid() {
+			return tid;
+		}
+		public void setTid(String tid) {
+			this.tid = tid;
+		}
+		public String getInstMid() {
+			return instMid;
+		}
+		public void setInstMid(String instMid) {
+			this.instMid = instMid;
+		}
+		public String getBillNo() {
+			return billNo;
+		}
+		public void setBillNo(String billNo) {
+			this.billNo = billNo;
+		}
+		public String getBillQRCode() {
+			return billQRCode;
+		}
+		public void setBillQRCode(String billQRCode) {
+			this.billQRCode = billQRCode;
+		}
+		public String getBillDate() {
+			return billDate;
+		}
+		public void setBillDate(String billDate) {
+			this.billDate = billDate;
+		}
+		public String getBillStatus() {
+			return billStatus;
+		}
+		public void setBillStatus(String billStatus) {
+			this.billStatus = billStatus;
+		}
+		public String getTotalAmount() {
+			return totalAmount;
+		}
+		public void setTotalAmount(String totalAmount) {
+			this.totalAmount = totalAmount;
+		}
+		public BillPayment getBillPayment() {
+			return billPayment;
+		}
+		public void setBillPayment(BillPayment billPayment) {
+			this.billPayment = billPayment;
+		}
 		
-		
+	}
+	
+	public static class BillPayment {
+		private String merOrderId;
+		private int totalAmount;
+		private String status;
+		private String payTime;
+		public String getMerOrderId() {
+			return merOrderId;
+		}
+		public void setMerOrderId(String merOrderId) {
+			this.merOrderId = merOrderId;
+		}
+		public int getTotalAmount() {
+			return totalAmount;
+		}
+		public void setTotalAmount(int totalAmount) {
+			this.totalAmount = totalAmount;
+		}
+		public String getStatus() {
+			return status;
+		}
+		public void setStatus(String status) {
+			this.status = status;
+		}
+		public String getPayTime() {
+			return payTime;
+		}
+		public void setPayTime(String payTime) {
+			this.payTime = payTime;
+		}
 	}
 }

@@ -6,4 +6,6 @@ import com.xpay.pay.model.Order;
 
 public interface OrderMapper extends BaseMapper<Order> {
 	List<Order> findByOrderNo(String orderNo);
+	
+	List<Order> findByExtOrderNo(String extOrderNo);
 }
