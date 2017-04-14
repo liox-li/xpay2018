@@ -64,7 +64,7 @@ public class PayNotifyServlet extends HttpServlet {
 	        byte[] buffer = new byte[request.getContentLength()];
 	        IOUtils.readFully(request.getInputStream(), buffer);
 	        String content = new String(buffer);
-	        logger.info("Notify from "+ uri +"content: " + content);
+	        logger.info("Notify from "+ uri +" content: " + content);
 	        
   			if(uri.contains(PaymentGateway.SWIFTPASS.name().toLowerCase())) {
   				notResp = handleSwiftpassNotification(content);

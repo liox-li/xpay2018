@@ -165,7 +165,9 @@ public class PaymentService {
 	private PaymentRequest toPaymentRequest(Order order) {
 		PaymentRequest request = new PaymentRequest();
 		request.setExtStoreId(order.getStoreChannel().getExtStoreId());
-		request.setDeviceId(order.getDeviceId());
+		String deviceId = order.getDeviceId();
+		deviceId = StringUtils.isBlank(deviceId)?order.getIp():deviceId;
+		request.setDeviceId(deviceId);
 		request.setPayChannel(order.getPayChannel());
 		request.setTotalFee(order.getTotalFee());
 		request.setAttach(order.getAttach());

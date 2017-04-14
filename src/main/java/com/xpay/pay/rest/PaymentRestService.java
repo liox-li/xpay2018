@@ -54,6 +54,7 @@ public class PaymentRestService extends AuthRestService {
 			@RequestParam(required = false) String notifyUrl,
 			@RequestBody(required = false) OrderDetail orderDetail) {
 		Assert.isTrue(StringUtils.isNoneBlank(storeId, payChannel, totalFee, orderTime), "StoreId, payChannel, totalFee and orderTime can not be null");
+		Assert.isTrue(StringUtils.isNotBlank(deviceId) || StringUtils.isNotBlank(ip), "DeviceId or ip must be provided");
 		PayChannel channel = PayChannel.fromValue(payChannel);
 		Assert.notNull(channel,"Unknow pay channel");
 		float fee = CommonUtils.toFloat(totalFee);
