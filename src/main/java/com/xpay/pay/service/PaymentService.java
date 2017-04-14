@@ -24,6 +24,7 @@ import com.xpay.pay.proxy.PaymentResponse;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.util.AppConfig;
 import com.xpay.pay.util.CommonUtils;
+import com.xpay.pay.util.IDGenerator;
 
 @Service
 public class PaymentService {
@@ -114,8 +115,7 @@ public class PaymentService {
 		Order order = orderService.findActiveByOrderNo(orderNo);
 		Assert.isTrue(storeCode.equals(order.getStore().getCode()), "No such order found for the store");
 		Assert.isTrue(appId == order.getAppId(), "No such order found under the app");
-		
-		if(!order.isSettle()) {
+		if(!order.isSettle() && CommonUtils.isWithinHours(order.getOrderTime(), IDGenerator.TimePattern14, 2)) {
 			try {
 				PaymentRequest paymentRequest = toQueryRequest(order);
 				IPaymentProxy paymentProxy = paymentProxyFactory.getPaymentProxy(order.getStoreChannel().getPaymentGateway());

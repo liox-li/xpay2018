@@ -3,7 +3,13 @@ package com.xpay.pay.util;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Enumeration;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -46,6 +52,30 @@ public class CommonUtils {
 			return false;
 		}
 		return coll.contains(e);
+	}
+	
+	public static Date hourBeforeNow(int hours) {
+		LocalDateTime localNow = LocalDateTime.now();
+		ZoneId currentZone = ZoneId.systemDefault();
+		ZonedDateTime zonedNow = ZonedDateTime.of(localNow, currentZone);
+		ZonedDateTime timeout = zonedNow.minusHours(hours);
+		return Date.from(timeout.toInstant());
+	}
+	
+	public static Date parseTime(String timeStr, String pattern) {
+		SimpleDateFormat timeFormat = new SimpleDateFormat(pattern);
+		try {
+			Date date = timeFormat.parse(timeStr);
+			return date;
+		} catch (ParseException e) {
+			return hourBeforeNow(36);
+		}
+	}
+	
+	public static boolean isWithinHours(String timeStr, String pattern, int hours) {
+		Date hourBeforeNow = hourBeforeNow(hours);
+		Date date = parseTime(timeStr, pattern);
+		return date.after(hourBeforeNow);
 	}
 	
 	public static String getLocalIP() {
