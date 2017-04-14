@@ -182,8 +182,12 @@ public class Order {
 			this.storeId = store.getId();
 		}
 	}
-	public boolean isSettle() {
+	public boolean isRemoteQueralbe() {
 		return OrderStatus.REFUND.equals(this.status) || OrderStatus.REVOKED.equals(this.status);
+	}
+	
+	public boolean isSettle() {
+		return OrderStatus.SUCCESS.equals(this.status) || OrderStatus.REFUND.equals(this.status) || OrderStatus.REVOKED.equals(this.status);
 	}
 	
 	public boolean isRefundable() {

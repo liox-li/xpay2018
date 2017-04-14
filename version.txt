@@ -1,7 +1,7 @@
 branch=refs/heads/master
-buildTimestamp=2017-04-14 03:11:05 +0000
-buildVersion=321
-commitId=8e07d37e6cd4238191547bdee8c00934372bf68d
+buildTimestamp=2017-04-14 03:26:04 +0000
+buildVersion=322
+commitId=5b308d3af6252524d9ffb0cd13a9ffaf562e3c9c
 
 hostname=localhost
 isSnapshot=true
@@ -12,4 +12,4 @@ osName=Mac OS X
 osVersion=10.11.6
 project=XPAY
 username=zma
-version=0.1.321
+version=0.1.322
