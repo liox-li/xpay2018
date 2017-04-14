@@ -23,6 +23,7 @@ public class SwiftpassProxyTest extends BaseSpringJunitTest {
 		request.setNotifyUrl("http://100.234.1.1/xpay/notify/X110101201703311115387831581");
 		PaymentResponse response = proxy.unifiedOrder(request);
 		System.out.println("response code: "+ response.getCode()+" "+response.getMsg());
+		System.out.println(response.getBill().getCodeUrl());
 	}
 	
 	@Test

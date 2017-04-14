@@ -19,11 +19,12 @@ public class MiaoFuProxyTest extends BaseSpringJunitTest {
 		request.setDeviceId("1213");
 		request.setPayChannel(PayChannel.WECHAT);
 		request.setTotalFee("0.01");
-		request.setOrderNo("X110101201703311115387831582");
-		request.setSubject("No Subject");
+		request.setOrderNo("X110101201703311115387831502");
+		request.setSubject("电子商品");
 		request.setAttach("atach");
 		PaymentResponse response = proxy.unifiedOrder(request);
 		System.out.println("response code: "+ response.getCode()+" "+response.getMsg());
+		System.out.println(response.getBill().getCodeUrl());
 	}
 	
 	@Test

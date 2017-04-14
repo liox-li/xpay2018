@@ -158,7 +158,7 @@ public class PaymentService {
 		}
 	}
 
-	private static final String DEFAULT_SUBJECT = AppConfig.XPayConfig.getProperty("order.subject");
+	private static final String DEFAULT_SUBJECT = "电子商品";
 	private static final String LOCAL_ID = CommonUtils.getLocalIP();
 	private static final String DEFAULT_NOTIFY_URL = AppConfig.XPayConfig.getProperty("notify.endpoint");
 	private PaymentRequest toPaymentRequest(Order order) {

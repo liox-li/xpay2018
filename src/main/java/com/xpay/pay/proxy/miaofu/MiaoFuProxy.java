@@ -90,9 +90,9 @@ public class MiaoFuProxy implements IPaymentProxy {
 			headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 			HttpEntity<?> httpEntity = new HttpEntity<>(headers);
 			MiaoFuResponse miaoFuResponse = miaofuProxy.exchange(url, HttpMethod.POST, httpEntity, MiaoFuResponse.class).getBody();
-			logger.info("query result: " + miaoFuResponse.getCode() + " "+miaoFuResponse.getMsg()+", took "
-					+ (System.currentTimeMillis() - l) + "ms");
 			response = toPaymentResponse(miaoFuResponse);
+			logger.info("query result: " + miaoFuResponse.getCode() + " "+miaoFuResponse.getMsg()+" "+response.getBill().getOrderStatus()+", took "
+					+ (System.currentTimeMillis() - l) + "ms");
 		} catch (RestClientException e) {
 			logger.info("query failed, took " + (System.currentTimeMillis() - l) + "ms", e);
 			throw e;
