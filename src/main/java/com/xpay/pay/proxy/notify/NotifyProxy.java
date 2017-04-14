@@ -31,7 +31,8 @@ public class NotifyProxy {
 		try {
 			RestTemplate restTemplate = initRestTemplte(app);
 			HttpHeaders headers = new HttpHeaders();
-			headers.set("Accept", MediaType.TEXT_PLAIN_VALUE);
+			headers.set("Content-Type", MediaType.APPLICATION_JSON_UTF8_VALUE);
+			headers.set("Accept", MediaType.APPLICATION_JSON_UTF8_VALUE);
 			HttpEntity<?> httpEntity = new HttpEntity<>(request, headers);
 			
 			response = restTemplate.exchange(url, HttpMethod.POST, httpEntity, BaseResponse.class).getBody();
