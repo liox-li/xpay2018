@@ -176,7 +176,11 @@ public class PaymentService {
 			request.setServerIp(LOCAL_ID);
 			request.setNotifyUrl(DEFAULT_NOTIFY_URL+order.getStoreChannel().getPaymentGateway().toString().toLowerCase());
 		}
-		if(PaymentGateway.CHINAUMS.equals(order.getStoreChannel().getPaymentGateway())) {
+		else if(PaymentGateway.CHINAUMS.equals(order.getStoreChannel().getPaymentGateway())) {
+			request.setNotifyUrl(DEFAULT_NOTIFY_URL+order.getStoreChannel().getPaymentGateway().toString().toLowerCase());
+		}
+		else if(PaymentGateway.RUBIPAY.equals(order.getStoreChannel().getPaymentGateway())) {
+			request.setServerIp(LOCAL_ID);
 			request.setNotifyUrl(DEFAULT_NOTIFY_URL+order.getStoreChannel().getPaymentGateway().toString().toLowerCase());
 		}
 		

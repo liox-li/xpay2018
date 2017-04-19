@@ -39,7 +39,7 @@ public class StoreChannel {
 	}
 
 	public enum PaymentGateway {
-		MIAOFU(1), SWIFTPASS(2), CHINAUMS(3);
+		MIAOFU(1), SWIFTPASS(2), CHINAUMS(3), RUBIPAY(4);
 		
 		int bailStoreId;
 		PaymentGateway(int bailStoreId) {
