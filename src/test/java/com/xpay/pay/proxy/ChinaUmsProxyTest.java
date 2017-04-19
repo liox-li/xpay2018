@@ -11,10 +11,17 @@ public class ChinaUmsProxyTest extends BaseSpringJunitTest {
 	@Autowired 
 	private ChinaUmsProxy proxy;
 	
+	//898319848160167
+	//898319848160168
+	//898319848160169
+	//898319848160170
+	//898319848160171
+	
+	//898340149000005
 	@Test
 	public void testUnifiedOrder() {
 		PaymentRequest request = new PaymentRequest();
-		request.setExtStoreId("898340149000005");
+		request.setExtStoreId("898319848160167");
 		request.setDeviceId("1213");
 		request.setPayChannel(PayChannel.WECHAT);
 		request.setTotalFee("0.01");

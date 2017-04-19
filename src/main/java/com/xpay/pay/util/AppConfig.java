@@ -31,6 +31,8 @@ public class AppConfig {
 	
 	public static final AppConfig ChinaUmsConfig = new AppConfig(load("chinaums.config"));
 	
+	public static final AppConfig RubiPayConfig = new AppConfig(load("rubipay.config"));
+	
 	public static final AppConfig XPayConfig = new AppConfig(load("xpay.config"));
 	
 	public AppConfig(Properties properties) {
