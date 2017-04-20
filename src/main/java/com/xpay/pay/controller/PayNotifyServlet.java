@@ -1,6 +1,7 @@
 package com.xpay.pay.controller;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -21,13 +22,13 @@ import com.xpay.pay.model.Order;
 import com.xpay.pay.model.StoreChannel.PaymentGateway;
 import com.xpay.pay.proxy.PaymentResponse;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
+import com.xpay.pay.proxy.chinaums.ChinaUmsProxy;
 import com.xpay.pay.proxy.notify.NotifyProxy;
 import com.xpay.pay.proxy.swiftpass.SwiftpassProxy;
 import com.xpay.pay.rest.contract.OrderResponse;
 import com.xpay.pay.service.OrderService;
 import com.xpay.pay.util.CommonUtils;
 import com.xpay.pay.util.CryptoUtils;
-import com.xpay.pay.util.JsonUtils;
 import com.xpay.pay.util.XmlUtils;
 
 public class PayNotifyServlet extends HttpServlet {
@@ -120,16 +121,31 @@ public class PayNotifyServlet extends HttpServlet {
 		Order order = null;
         String respString = "fail";
         
-		ChinaUmsNotification notification = JsonUtils.fromJson(content, ChinaUmsNotification.class);
-		if(notification!=null) {
-			String extOrderNo = notification.getBillNo();
-			order = orderService.findActiveByExtOrderNo(extOrderNo);
-			if(order!=null && CommonUtils.toInt(notification.getTotalAmount()) == (int)(order.getTotalFeeAsFloat()*100) && "PAID".equals(notification.getBillStatus())) {
-          	  order.setStatus(OrderStatus.SUCCESS);
-          	  orderService.update(order);
-          	  respString = "success";
-            }
-			
+		if(StringUtils.isNotBlank(content)) {
+			String billNo = "";
+			String status = "";
+			try {
+				String decoded = URLDecoder.decode(content, "utf-8");
+				String[] params = decoded.split("&");
+				for(String param: params) {
+					String[] pair = param.split("=");
+					String key = pair[0];
+					if("billNo".equals(key)) {
+						billNo = pair[1];
+					} else if ("billStatus".equals(key)) {
+						status = pair[1];
+					}
+				}
+				order = orderService.findActiveByExtOrderNo(billNo);
+				if(order!=null) {
+					order.setStatus(ChinaUmsProxy.toOrderStatus(status));
+					orderService.update(order);
+					respString = "success";
+				}
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		NotifyResponse response = new NotifyResponse(respString, order);
 	    return response;
@@ -172,104 +188,6 @@ public class PayNotifyServlet extends HttpServlet {
 		}
 		public void setOrder(Order order) {
 			this.order = order;
-		}
-	}
-	
-	public static class ChinaUmsNotification {
-		private String mid;
-		private String tid;
-		private String instMid;
-		private String billNo;
-		private String billQRCode;
-		private String billDate;
-		private String billStatus;
-		private String totalAmount;
-		private BillPayment billPayment;
-		public String getMid() {
-			return mid;
-		}
-		public void setMid(String mid) {
-			this.mid = mid;
-		}
-		public String getTid() {
-			return tid;
-		}
-		public void setTid(String tid) {
-			this.tid = tid;
-		}
-		public String getInstMid() {
-			return instMid;
-		}
-		public void setInstMid(String instMid) {
-			this.instMid = instMid;
-		}
-		public String getBillNo() {
-			return billNo;
-		}
-		public void setBillNo(String billNo) {
-			this.billNo = billNo;
-		}
-		public String getBillQRCode() {
-			return billQRCode;
-		}
-		public void setBillQRCode(String billQRCode) {
-			this.billQRCode = billQRCode;
-		}
-		public String getBillDate() {
-			return billDate;
-		}
-		public void setBillDate(String billDate) {
-			this.billDate = billDate;
-		}
-		public String getBillStatus() {
-			return billStatus;
-		}
-		public void setBillStatus(String billStatus) {
-			this.billStatus = billStatus;
-		}
-		public String getTotalAmount() {
-			return totalAmount;
-		}
-		public void setTotalAmount(String totalAmount) {
-			this.totalAmount = totalAmount;
-		}
-		public BillPayment getBillPayment() {
-			return billPayment;
-		}
-		public void setBillPayment(BillPayment billPayment) {
-			this.billPayment = billPayment;
-		}
-		
-	}
-	
-	public static class BillPayment {
-		private String merOrderId;
-		private int totalAmount;
-		private String status;
-		private String payTime;
-		public String getMerOrderId() {
-			return merOrderId;
-		}
-		public void setMerOrderId(String merOrderId) {
-			this.merOrderId = merOrderId;
-		}
-		public int getTotalAmount() {
-			return totalAmount;
-		}
-		public void setTotalAmount(int totalAmount) {
-			this.totalAmount = totalAmount;
-		}
-		public String getStatus() {
-			return status;
-		}
-		public void setStatus(String status) {
-			this.status = status;
-		}
-		public String getPayTime() {
-			return payTime;
-		}
-		public void setPayTime(String payTime) {
-			this.payTime = payTime;
 		}
 	}
 }

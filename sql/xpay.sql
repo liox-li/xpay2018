@@ -108,6 +108,7 @@ insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) val
 insert into bill_store (id, code, name) values (53, 'T20170412143221368', '银商测试商户');
 insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) values (53, 53, '898340149000005', 'CHINAUMS');
 
+
 insert into bill_store (id, code, name) values (54, 'T20170419143221468', 'RubiPay测试商户');
 insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) values (54, 54, '7551000001', 'RUBIPAY');
 
@@ -118,6 +119,13 @@ insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values 
 
 insert into bill_store (code, name) values ('T20070405151523101', '深圳贝碧嘉');
 insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values (101, '102520441241', 'SWIFTPASS');
+
+insert into bill_store (code, name) values ('T20170420143221368', '银商正式商户');
+insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values (104, '898319848160167', 'CHINAUMS');
+insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values (104, '898319848160168', 'CHINAUMS');
+insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values (104, '898319848160169', 'CHINAUMS');
+insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values (104, '898319848160170', 'CHINAUMS');
+insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values (104, '898319848160171', 'CHINAUMS');
 
 
 ALTER table bill_app OWNER TO xpay;
