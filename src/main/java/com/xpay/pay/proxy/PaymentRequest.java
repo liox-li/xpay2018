@@ -17,6 +17,8 @@ public class PaymentRequest {
 	private String notifyUrl;
 	private String subject;
 	private String orderTime;
+	private GoodsBean[] goods;
+	
 	public String getExtStoreId() {
 		return extStoreId;
 	}
@@ -92,5 +94,58 @@ public class PaymentRequest {
 	}
 	public void setOrderTime(String orderTime) {
 		this.orderTime = orderTime;
+	}
+	public GoodsBean[] getGoods() {
+		return goods;
+	}
+	public void setGoods(GoodsBean[] goods) {
+		this.goods = goods;
+	}
+
+
+	public static class GoodsBean {
+		private String goodsId;
+		private String goodsName;
+		private String quantity;
+		private String price;
+		private String goodsCategory;
+		private String body;
+		public String getGoodsId() {
+			return goodsId;
+		}
+		public void setGoodsId(String goodsId) {
+			this.goodsId = goodsId;
+		}
+		public String getGoodsName() {
+			return goodsName;
+		}
+		public void setGoodsName(String goodsName) {
+			this.goodsName = goodsName;
+		}
+		public String getQuantity() {
+			return quantity;
+		}
+		public void setQuantity(String quantity) {
+			this.quantity = quantity;
+		}
+		public String getPrice() {
+			return price;
+		}
+		public void setPrice(String price) {
+			this.price = price;
+		}
+		public String getGoodsCategory() {
+			return goodsCategory;
+		}
+		public void setGoodsCategory(String goodsCategory) {
+			this.goodsCategory = goodsCategory;
+		}
+		public String getBody() {
+			return body;
+		}
+		public void setBody(String body) {
+			this.body = body;
+		}
+		
 	}
 }

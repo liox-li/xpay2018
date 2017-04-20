@@ -26,6 +26,7 @@ import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.util.AppConfig;
 import com.xpay.pay.util.CryptoUtils;
 import com.xpay.pay.util.IDGenerator;
+import com.xpay.pay.util.JsonUtils;
 
 @Component
 public class ChinaUmsProxy implements IPaymentProxy {
@@ -141,6 +142,7 @@ public class ChinaUmsProxy implements IPaymentProxy {
 		if(StringUtils.isNotBlank(request.getTotalFee())) {
 			chinaUmsRequest.setTotalAmount(String.valueOf((int)(request.getTotalFeeAsFloat()*100)));
 		}
+		chinaUmsRequest.setGoods(request.getGoods());
 		chinaUmsRequest.setNotifyUrl(request.getNotifyUrl());
 		chinaUmsRequest.setMsgType(method.getMsgType());
 		chinaUmsRequest.setSystemId(appId);
@@ -196,6 +198,9 @@ public class ChinaUmsProxy implements IPaymentProxy {
 		}
 		if (StringUtils.isNotBlank(paymentRequest.getRefundAmount())) {
 			keyPairs.add(new KeyValuePair("refundAmount", paymentRequest.getRefundAmount()));
+		}
+		if(paymentRequest.getGoods()!=null) {
+			keyPairs.add(new KeyValuePair("goods", JsonUtils.toJson(paymentRequest.getGoods())));
 		}
 		keyPairs.sort((x1, x2) -> {
 			return x1.getKey().compareTo(x2.getKey());

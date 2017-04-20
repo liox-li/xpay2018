@@ -1,5 +1,7 @@
 package com.xpay.pay.proxy.chinaums;
 
+import com.xpay.pay.proxy.PaymentRequest.GoodsBean;
+
 public class ChinaUmsRequest {
 	private String systemId;
 	private String msgSrc;
@@ -14,6 +16,7 @@ public class ChinaUmsRequest {
 	private String totalAmount;
 	private String refundAmount;
 	private String notifyUrl;
+	private GoodsBean[] goods;
 	private String sign;
 	public String getSystemId() {
 		return systemId;
@@ -92,6 +95,13 @@ public class ChinaUmsRequest {
 	}
 	public void setNotifyUrl(String notifyUrl) {
 		this.notifyUrl = notifyUrl;
+	}
+	
+	public GoodsBean[] getGoods() {
+		return goods;
+	}
+	public void setGoods(GoodsBean[] goods) {
+		this.goods = goods;
 	}
 	public String getSign() {
 		return sign;
