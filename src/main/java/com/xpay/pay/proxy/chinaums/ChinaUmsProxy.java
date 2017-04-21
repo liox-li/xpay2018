@@ -74,7 +74,7 @@ public class ChinaUmsProxy implements IPaymentProxy {
 	@Override
 	public PaymentResponse query(PaymentRequest request) {
 		String url = baseEndpoint;
-		logger.info("unifiedOrder POST: " + url);
+		logger.info("query POST: " + url);
 		long l = System.currentTimeMillis();
 		PaymentResponse response = null;
 		try {
@@ -88,11 +88,11 @@ public class ChinaUmsProxy implements IPaymentProxy {
 			headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 			HttpEntity<?> httpEntity = new HttpEntity<>(chinaUmsRequest, headers);
 			ChinaUmsResponse chinaUmsResponse = chinaUmsProxy.exchange(url, HttpMethod.POST, httpEntity, ChinaUmsResponse.class).getBody();
-			logger.info("unifiedOrder result: " + chinaUmsResponse.getErrCode() + " "+chinaUmsResponse.getErrMsg() + ", took "
+			logger.info("query result: " + chinaUmsResponse.getErrCode() + " "+chinaUmsResponse.getErrMsg() + ", took "
 					+ (System.currentTimeMillis() - l) + "ms");
 			response = toPaymentResponse(chinaUmsRequest, chinaUmsResponse);
 		} catch (RestClientException e) {
-			logger.info("microPay failed, took " + (System.currentTimeMillis() - l) + "ms", e);
+			logger.info("query failed, took " + (System.currentTimeMillis() - l) + "ms", e);
 			throw e;
 		}
 		return response;
@@ -101,7 +101,6 @@ public class ChinaUmsProxy implements IPaymentProxy {
 	@Override
 	public PaymentResponse refund(PaymentRequest request) {
 		String url = baseEndpoint;
-		logger.info("unifiedOrder POST: " + url);
 		long l = System.currentTimeMillis();
 		PaymentResponse response = null;
 		try {
@@ -110,12 +109,13 @@ public class ChinaUmsProxy implements IPaymentProxy {
 			List<KeyValuePair> keyPairs = this.getKeyPairs(chinaUmsRequest);
 			String sign = this.signature(keyPairs, appSecret);
 			chinaUmsRequest.setSign(sign);
+			logger.info("refund POST: " + url+", body "+JsonUtils.toJson(chinaUmsRequest));
 			
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 			HttpEntity<?> httpEntity = new HttpEntity<>(chinaUmsRequest, headers);
 			ChinaUmsResponse chinaUmsResponse = chinaUmsProxy.exchange(url, HttpMethod.POST, httpEntity, ChinaUmsResponse.class).getBody();
-			logger.info("unifiedOrder result: " + chinaUmsResponse.getErrCode() + " "+chinaUmsResponse.getErrMsg() + ", took "
+			logger.info("refund result: " + chinaUmsResponse.getErrCode() + " "+chinaUmsResponse.getErrMsg() + ", took "
 					+ (System.currentTimeMillis() - l) + "ms");
 			response = toPaymentResponse(chinaUmsRequest, chinaUmsResponse);
 		} catch (RestClientException e) {
