@@ -45,16 +45,16 @@ public class ChinaUmsProxy implements IPaymentProxy {
 	@Override
 	public PaymentResponse unifiedOrder(PaymentRequest request) {
 		String url = baseEndpoint;
-		logger.info("unifiedOrder POST: " + url);
+		
 		long l = System.currentTimeMillis();
 		PaymentResponse response = null;
 		try {
 			request.setGatewayOrderNo(IDGenerator.buildQrCode(appId));
 			ChinaUmsRequest chinaUmsRequest = this.toChinaUmsRequest(Method.UnifiedOrder,request);
-			
 			List<KeyValuePair> keyPairs = this.getKeyPairs(chinaUmsRequest);
 			String sign = this.signature(keyPairs, appSecret);
 			chinaUmsRequest.setSign(sign);
+			logger.info("unifiedOrder POST: " + url+", body "+JsonUtils.toJson(chinaUmsRequest));
 			
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
