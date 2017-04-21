@@ -19,6 +19,7 @@ public class Order {
 	private String deviceId;
 	private String ip;
 	private String notifyUrl;
+	private String returnUrl;
 	private String codeUrl;
 	private String prepayId;
 	private String tokenId;
@@ -123,6 +124,12 @@ public class Order {
 	}
 	public void setNotifyUrl(String notifyUrl) {
 		this.notifyUrl = notifyUrl;
+	}
+	public String getReturnUrl() {
+		return returnUrl;
+	}
+	public void setReturnUrl(String returnUrl) {
+		this.returnUrl = returnUrl;
 	}
 	public String getCodeUrl() {
 		return codeUrl;

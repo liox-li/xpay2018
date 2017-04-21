@@ -37,7 +37,7 @@ public class PaymentService {
 
 	public Order createOrder(App app, String orderNo, Store store, PayChannel channel,
 			String deviceId, String ip, String totalFee, String orderTime,
-			String sellerOrderNo, String attach, String notifyUrl,
+			String sellerOrderNo, String attach, String notifyUrl,String returnUrl,
 			OrderDetail orderDetail, Method method) {
 		StoreChannel storeChannel = null;
 		boolean isNextBailPay = store.isNextBailPay();
@@ -62,6 +62,7 @@ public class PaymentService {
 		order.setSellerOrderNo(sellerOrderNo);
 		order.setAttach(attach);
 		order.setNotifyUrl(notifyUrl);
+		order.setReturnUrl(returnUrl);
 		order.setOrderDetail(orderDetail);
 		orderService.insert(order);
 		
@@ -178,6 +179,7 @@ public class PaymentService {
 		}
 		else if(PaymentGateway.CHINAUMS.equals(order.getStoreChannel().getPaymentGateway())) {
 			request.setNotifyUrl(DEFAULT_NOTIFY_URL+order.getStoreChannel().getPaymentGateway().toString().toLowerCase());
+			request.setReturnUrl(order.getReturnUrl());
 		}
 		else if(PaymentGateway.RUBIPAY.equals(order.getStoreChannel().getPaymentGateway())) {
 			request.setServerIp(LOCAL_ID);

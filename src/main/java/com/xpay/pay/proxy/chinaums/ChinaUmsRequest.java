@@ -16,6 +16,7 @@ public class ChinaUmsRequest {
 	private String totalAmount;
 	private String refundAmount;
 	private String notifyUrl;
+	private String returnUrl;
 	private GoodsBean[] goods;
 	private String sign;
 	public String getSystemId() {
@@ -97,6 +98,12 @@ public class ChinaUmsRequest {
 		this.notifyUrl = notifyUrl;
 	}
 	
+	public String getReturnUrl() {
+		return returnUrl;
+	}
+	public void setReturnUrl(String returnUrl) {
+		this.returnUrl = returnUrl;
+	}
 	public GoodsBean[] getGoods() {
 		return goods;
 	}

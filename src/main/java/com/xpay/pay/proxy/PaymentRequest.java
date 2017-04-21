@@ -15,6 +15,7 @@ public class PaymentRequest {
 	private TradeNoType tradeNoType;
 	private String serverIp;
 	private String notifyUrl;
+	private String returnUrl;
 	private String subject;
 	private String orderTime;
 	private GoodsBean[] goods;
@@ -76,6 +77,12 @@ public class PaymentRequest {
 	}
 	public void setNotifyUrl(String notifyUrl) {
 		this.notifyUrl = notifyUrl;
+	}
+	public String getReturnUrl() {
+		return returnUrl;
+	}
+	public void setReturnUrl(String returnUrl) {
+		this.returnUrl = returnUrl;
 	}
 	public String getSubject() {
 		return subject;
