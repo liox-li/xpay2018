@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS bill_app (
 	id BIGSERIAL PRIMARY KEY,
 	app_key varchar(64) NOT NULL,
 	app_secret varchar(256) NOT NULL,
+	name varchar(64) NOT NULL,
 	create_date TIMESTAMP WITH TIME ZONE NOT NULL default now(), 
 	update_date TIMESTAMP WITH TIME ZONE NOT NULL default now(),
 	deleted boolean DEFAULT FALSE
@@ -121,12 +122,13 @@ insert into bill_store (code, name) values ('T20070405151523101', '深圳贝碧�
 insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values (101, '102520441241', 'SWIFTPASS');
 
 insert into bill_store (code, name) values ('T20170420143221368', '银商正式商户');
-insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values (104, '898319848160167', 'CHINAUMS');
-insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values (104, '898319848160168', 'CHINAUMS');
-insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values (104, '898319848160169', 'CHINAUMS');
-insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values (104, '898319848160170', 'CHINAUMS');
-insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values (104, '898319848160171', 'CHINAUMS');
+insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values (102, '898319848160167', 'CHINAUMS');
+insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values (102, '898319848160168', 'CHINAUMS');
+insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values (102, '898319848160169', 'CHINAUMS');
+insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values (102, '898319848160170', 'CHINAUMS');
+insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values (102, '898319848160171', 'CHINAUMS');
 
+ALTER TABLE bill_app ADD COLUMN name VARCHAR(64);
 
 ALTER table bill_app OWNER TO xpay;
 ALTER table bill_store OWNER TO xpay;

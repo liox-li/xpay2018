@@ -59,7 +59,7 @@ public class LocalCache<K, V> implements ICache<K, V>{
 	}
 
 	@Override
-	public void clear() {
+	public void destroy() {
 		map.clear();
 	}
 	

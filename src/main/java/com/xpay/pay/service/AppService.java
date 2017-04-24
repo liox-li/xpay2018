@@ -10,15 +10,12 @@ import org.springframework.stereotype.Service;
 
 import com.xpay.pay.cache.CacheManager;
 import com.xpay.pay.cache.ICache;
-import com.xpay.pay.cache.LocalCache;
 import com.xpay.pay.dao.AppMapper;
 import com.xpay.pay.model.App;
 
 @Service
 public class AppService {
-	@SuppressWarnings("unchecked")
-	private static ICache<String, App> cache = CacheManager.register(App.class,
-			new LocalCache<String, App>(100));
+	private static ICache<String, App> cache = CacheManager.create(App.class,100);
 	@Autowired
 	protected AppMapper mapper;
 

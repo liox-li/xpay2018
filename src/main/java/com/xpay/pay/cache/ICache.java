@@ -14,7 +14,7 @@ public interface ICache<K, V> {
 	
 	public List<V> values();
 	
-	public void clear();
+	public void destroy();
 	
 	public long size();
 }

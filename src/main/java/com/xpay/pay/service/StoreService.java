@@ -12,7 +12,6 @@ import org.springframework.util.Assert;
 
 import com.xpay.pay.cache.CacheManager;
 import com.xpay.pay.cache.ICache;
-import com.xpay.pay.cache.LocalCache;
 import com.xpay.pay.dao.StoreChannelMapper;
 import com.xpay.pay.dao.StoreMapper;
 import com.xpay.pay.model.Store;
@@ -24,9 +23,7 @@ public class StoreService {
 	protected StoreMapper storeMapper;
 	@Autowired
 	protected StoreChannelMapper storeChannelMapper;
-	@SuppressWarnings("unchecked")
-	private static ICache<Long, List<StoreChannel>> channelCache = CacheManager.register(StoreChannel.class,
-			new LocalCache<Long, List<StoreChannel>>(1000));
+	private static ICache<Long, List<StoreChannel>> channelCache = CacheManager.create(StoreChannel.class, 1000);
 	
 	public Store findByCode(String code) {
 		initStoreChannelCache();
