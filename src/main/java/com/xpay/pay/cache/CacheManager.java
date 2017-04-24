@@ -14,12 +14,12 @@ public class CacheManager {
 		return cacheRepository.get(clazz);
 	}
 
-	public static <Key, Value> ICache<Key, Value> create(Class clazz) {
+	public static <K, V> ICache<K, V> create(Class clazz) {
 		return create(clazz, DEFAULT_SIZE);
 	}
 	
-	public static <Key, Value> ICache<Key, Value>  create(Class clazz, int size) {
-		LocalCache<Key, Value> cache = new LocalCache<Key, Value>(size);
+	public static <K, V> ICache<K, V>  create(Class clazz, int size) {
+		LocalCache<K, V> cache = new LocalCache<K, V>(size);
 		cacheRepository.put(clazz, cache);
 		return cache;
 	}
