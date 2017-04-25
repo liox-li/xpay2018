@@ -16,7 +16,6 @@ import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
 import com.xpay.pay.model.StoreChannel.PaymentGateway;
 import com.xpay.pay.proxy.IPaymentProxy;
-import com.xpay.pay.proxy.IPaymentProxy.Method;
 import com.xpay.pay.proxy.IPaymentProxy.PayChannel;
 import com.xpay.pay.proxy.PaymentProxyFactory;
 import com.xpay.pay.proxy.PaymentRequest;
@@ -38,7 +37,7 @@ public class PaymentService {
 	public Order createOrder(App app, String orderNo, Store store, PayChannel channel,
 			String deviceId, String ip, String totalFee, String orderTime,
 			String sellerOrderNo, String attach, String notifyUrl,String returnUrl,
-			OrderDetail orderDetail, Method method) {
+			OrderDetail orderDetail) {
 		StoreChannel storeChannel = null;
 		boolean isNextBailPay = store.isNextBailPay();
 		storeChannel = orderService.findUnusedChannel(store, orderNo);

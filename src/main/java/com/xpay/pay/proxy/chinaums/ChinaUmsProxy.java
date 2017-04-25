@@ -1,5 +1,6 @@
 package com.xpay.pay.proxy.chinaums;
 
+import static com.xpay.pay.model.StoreChannel.PaymentGateway.CHINAUMS;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,7 +51,7 @@ public class ChinaUmsProxy implements IPaymentProxy {
 		PaymentResponse response = null;
 		try {
 			request.setGatewayOrderNo(IDGenerator.buildQrCode(appId));
-			ChinaUmsRequest chinaUmsRequest = this.toChinaUmsRequest(Method.UnifiedOrder,request);
+			ChinaUmsRequest chinaUmsRequest = this.toChinaUmsRequest(CHINAUMS.UnifiedOrder(),request);
 			List<KeyValuePair> keyPairs = this.getKeyPairs(chinaUmsRequest);
 			String sign = this.signature(keyPairs, appSecret);
 			chinaUmsRequest.setSign(sign);
@@ -78,7 +79,7 @@ public class ChinaUmsProxy implements IPaymentProxy {
 		long l = System.currentTimeMillis();
 		PaymentResponse response = null;
 		try {
-			ChinaUmsRequest chinaUmsRequest = this.toChinaUmsRequest(Method.Query,request);
+			ChinaUmsRequest chinaUmsRequest = this.toChinaUmsRequest(CHINAUMS.Query(),request);
 			
 			List<KeyValuePair> keyPairs = this.getKeyPairs(chinaUmsRequest);
 			String sign = this.signature(keyPairs, appSecret);
@@ -104,7 +105,7 @@ public class ChinaUmsProxy implements IPaymentProxy {
 		long l = System.currentTimeMillis();
 		PaymentResponse response = null;
 		try {
-			ChinaUmsRequest chinaUmsRequest = this.toChinaUmsRequest(Method.Refund,request);
+			ChinaUmsRequest chinaUmsRequest = this.toChinaUmsRequest(CHINAUMS.Refund(),request);
 			chinaUmsRequest.setRefundAmount(chinaUmsRequest.getTotalAmount());
 			List<KeyValuePair> keyPairs = this.getKeyPairs(chinaUmsRequest);
 			String sign = this.signature(keyPairs, appSecret);
@@ -125,7 +126,7 @@ public class ChinaUmsProxy implements IPaymentProxy {
 		return response;
 	}
 
-	private ChinaUmsRequest toChinaUmsRequest(Method method, PaymentRequest request) {
+	private ChinaUmsRequest toChinaUmsRequest(String method, PaymentRequest request) {
 		ChinaUmsRequest chinaUmsRequest = new ChinaUmsRequest();
 		chinaUmsRequest.setMsgSrc(appName);
 		chinaUmsRequest.setMid(request.getExtStoreId());
@@ -133,7 +134,7 @@ public class ChinaUmsProxy implements IPaymentProxy {
 		chinaUmsRequest.setTid(tId);
 		chinaUmsRequest.setBillNo(request.getGatewayOrderNo());
 		chinaUmsRequest.setRequestTimeStamp(IDGenerator.formatTime());
-		if(Method.UnifiedOrder.equals(method)) {
+		if(CHINAUMS.UnifiedOrder().equals(method)) {
 			chinaUmsRequest.setBillDate(IDGenerator.formatDate());
 		} else {
 			chinaUmsRequest.setBillDate(IDGenerator.formatDate(IDGenerator.TimePattern14, request.getOrderTime()));
@@ -145,7 +146,7 @@ public class ChinaUmsProxy implements IPaymentProxy {
 		chinaUmsRequest.setGoods(request.getGoods());
 		chinaUmsRequest.setNotifyUrl(request.getNotifyUrl());
 		chinaUmsRequest.setReturnUrl(request.getReturnUrl());
-		chinaUmsRequest.setMsgType(method.getMsgType());
+		chinaUmsRequest.setMsgType(method);
 		chinaUmsRequest.setSystemId(appId);
 		return chinaUmsRequest;
 	}

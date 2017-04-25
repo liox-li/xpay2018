@@ -39,15 +39,33 @@ public class StoreChannel {
 	}
 
 	public enum PaymentGateway {
-		MIAOFU(1), SWIFTPASS(2), CHINAUMS(3), RUBIPAY(4);
+		MIAOFU(1, "unifiedorder", "query", "refund"), SWIFTPASS(2, "unified.trade.pay", "unified.trade.query", "unified.trade.refund"), CHINAUMS(3, "yuedan.getQRCode", "yuedan.query", "yuedan.refund"), RUBIPAY(4, "", "unified.trade.quickquery", "unified.trade.refund");
 		
 		int bailStoreId;
-		PaymentGateway(int bailStoreId) {
+		String unifiedOrder;
+		String query;
+		String refund;
+		PaymentGateway(int bailStoreId, String unifiedOrder, String query, String refund) {
 			this.bailStoreId = bailStoreId;
+			this.unifiedOrder = unifiedOrder;
+			this.query = query;
+			this.refund = refund;
 		}
 		
 		public int getBailStoreId() {
 			return this.bailStoreId;
+		}
+		
+		public String UnifiedOrder() {
+			return this.unifiedOrder;
+		}
+		
+		public String Query() {
+			return this.query;
+		}
+		
+		public String Refund() {
+			return this.refund;
 		}
 		
 	}

@@ -29,38 +29,6 @@ public interface IPaymentProxy {
 		}
 	}
 	
-	public enum Method {
-		MicroPay("pay", "micropay","unsupported", "unsupported"), UnifiedOrder("pay", "unifiedorder","unified.trade.pay", "yuedan.getQRCode"), Query("pay", "query", "unified.trade.query", "yuedan.query"), Refund("pay", "refund", "unified.trade.refund", "refund");
-		
-		String module;
-		String method;
-		String service;
-		String msgType;
-		
-		Method(String module, String method, String service, String msgType) {
-			this.module = module;
-			this.method = method;
-			this.service = service;
-			this.msgType = msgType;
-		}
-		
-		public String getModule() {
-			return this.module;
-		}
-		
-		public String getMethod() {
-			return this.method;
-		}
-		
-		public String getService() {
-			return this.service;
-		}
-		
-		public String getMsgType() {
-			return msgType;
-		}
-	}
-	
 	public enum TradeNoType {
 		MiaoFu(1), Gateway(2);
 		

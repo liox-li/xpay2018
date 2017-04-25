@@ -21,7 +21,6 @@ import com.xpay.pay.model.Bill;
 import com.xpay.pay.model.Order;
 import com.xpay.pay.model.OrderDetail;
 import com.xpay.pay.model.Store;
-import com.xpay.pay.proxy.IPaymentProxy.Method;
 import com.xpay.pay.proxy.IPaymentProxy.PayChannel;
 import com.xpay.pay.rest.contract.BaseResponse;
 import com.xpay.pay.rest.contract.OrderResponse;
@@ -71,7 +70,7 @@ public class PaymentRestService extends AuthRestService {
 		Order order = null;
 		Bill bill = null;
 		do {
-			order = paymentService.createOrder(app, orderNo, store, channel, deviceId, ip, totalFee, orderDate, sellerOrderNo, attach, notifyUrl, returnUrl, orderDetail, Method.UnifiedOrder);
+			order = paymentService.createOrder(app, orderNo, store, channel, deviceId, ip, totalFee, orderDate, sellerOrderNo, attach, notifyUrl, returnUrl, orderDetail);
 			Assert.notNull(order,"Create order failed");
 			
 			try {

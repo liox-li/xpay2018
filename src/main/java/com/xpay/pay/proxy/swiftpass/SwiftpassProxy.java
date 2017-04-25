@@ -1,5 +1,7 @@
 package com.xpay.pay.proxy.swiftpass;
 
+import static com.xpay.pay.model.StoreChannel.PaymentGateway.SWIFTPASS;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -50,9 +52,9 @@ public class SwiftpassProxy implements IPaymentProxy {
 		long l = System.currentTimeMillis();
 		try {
 			SwiftpassRequest swiftRequest = toSwiftpassRequest(request);
-			String sign = signature(Method.UnifiedOrder, swiftRequest, appSecret);
+			String sign = signature(SWIFTPASS.UnifiedOrder(), swiftRequest, appSecret);
 			swiftRequest.setSign(sign);
-			List<KeyValuePair> keyPairs = this.getKeyPairs(Method.UnifiedOrder,
+			List<KeyValuePair> keyPairs = this.getKeyPairs(SWIFTPASS.UnifiedOrder(),
 					swiftRequest);
 			String xml = XmlUtils.toXml(keyPairs);
 			StringEntity entityParams = new StringEntity(xml, "utf-8");
@@ -91,9 +93,9 @@ public class SwiftpassProxy implements IPaymentProxy {
 		long l = System.currentTimeMillis();
 		try {
 			SwiftpassRequest swiftRequest = toSwiftpassRequest(request);
-			String sign = signature(Method.Query, swiftRequest, appSecret);
+			String sign = signature(SWIFTPASS.Query(), swiftRequest, appSecret);
 			swiftRequest.setSign(sign);
-			List<KeyValuePair> keyPairs = this.getKeyPairs(Method.Query,
+			List<KeyValuePair> keyPairs = this.getKeyPairs(SWIFTPASS.Query(),
 					swiftRequest);
 			String xml = XmlUtils.toXml(keyPairs);
 			StringEntity entityParams = new StringEntity(xml, "utf-8");
@@ -135,9 +137,9 @@ public class SwiftpassProxy implements IPaymentProxy {
 			swiftRequest.setOut_refund_no(swiftRequest.getOut_trade_no().replace('X', 'R'));
 			swiftRequest.setRefund_fee(swiftRequest.getTotal_fee());
 			swiftRequest.setOp_user_id(swiftRequest.getMch_id());
-			String sign = signature(Method.Refund, swiftRequest, appSecret);
+			String sign = signature(SWIFTPASS.Refund(), swiftRequest, appSecret);
 			swiftRequest.setSign(sign);
-			List<KeyValuePair> keyPairs = this.getKeyPairs(Method.Refund,
+			List<KeyValuePair> keyPairs = this.getKeyPairs(SWIFTPASS.Refund(),
 					swiftRequest);
 			String xml = XmlUtils.toXml(keyPairs);
 			StringEntity entityParams = new StringEntity(xml, "utf-8");
@@ -210,7 +212,7 @@ public class SwiftpassProxy implements IPaymentProxy {
 		return response;
 	}
 
-	private String signature(Method method, SwiftpassRequest request,
+	private String signature(String method, SwiftpassRequest request,
 			String appSecret) {
 		List<KeyValuePair> keyPairs = getKeyPairs(method, request);
 
@@ -226,7 +228,7 @@ public class SwiftpassProxy implements IPaymentProxy {
 		return md5 == null ? null : md5.toUpperCase();
 	}
 	
-	private List<KeyValuePair> getKeyPairs(Method method,
+	private List<KeyValuePair> getKeyPairs(String method,
 			SwiftpassRequest paymentRequest) {
 		if (paymentRequest == null) {
 			return null;
@@ -273,7 +275,7 @@ public class SwiftpassProxy implements IPaymentProxy {
 		if (StringUtils.isNotBlank(paymentRequest.getRefund_fee())) {
 			keyPairs.add(new KeyValuePair("refund_fee", paymentRequest.getRefund_fee()));
 		}
-		keyPairs.add(new KeyValuePair("service", method.getService()));
+		keyPairs.add(new KeyValuePair("service", method));
 		keyPairs.add(new KeyValuePair("appid", appId));
 		keyPairs.add(new KeyValuePair("nonce_str", paymentRequest.getNonce_str()));
 		keyPairs.sort((x1, x2) -> {
