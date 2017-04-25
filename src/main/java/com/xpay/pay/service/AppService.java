@@ -20,12 +20,10 @@ public class AppService {
 	protected AppMapper mapper;
 
 	public App findByKey(String key) {
-		initCache();
 		return cache.get(key);
 	}
 	
 	public App findById(int id) {
-		initCache();
 		List<App> apps = cache.values();
 		if(CollectionUtils.isEmpty(apps)) {
 			return null;

@@ -26,7 +26,6 @@ public class StoreService {
 	private static ICache<Long, List<StoreChannel>> channelCache = CacheManager.create(StoreChannel.class, 1000);
 	
 	public Store findByCode(String code) {
-		initStoreChannelCache();
 		Store store = storeMapper.findByCode(code);
 		Assert.notNull(store, "Unknow storeId "+code);
 		List<StoreChannel> channels = channelCache.get(store.getId());
@@ -36,7 +35,6 @@ public class StoreService {
 	}
 
 	public Store findById(long id) {
-		initStoreChannelCache();
 		Store store = storeMapper.findById(id);
 		Assert.notNull(store, "Unknow storeId "+id);
 		List<StoreChannel> channels = channelCache.get(store.getId());
@@ -50,7 +48,6 @@ public class StoreService {
 	}
 	
 	public StoreChannel findStoreChannelById(long id) {
-		initStoreChannelCache();
 		return channelCache.values().stream().flatMap(x -> x.stream()).filter(x -> id == x.getId()).findAny().orElse(null);
 	}
 	
