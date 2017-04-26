@@ -1,10 +1,14 @@
 package com.xpay.pay.model;
 
+import java.util.Date;
+
 public class App {
 	private int id;
 	private String key;
 	private String secret;
 	private String name;
+	private String token;
+	private Date updateDate;
 	
 	public int getId() {
 		return id;
@@ -29,6 +33,18 @@ public class App {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public String getToken() {
+		return token;
+	}
+	public void setToken(String token) {
+		this.token = token;
+	}
+	public Date getUpdateDate() {
+		return updateDate;
+	}
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
 	}
 	
 }

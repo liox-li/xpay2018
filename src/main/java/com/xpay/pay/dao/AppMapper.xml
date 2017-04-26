@@ -6,12 +6,16 @@
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="app_key" jdbcType="VARCHAR" property="key" />
     <result column="app_secret" jdbcType="VARCHAR" property="secret" />
+    <result column="token" jdbcType="VARCHAR" property="token" />
+    <result column="update_date" jdbcType="VARCHAR" property="updateDate" />
   </resultMap>
   
   <sql id="appColumns">
     id,
     app_key as key,
-    app_secret as secret
+    app_secret as secret,
+    token,
+    update_date
   </sql>
 
   <select id="findById" resultMap="AppResultMap">
@@ -38,11 +42,12 @@
   <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.App">
     insert into bill_app
     <trim prefix="(" suffix=")" suffixOverrides=",">
-     app_key, app_secret
+     app_key, app_secret, token
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
      	#{key,jdbcType=VARCHAR},
      	#{secret,jdbcType=VARCHAR}
+     	#{token,jdbcType=VARCHAR}
     </trim>
   </insert>
   
@@ -54,6 +59,9 @@
       </if>
       <if test="secret != null">
         app_secret = #{secret,jdbcType=VARCHAR},
+      </if>
+      <if test="token != null">
+        token = #{token,jdbcType=VARCHAR},
       </if>
       update_date = now()
     </set>

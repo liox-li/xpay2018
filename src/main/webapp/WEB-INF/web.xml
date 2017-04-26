@@ -56,6 +56,12 @@
 		<display-name>PayNotifyServlet</display-name>
 		<servlet-class>com.xpay.pay.controller.PayNotifyServlet</servlet-class>
 	</servlet>
+	
+	<servlet>
+		<servlet-name>TokenServlet</servlet-name>
+		<display-name>TokenServlet</display-name>
+		<servlet-class>com.xpay.pay.controller.TokenServlet</servlet-class>
+	</servlet>
 
 	<servlet>
 		<servlet-name>HeartbeatServlet</servlet-name>
@@ -71,6 +77,11 @@
 	<servlet-mapping>
 		<servlet-name>PayNotifyServlet</servlet-name>
 		<url-pattern>/notify/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>TokenServlet</servlet-name>
+		<url-pattern>/tokens/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>

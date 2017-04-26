@@ -52,16 +52,25 @@ public class OAuthFilter implements Filter {
 			FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 
-		String oauth = httpRequest.getHeader(ApplicationConstants.HEADER_OAUTH);
 		try {
-			App app = checkApp(oauth);
-			if (app != null) {
-				request.setAttribute(ApplicationConstants.ATTRIBUTE_APP, app);
-				checkOAuth(httpRequest, app);
-				chain.doFilter(request, response);
+			String token = httpRequest.getHeader(ApplicationConstants.HEADER_ACCESS_TOKEN);
+			if(StringUtils.isNotBlank(token)) {
+				App app = checkToken(token);
+				if(app!=null) {
+					request.setAttribute(ApplicationConstants.ATTRIBUTE_APP, app);
+					chain.doFilter(request, response);
+				}
 			} else {
-				throw new AuthException("401", "Unauthorized, please check your key/secret");
-			}	
+				String oauth = httpRequest.getHeader(ApplicationConstants.HEADER_OAUTH);
+				App app = checkApp(oauth);
+				if (app != null) {
+					request.setAttribute(ApplicationConstants.ATTRIBUTE_APP, app);
+					checkOAuth(httpRequest, app);
+					chain.doFilter(request, response);
+				} else {
+					throw new AuthException("401", "Unauthorized, please check your key/secret");
+				}
+			}
 		} catch (ApplicationException e) {
 			printErrorResponse(response, e);
 		} finally {
@@ -70,6 +79,11 @@ public class OAuthFilter implements Filter {
 				lastReleaseTime.set(System.currentTimeMillis());
 			}
 		}
+	}
+
+	private App checkToken(String token) {
+		App app = appService.findByToken(token);
+		return app;
 	}
 
 	@Override

@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS bill_app (
 	app_key varchar(64) NOT NULL,
 	app_secret varchar(256) NOT NULL,
 	name varchar(64) NOT NULL,
+	token varchar(32),
 	create_date TIMESTAMP WITH TIME ZONE NOT NULL default now(), 
 	update_date TIMESTAMP WITH TIME ZONE NOT NULL default now(),
 	deleted boolean DEFAULT FALSE
