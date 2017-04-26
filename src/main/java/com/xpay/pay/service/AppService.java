@@ -33,7 +33,11 @@ public class AppService {
 			return null;
 		}
 		
-		return apps.stream().filter(x -> token.equals(x.getToken())).findFirst().orElse(null);
+		App app = apps.stream().filter(x -> token.equals(x.getToken())).findFirst().orElse(null);
+		if(app!=null) {
+			return this.isTokenExpired(app.getUpdateDate())? null: app;
+		}
+		return app;
 	}
 	
 	public App findById(int id) {
