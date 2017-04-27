@@ -14,66 +14,77 @@ import com.xpay.pay.cache.CacheManager;
 import com.xpay.pay.cache.ICache;
 import com.xpay.pay.dao.AppMapper;
 import com.xpay.pay.model.App;
-import com.xpay.pay.util.CommonUtils;
 import com.xpay.pay.util.IDGenerator;
 
 @Service
 public class AppService {
-	private static ICache<String, App> cache = CacheManager.create(App.class,100);
+	private static ICache<String, App> cache = CacheManager.create(App.class,
+			100);
 	@Autowired
 	protected AppMapper mapper;
 
 	public App findByKey(String key) {
 		return cache.get(key);
 	}
-	
+
 	public App findByToken(String token) {
 		List<App> apps = cache.values();
-		if(CollectionUtils.isEmpty(apps)) {
+		if (CollectionUtils.isEmpty(apps)) {
 			return null;
 		}
-		
-		App app = apps.stream().filter(x -> token.equals(x.getToken())).findFirst().orElse(null);
-		if(app!=null) {
-			return this.isTokenExpired(app.getUpdateDate())? null: app;
+
+		App app = apps.stream().filter(x -> token.equals(x.getToken()))
+				.findFirst().orElse(null);
+		if (app != null) {
+			return this.isTokenExpired(app.getToken()) ? null : app;
 		}
 		return app;
 	}
-	
+
 	public App findById(int id) {
 		List<App> apps = cache.values();
-		if(CollectionUtils.isEmpty(apps)) {
+		if (CollectionUtils.isEmpty(apps)) {
 			return null;
 		}
-		
-		return apps.stream().filter(x -> x.getId() == id).findFirst().orElse(null);
+
+		return apps.stream().filter(x -> x.getId() == id).findFirst()
+				.orElse(null);
 	}
-	
+
 	public void refreshToken(App app) {
-		if(StringUtils.isBlank(app.getToken()) || isTokenExpired(app.getUpdateDate())) {
+		if (isTokenExpired(app.getToken())) {
 			app.setToken(buildToken());
 			app.setUpdateDate(new Date());
 			mapper.updateById(app);
 		}
 	}
-	
-	private boolean isTokenExpired(Date updateDate) {
-		Date hourBefore = CommonUtils.hourBeforeNow(24);
-		return updateDate.before(hourBefore);
+
+	private static final long token_timeout = 24 * 60 * 60 * 1000L;
+	private boolean isTokenExpired(String token) {
+		if (StringUtils.isBlank(token)) {
+			return true;
+		}
+		try {
+			long tokenTime = Long.valueOf(token.substring(10, 13));
+			return System.currentTimeMillis() - tokenTime < token_timeout;
+		} catch (Exception e) {
+			return true;
+		}
 	}
 
 	@PostConstruct
 	private void initCache() {
-		if(cache.size() == 0) {
+		if (cache.size() == 0) {
 			List<App> apps = mapper.findAll();
-			for(App app: apps) {
+			for (App app : apps) {
 				cache.put(app.getKey(), app);
 			}
 		}
 	}
-	
+
 	private String buildToken() {
-		return IDGenerator.buildKey(10)+System.currentTimeMillis()+IDGenerator.buildKey(9);
+		return IDGenerator.buildKey(10) + System.currentTimeMillis()
+				+ IDGenerator.buildKey(9);
 	}
-	
+
 }
