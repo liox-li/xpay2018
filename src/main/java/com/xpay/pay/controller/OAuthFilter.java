@@ -54,7 +54,7 @@ public class OAuthFilter implements Filter {
 
 		try {
 			String token = httpRequest.getHeader(ApplicationConstants.HEADER_ACCESS_TOKEN);
-			if(StringUtils.isNotBlank(token)) {
+			if(StringUtils.isNotBlank(token) && token.length()>=32) {
 				App app = checkToken(token);
 				if(app!=null) {
 					request.setAttribute(ApplicationConstants.ATTRIBUTE_APP, app);
@@ -84,7 +84,12 @@ public class OAuthFilter implements Filter {
 	}
 
 	private App checkToken(String token) {
-		App app = appService.findByToken(token);
+		String aToken = token.substring(0,32);
+		String appKey = token.substring(32);
+		App app = appService.findByToken(aToken);
+		if(app!=null) {
+			return app.getKey().equals(appKey)?app: null;
+		}
 		return app;
 	}
 
