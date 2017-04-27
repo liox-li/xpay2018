@@ -66,7 +66,7 @@ public class TokenServlet extends HttpServlet {
     	App app = appService.findByKey(appId);
     	if(app!=null) {
     		appService.refreshToken(app);
-    		return app.getToken()+appId;
+    		return app.getToken()+appId.replace("-", "");
     	}
     	return null;
     }

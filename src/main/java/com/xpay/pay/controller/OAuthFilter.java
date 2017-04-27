@@ -88,7 +88,7 @@ public class OAuthFilter implements Filter {
 		String appKey = token.substring(32);
 		App app = appService.findByToken(aToken);
 		if(app!=null) {
-			return app.getKey().equals(appKey)?app: null;
+			return app.getKey().replace("-", "").equals(appKey)?app: null;
 		}
 		return app;
 	}
