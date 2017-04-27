@@ -59,6 +59,8 @@ public class OAuthFilter implements Filter {
 				if(app!=null) {
 					request.setAttribute(ApplicationConstants.ATTRIBUTE_APP, app);
 					chain.doFilter(request, response);
+				} else {
+					throw new AuthException("401", "Unauthorized, please check your key/secret");
 				}
 			} else {
 				String oauth = httpRequest.getHeader(ApplicationConstants.HEADER_OAUTH);

@@ -51,14 +51,15 @@ public class AppService {
 	
 	public void refreshToken(App app) {
 		if(StringUtils.isBlank(app.getToken()) || isTokenExpired(app.getUpdateDate())) {
-			app.setToken(IDGenerator.buildKey(32));
+			app.setToken(buildToken());
+			app.setUpdateDate(new Date());
 			mapper.updateById(app);
 		}
 	}
 	
 	private boolean isTokenExpired(Date updateDate) {
 		Date hourBefore = CommonUtils.hourBeforeNow(24);
-		return updateDate.after(hourBefore);
+		return updateDate.before(hourBefore);
 	}
 
 	@PostConstruct
@@ -69,6 +70,10 @@ public class AppService {
 				cache.put(app.getKey(), app);
 			}
 		}
+	}
+	
+	private String buildToken() {
+		return IDGenerator.buildKey(10)+System.currentTimeMillis()+IDGenerator.buildKey(9);
 	}
 	
 }
