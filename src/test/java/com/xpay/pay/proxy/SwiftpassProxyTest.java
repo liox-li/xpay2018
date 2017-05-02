@@ -13,10 +13,10 @@ public class SwiftpassProxyTest extends BaseSpringJunitTest {
 	@Test
 	public void testUnifiedOrder() {
 		PaymentRequest request = new PaymentRequest();
-		request.setExtStoreId("102520441241");
+		request.setExtStoreId("755437000006"); //
 		request.setDeviceId("1213");
-		request.setTotalFee("10");
-		request.setOrderNo("X011010220170407141421434141");
+		request.setTotalFee("0.01");
+		request.setOrderNo("X011010220170502141421434143");
 		request.setSubject("No Subject");
 		request.setAttach("atach");
 		request.setServerIp("100.234.1.1");

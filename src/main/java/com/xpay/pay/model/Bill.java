@@ -10,6 +10,7 @@ public class Bill {
 	private String prepayId;
 	private String codeUrl;
 	private String tokenId;
+	private String payInfo;
 	private OrderStatus orderStatus;
 	private Order order;
 	
@@ -42,6 +43,12 @@ public class Bill {
 	}
 	public void setTokenId(String tokenId) {
 		this.tokenId = tokenId;
+	}
+	public String getPayInfo() {
+		return payInfo;
+	}
+	public void setPayInfo(String payInfo) {
+		this.payInfo = payInfo;
 	}
 	public OrderStatus getOrderStatus() {
 		return orderStatus;

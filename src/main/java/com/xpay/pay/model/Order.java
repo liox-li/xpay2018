@@ -23,6 +23,7 @@ public class Order {
 	private String codeUrl;
 	private String prepayId;
 	private String tokenId;
+	private String payInfo;
 	private OrderStatus status;
 	private Long detailId;
 	private OrderDetail orderDetail;
@@ -149,6 +150,12 @@ public class Order {
 	}
 	public void setTokenId(String tokenId) {
 		this.tokenId = tokenId;
+	}
+	public String getPayInfo() {
+		return payInfo;
+	}
+	public void setPayInfo(String payInfo) {
+		this.payInfo = payInfo;
 	}
 	public OrderStatus getStatus() {
 		return status;

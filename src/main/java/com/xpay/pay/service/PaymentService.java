@@ -89,6 +89,7 @@ public class PaymentService {
 			order.setCodeUrl(bill.getCodeUrl());
 			order.setPrepayId(bill.getPrepayId());
 			order.setTokenId(bill.getTokenId());
+			order.setPayInfo(bill.getPayInfo());
 			order.setStatus(bill.getOrderStatus());
 		}
 		return orderService.update(order);
@@ -209,6 +210,8 @@ public class PaymentService {
 		Bill bill = new Bill();
 		bill.setCodeUrl(order.getCodeUrl());
 		bill.setPrepayId(order.getPrepayId());
+		bill.setTokenId(order.getTokenId());;
+		bill.setPayInfo(order.getPayInfo());
 		bill.setOrderNo(order.getOrderNo());
 		bill.setGatewayOrderNo(order.getExtOrderNo());
 		bill.setOrderStatus(order.getStatus());

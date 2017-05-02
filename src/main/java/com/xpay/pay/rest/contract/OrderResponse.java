@@ -10,6 +10,7 @@ public class OrderResponse {
 	private String prepayId;
 	private int orderStatus;
 	private String attach;
+	private String payInfo;
 	public String getOrderNo() {
 		return orderNo;
 	}
@@ -57,5 +58,11 @@ public class OrderResponse {
 	}
 	public void setTokenId(String tokenId) {
 		this.tokenId = tokenId;
+	}
+	public String getPayInfo() {
+		return payInfo;
+	}
+	public void setPayInfo(String payInfo) {
+		this.payInfo = payInfo;
 	}
 }

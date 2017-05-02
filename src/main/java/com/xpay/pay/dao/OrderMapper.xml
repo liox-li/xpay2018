@@ -20,6 +20,7 @@
     <result column="code_url" jdbcType="VARCHAR" property="codeUrl" />
     <result column="prepay_id" jdbcType="VARCHAR" property="prepayId" />
     <result column="token_id" jdbcType="VARCHAR" property="tokenId" />
+    <result column="pay_info" jdbcType="VARCHAR" property="payInfo" />
     <result column="status" jdbcType="VARCHAR" property="status" />  
     <result column="detail_id" jdbcType="BIGINT" property="detailId" />          
   </resultMap>
@@ -42,6 +43,7 @@
     code_url,
     prepay_id,
     token_id,
+    pay_info,
     status,
     detail_id
   </sql>
@@ -118,6 +120,9 @@
       <if test="tokenId != null">
         token_id,
       </if>
+      <if test="payInfo != null">
+        pay_info,
+      </if>
       <if test="status != null">
         status,
       </if>  
@@ -174,6 +179,9 @@
       <if test="tokenId != null">
         #{tokenId,jdbcType=VARCHAR},
       </if>
+       <if test="payInfo != null">
+        #{payInfo,jdbcType=VARCHAR},
+      </if>
       <if test="status != null">
         #{status,jdbcType=VARCHAR},
       </if>    
@@ -197,6 +205,9 @@
       </if>
       <if test="tokenId != null">
        token_id =  #{tokenId,jdbcType=VARCHAR},
+      </if>
+      <if test="payInfo != null">
+       pay_info =  #{payInfo,jdbcType=VARCHAR},
       </if>
       <if test="status != null">
         status = #{status,jdbcType=VARCHAR},

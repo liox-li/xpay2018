@@ -161,6 +161,7 @@ public class PaymentRestService extends AuthRestService {
 		result.setCodeUrl(bill.getCodeUrl());
 		result.setPrepayId(bill.getPrepayId());
 		result.setTokenId(bill.getTokenId());
+		result.setPayInfo(bill.getPayInfo());
 		result.setOrderStatus(bill.getOrderStatus().getValue());
 		result.setAttach(bill.getOrder().getAttach());
 		return result;

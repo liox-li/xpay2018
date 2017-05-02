@@ -9,6 +9,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -32,6 +33,7 @@ import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.util.AppConfig;
 import com.xpay.pay.util.CryptoUtils;
 import com.xpay.pay.util.IDGenerator;
+import com.xpay.pay.util.JsonUtils;
 import com.xpay.pay.util.XmlUtils;
 
 @Component
@@ -70,7 +72,46 @@ public class SwiftpassProxy implements IPaymentProxy {
 				 PaymentResponse paymentResponse = toPaymentResponse(response.getEntity());
 				 logger.info("unified order result: " + paymentResponse.getCode()+" "+ paymentResponse.getMsg() + ", took "
 							+ (System.currentTimeMillis() - l) + "ms");
+				 if(paymentResponse!=null && paymentResponse.getBill()!=null && StringUtils.isNotBlank(paymentResponse.getBill().getTokenId())) {
+					 String tokenId = paymentResponse.getBill().getTokenId();
+					 String payInfo = getPayInfo(tokenId);
+					 paymentResponse.getBill().setPayInfo(payInfo);
+				 }
 				 return paymentResponse;
+			}
+		} catch (Exception e) {
+			throw new GatewayException(ApplicationConstants.CODE_ERROR_JSON,e.getMessage());
+		} finally {
+			if(client != null) {
+				try {
+					client.close();
+				} catch(Exception e) {
+					
+				}
+			}
+		}
+		return null;
+	}
+	
+	private String getPayInfo(String tokenId) {
+		String url = "https://paya.swiftpass.cn/pay/unifiedsdkpay?token_id=<%tokenId%>&trade_type=pay.weixin.app&appid=<%appId%>&device_info=AND_SDK";
+		
+		CloseableHttpResponse response = null;
+		CloseableHttpClient client = null;
+		long l = System.currentTimeMillis();
+		try {
+			HttpGet httpGet = new HttpGet(url.replace("<%tokenId%>", tokenId).replace("<%appId%>", appId));
+			logger.info("getPayInfo GET: "+url);
+			
+			client = HttpClients.createDefault();
+			response = client.execute(httpGet);
+			
+			if(response != null && response.getEntity() != null){
+				String result = EntityUtils.toString(response.getEntity());
+				logger.info("unified order result: " + result + ", took "
+						+ (System.currentTimeMillis() - l) + "ms");
+				PayInfoResponse resp = JsonUtils.fromJson(result, PayInfoResponse.class);
+				return resp.getPay_info();
 			}
 		} catch (Exception e) {
 			throw new GatewayException(ApplicationConstants.CODE_ERROR_JSON,e.getMessage());
@@ -283,5 +324,49 @@ public class SwiftpassProxy implements IPaymentProxy {
 		});
 		return keyPairs;
 	}
-
+	
+	private static final class PayInfoResponse {
+		private String status;
+		private String pay_info;
+		private String err_msg;
+		private String out_trade_no;
+		private String order_no;
+		private String mch_id;
+		public String getStatus() {
+			return status;
+		}
+		public void setStatus(String status) {
+			this.status = status;
+		}
+		public String getPay_info() {
+			return pay_info;
+		}
+		public void setPay_info(String pay_info) {
+			this.pay_info = pay_info;
+		}
+		public String getErr_msg() {
+			return err_msg;
+		}
+		public void setErr_msg(String err_msg) {
+			this.err_msg = err_msg;
+		}
+		public String getOut_trade_no() {
+			return out_trade_no;
+		}
+		public void setOut_trade_no(String out_trade_no) {
+			this.out_trade_no = out_trade_no;
+		}
+		public String getOrder_no() {
+			return order_no;
+		}
+		public void setOrder_no(String order_no) {
+			this.order_no = order_no;
+		}
+		public String getMch_id() {
+			return mch_id;
+		}
+		public void setMch_id(String mch_id) {
+			this.mch_id = mch_id;
+		}
+	}
 }
