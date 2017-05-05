@@ -130,6 +130,9 @@ insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values 
 insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values (102, '898319848160170', 'CHINAUMS');
 insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values (102, '898319848160171', 'CHINAUMS');
 
+insert into bill_store (code, name) values ('T20170505142427186', '泰酷正式商户');
+insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values (103, '898319848160171', 'CHINAUMS');
+
 ALTER TABLE bill_app ADD COLUMN name VARCHAR(64);
 
 ALTER table bill_app OWNER TO xpay;
