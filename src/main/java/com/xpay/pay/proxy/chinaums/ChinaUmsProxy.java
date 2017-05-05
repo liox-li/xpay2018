@@ -147,7 +147,7 @@ public class ChinaUmsProxy implements IPaymentProxy {
 		chinaUmsRequest.setNotifyUrl(request.getNotifyUrl());
 		chinaUmsRequest.setReturnUrl(request.getReturnUrl());
 		chinaUmsRequest.setMsgType(method);
-		chinaUmsRequest.setSystemId(appId);
+//		chinaUmsRequest.setSystemId(appId);
 		return chinaUmsRequest;
 	}
 	
@@ -182,9 +182,6 @@ public class ChinaUmsProxy implements IPaymentProxy {
 		}
 		if (StringUtils.isNotBlank(paymentRequest.getTotalAmount())) {
 			keyPairs.add(new KeyValuePair("totalAmount", paymentRequest.getTotalAmount()));
-		}
-		if (StringUtils.isNotBlank(paymentRequest.getSystemId())) {
-			keyPairs.add(new KeyValuePair("systemId", paymentRequest.getSystemId()));
 		}
 		if (StringUtils.isNotBlank(paymentRequest.getSign())) {
 			keyPairs.add(new KeyValuePair("sign", paymentRequest.getSign()));

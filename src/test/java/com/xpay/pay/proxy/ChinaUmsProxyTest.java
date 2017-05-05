@@ -22,11 +22,11 @@ public class ChinaUmsProxyTest extends BaseSpringJunitTest {
 	@Test
 	public void testUnifiedOrder() {
 		PaymentRequest request = new PaymentRequest();
-		request.setExtStoreId("898319848160167");
+		request.setExtStoreId("898340149000005");
 		request.setDeviceId("1213");
 		request.setPayChannel(PayChannel.WECHAT);
 		request.setTotalFee("0.01");
-		request.setOrderNo("3116201704201003354995996119");
+		request.setOrderNo("3116201704241003354995996110");
 		request.setSubject("测试商品");
 		request.setAttach("atach");
 		GoodsBean[] goods = new GoodsBean[1];
