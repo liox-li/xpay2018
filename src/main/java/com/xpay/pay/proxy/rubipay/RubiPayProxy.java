@@ -1,5 +1,7 @@
 package com.xpay.pay.proxy.rubipay;
 
+import static com.xpay.pay.model.StoreChannel.PaymentGateway.RUBIPAY;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +51,7 @@ public class RubiPayProxy implements IPaymentProxy {
 		long l = System.currentTimeMillis();
 		try {
 			RubiPayRequest rubiPayRequest = this.toRubiPayRequest(request);
-			rubiPayRequest.setService(this.channel2Service(request.getPayChannel()));
+			rubiPayRequest.setService(RUBIPAY.UnifiedOrder());
 			String sign = signature(rubiPayRequest, appSecret);
 			rubiPayRequest.setSign(sign);
 			List<KeyValuePair> keyPairs = this.getKeyPairs(rubiPayRequest);
@@ -135,6 +137,7 @@ public class RubiPayProxy implements IPaymentProxy {
 		response.setBill(bill);
 		return response;
 	}
+	
 	private String signature(RubiPayRequest request, String appSecret) {
 		List<KeyValuePair> keyPairs = getKeyPairs(request);
 
@@ -195,6 +198,7 @@ public class RubiPayProxy implements IPaymentProxy {
 		return keyPairs;
 	}
 
+	/*
 	private String channel2Service(PayChannel channel) {
 		if(PayChannel.ALIPAY.equals(channel)) {
 			return "pay.alipay.native";
@@ -203,6 +207,6 @@ public class RubiPayProxy implements IPaymentProxy {
 		}
 		throw new java.lang.IllegalArgumentException("Pay channel is not supported");
 	}
-
+*/
 	
 }

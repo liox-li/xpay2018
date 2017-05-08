@@ -93,7 +93,7 @@ public class SwiftpassProxy implements IPaymentProxy {
 		return null;
 	}
 	
-	private String getPayInfo(String tokenId) {
+	public String getPayInfo(String tokenId) {
 		String url = "https://paya.swiftpass.cn/pay/unifiedsdkpay?token_id=<%tokenId%>&trade_type=pay.weixin.app&appid=<%appId%>&device_info=AND_SDK";
 		
 		CloseableHttpResponse response = null;
@@ -325,7 +325,7 @@ public class SwiftpassProxy implements IPaymentProxy {
 		return keyPairs;
 	}
 	
-	private static final class PayInfoResponse {
+	public static final class PayInfoResponse {
 		private String status;
 		private String pay_info;
 		private String err_msg;

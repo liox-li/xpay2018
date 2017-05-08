@@ -67,11 +67,12 @@ public class PayNotifyServlet extends HttpServlet {
 	        String content = new String(buffer);
 	        logger.info("Notify from "+ uri +" content: " + content);
 	        
-  			if(uri.contains(PaymentGateway.SWIFTPASS.name().toLowerCase())) {
+  			if (uri.contains(PaymentGateway.SWIFTPASS.name().toLowerCase())) {
   				notResp = handleSwiftpassNotification(content);
-  				
-	    	} else if(uri.contains(PaymentGateway.CHINAUMS.name().toLowerCase())) {
+  			} else if (uri.contains(PaymentGateway.CHINAUMS.name().toLowerCase())) {
   				notResp = handleChinaUmsNotification(content);
+	    	} else if (uri.contains(PaymentGateway.RUBIPAY.name().toLowerCase())) {
+	    		notResp = handleRubiPayNotification(content);
 	    	}
   			order = notResp == null? null: notResp.getOrder();
   			if(order!=null && StringUtils.isNotBlank(order.getNotifyUrl()) && order.isSettle()) {
@@ -83,7 +84,7 @@ public class PayNotifyServlet extends HttpServlet {
         	response.getWriter().write(notResp.getResp());
         } 
     }
-
+    
 	private NotifyResponse handleSwiftpassNotification(String content) throws Exception {
         Order order = null;
         String respString = "fail";
@@ -150,6 +151,15 @@ public class PayNotifyServlet extends HttpServlet {
 		NotifyResponse response = new NotifyResponse(respString, order);
 	    return response;
 	}
+	
+	//TODO implement me!
+	private NotifyResponse handleRubiPayNotification(String content) {
+		String respString = "success";
+		Order order = null;
+		NotifyResponse response = new NotifyResponse(respString, order);
+	    return response;
+	}
+
 
 	private void notify(final Order order) {
 		CompletableFuture.runAsync(() -> {

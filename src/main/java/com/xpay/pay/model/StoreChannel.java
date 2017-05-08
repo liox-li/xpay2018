@@ -39,7 +39,7 @@ public class StoreChannel {
 	}
 
 	public enum PaymentGateway {
-		MIAOFU(1, "unifiedorder", "query", "refund"), SWIFTPASS(2, "unified.trade.pay", "unified.trade.query", "unified.trade.refund"), CHINAUMS(3, "yuedan.getQRCode", "yuedan.query", "yuedan.refund"), RUBIPAY(4, "", "unified.trade.quickquery", "unified.trade.refund");
+		MIAOFU(1, "unifiedorder", "query", "refund"), SWIFTPASS(2, "unified.trade.pay", "unified.trade.query", "unified.trade.refund"), CHINAUMS(3, "yuedan.getQRCode", "yuedan.query", "yuedan.refund"), RUBIPAY(4, "unified.trade.pay", "unified.trade.query", "unified.trade.refund");
 		
 		int bailStoreId;
 		String unifiedOrder;
