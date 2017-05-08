@@ -16,14 +16,15 @@ public class SwiftpassProxyTest extends BaseSpringJunitTest {
 		request.setExtStoreId("755437000006"); //
 		request.setDeviceId("1213");
 		request.setTotalFee("0.01");
-		request.setOrderNo("X011010220170502141421434143");
+		request.setOrderNo("X011010220170502141421434144");
 		request.setSubject("No Subject");
 		request.setAttach("atach");
 		request.setServerIp("100.234.1.1");
 		request.setNotifyUrl("http://100.234.1.1/xpay/notify/X110101201703311115387831581");
 		PaymentResponse response = proxy.unifiedOrder(request);
 		System.out.println("response code: "+ response.getCode()+" "+response.getMsg());
-		System.out.println(response.getBill().getCodeUrl());
+		System.out.println(response.getBill().getTokenId());
+		System.out.println(response.getBill().getPayInfo());
 	}
 	
 	@Test

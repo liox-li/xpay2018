@@ -13,6 +13,10 @@ public class RubiPayRequest {
 	private String mch_create_ip;
 	private String nonce_str;
 	private String sign;
+	private String out_refund_no;
+	private String op_user_id;
+	private String refund_fee;
+	
 	public String getService() {
 		return service;
 	}
@@ -84,5 +88,23 @@ public class RubiPayRequest {
 	}
 	public void setSign(String sign) {
 		this.sign = sign;
+	}
+	public String getOut_refund_no() {
+		return out_refund_no;
+	}
+	public void setOut_refund_no(String out_refund_no) {
+		this.out_refund_no = out_refund_no;
+	}
+	public String getOp_user_id() {
+		return op_user_id;
+	}
+	public void setOp_user_id(String op_user_id) {
+		this.op_user_id = op_user_id;
+	}
+	public String getRefund_fee() {
+		return refund_fee;
+	}
+	public void setRefund_fee(String refund_fee) {
+		this.refund_fee = refund_fee;
 	}
 }

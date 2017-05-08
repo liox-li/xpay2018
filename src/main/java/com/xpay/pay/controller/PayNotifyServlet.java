@@ -24,6 +24,7 @@ import com.xpay.pay.proxy.PaymentResponse;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.proxy.chinaums.ChinaUmsProxy;
 import com.xpay.pay.proxy.notify.NotifyProxy;
+import com.xpay.pay.proxy.rubipay.RubiPayProxy;
 import com.xpay.pay.proxy.swiftpass.SwiftpassProxy;
 import com.xpay.pay.rest.contract.OrderResponse;
 import com.xpay.pay.service.OrderService;
@@ -152,12 +153,37 @@ public class PayNotifyServlet extends HttpServlet {
 	    return response;
 	}
 	
-	//TODO implement me!
-	private NotifyResponse handleRubiPayNotification(String content) {
-		String respString = "success";
+	private NotifyResponse handleRubiPayNotification(String content) throws Exception {
 		Order order = null;
-		NotifyResponse response = new NotifyResponse(respString, order);
-	    return response;
+        String respString = "fail";
+        if(StringUtils.isNotBlank(content)){
+            Map<String,String> map = XmlUtils.fromXml(content.getBytes(), "utf-8");
+            if(map.containsKey("sign")){
+            	boolean checkSignature = CryptoUtils.checkSignature(map, RubiPayProxy.appSecret, "sign", "key");
+                if(!checkSignature){
+                	logger.info("check signature failed");
+                    respString = "fail";
+                }else{
+                    String status = map.get("status");
+                    if(status != null && "0".equals(status)){
+                        String result_code = map.get("result_code");
+                        if(PaymentResponse.SUCCESS.equals(result_code)){
+                          String orderNo = map.get("out_trade_no");
+                          String totalFee = map.get("total_fee");
+                          order = orderService.findActiveByOrderNo(orderNo);
+                          if(order!=null && CommonUtils.toInt(totalFee) == (int)(order.getTotalFeeAsFloat()*100)) {
+                        	  order.setStatus(OrderStatus.SUCCESS);
+                        	  orderService.update(order);
+                        	  respString = "success";
+                          }
+                        } 
+                    } 
+                   
+                }
+            }
+        }
+        NotifyResponse response = new NotifyResponse(respString, order);
+        return response;
 	}
 
 

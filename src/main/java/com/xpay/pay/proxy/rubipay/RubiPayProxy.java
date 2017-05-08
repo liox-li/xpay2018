@@ -87,13 +87,86 @@ public class RubiPayProxy implements IPaymentProxy {
 
 	@Override
 	public PaymentResponse query(PaymentRequest request) {
-		// TODO Auto-generated method stub
+		CloseableHttpResponse response = null;
+		CloseableHttpClient client = null;
+		long l = System.currentTimeMillis();
+		try {
+			RubiPayRequest rubiPayRequest = this.toRubiPayRequest(request);
+			rubiPayRequest.setService(RUBIPAY.Query());
+			String sign = signature(rubiPayRequest, appSecret);
+			rubiPayRequest.setSign(sign);
+			List<KeyValuePair> keyPairs = this.getKeyPairs(rubiPayRequest);
+			String xml = XmlUtils.toXml(keyPairs);
+			StringEntity entityParams = new StringEntity(xml, "utf-8");
+			
+			HttpPost httpPost = new HttpPost(baseEndpoint);
+			httpPost.setEntity(entityParams);
+			logger.info("query POST: "+baseEndpoint+", content: " + xml);
+			
+			client = HttpClients.createDefault();
+			response = client.execute(httpPost);
+			
+			if(response != null && response.getEntity() != null){
+				 PaymentResponse paymentResponse = toPaymentResponse(response.getEntity());
+				 logger.info("query result: " + paymentResponse.getCode()+" "+ paymentResponse.getMsg() + ", took "
+							+ (System.currentTimeMillis() - l) + "ms");
+				 return paymentResponse;
+			}
+		} catch (Exception e) {
+			throw new GatewayException(ApplicationConstants.CODE_ERROR_JSON,e.getMessage());
+		} finally {
+			if(client != null) {
+				try {
+					client.close();
+				} catch(Exception e) {
+					
+				}
+			}
+		}
 		return null;
 	}
 
 	@Override
 	public PaymentResponse refund(PaymentRequest request) {
-		// TODO Auto-generated method stub
+		CloseableHttpResponse response = null;
+		CloseableHttpClient client = null;
+		long l = System.currentTimeMillis();
+		try {
+			RubiPayRequest rubiPayRequest = this.toRubiPayRequest(request);
+			rubiPayRequest.setOut_refund_no(rubiPayRequest.getOut_trade_no().replace('X', 'R'));
+			rubiPayRequest.setRefund_fee(rubiPayRequest.getTotal_fee());
+			rubiPayRequest.setOp_user_id(rubiPayRequest.getMch_id());
+			rubiPayRequest.setService(RUBIPAY.Refund());
+			String sign = signature(rubiPayRequest, appSecret);
+			rubiPayRequest.setSign(sign);
+			List<KeyValuePair> keyPairs = this.getKeyPairs(rubiPayRequest);
+			String xml = XmlUtils.toXml(keyPairs);
+			StringEntity entityParams = new StringEntity(xml, "utf-8");
+			
+			HttpPost httpPost = new HttpPost(baseEndpoint);
+			httpPost.setEntity(entityParams);
+			logger.info("refund POST: "+baseEndpoint+", content: " + xml);
+			
+			client = HttpClients.createDefault();
+			response = client.execute(httpPost);
+			
+			if(response != null && response.getEntity() != null){
+				 PaymentResponse paymentResponse = toPaymentResponse(response.getEntity());
+				 logger.info("refund result: " + paymentResponse.getCode()+" "+ paymentResponse.getMsg() + ", took "
+							+ (System.currentTimeMillis() - l) + "ms");
+				 return paymentResponse;
+			}
+		} catch (Exception e) {
+			throw new GatewayException(ApplicationConstants.CODE_ERROR_JSON,e.getMessage());
+		} finally {
+			if(client != null) {
+				try {
+					client.close();
+				} catch(Exception e) {
+					
+				}
+			}
+		}
 		return null;
 	}
 
@@ -187,6 +260,15 @@ public class RubiPayProxy implements IPaymentProxy {
 			keyPairs.add(new KeyValuePair("notify_url", paymentRequest
 					.getNotify_url()));
 		}
+		if (StringUtils.isNotBlank(paymentRequest.getOut_refund_no())) {
+			keyPairs.add(new KeyValuePair("out_refund_no", paymentRequest.getOut_refund_no()));
+		}
+		if (StringUtils.isNotBlank(paymentRequest.getOp_user_id())) {
+			keyPairs.add(new KeyValuePair("op_user_id", paymentRequest.getOp_user_id()));
+		}
+		if (StringUtils.isNotBlank(paymentRequest.getRefund_fee())) {
+			keyPairs.add(new KeyValuePair("refund_fee", paymentRequest.getRefund_fee()));
+		}
 		if (StringUtils.isNotBlank(paymentRequest.getSign())) {
 			keyPairs.add(new KeyValuePair("sign", paymentRequest.getSign()));
 		}
@@ -197,16 +279,4 @@ public class RubiPayProxy implements IPaymentProxy {
 		});
 		return keyPairs;
 	}
-
-	/*
-	private String channel2Service(PayChannel channel) {
-		if(PayChannel.ALIPAY.equals(channel)) {
-			return "pay.alipay.native";
-		} else if(PayChannel.WECHAT.equals(channel)) {
-			return "pay.weixin.native";
-		}
-		throw new java.lang.IllegalArgumentException("Pay channel is not supported");
-	}
-*/
-	
 }
