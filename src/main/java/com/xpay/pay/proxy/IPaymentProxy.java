@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 public interface IPaymentProxy {
 	public static final String NO_RESPONSE = "-100";
+	public static final int DEFAULT_TIMEOUT = 3000;
 	public PaymentResponse unifiedOrder(PaymentRequest request);
 	
 	public PaymentResponse query(PaymentRequest request);

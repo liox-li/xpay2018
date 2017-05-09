@@ -7,13 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.util.KeyValuePair;
@@ -22,7 +15,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.xpay.pay.ApplicationConstants;
 import com.xpay.pay.exception.GatewayException;
 import com.xpay.pay.model.Bill;
 import com.xpay.pay.proxy.IPaymentProxy;
@@ -31,6 +23,7 @@ import com.xpay.pay.proxy.PaymentResponse;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.util.AppConfig;
 import com.xpay.pay.util.CryptoUtils;
+import com.xpay.pay.util.HttpClient;
 import com.xpay.pay.util.IDGenerator;
 import com.xpay.pay.util.XmlUtils;
 
@@ -46,128 +39,62 @@ public class RubiPayProxy implements IPaymentProxy {
 	
 	@Override
 	public PaymentResponse unifiedOrder(PaymentRequest request) {
-		CloseableHttpResponse response = null;
-		CloseableHttpClient client = null;
-		long l = System.currentTimeMillis();
+		RubiPayRequest rubiPayRequest = this.toRubiPayRequest(request);
+		rubiPayRequest.setService(RUBIPAY.UnifiedOrder());
+		String sign = signature(rubiPayRequest, appSecret);
+		rubiPayRequest.setSign(sign);
+		List<KeyValuePair> keyPairs = this.getKeyPairs(rubiPayRequest);
+		String xmlBody = XmlUtils.toXml(keyPairs);
+		 	 
+		String result = HttpClient.doPost(baseEndpoint, xmlBody, DEFAULT_TIMEOUT);
+		PaymentResponse paymentResponse = null;
 		try {
-			RubiPayRequest rubiPayRequest = this.toRubiPayRequest(request);
-			rubiPayRequest.setService(RUBIPAY.UnifiedOrder());
-			String sign = signature(rubiPayRequest, appSecret);
-			rubiPayRequest.setSign(sign);
-			List<KeyValuePair> keyPairs = this.getKeyPairs(rubiPayRequest);
-			String xml = XmlUtils.toXml(keyPairs);
-			StringEntity entityParams = new StringEntity(xml, "utf-8");
-			
-			HttpPost httpPost = new HttpPost(baseEndpoint);
-			httpPost.setEntity(entityParams);
-			logger.info("unified order POST: "+baseEndpoint+", content: " + xml);
-			
-			client = HttpClients.createDefault();
-			response = client.execute(httpPost);
-			
-			if(response != null && response.getEntity() != null){
-				 PaymentResponse paymentResponse = toPaymentResponse(response.getEntity());
-				 logger.info("unified order result: " + paymentResponse.getCode()+" "+ paymentResponse.getMsg() + ", took "
-							+ (System.currentTimeMillis() - l) + "ms");
-				 return paymentResponse;
-			}
+			paymentResponse = toPaymentResponse(result);
 		} catch (Exception e) {
-			throw new GatewayException(ApplicationConstants.CODE_ERROR_JSON,e.getMessage());
-		} finally {
-			if(client != null) {
-				try {
-					client.close();
-				} catch(Exception e) {
-					
-				}
-			}
+			logger.error("ToPaymentResponse error", e);
 		}
-		return null;
+		return paymentResponse;
 	}
 
 	@Override
 	public PaymentResponse query(PaymentRequest request) {
-		CloseableHttpResponse response = null;
-		CloseableHttpClient client = null;
-		long l = System.currentTimeMillis();
+		RubiPayRequest rubiPayRequest = this.toRubiPayRequest(request);
+		rubiPayRequest.setService(RUBIPAY.Query());
+		String sign = signature(rubiPayRequest, appSecret);
+		rubiPayRequest.setSign(sign);
+		List<KeyValuePair> keyPairs = this.getKeyPairs(rubiPayRequest);
+		String xmlBody = XmlUtils.toXml(keyPairs);
+		 	 
+		String result = HttpClient.doPost(baseEndpoint, xmlBody, DEFAULT_TIMEOUT);
+		PaymentResponse paymentResponse = null;
 		try {
-			RubiPayRequest rubiPayRequest = this.toRubiPayRequest(request);
-			rubiPayRequest.setService(RUBIPAY.Query());
-			String sign = signature(rubiPayRequest, appSecret);
-			rubiPayRequest.setSign(sign);
-			List<KeyValuePair> keyPairs = this.getKeyPairs(rubiPayRequest);
-			String xml = XmlUtils.toXml(keyPairs);
-			StringEntity entityParams = new StringEntity(xml, "utf-8");
-			
-			HttpPost httpPost = new HttpPost(baseEndpoint);
-			httpPost.setEntity(entityParams);
-			logger.info("query POST: "+baseEndpoint+", content: " + xml);
-			
-			client = HttpClients.createDefault();
-			response = client.execute(httpPost);
-			
-			if(response != null && response.getEntity() != null){
-				 PaymentResponse paymentResponse = toPaymentResponse(response.getEntity());
-				 logger.info("query result: " + paymentResponse.getCode()+" "+ paymentResponse.getMsg() + ", took "
-							+ (System.currentTimeMillis() - l) + "ms");
-				 return paymentResponse;
-			}
+			paymentResponse = toPaymentResponse(result);
 		} catch (Exception e) {
-			throw new GatewayException(ApplicationConstants.CODE_ERROR_JSON,e.getMessage());
-		} finally {
-			if(client != null) {
-				try {
-					client.close();
-				} catch(Exception e) {
-					
-				}
-			}
+			logger.error("ToPaymentResponse error", e);
 		}
-		return null;
+		return paymentResponse;
 	}
 
 	@Override
 	public PaymentResponse refund(PaymentRequest request) {
-		CloseableHttpResponse response = null;
-		CloseableHttpClient client = null;
-		long l = System.currentTimeMillis();
+		RubiPayRequest rubiPayRequest = this.toRubiPayRequest(request);
+		rubiPayRequest.setOut_refund_no(rubiPayRequest.getOut_trade_no().replace('X', 'R'));
+		rubiPayRequest.setRefund_fee(rubiPayRequest.getTotal_fee());
+		rubiPayRequest.setOp_user_id(rubiPayRequest.getMch_id());
+		rubiPayRequest.setService(RUBIPAY.Refund());
+		String sign = signature(rubiPayRequest, appSecret);
+		rubiPayRequest.setSign(sign);
+		List<KeyValuePair> keyPairs = this.getKeyPairs(rubiPayRequest);
+		String xmlBody = XmlUtils.toXml(keyPairs);
+		 	 
+		String result = HttpClient.doPost(baseEndpoint, xmlBody, DEFAULT_TIMEOUT);
+		PaymentResponse paymentResponse = null;
 		try {
-			RubiPayRequest rubiPayRequest = this.toRubiPayRequest(request);
-			rubiPayRequest.setOut_refund_no(rubiPayRequest.getOut_trade_no().replace('X', 'R'));
-			rubiPayRequest.setRefund_fee(rubiPayRequest.getTotal_fee());
-			rubiPayRequest.setOp_user_id(rubiPayRequest.getMch_id());
-			rubiPayRequest.setService(RUBIPAY.Refund());
-			String sign = signature(rubiPayRequest, appSecret);
-			rubiPayRequest.setSign(sign);
-			List<KeyValuePair> keyPairs = this.getKeyPairs(rubiPayRequest);
-			String xml = XmlUtils.toXml(keyPairs);
-			StringEntity entityParams = new StringEntity(xml, "utf-8");
-			
-			HttpPost httpPost = new HttpPost(baseEndpoint);
-			httpPost.setEntity(entityParams);
-			logger.info("refund POST: "+baseEndpoint+", content: " + xml);
-			
-			client = HttpClients.createDefault();
-			response = client.execute(httpPost);
-			
-			if(response != null && response.getEntity() != null){
-				 PaymentResponse paymentResponse = toPaymentResponse(response.getEntity());
-				 logger.info("refund result: " + paymentResponse.getCode()+" "+ paymentResponse.getMsg() + ", took "
-							+ (System.currentTimeMillis() - l) + "ms");
-				 return paymentResponse;
-			}
+			paymentResponse = toPaymentResponse(result);
 		} catch (Exception e) {
-			throw new GatewayException(ApplicationConstants.CODE_ERROR_JSON,e.getMessage());
-		} finally {
-			if(client != null) {
-				try {
-					client.close();
-				} catch(Exception e) {
-					
-				}
-			}
+			logger.error("ToPaymentResponse error", e);
 		}
-		return null;
+		return paymentResponse;
 	}
 
 	private RubiPayRequest toRubiPayRequest(PaymentRequest paymentRequest) {
@@ -186,15 +113,14 @@ public class RubiPayProxy implements IPaymentProxy {
 		return request;
 	}
 	
-	private PaymentResponse toPaymentResponse(HttpEntity httpEntity) throws Exception {
-		byte[] bytes = EntityUtils.toByteArray(httpEntity);
-		Map<String, String> params = XmlUtils.fromXml(bytes, "utf-8");
-		logger.info("response: "+ XmlUtils.toXml(params));
+	private PaymentResponse toPaymentResponse(String result) throws Exception {
+		Map<String, String> params = XmlUtils.fromXml(result.getBytes(), "utf-8");
 		boolean checkSign = CryptoUtils.checkSignature(params, appSecret, "sign", "key");
 		
 		if(!checkSign || !PaymentResponse.SUCCESS.equals(params.get("status")) || StringUtils.isNotBlank(params.get("err_msg"))) {
 			String code = params.get("status");
 			String msg = params.get("err_msg");
+			msg = StringUtils.isBlank(msg)? params.get("message"): msg;
 			throw new GatewayException(code, msg);
 		}
 		PaymentResponse response = new PaymentResponse();
