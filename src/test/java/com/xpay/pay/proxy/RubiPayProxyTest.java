@@ -18,7 +18,7 @@ public class RubiPayProxyTest  extends BaseSpringJunitTest {
 	@Test
 	public void testUnifiedOrder() {
 		PaymentRequest request = new PaymentRequest();
-		request.setExtStoreId("7551000001");
+		request.setExtStoreId("103590012926");
 		request.setDeviceId("1213");
 		request.setTotalFee("0.01");
 		request.setOrderNo("X011010220170507141421434142");
