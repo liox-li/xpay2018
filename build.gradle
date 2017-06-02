@@ -93,7 +93,7 @@ configurations {
 
 
 dependencies {
-compile 'org.springframework:spring-webmvc:4.2.8.RELEASE'
+	compile 'org.springframework:spring-webmvc:4.2.8.RELEASE'
 	compile 'org.springframework:spring-aop:4.2.8.RELEASE'
 	compile 'org.springframework:spring-jdbc:4.2.8.RELEASE'
 	compile 'org.springframework:spring-beans:4.2.8.RELEASE'
