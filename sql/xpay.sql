@@ -104,6 +104,10 @@ insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) val
 insert into bill_store (id, code, name, bail, non_bail, bar, bail_percentage) values (5, 'T004', 'BaiFu Bail store Store', 0, 0, 0, 100);
 insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) values (5, 5, '80000193', 'BAIFU');
 
+insert into bill_store (id, code, name, bail, non_bail, bar, bail_percentage) values (6, 'T005', 'JuZhen Bail store Store', 0, 0, 0, 100);
+insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) values (6, 6, '999002100009696', 'JUZHEN');
+
+
 insert into bill_store (id, code, name) values (51, 'T20070331091523123', '秒付测试商户');
 insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) values (51, 51, 'T2017032319251974486873', 'MIAOFU');
 
@@ -116,6 +120,9 @@ insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) val
 
 insert into bill_store (id, code, name) values (54, 'T20170419143221468', 'RubiPay测试商户');
 insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) values (54, 54, '7551000001', 'RUBIPAY');
+
+insert into bill_store (id, code, name) values (55, 'T20170710143221148', 'JuZhen测试商户');
+insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) values (55, 55, '999002100009696', 'JUZHEN');
 
 
 insert into bill_store (code, name) values ('T20170412153151533', '池乐');
