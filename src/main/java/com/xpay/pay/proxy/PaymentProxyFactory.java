@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.xpay.pay.model.StoreChannel.PaymentGateway;
 import com.xpay.pay.proxy.chinaums.ChinaUmsProxy;
+import com.xpay.pay.proxy.juzhen.JuZhenProxy;
 import com.xpay.pay.proxy.miaofu.MiaoFuProxy;
 import com.xpay.pay.proxy.rubipay.RubiPayProxy;
 import com.xpay.pay.proxy.swiftpass.SwiftpassProxy;
@@ -18,6 +19,8 @@ public class PaymentProxyFactory {
 	@Autowired
 	private ChinaUmsProxy chinaUmsProxy;
 	@Autowired
+	private JuZhenProxy juZhenProxy;
+	@Autowired
 	private RubiPayProxy rubiPayProxy;
 	
 	public IPaymentProxy getPaymentProxy(PaymentGateway channel) {
@@ -27,6 +30,8 @@ public class PaymentProxyFactory {
 			return swiftpassProxy;
 		} else if (PaymentGateway.CHINAUMS.equals(channel)) {
 			return chinaUmsProxy;
+		} else if (PaymentGateway.JUZHEN.equals(channel)) {
+			return juZhenProxy;
 		} else {
 			return rubiPayProxy;
 		}

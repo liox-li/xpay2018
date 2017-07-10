@@ -26,6 +26,14 @@ public class IDGenerator {
 		sb.append(randomNum(3));
 		return sb.toString();
 	}
+	
+	public static String buildShortOrderNo() {
+		StringBuffer sb = new StringBuffer();
+		sb.append(X);
+		sb.append(formatNow(TimePattern14));
+		sb.append(randomNum(5));
+		return sb.toString();
+	}
 
 	private static final char T = 'T';
 

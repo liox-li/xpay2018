@@ -33,6 +33,10 @@ public class AppConfig {
 	
 	public static final AppConfig RubiPayConfig = new AppConfig(load("rubipay.config"));
 	
+	public static final AppConfig BaiFuConfig = new AppConfig(load("baifu.config"));
+	
+	public static final AppConfig JuZhenConfig = new AppConfig(load("juzhen.config"));
+	
 	public static final AppConfig XPayConfig = new AppConfig(load("xpay.config"));
 	
 	public AppConfig(Properties properties) {

@@ -181,10 +181,15 @@ public class PaymentService {
 			request.setNotifyUrl(DEFAULT_NOTIFY_URL+order.getStoreChannel().getPaymentGateway().toString().toLowerCase());
 			request.setReturnUrl(order.getReturnUrl());
 		}
+		else if(PaymentGateway.JUZHEN.equals(order.getStoreChannel().getPaymentGateway())) {
+			request.setServerIp(LOCAL_ID);
+			request.setNotifyUrl(DEFAULT_NOTIFY_URL+order.getStoreChannel().getPaymentGateway().toString().toLowerCase());
+		}
 		else if(PaymentGateway.RUBIPAY.equals(order.getStoreChannel().getPaymentGateway())) {
 			request.setServerIp(LOCAL_ID);
 			request.setNotifyUrl(DEFAULT_NOTIFY_URL+order.getStoreChannel().getPaymentGateway().toString().toLowerCase());
 		}
+		
 		
 		if (order.getOrderDetail() != null) {
 			request.setSubject(order.getOrderDetail().getSubject());

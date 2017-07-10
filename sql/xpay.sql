@@ -101,6 +101,8 @@ insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) val
 insert into bill_store (id, code, name, bail, non_bail, bar, bail_percentage) values (4, 'T003', 'Bail Store 4', 0, 0, 0, 100);
 insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) values (4, 4, '7551000001', 'RUBIPAY');
 
+insert into bill_store (id, code, name, bail, non_bail, bar, bail_percentage) values (5, 'T004', 'BaiFu Bail store Store', 0, 0, 0, 100);
+insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) values (5, 5, '80000193', 'BAIFU');
 
 insert into bill_store (id, code, name) values (51, 'T20070331091523123', '秒付测试商户');
 insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) values (51, 51, 'T2017032319251974486873', 'MIAOFU');
@@ -135,6 +137,9 @@ insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values 
 
 insert into bill_store (code, name) values ('T20170510142427186', 'RubiPay正式商户');
 insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values (103, '103590012926', 'RUBIPAY');
+
+insert into bill_store (code, name) values ('T20170630142427286', 'BaiFu测试商户');
+insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values (104, '80000193', 'BAIFU');
 
 ALTER TABLE bill_app ADD COLUMN name VARCHAR(64);
 
