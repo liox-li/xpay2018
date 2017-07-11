@@ -25,14 +25,14 @@ public class JuZhenProxy implements IPaymentProxy {
 	private static final AppConfig config = AppConfig.JuZhenConfig;
 	private static final String baseEndpoint = config
 			.getProperty("provider.endpoint");
-	private static final String publicKeyPath = config
+	public static final String publicKeyPath = config
 			.getProperty("provider.public.key.path");
-	private static final String privateKeyPath = config
+	public static final String privateKeyPath = config
 			.getProperty("provider.private.key.path");
-	private static final String keystorePass = "!@34%^";
-	private static final String pfxPass = "123pay";
+	public static final String keystorePass = "!@34%^";
+	public static final String pfxPass = "123pay";
 
-	private static final String encoding = "UTF-8";
+	public static final String encoding = "UTF-8";
 
 	@Override
 	public PaymentResponse unifiedOrder(PaymentRequest request) {
@@ -47,26 +47,23 @@ public class JuZhenProxy implements IPaymentProxy {
 			signature = JuSignature.sign(msgInfo, encoding, publicKeyPath,
 					pfxPass);
 			logger.info("sign: " + signature);
-		} catch (Exception e1) {
-			logger.error("Sign failed", e1);
-		}
 
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("merId", request.getExtStoreId());
-		map.put("tradeCode", PaymentGateway.JUZHEN.UnifiedOrder());
-		map.put("orderId", extOrderNo);
-		map.put("msg", msgInfo);
-		map.put("signature", signature);
-		String response = "";
-		try {
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("merId", request.getExtStoreId());
+			map.put("tradeCode", PaymentGateway.JUZHEN.UnifiedOrder());
+			map.put("orderId", extOrderNo);
+			map.put("msg", msgInfo);
+			map.put("signature", signature);
+
+			String response = "";
 			long l = System.currentTimeMillis();
 			response = HttpPost.https(baseEndpoint, map, privateKeyPath,
 					publicKeyPath, keystorePass, pfxPass);
 			boolean success = JuSignature.validateSign(response, encoding,
 					publicKeyPath, pfxPass);
+			logger.info("order response: " + response + ", took "
+					+ (System.currentTimeMillis() - l) + "ms");
 			if (success) {
-				logger.info("order response: " + response + ", took "
-						+ (System.currentTimeMillis() - l) + "ms");
 				return toPaymentResponse(response, extOrderNo);
 			} else {
 				logger.error("Verify sign failed");
@@ -108,7 +105,7 @@ public class JuZhenProxy implements IPaymentProxy {
 		return response;
 	}
 
-	private String formatAmount(float amount) {
+	public static final  String formatAmount(float amount) {
 		int amt = (int) (amount * 100);
 		String result = String.valueOf(amt);
 		if (result.length() < 15) {

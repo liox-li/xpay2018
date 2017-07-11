@@ -97,11 +97,11 @@ public class JuSignature {
 	 * @param pfxPwd
 	 * @return
 	 */
-	public static boolean  validateSign(String responts, String encoding,
+	public static boolean  validateSign(String response, String encoding,
 			String pubKeyUrl, String pfxPwd) {
 		boolean success=false;
-		String signature1 = JuSignature.getSign(responts);
-		String responts1 = responts.replace(signature1, "@eidpay");
+		String signature1 = JuSignature.getSign(response);
+		String responts1 = response.replace(signature1, "@eidpay");
 		String signature2 = JuSignature.sign(responts1, "UTF-8",pubKeyUrl,pfxPwd);
 		if (signature2.equals(signature1)) {
 			success=true;
