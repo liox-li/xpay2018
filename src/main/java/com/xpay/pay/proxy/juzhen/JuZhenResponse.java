@@ -4,6 +4,8 @@ public class JuZhenResponse {
 	public static final String SUCCESS = "00000";
 	private String respCode;
 	private String respInfo;
+	private String ordStatus;
+	private String ordInfo;
 	private String codeUrl;
 	private String codeImgUrl;
 	private String prepayId;
@@ -44,6 +46,16 @@ public class JuZhenResponse {
 	public void setSignature(String signature) {
 		this.signature = signature;
 	}
-	
-	
+	public String getOrdStatus() {
+		return ordStatus;
+	}
+	public void setOrdStatus(String ordStatus) {
+		this.ordStatus = ordStatus;
+	}
+	public String getOrdInfo() {
+		return ordInfo;
+	}
+	public void setOrdInfo(String ordInfo) {
+		this.ordInfo = ordInfo;
+	}
 }

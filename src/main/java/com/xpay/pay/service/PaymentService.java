@@ -201,7 +201,8 @@ public class PaymentService {
 	
 	private PaymentRequest toQueryRequest(Order order) {
 		PaymentRequest request = new PaymentRequest();
-		if(PaymentGateway.CHINAUMS.equals(order.getStoreChannel().getPaymentGateway())) {
+		if(PaymentGateway.CHINAUMS.equals(order.getStoreChannel().getPaymentGateway()) 
+				|| PaymentGateway.JUZHEN.equals(order.getStoreChannel().getPaymentGateway())) {
 			request.setOrderTime(order.getOrderTime());
 			request.setGatewayOrderNo(order.getExtOrderNo());
 		}

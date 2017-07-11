@@ -40,7 +40,7 @@ public class JuZhenProxy implements IPaymentProxy {
 		String msgInfo = IDGenerator.formatNow(IDGenerator.TimePattern14) + "|"
 				+ formatAmount(request.getTotalFeeAsFloat()) + "|"
 				+ request.getNotifyUrl() + "|" + request.getSubject();
-		logger.info("msgInfo: " + msgInfo);
+		logger.info("Order msgInfo: " + msgInfo);
 		
 		String signature = "";
 		try {
@@ -76,7 +76,39 @@ public class JuZhenProxy implements IPaymentProxy {
 
 	@Override
 	public PaymentResponse query(PaymentRequest request) {
-		// TODO Auto-generated method stub
+		String extOrderNo = request.getGatewayOrderNo();
+		String msgInfo = IDGenerator.formatNow(IDGenerator.TimePattern14) + "|"+extOrderNo+"|"+PaymentGateway.JUZHEN.Query();
+		logger.info("Query msgInfo: " + msgInfo);
+		
+		String signature = "";
+		try {
+			signature = JuSignature.sign(msgInfo, encoding, publicKeyPath,
+					pfxPass);
+			logger.info("sign: " + signature);
+
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("merId", request.getExtStoreId());
+			map.put("tradeCode", PaymentGateway.JUZHEN.Query());
+			map.put("orderId", extOrderNo);
+			map.put("msg", msgInfo);
+			map.put("signature", signature);
+
+			String response = "";
+			long l = System.currentTimeMillis();
+			response = HttpPost.https(baseEndpoint, map, privateKeyPath,
+					publicKeyPath, keystorePass, pfxPass);
+			boolean success = JuSignature.validateSign(response, encoding,
+					publicKeyPath, pfxPass);
+			logger.info("Query response: " + response + ", took "
+					+ (System.currentTimeMillis() - l) + "ms");
+			if (success) {
+				return toPaymentResponse(request, response, extOrderNo);
+			} else {
+				logger.error("Verify sign failed");
+			}
+		} catch (Exception e) {
+			logger.error("Query order failed", e);
+		}
 		return null;
 	}
 
@@ -101,9 +133,22 @@ public class JuZhenProxy implements IPaymentProxy {
 		bill.setPrepayId(resp.getPrepayId());
 		bill.setOrderNo(request.getOrderNo());
 		bill.setGatewayOrderNo(extOrderNo);
-		bill.setOrderStatus(OrderStatus.NOTPAY);
+		bill.setOrderStatus(toOrderStatus(resp.getOrdStatus()));
 		response.setBill(bill);
 		return response;
+	}
+	
+	private OrderStatus toOrderStatus(String ordStatus) {
+		if(StringUtils.isBlank(ordStatus)) {
+			return OrderStatus.NOTPAY;
+		}
+		if(ordStatus.startsWith("0")) {
+			return OrderStatus.SUCCESS;
+		} else if(ordStatus.startsWith("1") || ordStatus.startsWith("2")) {
+			return OrderStatus.PAYERROR;
+		} else {
+			return OrderStatus.NOTPAY;
+		}
 	}
 
 	public static final  String formatAmount(float amount) {
