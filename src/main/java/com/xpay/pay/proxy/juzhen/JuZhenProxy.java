@@ -38,7 +38,7 @@ public class JuZhenProxy implements IPaymentProxy {
 	public PaymentResponse unifiedOrder(PaymentRequest request) {
 		String extOrderNo = IDGenerator.buildShortOrderNo();
 		String msgInfo = IDGenerator.formatNow(IDGenerator.TimePattern14) + "|"
-				+ this.formatAmount(request.getTotalFeeAsFloat()) + "|"
+				+ formatAmount(request.getTotalFeeAsFloat()) + "|"
 				+ request.getNotifyUrl() + "|" + request.getSubject();
 		logger.info("msgInfo: " + msgInfo);
 		
@@ -64,7 +64,7 @@ public class JuZhenProxy implements IPaymentProxy {
 			logger.info("order response: " + response + ", took "
 					+ (System.currentTimeMillis() - l) + "ms");
 			if (success) {
-				return toPaymentResponse(response, extOrderNo);
+				return toPaymentResponse(request, response, extOrderNo);
 			} else {
 				logger.error("Verify sign failed");
 			}
@@ -86,7 +86,7 @@ public class JuZhenProxy implements IPaymentProxy {
 		return null;
 	}
 
-	private PaymentResponse toPaymentResponse(String str, String extOrderNo) {
+	private PaymentResponse toPaymentResponse(PaymentRequest request, String str, String extOrderNo) {
 		JuZhenResponse resp = JsonUtils.fromJson(str, JuZhenResponse.class);
 		if (resp == null || !JuZhenResponse.SUCCESS.equals(resp.getRespCode())
 				|| StringUtils.isBlank(resp.getCodeUrl())) {
@@ -99,7 +99,8 @@ public class JuZhenProxy implements IPaymentProxy {
 		Bill bill = new Bill();
 		bill.setCodeUrl(resp.getCodeUrl());
 		bill.setPrepayId(resp.getPrepayId());
-		bill.setOrderNo(extOrderNo);
+		bill.setOrderNo(request.getOrderNo());
+		bill.setGatewayOrderNo(extOrderNo);
 		bill.setOrderStatus(OrderStatus.NOTPAY);
 		response.setBill(bill);
 		return response;

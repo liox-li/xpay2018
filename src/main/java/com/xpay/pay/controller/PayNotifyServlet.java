@@ -25,7 +25,6 @@ import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.proxy.chinaums.ChinaUmsProxy;
 import com.xpay.pay.proxy.juzhen.JuZhenNotification;
 import com.xpay.pay.proxy.juzhen.JuZhenProxy;
-import com.xpay.pay.proxy.juzhen.JuZhenResponse;
 import com.xpay.pay.proxy.notify.NotifyProxy;
 import com.xpay.pay.proxy.rubipay.RubiPayProxy;
 import com.xpay.pay.proxy.swiftpass.SwiftpassProxy;
@@ -91,7 +90,7 @@ public class PayNotifyServlet extends HttpServlet {
 				notify(order);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("notify failed ", e);
 		} finally {
 			response.getWriter().write(notResp.getResp());
 		}
@@ -222,7 +221,7 @@ public class PayNotifyServlet extends HttpServlet {
 				String orderId = notification.getOrderId();
 				String totalFee = notification.getTransAmt();
 
-				order = orderService.findActiveByOrderNo(orderId);
+				order = orderService.findActiveByExtOrderNo(orderId);
 
 				if (order != null
 						&& totalFee.equals(JuZhenProxy.formatAmount(order
@@ -233,7 +232,7 @@ public class PayNotifyServlet extends HttpServlet {
 				}
 			}
 		}
-
+		logger.info("handle response result: "+respString);
 		NotifyResponse response = new NotifyResponse(respString, order);
 		return response;
 	}
