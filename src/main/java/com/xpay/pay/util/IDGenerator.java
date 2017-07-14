@@ -91,6 +91,11 @@ public class IDGenerator {
 		}
 	}
 	
+	public static String formatTime(Date date, String pattern) {
+		SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
+		return dateFormat.format(date);
+	}
+	
 	public static String formatNow(String pattern) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
 		return dateFormat.format(new Date());

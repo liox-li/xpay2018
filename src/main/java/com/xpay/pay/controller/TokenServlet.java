@@ -1,6 +1,7 @@
 package com.xpay.pay.controller;
 
 import java.io.IOException;
+import java.util.Date;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -15,6 +16,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.xpay.pay.model.App;
 import com.xpay.pay.service.AppService;
+import com.xpay.pay.util.IDGenerator;
 import com.xpay.pay.util.JsonUtils;
 
 public class TokenServlet extends HttpServlet {
@@ -73,14 +75,23 @@ public class TokenServlet extends HttpServlet {
     
 	public static class TokenResponse {
 		private String token;
+		private String expireAt;
 		public TokenResponse(String token) {
 			this.token = token;
+			long timestamp = Long.valueOf(token.substring(10, 23)) + AppService.token_timeout;
+			expireAt = IDGenerator.formatTime(new Date(timestamp), IDGenerator.TimePattern14);
 		}
 		public String getToken() {
 			return token;
 		}
 		public void setToken(String token) {
 			this.token = token;
+		}
+		public String getExpireAt() {
+			return expireAt;
+		}
+		public void setExpireAt(String expireAt) {
+			this.expireAt = expireAt;
 		}
 	}
 }

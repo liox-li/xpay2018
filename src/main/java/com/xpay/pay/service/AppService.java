@@ -59,14 +59,14 @@ public class AppService {
 		}
 	}
 
-	private static final long token_timeout = 24 * 60 * 60 * 1000L;
+	public static final long token_timeout = 24 * 60 * 60 * 1000L;
 	private boolean isTokenExpired(String token) {
 		if (StringUtils.isBlank(token)) {
 			return true;
 		}
 		try {
-			long tokenTime = Long.valueOf(token.substring(10, 13));
-			return System.currentTimeMillis() - tokenTime < token_timeout;
+			long tokenTime = Long.valueOf(token.substring(10, 23));
+			return System.currentTimeMillis() - tokenTime > token_timeout;
 		} catch (Exception e) {
 			return true;
 		}
