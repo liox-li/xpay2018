@@ -20,6 +20,7 @@ import com.xpay.pay.model.App;
 import com.xpay.pay.model.Bill;
 import com.xpay.pay.model.Order;
 import com.xpay.pay.model.OrderDetail;
+import com.xpay.pay.model.OrderRequest;
 import com.xpay.pay.model.Store;
 import com.xpay.pay.proxy.IPaymentProxy.PayChannel;
 import com.xpay.pay.rest.contract.BaseResponse;
@@ -42,17 +43,30 @@ public class PaymentRestService extends AuthRestService {
 
 	@RequestMapping(value = "/unifiedorder ", method = RequestMethod.POST)
 	public BaseResponse<OrderResponse> unifiedOrder(
-			@RequestParam String storeId,   //Store.code
-			@RequestParam String payChannel, // ALIPAY("1"), WECHAT("2")
-			@RequestParam String totalFee, // <=3000yuan
-			@RequestParam String orderTime, // yyyyMMddHHmmss
+			@RequestParam(required = false) String storeId,   //Store.code
+			@RequestParam(required = false) String payChannel, // ALIPAY("1"), WECHAT("2")
+			@RequestParam(required = false) String totalFee, // <=3000yuan
+			@RequestParam(required = false) String orderTime, // yyyyMMddHHmmss
 			@RequestParam(required = false) String sellerOrderNo,
 			@RequestParam(required = false) String attach,
 			@RequestParam(required = false) String deviceId,
 			@RequestParam(required = false) String ip,
 			@RequestParam(required = false) String notifyUrl,
 			@RequestParam(required = false) String returnUrl,
-			@RequestBody(required = false) OrderDetail orderDetail) {
+			@RequestBody(required = false) OrderRequest payload) {
+		if(StringUtils.isBlank(storeId)) {
+			Assert.notNull(payload, "Order request can not be null");
+			storeId = payload.getStoreId();
+			payChannel = payload.getPayChannel();
+			totalFee = payload.getTotalFee();
+			orderTime = payload.getOrderTime();
+			deviceId = payload.getDeviceId();
+			ip = payload.getIp();
+			sellerOrderNo = payload.getSellerOrderNo();
+			attach = payload.getAttach();
+			notifyUrl = payload.getNotifyUrl();
+			returnUrl = payload.getReturnUrl();
+	}
 		Assert.isTrue(StringUtils.isNoneBlank(storeId, payChannel, totalFee, orderTime), "StoreId, payChannel, totalFee and orderTime can not be null");
 		Assert.isTrue(StringUtils.isNotBlank(deviceId) || StringUtils.isNotBlank(ip), "DeviceId or ip must be provided");
 		PayChannel channel = PayChannel.fromValue(payChannel);
@@ -63,6 +77,7 @@ public class PaymentRestService extends AuthRestService {
 		Store store = storeService.findByCode(storeId);
 		App app = getApp();
 		String orderNo = IDGenerator.buildOrderNo(app.getId(), store.getId());
+		OrderDetail orderDetail = payload == null?null: payload.getOrderDetail();
 		if(orderDetail != null) {
 			orderService.insert(orderDetail);
 		}

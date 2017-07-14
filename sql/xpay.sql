@@ -117,6 +117,10 @@ insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) val
 insert into bill_store (id, code, name) values (53, 'T20170412143221368', '银商测试商户');
 insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) values (53, 53, '898340149000005', 'CHINAUMS');
 
+insert into bill_store (id, code, name) values (56, 'T20170711123321148', '银商demo商户');
+insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) values (56, 56, '898319848160171', 'CHINAUMS');
+
+
 
 insert into bill_store (id, code, name) values (54, 'T20170419143221468', 'RubiPay测试商户');
 insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) values (54, 54, '7551000001', 'RUBIPAY');
