@@ -73,7 +73,7 @@
     SELECT
     <include refid="orderColumns" />
     FROM bill_order
-    WHERE bill_order.store_id = #{storeId} AND update_date &gt;= #{startTime} AND update_date &lt; #{endTime} AND (status='SUCCESS' or status='REFUND') AND deleted = false
+    WHERE bill_order.store_id = #{storeId} AND update_date &gt;= #{startTime} AND update_date &lt; #{endTime} AND deleted = false
   </select>
   
   <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.Order">
