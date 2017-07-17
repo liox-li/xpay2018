@@ -69,6 +69,13 @@
     WHERE bill_order.ext_order_no = #{extOrderNo} AND deleted = false
   </select>
   
+  <select id="findByStoreIdAndTime" resultMap="OrderResultMap">
+    SELECT
+    <include refid="orderColumns" />
+    FROM bill_order
+    WHERE bill_order.store_id = #{storeId} AND update_date &gt;= #{startTime} AND update_date &lt; #{endTime} AND (status='SUCCESS' or status='REFUND') AND deleted = false
+  </select>
+  
   <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.Order">
     insert into bill_order
    <trim prefix="(" suffix=")" suffixOverrides=",">

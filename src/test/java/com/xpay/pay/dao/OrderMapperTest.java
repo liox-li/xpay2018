@@ -1,5 +1,6 @@
 package com.xpay.pay.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
@@ -9,6 +10,7 @@ import com.xpay.pay.BaseSpringJunitTest;
 import com.xpay.pay.model.Order;
 import com.xpay.pay.proxy.IPaymentProxy.PayChannel;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
+import com.xpay.pay.util.TimeUtils;
 
 public class OrderMapperTest extends BaseSpringJunitTest {
 	@Autowired
@@ -51,5 +53,14 @@ public class OrderMapperTest extends BaseSpringJunitTest {
 		order.setCodeUrl("http://ali.pay.com/asdfv");
 		order.setStatus(OrderStatus.NOTPAY);
 		mapper.updateById(order);
+	}
+	
+	@Test
+	public void testFindByStoreIdAndTime() {
+		int storeId=53;
+		Date startTime = TimeUtils.parseTime("2017-04-13 00:00:00", TimeUtils.TimePatternTime);
+		Date endTime = TimeUtils.parseTime("2017-04-14 00:00:00", TimeUtils.TimePatternTime);
+		List<Order> orders = mapper.findByStoreIdAndTime(storeId, startTime, endTime);
+		System.out.println(orders.size());
 	}
 }
