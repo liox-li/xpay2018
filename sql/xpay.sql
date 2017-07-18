@@ -153,6 +153,10 @@ insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values 
 insert into bill_store (code, name) values ('T20170630142427286', 'BaiFu测试商户');
 insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values (104, '80000193', 'BAIFU');
 
+insert into bill_store (id, code, name) values (57, 'T201707180927281148', 'JuZhen正式商户');
+insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) values (57, 57, '800001750000000', 'JUZHEN');
+
+
 ALTER TABLE bill_app ADD COLUMN name VARCHAR(64);
 
 ALTER table bill_app OWNER TO xpay;

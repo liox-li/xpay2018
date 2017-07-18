@@ -40,7 +40,7 @@ public class JuZhenProxy implements IPaymentProxy {
 		String msgInfo = IDGenerator.formatNow(IDGenerator.TimePattern14) + "|"
 				+ formatAmount(request.getTotalFeeAsFloat()) + "|"
 				+ request.getNotifyUrl() + "|" + request.getSubject();
-		logger.info("Order msgInfo: " + msgInfo);
+		logger.info("UnifiedOrder: " + baseEndpoint+" msgInfo="+msgInfo+" store="+request.getExtStoreId());
 		
 		String signature = "";
 		try {
