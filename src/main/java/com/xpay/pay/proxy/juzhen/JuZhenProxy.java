@@ -50,7 +50,7 @@ public class JuZhenProxy implements IPaymentProxy {
 
 			Map<String, String> map = new HashMap<String, String>();
 			map.put("merId", request.getExtStoreId());
-			map.put("tradeCode", PaymentGateway.JUZHEN.UnifiedOrder());
+			map.put("tradeCode", this.toTranCode(request.getPayChannel()));
 			map.put("orderId", extOrderNo);
 			map.put("msg", msgInfo);
 			map.put("signature", signature);
@@ -77,7 +77,7 @@ public class JuZhenProxy implements IPaymentProxy {
 	@Override
 	public PaymentResponse query(PaymentRequest request) {
 		String extOrderNo = request.getGatewayOrderNo();
-		String msgInfo = IDGenerator.formatNow(IDGenerator.TimePattern14) + "|"+extOrderNo+"|"+PaymentGateway.JUZHEN.Query();
+		String msgInfo = IDGenerator.formatNow(IDGenerator.TimePattern14) + "|"+extOrderNo+"|"+toTranCode(request.getPayChannel());
 		logger.info("Query msgInfo: " + msgInfo);
 		
 		String signature = "";
@@ -102,7 +102,7 @@ public class JuZhenProxy implements IPaymentProxy {
 			logger.info("Query response: " + response + ", took "
 					+ (System.currentTimeMillis() - l) + "ms");
 			if (success) {
-				return toPaymentResponse(request, response, extOrderNo);
+				return toQueryResponse(request, response, extOrderNo);
 			} else {
 				logger.error("Verify sign failed");
 			}
@@ -117,11 +117,42 @@ public class JuZhenProxy implements IPaymentProxy {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	private static final String wechatChannel = "070201";
+	private static final String aliChannel = "070301";
+	private String toTranCode(PayChannel payChannel) {
+		if(PayChannel.WECHAT.equals(payChannel)) {
+			return wechatChannel;
+		} else if (PayChannel.ALIPAY.equals(payChannel)) {
+			return aliChannel;
+		} else {
+			return wechatChannel;
+		}
+	}
 
 	private PaymentResponse toPaymentResponse(PaymentRequest request, String str, String extOrderNo) {
 		JuZhenResponse resp = JsonUtils.fromJson(str, JuZhenResponse.class);
 		if (resp == null || !JuZhenResponse.SUCCESS.equals(resp.getRespCode())
 				|| StringUtils.isBlank(resp.getCodeUrl())) {
+			String code = resp == null ? NO_RESPONSE : resp.getRespCode();
+			String msg = resp == null ? "No response" : resp.getRespInfo();
+			throw new GatewayException(code, msg);
+		}
+		PaymentResponse response = new PaymentResponse();
+		response.setCode(PaymentResponse.SUCCESS);
+		Bill bill = new Bill();
+		bill.setCodeUrl(resp.getCodeUrl());
+		bill.setPrepayId(resp.getPrepayId());
+		bill.setOrderNo(request.getOrderNo());
+		bill.setGatewayOrderNo(extOrderNo);
+		bill.setOrderStatus(toOrderStatus(resp.getOrdStatus()));
+		response.setBill(bill);
+		return response;
+	}
+	
+	private PaymentResponse toQueryResponse(PaymentRequest request, String str, String extOrderNo) {
+		JuZhenResponse resp = JsonUtils.fromJson(str, JuZhenResponse.class);
+		if (resp == null || !JuZhenResponse.SUCCESS.equals(resp.getRespCode())) {
 			String code = resp == null ? NO_RESPONSE : resp.getRespCode();
 			String msg = resp == null ? "No response" : resp.getRespInfo();
 			throw new GatewayException(code, msg);
