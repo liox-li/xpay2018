@@ -261,9 +261,12 @@ public class PayNotifyServlet extends HttpServlet {
 					if(response != null && response.getStatus()==ApplicationConstants.STATUS_OK) {
 						return;
 					}
-					Thread.sleep(30000);
 				} catch(Exception e) {
 					
+				}
+				try {
+					Thread.sleep(30000);
+				} catch (Exception e) {
 				}
 			}
 		}, executor);
