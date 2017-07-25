@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -239,6 +241,7 @@ public class PayNotifyServlet extends HttpServlet {
 		return response;
 	}
 
+	private static final Executor executor = Executors.newFixedThreadPool(50);
 	private void notify(final Order order) {
 		CompletableFuture.runAsync(() -> {
 			OrderResponse notification = new OrderResponse();
@@ -263,7 +266,7 @@ public class PayNotifyServlet extends HttpServlet {
 					
 				}
 			}
-		});
+		}, executor);
 	}
 
 	public static class NotifyResponse {
