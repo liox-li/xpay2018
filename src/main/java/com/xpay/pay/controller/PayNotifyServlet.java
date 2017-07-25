@@ -18,6 +18,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import com.xpay.pay.ApplicationConstants;
 import com.xpay.pay.model.Order;
 import com.xpay.pay.model.StoreChannel.PaymentGateway;
 import com.xpay.pay.proxy.PaymentResponse;
@@ -28,6 +29,7 @@ import com.xpay.pay.proxy.juzhen.JuZhenProxy;
 import com.xpay.pay.proxy.notify.NotifyProxy;
 import com.xpay.pay.proxy.rubipay.RubiPayProxy;
 import com.xpay.pay.proxy.swiftpass.SwiftpassProxy;
+import com.xpay.pay.rest.contract.BaseResponse;
 import com.xpay.pay.rest.contract.OrderResponse;
 import com.xpay.pay.service.OrderService;
 import com.xpay.pay.util.CommonUtils;
@@ -248,8 +250,19 @@ public class PayNotifyServlet extends HttpServlet {
 			notification.setTokenId(order.getTokenId());
 			notification.setOrderStatus(order.getStatus().getValue());
 			notification.setAttach(order.getAttach());
-			notifyProxy.notify(order.getNotifyUrl(), order.getApp(),
-					notification);
+			BaseResponse response = null;
+			for (int i=0;i<3;i++) {
+				try {
+					response = notifyProxy.notify(order.getNotifyUrl(), order.getApp(),
+						notification);
+					if(response != null && response.getStatus()==ApplicationConstants.STATUS_OK) {
+						return;
+					}
+					Thread.sleep(30000);
+				} catch(Exception e) {
+					
+				}
+			}
 		});
 	}
 

@@ -13,8 +13,8 @@
  
 	<bean id="httpClientFactory" class="org.springframework.http.client.HttpComponentsClientHttpRequestFactory">
 		<constructor-arg ref="httpClient" />
-		<property name="connectTimeout" value="5000" />
-		<property name="readTimeout" value="5000" />
+		<property name="connectTimeout" value="10000" />
+		<property name="readTimeout" value="10000" />
 	</bean>
 
 	<bean id="httpClient" class="org.apache.http.impl.client.DefaultHttpClient">

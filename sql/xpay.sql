@@ -84,11 +84,30 @@ CREATE TABLE IF NOT EXISTS bill_order_detail (
 );
 ALTER SEQUENCE bill_order_detail_id_seq RESTART 1000;
 
+CREATE TABLE IF NOT EXISTS cash_transaction (
+	id BIGSERIAL PRIMARY KEY,
+	order_no varchar(32) NOT NULL,
+	channel varchar(32) NOT NULL,
+	card_num varchar(32) NOT NULL,
+	account_name varchar(32) NOT NULL,
+	bank_name varchar(32) NOT NULL,
+	total_fee varchar(10) NOT NULL,
+	status varchar(16) default 'PENDING',
+	create_date TIMESTAMP WITH TIME ZONE NOT NULL default now(), 
+	update_date TIMESTAMP WITH TIME ZONE NOT NULL default now(),
+	deleted boolean DEFAULT FALSE
+);
+ALTER SEQUENCE cash_transaction_id_seq RESTART 1000;
+CREATE INDEX idx_cash_transaction_order_no ON cash_transaction(order_no);
+CREATE INDEX idx_cash_card_num ON cash_transaction(card_num); 
+
 
 //Init data
 insert into bill_app (id, app_key, app_secret) values (1, 'b471565ef7394b439c00ea47052e', '93039FAF4719BCA16CF51DA9D86D8BCD');
 insert into bill_app (id, app_key, app_secret) values (2, '39ba4501-8e43-403e-b31a-1601963151ab', 'wZAU7CE4pXqPiwbxq1jTuoKp4CGSjC4Drbtfc9My0g9PzRGXS1pYzGUmcGDUKwuX20v4hEWonn1Dr66xrbCtBFXJ');
 insert into bill_app (id, app_key, app_secret) values (3, '2dbfa7ce-4af4-4b3e-abed-929fbaa4a2f1', 'eGGtcSaUUf2S55Px3RduyNszYD9mDwpsFBM3FvMa2u48UV7GRl3LX9PUorncnk7sGMtbhFzn7fqobd2tr2uBcJRy');
+insert into bill_app (id, app_key, app_secret) values (4, 'ed996bdc-b1d8-4ae0-a7f0-700128aca648', 'XYwKigqEBYUYRlKKrv8pZAoMSEhfhMRPCYhR2gGqM05rdo48qz4Lej7Z36e9g1hjDjNdeFgKdqmdKD4neKYhyhni');
+
 
 insert into bill_store (id, code, name, bail, non_bail, bar, bail_percentage) values (1, 'T000', 'Bail Store', 0, 0, 0, 100);
 insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) values (1, 1, 'T2017032319251974486873', 'MIAOFU');
@@ -107,7 +126,6 @@ insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) val
 
 insert into bill_store (id, code, name, bail, non_bail, bar, bail_percentage) values (6, 'T005', 'JuZhen Bail store Store', 0, 0, 0, 100);
 insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) values (6, 6, '999002100009696', 'JUZHEN');
-
 
 insert into bill_store (id, code, name) values (51, 'T20070331091523123', '秒付测试商户');
 insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) values (51, 51, 'T2017032319251974486873', 'MIAOFU');
@@ -156,6 +174,8 @@ insert into bill_store_channel (store_id, ext_store_id, payment_gateway) values 
 insert into bill_store (id, code, name) values (57, 'T201707180927281148', 'JuZhen正式商户');
 insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) values (57, 57, '800001750000000', 'JUZHEN');
 
+insert into bill_store (id, code, name) values (106, 'T20170718141112675', '深圳市华商盟科技有限公司');
+insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) values (106, 106, '800001750000000', 'JUZHEN');
 
 ALTER TABLE bill_app ADD COLUMN name VARCHAR(64);
 
