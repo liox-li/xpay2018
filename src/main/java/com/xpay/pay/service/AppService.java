@@ -18,8 +18,7 @@ import com.xpay.pay.util.IDGenerator;
 
 @Service
 public class AppService {
-	private static ICache<String, App> cache = CacheManager.create(App.class,
-			100);
+	private static ICache<String, App> cache = CacheManager.create(App.class, 100);
 	@Autowired
 	protected AppMapper mapper;
 
@@ -85,6 +84,14 @@ public class AppService {
 	private String buildToken() {
 		return IDGenerator.buildKey(10) + System.currentTimeMillis()
 				+ IDGenerator.buildKey(9);
+	}
+	
+	public void refreshCache() {
+		cache.destroy();
+		List<App> apps = mapper.findAll();
+		for (App app : apps) {
+			cache.put(app.getKey(), app);
+		}
 	}
 
 }

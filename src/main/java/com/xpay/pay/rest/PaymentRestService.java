@@ -25,6 +25,7 @@ import com.xpay.pay.model.Store;
 import com.xpay.pay.proxy.IPaymentProxy.PayChannel;
 import com.xpay.pay.rest.contract.BaseResponse;
 import com.xpay.pay.rest.contract.OrderResponse;
+import com.xpay.pay.service.AppService;
 import com.xpay.pay.service.OrderService;
 import com.xpay.pay.service.PaymentService;
 import com.xpay.pay.service.StoreService;
@@ -40,6 +41,8 @@ public class PaymentRestService extends AuthRestService {
 	private StoreService storeService;
 	@Autowired
 	private OrderService orderService;
+	@Autowired
+	private AppService appService;
 
 	@RequestMapping(value = "/unifiedorder ", method = RequestMethod.POST)
 	public BaseResponse<OrderResponse> unifiedOrder(
@@ -167,6 +170,18 @@ public class PaymentRestService extends AuthRestService {
 		
 		return response;
 	}
+	
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/refresh ", method = RequestMethod.GET)
+	public BaseResponse<OrderResponse> refresh(@PathVariable String domain) {
+		if("app".equals(domain)) {
+			appService.refreshCache();
+		} else if("store".equals(domain)) {
+			storeService.refreshCache();
+		}
+		return BaseResponse.OK;
+	}
+			
 
 	private OrderResponse toOrderResponse(Bill bill) {
 		OrderResponse result = new OrderResponse();

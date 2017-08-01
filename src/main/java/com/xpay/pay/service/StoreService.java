@@ -23,7 +23,7 @@ public class StoreService {
 	protected StoreMapper storeMapper;
 	@Autowired
 	protected StoreChannelMapper storeChannelMapper;
-	private static ICache<Long, List<StoreChannel>> channelCache = CacheManager.create(StoreChannel.class, 1000);
+	private static ICache<Long, List<StoreChannel>> channelCache = CacheManager.create(StoreChannel.class, 2000);
 	
 	public Store findByCode(String code) {
 		Store store = storeMapper.findByCode(code);
@@ -59,6 +59,15 @@ public class StoreService {
 			for(Long storeId: storeChannelMap.keySet()) {
 				channelCache.put(storeId, storeChannelMap.get(storeId));
 			}
+		}
+	}
+	
+	public void refreshCache() {
+		channelCache.destroy();
+		List<StoreChannel> channels = storeChannelMapper.findAll();
+		Map<Long, List<StoreChannel>> storeChannelMap = channels.stream().collect(Collectors.groupingBy(x -> x.getStoreId()));
+		for(Long storeId: storeChannelMap.keySet()) {
+			channelCache.put(storeId, storeChannelMap.get(storeId));
 		}
 	}
 }
