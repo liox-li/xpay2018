@@ -47,7 +47,7 @@ public class TokenServlet extends HttpServlet {
 		TokenResponse tokenResp = null;
 		try {
 			request.setCharacterEncoding("utf-8");
-	        logger.info("Refresh token from "+ uri);
+	       // logger.info("Refresh token from "+ uri);
 	        String appId = uri.substring(uri.lastIndexOf("/")+1);
 	        String token = this.refreshToken(appId);
 	        if(token!=null) {
