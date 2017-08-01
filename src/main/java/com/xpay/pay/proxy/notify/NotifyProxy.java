@@ -13,7 +13,7 @@ import org.springframework.web.client.RestTemplate;
 import com.xpay.pay.model.App;
 import com.xpay.pay.proxy.OAuth1ApiBinding;
 import com.xpay.pay.rest.contract.BaseResponse;
-import com.xpay.pay.rest.contract.OrderResponse;
+import com.xpay.pay.rest.contract.NotificationResponse;
 import com.xpay.pay.util.JsonUtils;
 
 @Component
@@ -24,7 +24,7 @@ public class NotifyProxy {
 
 	
 	@SuppressWarnings("rawtypes")
-	public BaseResponse notify(String url, App app, OrderResponse request) {
+	public BaseResponse notify(String url, App app, NotificationResponse request) {
 		logger.info("notify POST: " + url+ " "+JsonUtils.toJson(request));
 		BaseResponse response = new BaseResponse();
 		long l = System.currentTimeMillis();

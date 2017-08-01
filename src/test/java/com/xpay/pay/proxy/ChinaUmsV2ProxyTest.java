@@ -1,16 +1,19 @@
 package com.xpay.pay.proxy;
 
+import java.util.Date;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.xpay.pay.BaseSpringJunitTest;
 import com.xpay.pay.proxy.IPaymentProxy.PayChannel;
 import com.xpay.pay.proxy.PaymentRequest.GoodsBean;
-import com.xpay.pay.proxy.chinaums.ChinaUmsProxy;
+import com.xpay.pay.proxy.chinaumsv2.ChinaUmsV2Proxy;
+import com.xpay.pay.util.IDGenerator;
 
-public class ChinaUmsProxyTest extends BaseSpringJunitTest {
+public class ChinaUmsV2ProxyTest extends BaseSpringJunitTest {
 	@Autowired 
-	private ChinaUmsProxy proxy;
+	private ChinaUmsV2Proxy proxy;
 	
 	//898319848160167
 	//898319848160168
@@ -27,6 +30,8 @@ public class ChinaUmsProxyTest extends BaseSpringJunitTest {
 		request.setPayChannel(PayChannel.WECHAT);
 		request.setTotalFee("0.01");
 		request.setOrderNo("3116201707311003354995996111");
+		request.setReturnUrl("http://www.baidu.com");
+		request.setNotifyUrl("http://106.14.47.193/xpay/notify/chinaumsv2");
 		request.setSubject("测试商品");
 		request.setAttach("atach");
 		GoodsBean[] goods = new GoodsBean[1];
@@ -50,9 +55,10 @@ public class ChinaUmsProxyTest extends BaseSpringJunitTest {
 		request.setDeviceId("1213");
 		request.setPayChannel(PayChannel.WECHAT);
 		request.setTotalFee("0.01");
-		request.setOrderNo("3116201704121003354995996119");
+		request.setOrderNo("3194201708010918353746720064");
 		request.setSubject("No Subject");
 		request.setAttach("atach");
+		request.setOrderTime(IDGenerator.formatTime(new Date(), IDGenerator.TimePattern14));
 		PaymentResponse response = proxy.query(request);
 		System.out.println("response code: "+ response.getCode()+" "+response.getMsg());
 	}

@@ -88,8 +88,4 @@ public class OrderService {
 		return orderMapper.updateById(order);
 	}
 	
-	private static final int BAIL_STORE_ID=1;
-	public Store findBailStore() {
-		return storeService.findById(BAIL_STORE_ID);
-	}
 }

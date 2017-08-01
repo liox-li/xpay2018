@@ -32,7 +32,7 @@ import com.xpay.pay.proxy.notify.NotifyProxy;
 import com.xpay.pay.proxy.rubipay.RubiPayProxy;
 import com.xpay.pay.proxy.swiftpass.SwiftpassProxy;
 import com.xpay.pay.rest.contract.BaseResponse;
-import com.xpay.pay.rest.contract.OrderResponse;
+import com.xpay.pay.rest.contract.NotificationResponse;
 import com.xpay.pay.service.OrderService;
 import com.xpay.pay.util.CommonUtils;
 import com.xpay.pay.util.CryptoUtils;
@@ -244,7 +244,7 @@ public class PayNotifyServlet extends HttpServlet {
 	private static final Executor executor = Executors.newFixedThreadPool(50);
 	private void notify(final Order order) {
 		CompletableFuture.runAsync(() -> {
-			OrderResponse notification = new OrderResponse();
+			NotificationResponse notification = new NotificationResponse();
 			notification.setOrderNo(order.getOrderNo());
 			notification.setSellerOrderNo(order.getSellerOrderNo());
 			notification.setStoreId(String.valueOf(order.getStoreId()));
@@ -253,6 +253,7 @@ public class PayNotifyServlet extends HttpServlet {
 			notification.setTokenId(order.getTokenId());
 			notification.setOrderStatus(order.getStatus().getValue());
 			notification.setAttach(order.getAttach());
+			notification.setExtOrderNo(order.getExtOrderNo());
 			BaseResponse response = null;
 			for (int i=0;i<3;i++) {
 				try {

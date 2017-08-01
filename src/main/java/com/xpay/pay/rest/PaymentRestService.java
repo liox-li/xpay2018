@@ -66,7 +66,7 @@ public class PaymentRestService extends AuthRestService {
 			attach = payload.getAttach();
 			notifyUrl = payload.getNotifyUrl();
 			returnUrl = payload.getReturnUrl();
-	}
+	    }
 		Assert.isTrue(StringUtils.isNoneBlank(storeId, payChannel, totalFee, orderTime), "StoreId, payChannel, totalFee and orderTime can not be null");
 		Assert.isTrue(StringUtils.isNotBlank(deviceId) || StringUtils.isNotBlank(ip), "DeviceId or ip must be provided");
 		PayChannel channel = PayChannel.fromValue(payChannel);

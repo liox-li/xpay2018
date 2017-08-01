@@ -17,6 +17,7 @@ public class ChinaUmsRequest {
 	private String refundAmount;
 	private String notifyUrl;
 	private String returnUrl;
+	private String expireTime;
 	private GoodsBean[] goods;
 	private String sign;
 	public String getSystemId() {
@@ -115,5 +116,11 @@ public class ChinaUmsRequest {
 	}
 	public void setSign(String sign) {
 		this.sign = sign;
+	}
+	public String getExpireTime() {
+		return expireTime;
+	}
+	public void setExpireTime(String expireTime) {
+		this.expireTime = expireTime;
 	}
 }
