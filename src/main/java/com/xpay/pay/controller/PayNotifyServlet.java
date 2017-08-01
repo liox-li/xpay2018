@@ -79,11 +79,9 @@ public class PayNotifyServlet extends HttpServlet {
 
 			if (uri.contains(PaymentGateway.SWIFTPASS.name().toLowerCase())) {
 				notResp = handleSwiftpassNotification(content);
-			} else if (uri.contains(PaymentGateway.CHINAUMS.name()
-					.toLowerCase())) {
+			} else if (uri.contains(PaymentGateway.CHINAUMS.name().toLowerCase())) {
 				notResp = handleChinaUmsNotification(content);
-			} else if (uri
-					.contains(PaymentGateway.RUBIPAY.name().toLowerCase())) {
+			} else if (uri.contains(PaymentGateway.RUBIPAY.name().toLowerCase())) {
 				notResp = handleRubiPayNotification(content);
 			} else if (uri.contains(PaymentGateway.JUZHEN.name().toLowerCase())) {
 				notResp = handleJuZhenNotification(content);

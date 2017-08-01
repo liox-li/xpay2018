@@ -7,10 +7,10 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import com.xpay.pay.dao.OrderDetailMapper;
 import com.xpay.pay.dao.OrderMapper;
+import com.xpay.pay.exception.Assert;
 import com.xpay.pay.model.Order;
 import com.xpay.pay.model.OrderDetail;
 import com.xpay.pay.model.Store;
