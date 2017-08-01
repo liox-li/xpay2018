@@ -172,7 +172,7 @@ public class PaymentRestService extends AuthRestService {
 	}
 	
 	@SuppressWarnings("unchecked")
-	@RequestMapping(value = "/refresh ", method = RequestMethod.GET)
+	@RequestMapping(value = "/refresh/{domain}", method = RequestMethod.GET)
 	public BaseResponse<OrderResponse> refresh(@PathVariable String domain) {
 		if("app".equals(domain)) {
 			appService.refreshCache();
