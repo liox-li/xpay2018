@@ -247,13 +247,12 @@ public class PayNotifyServlet extends HttpServlet {
 			NotificationResponse notification = new NotificationResponse();
 			notification.setOrderNo(order.getOrderNo());
 			notification.setSellerOrderNo(order.getSellerOrderNo());
-			notification.setStoreId(String.valueOf(order.getStoreId()));
+			notification.setExtOrderNo(order.getExtOrderNo());
 			notification.setCodeUrl(order.getCodeUrl());
 			notification.setPrepayId(order.getPrepayId());
 			notification.setTokenId(order.getTokenId());
 			notification.setOrderStatus(order.getStatus().getValue());
 			notification.setAttach(order.getAttach());
-			notification.setExtOrderNo(order.getExtOrderNo());
 			BaseResponse response = null;
 			for (int i=0;i<3;i++) {
 				try {
