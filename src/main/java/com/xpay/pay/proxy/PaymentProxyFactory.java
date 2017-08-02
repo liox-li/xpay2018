@@ -13,18 +13,18 @@ import com.xpay.pay.proxy.swiftpass.SwiftpassProxy;
 
 @Service
 public class PaymentProxyFactory {
-	@Autowired
-	private MiaoFuProxy miaoFuProxy;
-	@Autowired
-	private SwiftpassProxy swiftpassProxy;
+//	@Autowired
+//	private MiaoFuProxy miaoFuProxy;
+//	@Autowired
+//	private SwiftpassProxy swiftpassProxy;
 	@Autowired
 	private ChinaUmsProxy chinaUmsProxy;
 	@Autowired
 	private ChinaUmsV2Proxy chinaUmsV2Proxy;
 	@Autowired
 	private JuZhenProxy juZhenProxy;
-	@Autowired
-	private RubiPayProxy rubiPayProxy;
+//	@Autowired
+//	private RubiPayProxy rubiPayProxy;
 
 	public IPaymentProxy getPaymentProxy(PaymentGateway channel) {
 		switch (channel) {
