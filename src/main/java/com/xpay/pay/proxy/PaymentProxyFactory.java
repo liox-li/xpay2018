@@ -27,18 +27,28 @@ public class PaymentProxyFactory {
 	private RubiPayProxy rubiPayProxy;
 
 	public IPaymentProxy getPaymentProxy(PaymentGateway channel) {
-		if (PaymentGateway.CHINAUMSV2.equals(channel)) {
-			return chinaUmsV2Proxy;
-		} else if (PaymentGateway.CHINAUMS.equals(channel)) {
-			return chinaUmsProxy;
-		} else if (PaymentGateway.JUZHEN.equals(channel)) {
-			return juZhenProxy;
-		} else if (PaymentGateway.MIAOFU.equals(channel)) {
-			return miaoFuProxy;
-		} else if (PaymentGateway.SWIFTPASS.equals(channel)) {
-			return swiftpassProxy;
-		} else {
-			return rubiPayProxy;
+		switch (channel) {
+			case CHINAUMSV2:
+				return chinaUmsV2Proxy;
+			case CHINAUMS:
+				return chinaUmsProxy;
+			case  JUZHEN:
+				return juZhenProxy;
+			default: 
+				return chinaUmsV2Proxy;
 		}
+//		if (PaymentGateway.CHINAUMSV2.equals(channel)) {
+//			return chinaUmsV2Proxy;
+//		} else if (PaymentGateway.CHINAUMS.equals(channel)) {
+//			return chinaUmsProxy;
+//		} else if (PaymentGateway.JUZHEN.equals(channel)) {
+//			return juZhenProxy;
+//		} else if (PaymentGateway.MIAOFU.equals(channel)) {
+//			return miaoFuProxy;
+//		} else if (PaymentGateway.SWIFTPASS.equals(channel)) {
+//			return swiftpassProxy;
+//		} else {
+//			return rubiPayProxy;
+//		}
 	}
 }
