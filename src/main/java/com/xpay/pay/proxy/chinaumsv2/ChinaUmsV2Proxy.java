@@ -81,7 +81,6 @@ public class ChinaUmsV2Proxy implements IPaymentProxy {
 	@Override
 	public PaymentResponse query(PaymentRequest request) {
 		String url = baseEndpoint;
-		logger.info("query POST: " + url);
 		long l = System.currentTimeMillis();
 		PaymentResponse response = null;
 		try {
@@ -90,12 +89,12 @@ public class ChinaUmsV2Proxy implements IPaymentProxy {
 			List<KeyValuePair> keyPairs = this.getKeyPairs(chinaUmsRequest);
 			String sign = this.signature(keyPairs, appSecret);
 			chinaUmsRequest.setSign(sign);
-			
+			logger.info("query POST: " + url+", body "+JsonUtils.toJson(chinaUmsRequest));
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 			HttpEntity<?> httpEntity = new HttpEntity<>(chinaUmsRequest, headers);
 			ChinaUmsResponse chinaUmsResponse = chinaUmsProxy.exchange(url, HttpMethod.POST, httpEntity, ChinaUmsResponse.class).getBody();
-			logger.info("query result: " + chinaUmsResponse.getErrCode() + " "+chinaUmsResponse.getErrMsg() + ", took "
+			logger.info("query result: " + chinaUmsResponse.getErrCode() + " "+chinaUmsResponse.getErrMsg() + " "+chinaUmsResponse.getBillStatus() + ", took "
 					+ (System.currentTimeMillis() - l) + "ms");
 			response = toPaymentResponse(chinaUmsRequest, chinaUmsResponse);
 		} catch (RestClientException e) {
