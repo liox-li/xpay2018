@@ -240,6 +240,7 @@ public class PayNotifyServlet extends HttpServlet {
 	}
 
 	private static final Executor executor = Executors.newFixedThreadPool(50);
+	@SuppressWarnings("rawtypes")
 	private void notify(final Order order) {
 		CompletableFuture.runAsync(() -> {
 			NotificationResponse notification = new NotificationResponse();

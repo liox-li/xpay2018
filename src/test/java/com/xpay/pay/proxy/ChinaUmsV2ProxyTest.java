@@ -55,7 +55,7 @@ public class ChinaUmsV2ProxyTest extends BaseSpringJunitTest {
 		request.setDeviceId("1213");
 		request.setPayChannel(PayChannel.WECHAT);
 		request.setTotalFee("0.01");
-		request.setOrderNo("3194201708010918353746720064");
+		request.setOrderNo("3194201708020912525902559623");
 		request.setSubject("No Subject");
 		request.setAttach("atach");
 		request.setOrderTime(IDGenerator.formatTime(new Date(), IDGenerator.TimePattern14));
@@ -70,9 +70,10 @@ public class ChinaUmsV2ProxyTest extends BaseSpringJunitTest {
 		request.setDeviceId("1213");
 		request.setPayChannel(PayChannel.WECHAT);
 		request.setTotalFee("0.01");
-		request.setOrderNo("3116201704121003354995996119");
+		request.setOrderNo("3194201708020921163077813588");
 		request.setSubject("No Subject");
 		request.setAttach("atach");
+		request.setOrderTime(IDGenerator.formatTime(new Date(), IDGenerator.TimePattern14));
 		PaymentResponse response = proxy.refund(request);
 		System.out.println("response code: "+ response.getCode()+" "+response.getMsg());
 	}
