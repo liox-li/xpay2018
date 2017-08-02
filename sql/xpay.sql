@@ -184,6 +184,10 @@ insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) val
 insert into bill_store (id, code, name) values (106, 'T20170718141112675', '深圳市华商盟科技有限公司');
 insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) values (106, 106, '800001750000000', 'JUZHEN');
 
+insert into bill_store (id, code, name) values (106, 'T20170802162829655', '北京泰达能通科技有限公司');
+insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) values (106, 102, '898319848160167', 'CHINAUMS');
+
+
 ALTER TABLE bill_app ADD COLUMN name VARCHAR(64);
 
 ALTER table bill_app OWNER TO xpay;

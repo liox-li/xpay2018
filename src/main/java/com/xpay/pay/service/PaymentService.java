@@ -173,15 +173,11 @@ public class PaymentService {
 		request.setTotalFee(order.getTotalFee());
 		request.setAttach(order.getAttach());
 		request.setOrderNo(order.getOrderNo());
-		if(PaymentGateway.SWIFTPASS.equals(order.getStoreChannel().getPaymentGateway())) {
-			request.setServerIp(LOCAL_ID);
-			request.setNotifyUrl(DEFAULT_NOTIFY_URL+order.getStoreChannel().getPaymentGateway().toString().toLowerCase());
-		}
-		else if(PaymentGateway.CHINAUMS.equals(order.getStoreChannel().getPaymentGateway())) {
+		if(PaymentGateway.CHINAUMSV2.equals(order.getStoreChannel().getPaymentGateway())) {
 			request.setNotifyUrl(DEFAULT_NOTIFY_URL+order.getStoreChannel().getPaymentGateway().toString().toLowerCase());
 			request.setReturnUrl(order.getReturnUrl());
 		}
-		else if(PaymentGateway.CHINAUMSV2.equals(order.getStoreChannel().getPaymentGateway())) {
+		else if(PaymentGateway.CHINAUMS.equals(order.getStoreChannel().getPaymentGateway())) {
 			request.setNotifyUrl(DEFAULT_NOTIFY_URL+order.getStoreChannel().getPaymentGateway().toString().toLowerCase());
 			request.setReturnUrl(order.getReturnUrl());
 		}
@@ -189,11 +185,15 @@ public class PaymentService {
 			request.setServerIp(LOCAL_ID);
 			request.setNotifyUrl(DEFAULT_NOTIFY_URL+order.getStoreChannel().getPaymentGateway().toString().toLowerCase());
 		}
-		else if(PaymentGateway.RUBIPAY.equals(order.getStoreChannel().getPaymentGateway())) {
-			request.setServerIp(LOCAL_ID);
-			request.setNotifyUrl(DEFAULT_NOTIFY_URL+order.getStoreChannel().getPaymentGateway().toString().toLowerCase());
-		}
-		
+//		else if(PaymentGateway.RUBIPAY.equals(order.getStoreChannel().getPaymentGateway())) {
+//			request.setServerIp(LOCAL_ID);
+//			request.setNotifyUrl(DEFAULT_NOTIFY_URL+order.getStoreChannel().getPaymentGateway().toString().toLowerCase());
+//		}
+//		else if(PaymentGateway.SWIFTPASS.equals(order.getStoreChannel().getPaymentGateway())) {
+//			request.setServerIp(LOCAL_ID);
+//			request.setNotifyUrl(DEFAULT_NOTIFY_URL+order.getStoreChannel().getPaymentGateway().toString().toLowerCase());
+//		}
+//		
 		
 		if (order.getOrderDetail() != null) {
 			request.setSubject(order.getOrderDetail().getSubject());
