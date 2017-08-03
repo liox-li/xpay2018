@@ -34,6 +34,7 @@ import com.xpay.pay.proxy.swiftpass.SwiftpassProxy;
 import com.xpay.pay.rest.contract.BaseResponse;
 import com.xpay.pay.rest.contract.NotificationResponse;
 import com.xpay.pay.service.OrderService;
+import com.xpay.pay.service.PaymentService;
 import com.xpay.pay.util.CommonUtils;
 import com.xpay.pay.util.CryptoUtils;
 import com.xpay.pay.util.JsonUtils;
@@ -48,6 +49,8 @@ public class PayNotifyServlet extends HttpServlet {
 	protected OrderService orderService;
 	@Autowired
 	protected NotifyProxy notifyProxy;
+	@Autowired
+	protected PaymentService paymentService;
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
@@ -76,27 +79,26 @@ public class PayNotifyServlet extends HttpServlet {
 			IOUtils.readFully(request.getInputStream(), buffer);
 			String content = new String(buffer);
 			logger.info("Notify from " + uri + " content: " + content);
-
-			if (uri.contains(PaymentGateway.SWIFTPASS.name().toLowerCase())) {
-				notResp = handleSwiftpassNotification(content);
-			} else if (uri.contains(PaymentGateway.CHINAUMS.name().toLowerCase())) {
+			if (uri.contains(PaymentGateway.CHINAUMS.name().toLowerCase())) {
 				notResp = handleChinaUmsNotification(content);
-			} else if (uri.contains(PaymentGateway.RUBIPAY.name().toLowerCase())) {
-				notResp = handleRubiPayNotification(content);
 			} else if (uri.contains(PaymentGateway.JUZHEN.name().toLowerCase())) {
 				notResp = handleJuZhenNotification(content);
-			}
+			} else if (uri.contains(PaymentGateway.SWIFTPASS.name().toLowerCase())) {
+				notResp = handleSwiftpassNotification(content);
+			}  else if (uri.contains(PaymentGateway.RUBIPAY.name().toLowerCase())) {
+				notResp = handleRubiPayNotification(content);
+			} 
 			order = notResp == null ? null : notResp.getOrder();
-			if (order != null && StringUtils.isNotBlank(order.getNotifyUrl())
-					&& order.isSettle()) {
-				notify(order);
-			}
+			updateBail(order);
+			notify(order);
+			
 		} catch (Exception e) {
 			logger.error("notify failed ", e);
 		} finally {
 			response.getWriter().write(notResp.getResp());
 		}
 	}
+
 
 	private NotifyResponse handleSwiftpassNotification(String content)
 			throws Exception {
@@ -156,11 +158,11 @@ public class PayNotifyServlet extends HttpServlet {
 					}
 				}
 				order = orderService.findActiveByExtOrderNo(billNo);
-				if (order != null) {
+				if (order != null && !OrderStatus.SUCCESS.equals(order.getStatus())) {
 					order.setStatus(ChinaUmsProxy.toOrderStatus(status));
 					orderService.update(order);
-					respString = "success";
 				}
+				respString = "success";
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -239,36 +241,45 @@ public class PayNotifyServlet extends HttpServlet {
 		return response;
 	}
 
+	private void updateBail(Order order) {
+		if(order!=null && OrderStatus.SUCCESS.equals(order.getStatus())) {
+			paymentService.updateBail(order, true);
+		}
+	}
+	
 	private static final Executor executor = Executors.newFixedThreadPool(50);
 	@SuppressWarnings("rawtypes")
 	private void notify(final Order order) {
-		CompletableFuture.runAsync(() -> {
-			NotificationResponse notification = new NotificationResponse();
-			notification.setOrderNo(order.getOrderNo());
-			notification.setSellerOrderNo(order.getSellerOrderNo());
-			notification.setExtOrderNo(order.getExtOrderNo());
-			notification.setCodeUrl(order.getCodeUrl());
-			notification.setPrepayId(order.getPrepayId());
-			notification.setTokenId(order.getTokenId());
-			notification.setOrderStatus(order.getStatus().getValue());
-			notification.setAttach(order.getAttach());
-			BaseResponse response = null;
-			for (int i=0;i<3;i++) {
-				try {
-					response = notifyProxy.notify(order.getNotifyUrl(), order.getApp(),
-						notification);
-					if(response != null && response.getStatus()==ApplicationConstants.STATUS_OK) {
-						return;
+		if (order != null && StringUtils.isNotBlank(order.getNotifyUrl())
+				&& order.isSettle()) {
+			CompletableFuture.runAsync(() -> {
+				NotificationResponse notification = new NotificationResponse();
+				notification.setOrderNo(order.getOrderNo());
+				notification.setSellerOrderNo(order.getSellerOrderNo());
+				notification.setExtOrderNo(order.getExtOrderNo());
+				notification.setCodeUrl(order.getCodeUrl());
+				notification.setPrepayId(order.getPrepayId());
+				notification.setTokenId(order.getTokenId());
+				notification.setOrderStatus(order.getStatus().getValue());
+				notification.setAttach(order.getAttach());
+				BaseResponse response = null;
+				for (int i=0;i<3;i++) {
+					try {
+						response = notifyProxy.notify(order.getNotifyUrl(), order.getApp(),
+							notification);
+						if(response != null && response.getStatus()==ApplicationConstants.STATUS_OK) {
+							return;
+						}
+					} catch(Exception e) {
+						
 					}
-				} catch(Exception e) {
-					
+					try {
+						Thread.sleep(30000);
+					} catch (Exception e) {
+					}
 				}
-				try {
-					Thread.sleep(30000);
-				} catch (Exception e) {
-				}
-			}
-		}, executor);
+			}, executor);
+		}
 	}
 
 	public static class NotifyResponse {

@@ -95,16 +95,17 @@ public class PaymentService {
 		return orderService.update(order);
 	}
 	
-	public boolean updateBail(Store store, Bill bill, boolean isAdd) {
-		if(bill != null) {
-			boolean isBail = bill.getOrder().getStoreChannelId()<100;
+	public boolean updateBail(Order order, boolean isAdd) {
+		if(order != null) {
+			boolean isBail = order.getStoreChannelId()<100;
+			Store store = order.getStore();
 			if(isBail) {
-				float newBail = isAdd? store.getBail() + bill.getOrder().getTotalFeeAsFloat()
-						:store.getBail() - bill.getOrder().getTotalFeeAsFloat();
+				float newBail = isAdd? store.getBail() + order.getTotalFeeAsFloat()
+						:store.getBail() - order.getTotalFeeAsFloat();
 				store.setBail(newBail);
 			} else {
-				float newNonBail = isAdd? store.getNonBail() + bill.getOrder().getTotalFeeAsFloat()
-						:store.getNonBail() - bill.getOrder().getTotalFeeAsFloat();
+				float newNonBail = isAdd? store.getNonBail() + order.getTotalFeeAsFloat()
+						:store.getNonBail() - order.getTotalFeeAsFloat();
 				store.setNonBail(newNonBail);
 			}
 			return storeService.updateById(store);
@@ -152,7 +153,7 @@ public class PaymentService {
 				bill.setOrder(order);
 				order.setStatus(bill.getOrderStatus());
 				orderService.update(order);
-				updateBail(order.getStore(), bill, false);
+				updateBail(order, false);
 			}
 			return bill;
 		} else {
