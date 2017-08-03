@@ -28,12 +28,13 @@ def export_csv( cur, store_id, store_code, store_name ):
     order_time = "Order_Time"
     update_date = "Pay_Time"
     ext_store_id = "Channel_No"    
+    direct_pay = "Direct_Pay"    
 
     FILE_NAME= FILE_PATH +'/' + store_code + '_' + ydate + '.csv'
     
-    query = """select a.order_no as %(order_no)s, '\t' || a.seller_order_no as %(seller_order_no)s, '\t' || a.ext_order_no as %(ext_order_no)s, a.total_fee as %(total_fee)s, a.status as %(status)s, '\t' || a.order_time as %(order_time)s, a.update_date as %(update_date)s, '\t' || b.ext_store_id as %(ext_store_id)s  From bill_order a, bill_store_channel b
+    query = """select a.order_no as %(order_no)s, '\t' || a.seller_order_no as %(seller_order_no)s, '\t' || a.ext_order_no as %(ext_order_no)s, a.total_fee as %(total_fee)s, a.status as %(status)s, '\t' || a.order_time as %(order_time)s, a.update_date as %(update_date)s, '\t' || b.ext_store_id as %(ext_store_id)s, a.store_channel/100 as %(direct_pay)s  From bill_order a, bill_store_channel b
                   where a.store_channel=b.id and a.store_id = %(store_id)s and a.update_date >= '%(start)s' and a.update_date <= '%(end)s' and a.deleted = false
-           """ % dict(order_no=order_no,seller_order_no=seller_order_no,ext_order_no=ext_order_no,total_fee=total_fee,status=status,order_time=order_time,update_date=update_date,ext_store_id=ext_store_id,store_id=store_id, start=start, end=end)
+           """ % dict(order_no=order_no,seller_order_no=seller_order_no,ext_order_no=ext_order_no,total_fee=total_fee,status=status,order_time=order_time,update_date=update_date,ext_store_id=ext_store_id,direct_pay=direct_pay,store_id=store_id, start=start, end=end)
   
  #   print query
     outputquery = "COPY ({0}) TO STDOUT CSV HEADER".format(query)
