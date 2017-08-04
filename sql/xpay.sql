@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS bill_store_channel (
 	update_date TIMESTAMP WITH TIME ZONE NOT NULL default now(),
 	deleted boolean DEFAULT FALSE
 );
-ALTER SEQUENCE bill_store_channel_id_seq RESTART 100;
+ALTER SEQUENCE bill_store_channel_id_seq RESTART 1000;
 CREATE INDEX idx_bill_store_channel ON bill_store_channel(store_id); 
 
 CREATE TABLE IF NOT EXISTS bill_order (

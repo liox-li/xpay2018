@@ -66,7 +66,7 @@ public class ChinaUmsProxy implements IPaymentProxy {
 			response = toPaymentResponse(chinaUmsRequest, chinaUmsResponse);
 			response.getBill().setGatewayOrderNo(request.getGatewayOrderNo());
 		} catch (RestClientException e) {
-			logger.info("microPay failed, took " + (System.currentTimeMillis() - l) + "ms", e);
+			logger.info("unifiedOrder failed, took " + (System.currentTimeMillis() - l) + "ms", e);
 			throw e;
 		}
 		return response;
@@ -120,7 +120,7 @@ public class ChinaUmsProxy implements IPaymentProxy {
 					+ (System.currentTimeMillis() - l) + "ms");
 			response = toPaymentResponse(chinaUmsRequest, chinaUmsResponse);
 		} catch (RestClientException e) {
-			logger.info("microPay failed, took " + (System.currentTimeMillis() - l) + "ms", e);
+			logger.info("refund failed, took " + (System.currentTimeMillis() - l) + "ms", e);
 			throw e;
 		}
 		return response;
