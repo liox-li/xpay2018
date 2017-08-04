@@ -131,7 +131,7 @@ public class PaymentRestService extends AuthRestService {
 			@RequestParam String storeId,
 			@RequestParam(required = false) String deviceId,
 			@RequestParam(required = false) String ip,
-			@RequestParam(required = false) Boolean isCsr) {
+			@RequestParam(required = false, defaultValue = "false") Boolean isCsr) {
 		Assert.isTrue(StringUtils.isNoneBlank(orderNo, storeId), "OrderNo and storeId can not be null");
 		Bill bill = paymentService.query(getApp().getId(), orderNo, storeId, isCsr);
 		
