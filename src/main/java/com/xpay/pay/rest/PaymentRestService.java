@@ -130,9 +130,10 @@ public class PaymentRestService extends AuthRestService {
 			@PathVariable String orderNo,
 			@RequestParam String storeId,
 			@RequestParam(required = false) String deviceId,
-			@RequestParam(required = false) String ip) {
+			@RequestParam(required = false) String ip,
+			@RequestParam(required = false) Boolean isCsr) {
 		Assert.isTrue(StringUtils.isNoneBlank(orderNo, storeId), "OrderNo and storeId can not be null");
-		Bill bill = paymentService.query(getApp().getId(), orderNo, storeId);
+		Bill bill = paymentService.query(getApp().getId(), orderNo, storeId, isCsr);
 		
 		BaseResponse<OrderResponse> response = new BaseResponse<OrderResponse>();
 		OrderResponse orderResponse = new OrderResponse();
@@ -153,9 +154,10 @@ public class PaymentRestService extends AuthRestService {
 			@PathVariable String orderNo,
 			@RequestParam String storeId,
 			@RequestParam(required = false) String deviceId,
-			@RequestParam(required = false) String ip) {
+			@RequestParam(required = false) String ip,
+			@RequestParam(required = false, defaultValue = "false") Boolean isCsr) {
 		Assert.isTrue(StringUtils.isNoneBlank(orderNo, storeId), "OrderNo and storeId can not be null");
-		Bill bill = paymentService.refund(getApp().getId(), orderNo, storeId);
+		Bill bill = paymentService.refund(getApp().getId(), orderNo, storeId, isCsr);
 		
 		BaseResponse<OrderResponse> response = new BaseResponse<OrderResponse>();
 		OrderResponse orderResponse = new OrderResponse();

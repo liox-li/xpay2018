@@ -113,12 +113,12 @@ public class PaymentService {
 		return true;
 	}
 
-	public Bill query(int appId, String orderNo, String storeCode) {
+	public Bill query(int appId, String orderNo, String storeCode, boolean isCsr) {
 		Order order = orderService.findActiveByOrderNo(orderNo);
 		Assert.isTrue(storeCode.equals(order.getStore().getCode()), "No such order found for the store");
 		Assert.isTrue(appId == order.getAppId(), "No such order found under the app");
 		Assert.isTrue(order.isSettle() || CommonUtils.isWithinHours(order.getOrderTime(), IDGenerator.TimePattern14, 24), "Order expired");
-		if(order.isRemoteQueralbe() && CommonUtils.isWithinHours(order.getOrderTime(), IDGenerator.TimePattern14, 2)) {
+		if(isCsr || (order.isRemoteQueralbe() && CommonUtils.isWithinHours(order.getOrderTime(), IDGenerator.TimePattern14, 24))) {
 			try {
 				PaymentRequest paymentRequest = toQueryRequest(order);
 				IPaymentProxy paymentProxy = paymentProxyFactory.getPaymentProxy(order.getStoreChannel().getPaymentGateway());
@@ -137,12 +137,12 @@ public class PaymentService {
 		return toBill(order);
 	}
 	
-	public Bill refund(int appId, String orderNo, String storeCode) {
+	public Bill refund(int appId, String orderNo, String storeCode, boolean isCsr) {
 		Order order = orderService.findActiveByOrderNo(orderNo);
 		Assert.isTrue(storeCode.equals(order.getStore().getCode()), "No such order found for the store");
 		Assert.isTrue(appId == order.getAppId(), "No such order found under the app");
 		
-		if(order.isRefundable()) {
+		if(isCsr || (order.isRefundable()  && CommonUtils.isWithinHours(order.getOrderTime(), IDGenerator.TimePattern14, 24))) {
 			PaymentRequest paymentRequest = toQueryRequest(order);
 			paymentRequest.setTotalFee(order.getTotalFee());
 			IPaymentProxy paymentProxy = paymentProxyFactory.getPaymentProxy(order.getStoreChannel().getPaymentGateway());
