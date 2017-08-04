@@ -197,7 +197,7 @@ public class Order {
 		}
 	}
 	public boolean isRemoteQueralbe() {
-		return OrderStatus.REFUND.equals(this.status) || OrderStatus.REVOKED.equals(this.status);
+		return !OrderStatus.REFUND.equals(this.status) && !OrderStatus.REVOKED.equals(this.status);
 	}
 	
 	public boolean isSettle() {

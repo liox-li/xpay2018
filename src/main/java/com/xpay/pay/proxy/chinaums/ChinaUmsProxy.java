@@ -84,6 +84,7 @@ public class ChinaUmsProxy implements IPaymentProxy {
 			List<KeyValuePair> keyPairs = this.getKeyPairs(chinaUmsRequest);
 			String sign = this.signature(keyPairs, appSecret);
 			chinaUmsRequest.setSign(sign);
+			logger.info("query POST: " + url+", body "+JsonUtils.toJson(chinaUmsRequest));
 			
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
