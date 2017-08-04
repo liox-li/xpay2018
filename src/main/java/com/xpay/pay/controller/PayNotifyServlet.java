@@ -145,9 +145,11 @@ public class PayNotifyServlet extends HttpServlet {
 		if (StringUtils.isNotBlank(content)) {
 			String billNo = "";
 			String status = "";
+			String targetOrderNo = "";
 			try {
 				String decoded = URLDecoder.decode(content, "utf-8");
 				String[] params = decoded.split("&");
+
 				for (String param : params) {
 					String[] pair = param.split("=");
 					String key = pair[0];
@@ -155,11 +157,15 @@ public class PayNotifyServlet extends HttpServlet {
 						billNo = pair[1];
 					} else if ("billStatus".equals(key)) {
 						status = pair[1];
+					} else if ("billPayment".equals(key)) {
+						ChinaUmsBill bill = JsonUtils.fromJson(pair[1], ChinaUmsBill.class);
+						targetOrderNo = bill == null? "": bill.getTargetOrderId();
 					}
 				}
 				order = orderService.findActiveByExtOrderNo(billNo);
 				if (order != null && !OrderStatus.SUCCESS.equals(order.getStatus())) {
 					order.setStatus(ChinaUmsProxy.toOrderStatus(status));
+					order.setTargetOrderNo(targetOrderNo);
 					orderService.update(order);
 				}
 				respString = "success";
@@ -309,6 +315,18 @@ public class PayNotifyServlet extends HttpServlet {
 
 		public void setOrder(Order order) {
 			this.order = order;
+		}
+	}
+	
+	public static class ChinaUmsBill {
+		private String targetOrderId;
+
+		public String getTargetOrderId() {
+			return targetOrderId;
+		}
+
+		public void setTargetOrderId(String targetOrderId) {
+			this.targetOrderId = targetOrderId;
 		}
 	}
 }

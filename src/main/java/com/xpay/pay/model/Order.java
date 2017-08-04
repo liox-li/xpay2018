@@ -14,6 +14,7 @@ public class Order {
 	private String orderTime;
 	private String sellerOrderNo;
 	private String extOrderNo;
+	private String targetOrderNo;
 	private PayChannel payChannel;
 	private String attach;
 	private String deviceId;
@@ -95,6 +96,12 @@ public class Order {
 	}
 	public void setExtOrderNo(String extOrderNo) {
 		this.extOrderNo = extOrderNo;
+	}
+	public String getTargetOrderNo() {
+		return targetOrderNo;
+	}
+	public void setTargetOrderNo(String targetOrderNo) {
+		this.targetOrderNo = targetOrderNo;
 	}
 	public PayChannel getPayChannel() {
 		return payChannel;

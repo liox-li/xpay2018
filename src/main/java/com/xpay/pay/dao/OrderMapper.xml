@@ -218,7 +218,10 @@
       </if>
       <if test="status != null">
         status = #{status,jdbcType=VARCHAR},
-      </if> 
+      </if>
+      <if test="targetOrderNo != null">
+        target_order_no = #{targetOrderNo,jdbcType=VARCHAR},
+      </if>  
       update_date = now()
     </set>
     where id = #{id,jdbcType=BIGINT}

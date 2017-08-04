@@ -70,6 +70,7 @@ ALTER SEQUENCE bill_order_id_seq RESTART 1000;
 CREATE INDEX idx_order_no ON bill_order(order_no); 
 CREATE INDEX idx_ext_order_no ON bill_order(ext_order_no); 
 CREATE INDEX idx_order_store_id ON bill_order(store_id, update_date); 
+ALTER TABLE bill_order ADD COLUMN target_order_no varchar(64);
 
 CREATE TABLE IF NOT EXISTS bill_order_detail (
 	id BIGSERIAL PRIMARY KEY,
