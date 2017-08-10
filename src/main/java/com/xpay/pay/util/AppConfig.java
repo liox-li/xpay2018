@@ -33,6 +33,8 @@ public class AppConfig {
 	
 	public static final AppConfig ChinaUmsV2Config = new AppConfig(load("chinaumsv2.config"));
 	
+	public static final AppConfig KeFuConfig = new AppConfig(load("kefu.config"));
+	
 	public static final AppConfig RubiPayConfig = new AppConfig(load("rubipay.config"));
 	
 	public static final AppConfig BaiFuConfig = new AppConfig(load("baifu.config"));

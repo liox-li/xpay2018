@@ -83,6 +83,8 @@ public class PayNotifyServlet extends HttpServlet {
 				notResp = handleChinaUmsNotification(content);
 			} else if (uri.contains(PaymentGateway.JUZHEN.name().toLowerCase())) {
 				notResp = handleJuZhenNotification(content);
+			} else if (uri.contains(PaymentGateway.MSBANK.name().toLowerCase())) {
+					notResp = handleKeFuPayNotification(content);
 			} else if (uri.contains(PaymentGateway.SWIFTPASS.name().toLowerCase())) {
 				notResp = handleSwiftpassNotification(content);
 			}  else if (uri.contains(PaymentGateway.RUBIPAY.name().toLowerCase())) {
@@ -246,6 +248,15 @@ public class PayNotifyServlet extends HttpServlet {
 		NotifyResponse response = new NotifyResponse(respString, order);
 		return response;
 	}
+	
+
+	private NotifyResponse handleKeFuPayNotification(String content) {
+		Order order = null;
+		String respString = "SUCCESS";
+		NotifyResponse response = new NotifyResponse(respString, order);
+		return response;
+	}
+
 
 	private void updateBail(Order order) {
 		if(order!=null && OrderStatus.SUCCESS.equals(order.getStatus())) {
