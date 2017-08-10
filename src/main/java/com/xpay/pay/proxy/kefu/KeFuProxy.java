@@ -15,6 +15,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -27,7 +29,6 @@ import com.xpay.pay.proxy.PaymentResponse;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.util.AppConfig;
 import com.xpay.pay.util.CryptoUtils;
-import com.xpay.pay.util.IDGenerator;
 import com.xpay.pay.util.JsonUtils;
 
 @Component
@@ -56,7 +57,9 @@ public class KeFuProxy implements IPaymentProxy {
 			
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
-			HttpEntity<?> httpEntity = new HttpEntity<>(keFuRequest, headers);
+			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+			MultiValueMap<String, String> map= this.toFormMap(keFuRequest);
+			HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<MultiValueMap<String, String>>(map, headers);
 			KeFuResponse keFuResponse = keFuProxy.exchange(url, HttpMethod.POST, httpEntity, KeFuResponse.class).getBody();
 			logger.info("unifiedOrder result: " + keFuResponse.getRespCode() + " "+keFuResponse.getRespInfo() + ", took "
 					+ (System.currentTimeMillis() - l) + "ms");
@@ -151,6 +154,39 @@ public class KeFuProxy implements IPaymentProxy {
 		String md5 = CryptoUtils.md5(params);
 		logger.debug("md5 upper: "+md5.toUpperCase());
 		return md5 == null? null:md5.toUpperCase();
+	}
+	
+	private MultiValueMap<String, String> toFormMap(KeFuRequest paymentRequest) {
+		MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
+		if (StringUtils.isNotBlank(paymentRequest.getCustomerId())) {
+			map.add("customerId", paymentRequest.getCustomerId());
+		}
+		if (StringUtils.isNotBlank(paymentRequest.getChannelFlag())) {
+			map.add("channelFlag", paymentRequest.getChannelFlag());
+		}
+		if (StringUtils.isNotBlank(paymentRequest.getAmount())) {
+			map.add("amount", paymentRequest.getAmount());
+		}
+		if (StringUtils.isNotBlank(paymentRequest.getNotifyUrl())) {
+			map.add("notifyUrl", paymentRequest.getNotifyUrl());
+		}
+		if (StringUtils.isNotBlank(paymentRequest.getGoodsName())) {
+			map.add("goodsName", paymentRequest.getGoodsName());
+		}
+		if (StringUtils.isNotBlank(paymentRequest.getUserid())) {
+			map.add("userid", paymentRequest.getUserid());
+		}
+		if (StringUtils.isNotBlank(paymentRequest.getSign())) {
+			map.add("sign ", paymentRequest.getSign());
+		}
+		if (StringUtils.isNotBlank(paymentRequest.getPay_number())) {
+			map.add("pay_number", paymentRequest.getPay_number());
+		}
+		if (StringUtils.isNotBlank(paymentRequest.getOrderCode())) {
+			map.add("orderCode", paymentRequest.getOrderCode());
+		}
+		return map;
+		
 	}
 	
 	private String channel2Flag(PayChannel payChannel) {
