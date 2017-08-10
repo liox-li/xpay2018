@@ -162,7 +162,7 @@ public class PaymentService {
 	}
 
 	private static final String DEFAULT_SUBJECT = "电子商品";
-	private static final String DEFAULT_SUBJECT_CHINAUMS = "银联商务投诉热线: 95534";
+	private static final String DEFAULT_SUBJECT_CHINAUMS = "投诉热线: 95534";
 	private static final String LOCAL_ID = CommonUtils.getLocalIP();
 	private static final String DEFAULT_NOTIFY_URL = AppConfig.XPayConfig.getProperty("notify.endpoint");
 	private PaymentRequest toPaymentRequest(Order order) {
