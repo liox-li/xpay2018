@@ -41,6 +41,20 @@ CREATE TABLE IF NOT EXISTS bill_store_channel (
 ALTER SEQUENCE bill_store_channel_id_seq RESTART 1000;
 CREATE INDEX idx_bill_store_channel ON bill_store_channel(store_id); 
 
+CREATE TABLE IF NOT EXISTS bill_channel_limit (
+	id BIGSERIAL PRIMARY KEY,
+	channel_id BIGINT NOT NULL,
+	channel_limit NUMERIC NOT NULL default 50000,
+	current_amount NUMERIC NOT null default 0,
+	notes TEXT,
+	create_date TIMESTAMP WITH TIME ZONE NOT NULL default now(), 
+	update_date TIMESTAMP WITH TIME ZONE NOT NULL default now(),
+	deleted boolean DEFAULT FALSE
+);
+ALTER SEQUENCE bill_channel_limit_id_seq RESTART 1000;
+CREATE INDEX idx_bill_channel_id ON bill_channel_limit(channel_id); 
+
+
 CREATE TABLE IF NOT EXISTS bill_order (
 	id BIGSERIAL PRIMARY KEY,
 	order_no varchar(32) NOT NULL,
@@ -85,6 +99,19 @@ CREATE TABLE IF NOT EXISTS bill_order_detail (
 	deleted boolean DEFAULT FALSE
 );
 ALTER SEQUENCE bill_order_detail_id_seq RESTART 1000;
+
+CREATE TABLE IF NOT EXISTS bill_order_notification (
+	id BIGSERIAL PRIMARY KEY,
+	order_no varchar(32) NOT NULL,
+	seller_order_no varchar(64),
+	ext_order_no varchar(64),
+	target_order_no varchar(64),
+	status varchar(16),
+	notify_url varchar(256),
+	create_date TIMESTAMP WITH TIME ZONE NOT NULL default now(), 
+);
+ALTER SEQUENCE bill_order_notification_id_seq RESTART 1000;
+CREATE INDEX idx_notification_order_no ON bill_order_notification(order_no); 
 
 CREATE TABLE IF NOT EXISTS cash_transaction (
 	id BIGSERIAL PRIMARY KEY,

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xpay.pay.dao.ChannelLimitMapper">
+
+  <resultMap id="ChannelLimitResultMap" type="com.xpay.pay.model.ChannelLimit">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="channel_id" jdbcType="BIGINT" property="channelId" />
+    <result column="channel_limit" jdbcType="NUMERIC" property="limit" />
+    <result column="current_amount" jdbcType="NUMERIC" property="currentAmount" />
+    <result column="notes" jdbcType="VARCHAR" property="notes" />
+    <result column="update_date" jdbcType="VARCHAR" property="updateDate" />
+  </resultMap>
+  
+  <sql id="channelLimitColumns">
+    id,
+    channel_id,
+    channel_limit,
+    current_amount,
+    notes,
+    update_date
+  </sql>
+
+  <select id="findById" resultMap="ChannelLimitResultMap">
+    SELECT
+    <include refid="channelLimitColumns" />
+    FROM bill_channel_limit
+    WHERE bill_channel_limit.id = #{id} AND deleted = false
+  </select>
+  
+  <select id="findByChannelId" resultMap="ChannelLimitResultMap">
+    SELECT
+    <include refid="channelLimitColumns" />
+    FROM bill_channel_limit
+    WHERE bill_channel_limit.channel_id = #{channelId} AND deleted = false
+  </select>
+  
+   <select id="findAll" resultMap="ChannelLimitResultMap">
+    SELECT
+    <include refid="channelLimitColumns" />
+    FROM bill_channel_limit
+    WHERE deleted = false
+  </select>
+  
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.ChannelLimit">
+    insert into bill_channel_limit
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+     channel_id, channel_limit
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+     	#{channelId,jdbcType=BIGINT},
+     	#{limit,jdbcType=NUMERIC}
+    </trim>
+  </insert>
+  
+  <update id="updateById" parameterType="com.xpay.pay.model.ChannelLimit">
+    update bill_channel_limit
+    <set>
+      <if test="limit != null">
+        channel_limit = #{limit,jdbcType=NUMERIC},
+      </if>
+      <if test="currentAmount != null">
+        current_amount = #{currentAmount,jdbcType=NUMERIC},
+      </if>
+      <if test="notes != null">
+        notes = #{notes,jdbcType=VARCHAR},
+      </if>
+      update_date = now()
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+      and deleted = false
+  </update>
+  
+  <update id="deleteById">
+    update bill_channel_limit
+    <set>
+      deleted = true,
+      update_date = now()
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+      and deleted = false
+  </update>
+  
+</mapper>
