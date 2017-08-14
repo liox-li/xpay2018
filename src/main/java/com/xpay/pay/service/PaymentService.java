@@ -39,7 +39,7 @@ public class PaymentService {
 			String sellerOrderNo, String attach, String notifyUrl,String returnUrl,
 			OrderDetail orderDetail) {
 		StoreChannel storeChannel = null;
-		boolean isNextBailPay = store.isNextBailPay();
+		boolean isNextBailPay = store.isNextBailPay(CommonUtils.toFloat(totalFee));
 		storeChannel = orderService.findUnusedChannel(store, orderNo);
 		if(isNextBailPay) {
 			PaymentGateway gateway = storeChannel.getPaymentGateway();

@@ -118,10 +118,16 @@ public class Store {
 		RoundRobin, FirstOneFirst
 	}
 	
-	public boolean isNextBailPay() {
+	private static final int SECURE_LOW_BOUNDER = 100;
+	private static final int SECURE_UP_BOUNDER = 500;
+	public boolean isNextBailPay(float totalFee) {
 		if(this.nonBail <= this.bar) {
 			return false;
 		}
-		return this.bail * 100 / (this.nonBail - this.bar) <= this.bailPercentage;
+		boolean isNextBailPay = this.bail * 100 <= this.nonBail * this.bailPercentage;
+		if(!isNextBailPay) {
+			isNextBailPay = totalFee>=SECURE_LOW_BOUNDER & totalFee<SECURE_UP_BOUNDER && this.bail * 100 <=  this.nonBail * this.bailPercentage * 2;
+		}
+		return isNextBailPay;
 	}
 }
