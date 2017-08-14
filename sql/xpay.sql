@@ -218,6 +218,8 @@ insert into bill_store_channel (id, store_id, ext_store_id, payment_gateway) val
 
 
 ALTER TABLE bill_app ADD COLUMN name VARCHAR(64);
+ALTER TABLE bill_store_channel ADD COLUMN bill_type VARCHAR(32);
+
 
 ALTER table bill_app OWNER TO xpay;
 ALTER table bill_store OWNER TO xpay;
