@@ -8,6 +8,7 @@ public class NotificationResponse {
 	private String tokenId;
 	private String prepayId;
 	private int orderStatus;
+	private String totalFee;
 	private String extOrderNo;
 	private String attach;
 	private String payInfo;
@@ -52,6 +53,12 @@ public class NotificationResponse {
 	}
 	public void setOrderStatus(int orderStatus) {
 		this.orderStatus = orderStatus;
+	}
+	public String getTotalFee() {
+		return totalFee;
+	}
+	public void setTotalFee(String totalFee) {
+		this.totalFee = totalFee;
 	}
 	public String getExtOrderNo() {
 		return extOrderNo;

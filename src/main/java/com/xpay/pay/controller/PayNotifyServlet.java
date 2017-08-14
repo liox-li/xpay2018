@@ -277,6 +277,7 @@ public class PayNotifyServlet extends HttpServlet {
 				notification.setCodeUrl(order.getCodeUrl());
 				notification.setPrepayId(order.getPrepayId());
 				notification.setTokenId(order.getTokenId());
+				notification.setTotalFee(order.getTotalFee());
 				notification.setOrderStatus(order.getStatus().getValue());
 				notification.setAttach(order.getAttach());
 				BaseResponse response = null;
