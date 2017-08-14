@@ -125,7 +125,7 @@ public class ChinaUmsV2Proxy implements IPaymentProxy {
 					+ (System.currentTimeMillis() - l) + "ms");
 			response = toPaymentResponse(chinaUmsRequest, chinaUmsResponse);
 		} catch (RestClientException e) {
-			logger.info("microPay failed, took " + (System.currentTimeMillis() - l) + "ms", e);
+			logger.info("refund failed, took " + (System.currentTimeMillis() - l) + "ms", e);
 			throw e;
 		}
 		return response;
