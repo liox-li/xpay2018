@@ -72,7 +72,7 @@ public class ChinaUmsV2Proxy implements IPaymentProxy {
 			response = toPaymentResponse(chinaUmsRequest, chinaUmsResponse);
 			response.getBill().setGatewayOrderNo(request.getGatewayOrderNo());
 		} catch (RestClientException e) {
-			logger.info("microPay failed, took " + (System.currentTimeMillis() - l) + "ms", e);
+			logger.info("unifiedOrder failed, took " + (System.currentTimeMillis() - l) + "ms", e);
 			throw e;
 		}
 		return response;
