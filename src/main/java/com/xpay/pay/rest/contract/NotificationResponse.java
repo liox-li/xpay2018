@@ -10,6 +10,7 @@ public class NotificationResponse {
 	private int orderStatus;
 	private String totalFee;
 	private String extOrderNo;
+	private String targetOrderNo;
 	private String attach;
 	private String payInfo;
 	public String getOrderNo() {
@@ -65,6 +66,12 @@ public class NotificationResponse {
 	}
 	public void setExtOrderNo(String extOrderNo) {
 		this.extOrderNo = extOrderNo;
+	}
+	public String getTargetOrderNo() {
+		return targetOrderNo;
+	}
+	public void setTargetOrderNo(String targetOrderNo) {
+		this.targetOrderNo = targetOrderNo;
 	}
 	public String getAttach() {
 		return attach;

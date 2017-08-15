@@ -171,8 +171,7 @@ public class ChinaUmsV2Proxy implements IPaymentProxy {
 					.getRequestTimeStamp()));
 		}
 		if (StringUtils.isNotBlank(paymentRequest.getMid())) {
-			keyPairs.add(new KeyValuePair("mid", paymentRequest
-					.getMid()));
+			keyPairs.add(new KeyValuePair("mid", paymentRequest.getMid()));
 		}
 		if (StringUtils.isNotBlank(paymentRequest.getTid())) {
 			keyPairs.add(new KeyValuePair("tid", paymentRequest.getTid()));

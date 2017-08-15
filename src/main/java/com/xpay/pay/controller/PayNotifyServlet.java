@@ -274,6 +274,7 @@ public class PayNotifyServlet extends HttpServlet {
 				notification.setOrderNo(order.getOrderNo());
 				notification.setSellerOrderNo(order.getSellerOrderNo());
 				notification.setExtOrderNo(order.getExtOrderNo());
+				notification.setTargetOrderNo(order.getTargetOrderNo());
 				notification.setCodeUrl(order.getCodeUrl());
 				notification.setPrepayId(order.getPrepayId());
 				notification.setTokenId(order.getTokenId());
