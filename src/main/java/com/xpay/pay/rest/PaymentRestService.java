@@ -75,7 +75,7 @@ public class PaymentRestService extends AuthRestService {
 		PayChannel channel = PayChannel.fromValue(payChannel);
 		Assert.notNull(channel,"Unknow pay channel");
 		float fee = CommonUtils.toFloat(totalFee);
-		Assert.isTrue(fee>0 && fee<3000, "Invalid total fee");
+		Assert.isTrue(fee>=0.01 && fee<3000, "Invalid total fee");
 		String orderDate = validateOrderTime(orderTime);
 		Store store = storeService.findByCode(storeId);
 		App app = getApp();
