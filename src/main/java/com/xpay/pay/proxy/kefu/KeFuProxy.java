@@ -1,6 +1,6 @@
 package com.xpay.pay.proxy.kefu;
 
-import static com.xpay.pay.model.StoreChannel.PaymentGateway.MSBANK;
+import static com.xpay.pay.model.StoreChannel.PaymentGateway.KEFU;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +49,7 @@ public class KeFuProxy implements IPaymentProxy {
 		long l = System.currentTimeMillis();
 		PaymentResponse response = null;
 		try {
-			KeFuRequest keFuRequest = this.toKeFuRequest(MSBANK.UnifiedOrder(),request);
+			KeFuRequest keFuRequest = this.toKeFuRequest(KEFU.UnifiedOrder(),request);
 			List<KeyValuePair> keyPairs = this.getKeyPairs(keFuRequest);
 			String sign = this.signature(keyPairs, appSecret);
 			keFuRequest.setSign(sign);
