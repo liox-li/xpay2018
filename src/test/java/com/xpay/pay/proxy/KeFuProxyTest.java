@@ -15,7 +15,7 @@ public class KeFuProxyTest extends BaseSpringJunitTest {
 	@Test
 	public void testUnifiedOrder() {
 		PaymentRequest request = new PaymentRequest();
-		request.setExtStoreId("898340149000005");
+		request.setExtStoreId("MS0000001694830");
 		request.setDeviceId("1213");
 		request.setPayChannel(PayChannel.WECHAT);
 		request.setTotalFee("0.01");

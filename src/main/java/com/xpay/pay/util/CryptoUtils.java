@@ -9,21 +9,34 @@ import java.util.Map;
 public class CryptoUtils {
 	public static final String md5(String str) {
 		try {
-			MessageDigest messageDigest = null;
-
-			messageDigest = MessageDigest.getInstance("MD5");
-
+			MessageDigest messageDigest =  MessageDigest.getInstance("MD5");
 			messageDigest.reset();
-
 			messageDigest.update(str.getBytes("UTF-8"));
-
 			byte[] byteArray = messageDigest.digest();
-
 			return bytesToHex(byteArray);
 		} catch (Exception e) {
 			return null;
 		}
 	}
+	
+    public static String md5KeFu(String str, String key) {
+        try {
+            MessageDigest md5 = MessageDigest.getInstance("MD5");
+            md5.update(str.getBytes("UTF-8"));
+            
+            String result="";
+            byte[] temp;
+            temp=md5.digest(key.getBytes("UTF-8"));
+            for (int i=0; i<temp.length; i++){
+                result+=Integer.toHexString((0x000000ff & temp[i]) | 0xffffff00).substring(6);
+            }
+            
+            return result;
+        } catch(Exception e)
+        {
+        	return null;
+        }
+    }
 	
 	public static boolean checkSignature(Map<String,String> params,String key, String signKey, String keyParam){
         boolean result = false;

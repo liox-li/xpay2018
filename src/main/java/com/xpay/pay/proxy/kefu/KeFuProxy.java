@@ -149,9 +149,9 @@ public class KeFuProxy implements IPaymentProxy {
 		for(KeyValuePair pair : keyPairs) {
 			builder.queryParam(pair.getKey(), pair.getValue());
 		}
-		String params = builder.build().toString().substring(1)+appSecret;
+		String params = builder.build().toString().substring(1);
 		logger.debug("sorted params: "+params);
-		String md5 = CryptoUtils.md5(params);
+		String md5 = CryptoUtils.md5KeFu(params, appSecret);
 		logger.debug("md5 upper: "+md5.toUpperCase());
 		return md5 == null? null:md5.toUpperCase();
 	}
@@ -196,5 +196,4 @@ public class KeFuProxy implements IPaymentProxy {
 			return "01";
 		}
 	}
-	
 }
