@@ -19,7 +19,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.xpay.pay.ApplicationConstants;
 import com.xpay.pay.model.Order;
