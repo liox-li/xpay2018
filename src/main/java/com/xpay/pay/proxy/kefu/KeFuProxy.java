@@ -72,7 +72,7 @@ public class KeFuProxy implements IPaymentProxy {
 		long l = System.currentTimeMillis();
 		PaymentResponse response = null;
 		try {
-			KeFuRequest keFuRequest = this.toKeFuRequest(KEFU.Query(),request);
+			KeFuRequest keFuRequest = this.toKeFuQueryRequest(KEFU.Query(),request);
 			List<KeyValuePair> keyPairs = this.getKeyPairs(keFuRequest);
 			String sign = this.signature(keyPairs, appSecret);
 			keFuRequest.setSign(sign);
@@ -108,6 +108,16 @@ public class KeFuProxy implements IPaymentProxy {
 		keFuRequest.setNotifyUrl(request.getNotifyUrl());
 		keFuRequest.setGoodsName(request.getSubject());
 		keFuRequest.setPay_number(request.getOrderTime());
+		keFuRequest.setUserid(appId);
+		keFuRequest.setOrderCode(method);
+		
+		return keFuRequest;
+	}
+	
+	private KeFuRequest toKeFuQueryRequest(String method, PaymentRequest request) {
+		KeFuRequest keFuRequest = new KeFuRequest();
+		keFuRequest.setCustomerId(request.getExtStoreId());
+		keFuRequest.setOrderId(request.getGatewayOrderNo());
 		keFuRequest.setUserid(appId);
 		keFuRequest.setOrderCode(method);
 		

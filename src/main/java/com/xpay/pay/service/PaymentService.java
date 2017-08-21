@@ -213,7 +213,8 @@ public class PaymentService {
 		PaymentRequest request = new PaymentRequest();
 		if(PaymentGateway.CHINAUMS.equals(order.getStoreChannel().getPaymentGateway()) 
 				|| PaymentGateway.CHINAUMSV2.equals(order.getStoreChannel().getPaymentGateway()) 
-				|| PaymentGateway.JUZHEN.equals(order.getStoreChannel().getPaymentGateway())) {
+				|| PaymentGateway.JUZHEN.equals(order.getStoreChannel().getPaymentGateway())
+				|| PaymentGateway.KEFU.equals(order.getStoreChannel().getPaymentGateway())) {
 			request.setOrderTime(order.getOrderTime());
 			request.setGatewayOrderNo(order.getExtOrderNo());
 		}
