@@ -19,6 +19,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.xpay.pay.ApplicationConstants;
 import com.xpay.pay.model.Order;
@@ -252,7 +253,39 @@ public class PayNotifyServlet extends HttpServlet {
 
 	private NotifyResponse handleKeFuPayNotification(String content) {
 		Order order = null;
-		String respString = "SUCCESS";
+		String respString = "FAIL";
+		if (StringUtils.isNotBlank(content)) {
+			String billNo = "";
+			String status = "";
+			String targetOrderNo = "";
+			try {
+				String decoded = URLDecoder.decode(content, "utf-8");
+				String[] params = decoded.split("&");
+
+				for (String param : params) {
+					String[] pair = param.split("=");
+					String key = pair[0];
+					if ("orderId".equals(key)) {
+						billNo = pair[1];
+					} else if ("respCode".equals(key)) {
+						status = pair[1];
+					} else if ("outOrderNo".equals(key)) {
+						targetOrderNo = pair[1];
+					}
+				}
+				order = orderService.findActiveByExtOrderNo(billNo);
+				if (order != null && !OrderStatus.SUCCESS.equals(order.getStatus())) {
+					OrderStatus orderStatus = "0000".equals(status)?OrderStatus.SUCCESS:OrderStatus.NOTPAY;
+					order.setStatus(orderStatus);
+					order.setTargetOrderNo(targetOrderNo);
+					orderService.update(order);
+				}
+				respString = "SUCCESS";
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		NotifyResponse response = new NotifyResponse(respString, order);
 		return response;
 	}
