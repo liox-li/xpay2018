@@ -127,6 +127,9 @@ public class PaymentService {
 				bill.setOrder(order);
 				if(bill!=null && !bill.getOrderStatus().equals(order.getStatus())) {
 					order.setStatus(bill.getOrderStatus());
+					if(StringUtils.isNotBlank(bill.getTargetOrderNo())) {
+						order.setTargetOrderNo(bill.getTargetOrderNo());
+					}
 					orderService.update(order);
 				}
 				return bill;

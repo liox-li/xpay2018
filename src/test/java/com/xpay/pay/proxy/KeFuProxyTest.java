@@ -17,12 +17,12 @@ public class KeFuProxyTest extends BaseSpringJunitTest {
 		PaymentRequest request = new PaymentRequest();
 		request.setExtStoreId("MS0000001694830");
 		request.setDeviceId("1213");
-		request.setPayChannel(PayChannel.WECHAT);
+		request.setPayChannel(PayChannel.ALIPAY);
 		request.setTotalFee("0.01");
 		request.setOrderNo("3116201707311003354995996111");
 		request.setSubject("测试商品");
 		request.setAttach("atach");
-		request.setNotifyUrl("http://106.14.47.193/xpay/notify/msbank");
+		request.setNotifyUrl("http://106.14.47.193/xpay/notify/kefu");
 		GoodsBean[] goods = new GoodsBean[1];
 		GoodsBean good = new GoodsBean();
 		good.setGoodsId("001");
@@ -36,5 +36,13 @@ public class KeFuProxyTest extends BaseSpringJunitTest {
 		PaymentResponse response = proxy.unifiedOrder(request);
 		System.out.println("response code: "+ response.getCode()+" "+response.getMsg());
 	}
-	
+
+	@Test
+	public void testQuery() {
+		PaymentRequest request = new PaymentRequest();
+		request.setExtStoreId("MS0000001694830");
+		request.setOrderNo("WX2017082110583442329742355");
+		PaymentResponse response = proxy.query(request);
+		System.out.println("response code: "+ response.getCode()+" "+response.getMsg());
+	}
 }

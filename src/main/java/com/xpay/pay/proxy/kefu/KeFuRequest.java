@@ -2,6 +2,7 @@ package com.xpay.pay.proxy.kefu;
 
 public class KeFuRequest {
 	private String customerId;
+	private String orderId;
 	private String channelFlag;
 	private String amount;
 	private String notifyUrl;
@@ -15,6 +16,12 @@ public class KeFuRequest {
 	}
 	public void setCustomerId(String customerId) {
 		this.customerId = customerId;
+	}
+	public String getOrderId() {
+		return orderId;
+	}
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
 	}
 	public String getChannelFlag() {
 		return channelFlag;

@@ -7,6 +7,7 @@ import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 public class Bill {
 	private String orderNo;
 	private String gatewayOrderNo;
+	private String targetOrderNo;
 	private String prepayId;
 	private String codeUrl;
 	private String tokenId;
@@ -25,6 +26,12 @@ public class Bill {
 	}
 	public void setGatewayOrderNo(String gatewayOrderNo) {
 		this.gatewayOrderNo = gatewayOrderNo;
+	}
+	public String getTargetOrderNo() {
+		return targetOrderNo;
+	}
+	public void setTargetOrderNo(String targetOrderNo) {
+		this.targetOrderNo = targetOrderNo;
 	}
 	public String getPrepayId() {
 		return prepayId;

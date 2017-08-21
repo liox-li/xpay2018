@@ -10,14 +10,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.util.KeyValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -58,22 +53,45 @@ public class KeFuProxy implements IPaymentProxy {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-			MultiValueMap<String, String> map= this.toFormMap(keFuRequest);
-			HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<MultiValueMap<String, String>>(map, headers);
-			KeFuResponse keFuResponse = keFuProxy.exchange(url, HttpMethod.POST, httpEntity, KeFuResponse.class).getBody();
+			String params = this.toParams(keFuRequest);
+			String respStr = HttpClientUtil.sendPostRequest(url, params);
+			KeFuResponse keFuResponse = JsonUtils.fromJson(respStr, KeFuResponse.class);
 			logger.info("unifiedOrder result: " + keFuResponse.getRespCode() + " "+keFuResponse.getRespInfo() + ", took "
 					+ (System.currentTimeMillis() - l) + "ms");
 			response = toPaymentResponse(keFuResponse);
-		} catch (RestClientException e) {
+		} catch (Exception e) {
 			logger.info("unifiedOrder failed, took " + (System.currentTimeMillis() - l) + "ms", e);
-			throw e;
+			throw new GatewayException("503", "unifiedOrder failed", e);
 		}
 		return response;
 	}
 	@Override
 	public PaymentResponse query(PaymentRequest request) {
-		// TODO Auto-generated method stub
-		return null;
+		String url = baseEndpoint;
+		
+		long l = System.currentTimeMillis();
+		PaymentResponse response = null;
+		try {
+			KeFuRequest keFuRequest = this.toKeFuRequest(KEFU.Query(),request);
+			List<KeyValuePair> keyPairs = this.getKeyPairs(keFuRequest);
+			String sign = this.signature(keyPairs, appSecret);
+			keFuRequest.setSign(sign);
+			logger.info("Query POST: " + url+", body "+JsonUtils.toJson(keFuRequest));
+			
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+			String params = this.toParams(keFuRequest);
+			String respStr = HttpClientUtil.sendPostRequest(url, params);
+			KeFuResponse keFuResponse = JsonUtils.fromJson(respStr, KeFuResponse.class);
+			logger.info("Query result: " + keFuResponse.getRespCode() + " "+keFuResponse.getRespInfo() + ", took "
+					+ (System.currentTimeMillis() - l) + "ms");
+			response = toPaymentResponse(keFuResponse);
+		} catch (Exception e) {
+			logger.info("Query failed, took " + (System.currentTimeMillis() - l) + "ms", e);
+			throw new GatewayException("503", "Query failed", e);
+		}
+		return response;
 	}
 	@Override
 	public PaymentResponse refund(PaymentRequest request) {
@@ -86,9 +104,10 @@ public class KeFuProxy implements IPaymentProxy {
 		keFuRequest.setCustomerId(request.getExtStoreId());
 		keFuRequest.setChannelFlag(this.channel2Flag(request.getPayChannel()));
 		keFuRequest.setAmount(request.getTotalFee());
+		keFuRequest.setOrderId(request.getOrderNo());
 		keFuRequest.setNotifyUrl(request.getNotifyUrl());
 		keFuRequest.setGoodsName(request.getSubject());
-		keFuRequest.setPay_number(request.getOrderNo());
+		keFuRequest.setPay_number(request.getOrderTime());
 		keFuRequest.setUserid(appId);
 		keFuRequest.setOrderCode(method);
 		
@@ -96,8 +115,7 @@ public class KeFuProxy implements IPaymentProxy {
 	}
 	
 	private PaymentResponse toPaymentResponse(KeFuResponse keFuResponse) {
-		if (keFuResponse == null || !KeFuResponse.SUCCESS.equals(keFuResponse.getRespCode())
-				|| StringUtils.isBlank(keFuResponse.getPayUrl())) {
+		if (keFuResponse == null || !KeFuResponse.SUCCESS.equals(keFuResponse.getRespCode())) {
 			String code = keFuResponse == null ? NO_RESPONSE : keFuResponse.getRespCode();
 			String msg = keFuResponse == null ? "No response" : keFuResponse.getRespInfo();
 			throw new GatewayException(code, msg);
@@ -108,7 +126,8 @@ public class KeFuProxy implements IPaymentProxy {
 		bill.setCodeUrl(keFuResponse.getPayUrl());
 		bill.setOrderNo(keFuResponse.getPay_number());
 		bill.setGatewayOrderNo(keFuResponse.getOrderId());
-		bill.setOrderStatus(OrderStatus.NOTPAY);
+		bill.setTargetOrderNo(keFuResponse.getOutOrderNo());
+		bill.setOrderStatus(this.toOrderStatus(keFuResponse.getTransStatus()));
 		response.setBill(bill);
 		return response;
 	}
@@ -118,9 +137,11 @@ public class KeFuProxy implements IPaymentProxy {
 			return null;
 		}
 		List<KeyValuePair> keyPairs = new ArrayList<KeyValuePair>();
-
 		if (StringUtils.isNotBlank(paymentRequest.getCustomerId())) {
 			keyPairs.add(new KeyValuePair("customerId", paymentRequest.getCustomerId()));
+		}
+		if (StringUtils.isNotBlank(paymentRequest.getOrderId())) {
+			keyPairs.add(new KeyValuePair("orderId", paymentRequest.getOrderId()));
 		}
 		if (StringUtils.isNotBlank(paymentRequest.getChannelFlag())) {
 			keyPairs.add(new KeyValuePair("channelFlag", paymentRequest.getChannelFlag()));
@@ -156,44 +177,59 @@ public class KeFuProxy implements IPaymentProxy {
 		return md5 == null? null:md5.toUpperCase();
 	}
 	
-	private MultiValueMap<String, String> toFormMap(KeFuRequest paymentRequest) {
-		MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
+	private String toParams(KeFuRequest paymentRequest) {
+		UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
 		if (StringUtils.isNotBlank(paymentRequest.getCustomerId())) {
-			map.add("customerId", paymentRequest.getCustomerId());
+			builder.queryParam("customerId", paymentRequest.getCustomerId());
+		}
+		if (StringUtils.isNotBlank(paymentRequest.getOrderId())) {
+			builder.queryParam("orderId", paymentRequest.getOrderId());
 		}
 		if (StringUtils.isNotBlank(paymentRequest.getChannelFlag())) {
-			map.add("channelFlag", paymentRequest.getChannelFlag());
+			builder.queryParam("channelFlag", paymentRequest.getChannelFlag());
 		}
 		if (StringUtils.isNotBlank(paymentRequest.getAmount())) {
-			map.add("amount", paymentRequest.getAmount());
+			builder.queryParam("amount", paymentRequest.getAmount());
 		}
 		if (StringUtils.isNotBlank(paymentRequest.getNotifyUrl())) {
-			map.add("notifyUrl", paymentRequest.getNotifyUrl());
+			builder.queryParam("notifyUrl", paymentRequest.getNotifyUrl());
 		}
 		if (StringUtils.isNotBlank(paymentRequest.getGoodsName())) {
-			map.add("goodsName", paymentRequest.getGoodsName());
+			builder.queryParam("goodsName", paymentRequest.getGoodsName());
 		}
 		if (StringUtils.isNotBlank(paymentRequest.getUserid())) {
-			map.add("userid", paymentRequest.getUserid());
+			builder.queryParam("userid", paymentRequest.getUserid());
 		}
 		if (StringUtils.isNotBlank(paymentRequest.getSign())) {
-			map.add("sign ", paymentRequest.getSign());
+			builder.queryParam("sign", paymentRequest.getSign());
 		}
 		if (StringUtils.isNotBlank(paymentRequest.getPay_number())) {
-			map.add("pay_number", paymentRequest.getPay_number());
+			builder.queryParam("pay_number", paymentRequest.getPay_number());
 		}
 		if (StringUtils.isNotBlank(paymentRequest.getOrderCode())) {
-			map.add("orderCode", paymentRequest.getOrderCode());
+			builder.queryParam("orderCode", paymentRequest.getOrderCode());
 		}
-		return map;
+		return builder.build().toString().substring(1);
 		
 	}
 	
 	private String channel2Flag(PayChannel payChannel) {
 		if(PayChannel.WECHAT.equals(payChannel)) {
 			return "02";
-		} else {
+		} else if(PayChannel.ALIPAY.equals(payChannel)) {
 			return "01";
+		} else {
+			return "";
 		}
 	}
+	
+	private OrderStatus toOrderStatus(String status) {
+		if("0".equals(status)) {
+			return OrderStatus.SUCCESS;
+		} else if("1".equals(status)) {
+			return OrderStatus.PAYERROR;
+		} else {
+			return OrderStatus.NOTPAY;
+		}
+ 	}
 }
