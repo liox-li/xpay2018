@@ -178,17 +178,15 @@ public class PaymentService {
 		request.setTotalFee(order.getTotalFee());
 		request.setAttach(order.getAttach());
 		request.setOrderNo(order.getOrderNo());
+		request.setNotifyUrl(DEFAULT_NOTIFY_URL+order.getStoreChannel().getPaymentGateway().toString().toLowerCase());
 		if(PaymentGateway.CHINAUMSV2.equals(order.getStoreChannel().getPaymentGateway())) {
-			request.setNotifyUrl(DEFAULT_NOTIFY_URL+order.getStoreChannel().getPaymentGateway().toString().toLowerCase());
 			request.setReturnUrl(order.getReturnUrl());
 		}
 		else if(PaymentGateway.CHINAUMS.equals(order.getStoreChannel().getPaymentGateway())) {
-			request.setNotifyUrl(DEFAULT_NOTIFY_URL+order.getStoreChannel().getPaymentGateway().toString().toLowerCase());
 			request.setReturnUrl(order.getReturnUrl());
 		}
 		else if(PaymentGateway.JUZHEN.equals(order.getStoreChannel().getPaymentGateway())) {
 			request.setServerIp(LOCAL_ID);
-			request.setNotifyUrl(DEFAULT_NOTIFY_URL+order.getStoreChannel().getPaymentGateway().toString().toLowerCase());
 		}
 //		else if(PaymentGateway.RUBIPAY.equals(order.getStoreChannel().getPaymentGateway())) {
 //			request.setServerIp(LOCAL_ID);
