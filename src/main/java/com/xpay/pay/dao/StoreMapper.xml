@@ -12,6 +12,7 @@
     <result column="bail_percentage" jdbcType="SMALLINT" property="bailPercentage" />
     <result column="rotation_type" jdbcType="VARCHAR" property="rotationType" />
     <result column="rotation_index" jdbcType="SMALLINT" property="rotationIndex" />
+    <result column="bail_store_id" jdbcType="BIGINT" property="bailStoreId" />
   </resultMap>
   
   <sql id="storeColumns">
@@ -23,7 +24,8 @@
     bar,
     bail_percentage,
     rotation_type,
-    rotation_index
+    rotation_index,
+    bail_store_id
   </sql>
 
   <select id="findById" resultMap="StoreResultMap">
@@ -60,6 +62,9 @@
       <if test="rotationType != null">
         rotation_type,
       </if>
+      <if test="bailStoreId != null">
+        bail_store_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
      	#{code,jdbcType=VARCHAR},
@@ -72,6 +77,9 @@
         </if>
         <if test="rotationType != null">
         	#{rotationType,jdbcType=VARCHAR},
+        </if>
+        <if test="bailStoreId != null">
+        	#{bailStoreId,jdbcType=BIGINT},
         </if>
     </trim>
   </insert>
@@ -102,7 +110,10 @@
       </if>
        <if test="rotationIndex != null">
         rotation_index = #{rotationIndex,jdbcType=SMALLINT},
-      </if>     
+      </if>   
+       <if test="bailStoreId != null">
+        bail_store_id = #{bailStoreId,jdbcType=BIGINT},
+      </if>    
       update_date = now()
     </set>
     where id = #{id,jdbcType=BIGINT}

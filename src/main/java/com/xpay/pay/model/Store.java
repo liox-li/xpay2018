@@ -12,6 +12,7 @@ public class Store {
 	private Integer bailPercentage;
 	private RotationType rotationType;
 	private Integer rotationIndex;
+	private long bailStoreId;
 	private List<StoreChannel> channels;
 
 	public long getId() {
@@ -88,38 +89,41 @@ public class Store {
 		return rotationType;
 	}
 
-
 	public void setRotationType(RotationType rotationType) {
 		this.rotationType = rotationType;
 	}
-
 
 	public Integer getRotationIndex() {
 		return rotationIndex;
 	}
 
-
 	public void setRotationIndex(Integer rotationIndex) {
 		this.rotationIndex = rotationIndex;
 	}
 
+	public long getBailStoreId() {
+		return bailStoreId;
+	}
+
+
+	public void setBailStoreId(long bailStoreId) {
+		this.bailStoreId = bailStoreId;
+	}
+
+	public enum RotationType {
+		RoundRobin, FirstOneFirst
+	}
 
 	public List<StoreChannel> getChannels() {
 		return channels;
 	}
 
-
 	public void setChannels(List<StoreChannel> channels) {
 		this.channels = channels;
 	}
-
-
-	public enum RotationType {
-		RoundRobin, FirstOneFirst
-	}
 	
-	private static final int SECURE_LOW_BOUNDER = 100;
-	private static final int SECURE_UP_BOUNDER = 500;
+	private static final int SECURE_LOW_BOUNDER = 50;
+	private static final int SECURE_UP_BOUNDER = 300;
 	public boolean isNextBailPay(float totalFee) {
 		if(this.nonBail <= this.bar) {
 			return false;
