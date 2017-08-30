@@ -8,11 +8,12 @@ import com.xpay.pay.proxy.chinaums.ChinaUmsProxy;
 import com.xpay.pay.proxy.chinaumsv2.ChinaUmsV2Proxy;
 import com.xpay.pay.proxy.juzhen.JuZhenProxy;
 import com.xpay.pay.proxy.kefu.KeFuProxy;
+import com.xpay.pay.proxy.miaofu.MiaoFuProxy;
 
 @Service
 public class PaymentProxyFactory {
-//	@Autowired
-//	private MiaoFuProxy miaoFuProxy;
+	@Autowired
+	private MiaoFuProxy miaoFuProxy;
 //	@Autowired
 //	private SwiftpassProxy swiftpassProxy;
 	@Autowired
@@ -36,6 +37,8 @@ public class PaymentProxyFactory {
 				return juZhenProxy;
 			case  KEFU:
 				return keFuProxy;
+			case MIAOFU:
+				return miaoFuProxy;
 			default: 
 				return chinaUmsV2Proxy;
 		}

@@ -169,7 +169,7 @@ public class JuZhenProxy implements IPaymentProxy {
 		return response;
 	}
 	
-	private OrderStatus toOrderStatus(String ordStatus) {
+	public static OrderStatus toOrderStatus(String ordStatus) {
 		if(StringUtils.isBlank(ordStatus)) {
 			return OrderStatus.NOTPAY;
 		}

@@ -1,8 +1,6 @@
 package com.xpay.pay.controller;
 
 import java.io.IOException;
-import java.net.URLDecoder;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -22,23 +20,11 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.xpay.pay.ApplicationConstants;
 import com.xpay.pay.model.Order;
-import com.xpay.pay.model.StoreChannel.PaymentGateway;
-import com.xpay.pay.proxy.PaymentResponse;
-import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
-import com.xpay.pay.proxy.chinaums.ChinaUmsProxy;
-import com.xpay.pay.proxy.juzhen.JuZhenNotification;
-import com.xpay.pay.proxy.juzhen.JuZhenProxy;
+import com.xpay.pay.notify.INotifyHandler;
+import com.xpay.pay.notify.NotifyHandlerFactory;
 import com.xpay.pay.proxy.notify.NotifyProxy;
-import com.xpay.pay.proxy.rubipay.RubiPayProxy;
-import com.xpay.pay.proxy.swiftpass.SwiftpassProxy;
 import com.xpay.pay.rest.contract.BaseResponse;
 import com.xpay.pay.rest.contract.NotificationResponse;
-import com.xpay.pay.service.OrderService;
-import com.xpay.pay.service.PaymentService;
-import com.xpay.pay.util.CommonUtils;
-import com.xpay.pay.util.CryptoUtils;
-import com.xpay.pay.util.JsonUtils;
-import com.xpay.pay.util.XmlUtils;
 
 public class PayNotifyServlet extends HttpServlet {
 	private static final long serialVersionUID = -4617898543988945707L;
@@ -46,11 +32,9 @@ public class PayNotifyServlet extends HttpServlet {
 	protected final Logger logger = LogManager.getLogger("AccessLog");
 
 	@Autowired
-	protected OrderService orderService;
+	protected NotifyHandlerFactory factory;
 	@Autowired
 	protected NotifyProxy notifyProxy;
-	@Autowired
-	protected PaymentService paymentService;
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
@@ -68,40 +52,31 @@ public class PayNotifyServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		String uri = request.getRequestURI();
-
-		response.setCharacterEncoding("utf-8");
-		response.setHeader("Content-type", "text/html;charset=UTF-8");
+		INotifyHandler notifyHandler = factory.getNotifyHandler(uri);
+		
 		NotifyResponse notResp = null;
-		Order order = null;
 		try {
-			request.setCharacterEncoding("utf-8");
+			request.setCharacterEncoding(notifyHandler.getCharacterEncoding());
 			byte[] buffer = new byte[request.getContentLength()];
 			IOUtils.readFully(request.getInputStream(), buffer);
 			String content = new String(buffer);
 			logger.info("Notify from " + uri + " content: " + content);
-			if (uri.contains(PaymentGateway.CHINAUMS.name().toLowerCase())) {
-				notResp = handleChinaUmsNotification(content);
-			} else if (uri.contains(PaymentGateway.JUZHEN.name().toLowerCase())) {
-				notResp = handleJuZhenNotification(content);
-			} else if (uri.contains(PaymentGateway.KEFU.name().toLowerCase())) {
-					notResp = handleKeFuPayNotification(content);
-			} else if (uri.contains(PaymentGateway.SWIFTPASS.name().toLowerCase())) {
-				notResp = handleSwiftpassNotification(content);
-			}  else if (uri.contains(PaymentGateway.RUBIPAY.name().toLowerCase())) {
-				notResp = handleRubiPayNotification(content);
-			} 
-			order = notResp == null ? null : notResp.getOrder();
-			updateBail(order);
-			notify(order);
 			
+			notResp = notifyHandler.handleNotification(content);
+			Order order = notResp == null ? null : notResp.getOrder();
+			notify(order);
 		} catch (Exception e) {
 			logger.error("notify failed ", e);
 		} finally {
-			response.getWriter().write(notResp.getResp());
+			if(notResp!=null) {
+				response.setCharacterEncoding(notifyHandler.getCharacterEncoding());
+				response.setHeader("Content-type", notifyHandler.getContentType());
+				response.getWriter().write(notResp.getResp());
+			}
 		}
 	}
 
-
+/*
 	private NotifyResponse handleSwiftpassNotification(String content)
 			throws Exception {
 		Order order = null;
@@ -288,14 +263,9 @@ public class PayNotifyServlet extends HttpServlet {
 		NotifyResponse response = new NotifyResponse(respString, order);
 		return response;
 	}
+*/
 
 
-	private void updateBail(Order order) {
-		if(order!=null && OrderStatus.SUCCESS.equals(order.getStatus())) {
-			paymentService.updateBail(order, true);
-		}
-	}
-	
 	private static final Executor executor = Executors.newFixedThreadPool(50);
 	@SuppressWarnings("rawtypes")
 	private void notify(final Order order) {
@@ -360,18 +330,6 @@ public class PayNotifyServlet extends HttpServlet {
 
 		public void setOrder(Order order) {
 			this.order = order;
-		}
-	}
-	
-	public static class ChinaUmsBill {
-		private String targetOrderId;
-
-		public String getTargetOrderId() {
-			return targetOrderId;
-		}
-
-		public void setTargetOrderId(String targetOrderId) {
-			this.targetOrderId = targetOrderId;
 		}
 	}
 }

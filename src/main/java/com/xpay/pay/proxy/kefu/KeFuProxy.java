@@ -233,7 +233,7 @@ public class KeFuProxy implements IPaymentProxy {
 		}
 	}
 	
-	private OrderStatus toOrderStatus(String status) {
+	public static OrderStatus toOrderStatus(String status) {
 		if("0".equals(status)) {
 			return OrderStatus.SUCCESS;
 		} else if("1".equals(status)) {
