@@ -137,7 +137,7 @@ public class KeFuProxy implements IPaymentProxy {
 		bill.setOrderNo(keFuResponse.getPay_number());
 		bill.setGatewayOrderNo(keFuResponse.getOrderId());
 		bill.setTargetOrderNo(keFuResponse.getOutOrderNo());
-		bill.setOrderStatus(this.toOrderStatus(keFuResponse.getTransStatus()));
+		bill.setOrderStatus(toOrderStatus(keFuResponse.getTransStatus()));
 		response.setBill(bill);
 		return response;
 	}
