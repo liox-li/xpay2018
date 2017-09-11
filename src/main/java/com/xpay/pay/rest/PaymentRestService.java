@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +30,7 @@ import com.xpay.pay.service.PaymentService;
 import com.xpay.pay.service.StoreService;
 import com.xpay.pay.util.CommonUtils;
 import com.xpay.pay.util.IDGenerator;
+import com.xpay.pay.exception.Assert;
 
 @RestController
 @RequestMapping("/v1/pay")
@@ -78,6 +78,8 @@ public class PaymentRestService extends AuthRestService {
 		Assert.isTrue(fee>=0.01f && fee<3000, "Invalid total fee");
 		String orderDate = validateOrderTime(orderTime);
 		Store store = storeService.findByCode(storeId);
+		validateDailyLimit(store);
+		
 		App app = getApp();
 		String orderNo = IDGenerator.buildOrderNo(app.getId(), store.getId());
 		OrderDetail orderDetail = payload == null?null: payload.getOrderDetail();
@@ -115,6 +117,7 @@ public class PaymentRestService extends AuthRestService {
 		throw new GatewayException("-1", "No avaiable payment gateway");		
 	}
 
+
 	private String validateOrderTime(String orderTime) {
 		SimpleDateFormat timeFormat = new SimpleDateFormat(IDGenerator.TimePattern14);
 		try {
@@ -125,6 +128,13 @@ public class PaymentRestService extends AuthRestService {
 		}
 	}
 
+
+	private void validateDailyLimit(Store store) {
+		Assert.notNull(store, "No store found");
+		Assert.isTrue(-1 == store.getDailyLimit() || store.getBail()+store.getNonBail() < store.getDailyLimit(), "Exceed transaction limit");
+		
+	}
+	
 	@RequestMapping(value = "/query/{orderNo} ", method = RequestMethod.GET)
 	public BaseResponse<OrderResponse> query(
 			@PathVariable String orderNo,

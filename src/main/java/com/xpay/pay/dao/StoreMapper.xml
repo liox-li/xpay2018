@@ -13,6 +13,7 @@
     <result column="rotation_type" jdbcType="VARCHAR" property="rotationType" />
     <result column="rotation_index" jdbcType="SMALLINT" property="rotationIndex" />
     <result column="bail_store_id" jdbcType="BIGINT" property="bailStoreId" />
+    <result column="daily_limit" jdbcType="BIGINT" property="dailyLimit" />
   </resultMap>
   
   <sql id="storeColumns">
@@ -25,7 +26,8 @@
     bail_percentage,
     rotation_type,
     rotation_index,
-    bail_store_id
+    bail_store_id,
+    daily_limit
   </sql>
 
   <select id="findById" resultMap="StoreResultMap">
@@ -113,6 +115,9 @@
       </if>   
        <if test="bailStoreId != null">
         bail_store_id = #{bailStoreId,jdbcType=BIGINT},
+      </if>
+      <if test="dailyLimit != null">
+        daily_limit = #{dailyLimit,jdbcType=BIGINT},
       </if>    
       update_date = now()
     </set>

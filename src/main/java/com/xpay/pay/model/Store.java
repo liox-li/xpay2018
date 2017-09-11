@@ -13,6 +13,7 @@ public class Store {
 	private RotationType rotationType;
 	private Integer rotationIndex;
 	private long bailStoreId;
+	private long dailyLimit;
 	private List<StoreChannel> channels;
 
 	public long getId() {
@@ -105,9 +106,16 @@ public class Store {
 		return bailStoreId;
 	}
 
-
 	public void setBailStoreId(long bailStoreId) {
 		this.bailStoreId = bailStoreId;
+	}
+	
+	public long getDailyLimit() {
+		return dailyLimit;
+	}
+
+	public void setDailyLimit(long dailyLimit) {
+		this.dailyLimit = dailyLimit;
 	}
 
 	public enum RotationType {
