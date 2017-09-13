@@ -1,7 +1,5 @@
 package com.xpay.pay.dao;
 
-import java.util.List;
-
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -16,7 +14,6 @@ public class StoreChannelMapperTest extends BaseSpringJunitTest {
 	@Test
 	public void testInert() {
 		StoreChannel channel = new StoreChannel();
-		channel.setStoreId(100);
 		channel.setExtStoreId("123");
 		channel.setPaymentGateway(PaymentGateway.MIAOFU);
 		mapper.insert(channel);
@@ -26,12 +23,6 @@ public class StoreChannelMapperTest extends BaseSpringJunitTest {
 	public void testFindById() {
 		StoreChannel storeChannel = mapper.findById(100);
 		System.out.println(storeChannel.getPaymentGateway());
-	}
-	
-	@Test
-	public void testFindByStoreId() {
-		List<StoreChannel> channels = mapper.findByStoreId(100);
-		System.out.println(channels.size());
 	}
 	
 	@Test

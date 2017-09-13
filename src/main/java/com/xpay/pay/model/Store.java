@@ -12,8 +12,10 @@ public class Store {
 	private Integer bailPercentage;
 	private RotationType rotationType;
 	private Integer rotationIndex;
-	private long bailStoreId;
+	private String bailChannelIds;
+	private List<StoreChannel> bailChannels;
 	private long dailyLimit;
+	private String channelIds;
 	private List<StoreChannel> channels;
 
 	public long getId() {
@@ -101,15 +103,15 @@ public class Store {
 	public void setRotationIndex(Integer rotationIndex) {
 		this.rotationIndex = rotationIndex;
 	}
-
-	public long getBailStoreId() {
-		return bailStoreId;
-	}
-
-	public void setBailStoreId(long bailStoreId) {
-		this.bailStoreId = bailStoreId;
-	}
 	
+	public List<StoreChannel> getBailChannels() {
+		return bailChannels;
+	}
+
+	public void setBailChannels(List<StoreChannel> bailChannels) {
+		this.bailChannels = bailChannels;
+	}
+
 	public long getDailyLimit() {
 		return dailyLimit;
 	}
@@ -130,6 +132,22 @@ public class Store {
 		this.channels = channels;
 	}
 	
+	public String getBailChannelIds() {
+		return bailChannelIds;
+	}
+
+	public void setBailChannelIds(String bailChannelIds) {
+		this.bailChannelIds = bailChannelIds;
+	}
+
+	public String getChannelIds() {
+		return channelIds;
+	}
+
+	public void setChannelIds(String channelIds) {
+		this.channelIds = channelIds;
+	}
+
 	private static final int SECURE_LOW_BOUNDER = 50;
 	private static final int SECURE_UP_BOUNDER = 300;
 	public boolean isNextBailPay(float totalFee) {

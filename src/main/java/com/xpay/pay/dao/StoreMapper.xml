@@ -12,7 +12,8 @@
     <result column="bail_percentage" jdbcType="SMALLINT" property="bailPercentage" />
     <result column="rotation_type" jdbcType="VARCHAR" property="rotationType" />
     <result column="rotation_index" jdbcType="SMALLINT" property="rotationIndex" />
-    <result column="bail_store_id" jdbcType="BIGINT" property="bailStoreId" />
+    <result column="channels" jdbcType="VARCHAR" property="channelIds" />
+    <result column="bail_channels" jdbcType="VARCHAR" property="bailChannelIds" />
     <result column="daily_limit" jdbcType="BIGINT" property="dailyLimit" />
   </resultMap>
   
@@ -26,7 +27,8 @@
     bail_percentage,
     rotation_type,
     rotation_index,
-    bail_store_id,
+    channels,
+    bail_channels,
     daily_limit
   </sql>
 
@@ -64,8 +66,11 @@
       <if test="rotationType != null">
         rotation_type,
       </if>
-      <if test="bailStoreId != null">
-        bail_store_id,
+      <if test="channelIds != null">
+        channels,
+      </if>
+      <if test="bailChannelIds != null">
+        bail_channels,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -80,8 +85,11 @@
         <if test="rotationType != null">
         	#{rotationType,jdbcType=VARCHAR},
         </if>
-        <if test="bailStoreId != null">
-        	#{bailStoreId,jdbcType=BIGINT},
+        <if test="channelIds != null">
+        	#{channelIds,jdbcType=VARCHAR},
+        </if>
+        <if test="bailChannelIds != null">
+        	#{bailChannelIds,jdbcType=VARCHAR},
         </if>
     </trim>
   </insert>
@@ -113,8 +121,11 @@
        <if test="rotationIndex != null">
         rotation_index = #{rotationIndex,jdbcType=SMALLINT},
       </if>   
-       <if test="bailStoreId != null">
-        bail_store_id = #{bailStoreId,jdbcType=BIGINT},
+       <if test="channelIds != null">
+        channels = #{channelIds,jdbcType=VARCHAR},
+      </if>
+      <if test="bailChannelIds != null">
+        bail_channels = #{bailChannelIds,jdbcType=VARCHAR},
       </if>
       <if test="dailyLimit != null">
         daily_limit = #{dailyLimit,jdbcType=BIGINT},

@@ -8,12 +8,9 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.xpay.pay.dao.OrderDetailMapper;
 import com.xpay.pay.dao.OrderMapper;
 import com.xpay.pay.exception.Assert;
 import com.xpay.pay.model.Order;
-import com.xpay.pay.model.OrderDetail;
-import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.util.CommonUtils;
@@ -22,8 +19,6 @@ import com.xpay.pay.util.CommonUtils;
 public class OrderService {
 	@Autowired
 	protected OrderMapper orderMapper;
-	@Autowired
-	protected OrderDetailMapper orderDetailMapper;
 	@Autowired
 	protected AppService appService;
 	@Autowired
@@ -61,12 +56,11 @@ public class OrderService {
 		return order;
 	}
 
-	public StoreChannel findUnusedChannel(Store store, String orderNo) {
+	public StoreChannel findUnusedChannel(List<StoreChannel> channels, String orderNo) {
 		List<Order> orders = this.findByOrderNo(orderNo);
 		List<Long> usedChannels = CollectionUtils.isEmpty(orders) ? null : orders
 				.stream().map(x -> x.getStoreChannelId())
 				.collect(Collectors.toList());
-		List<StoreChannel> channels = store.getChannels();
 
 		StoreChannel channel = channels.stream().filter(x -> !CommonUtils.in(usedChannels, x.getId()))
 				.collect(Collectors.collectingAndThen(Collectors.toList(), collected -> {
@@ -80,10 +74,6 @@ public class OrderService {
 		return orderMapper.insert(order);
 	}
 	
-	public boolean insert(OrderDetail orderDetail) {
-		return orderDetailMapper.insert(orderDetail);
-	}
-
 	public boolean update(Order order) {
 		return orderMapper.updateById(order);
 	}

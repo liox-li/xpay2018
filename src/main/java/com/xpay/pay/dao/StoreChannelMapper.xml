@@ -4,14 +4,12 @@
 
   <resultMap id="StoreChannelResultMap" type="com.xpay.pay.model.StoreChannel">
     <result column="id" jdbcType="BIGINT" property="id" />
-    <result column="store_id" jdbcType="BIGINT" property="storeId" />
     <result column="ext_store_id" jdbcType="VARCHAR" property="extStoreId" />
     <result column="payment_gateway" jdbcType="VARCHAR" property="paymentGateway" />
   </resultMap>
   
   <sql id="storeChannelColumns">
   	id,
-    store_id,
     ext_store_id,
     payment_gateway
   </sql>
@@ -23,13 +21,6 @@
     WHERE bill_store_channel.id = #{id} AND deleted = false
   </select>
 
-  <select id="findByStoreId" resultMap="StoreChannelResultMap">
-    SELECT
-    <include refid="storeChannelColumns" />
-    FROM bill_store_channel
-    WHERE bill_store_channel.store_id = #{storeId} AND deleted = false
-  </select>
-    
   <select id="findAll" resultMap="StoreChannelResultMap">
     SELECT
     <include refid="storeChannelColumns" />
@@ -40,10 +31,9 @@
   <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.StoreChannel">
     insert into bill_store_channel
     <trim prefix="(" suffix=")" suffixOverrides=",">
-     store_id, ext_store_id, payment_gateway
+     ext_store_id, payment_gateway
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-     	#{storeId,jdbcType=BIGINT},
      	#{extStoreId,jdbcType=VARCHAR},
      	#{paymentGateway,jdbcType=VARCHAR}
     </trim>
@@ -52,9 +42,6 @@
    <update id="updateById" parameterType="com.xpay.pay.model.StoreChannel">
     update bill_store_channel
      <set>
-      <if test="storeId != null">
-        store_id = #{storeId,jdbcType=BIGINT},
-      </if>
       <if test="extStoreId != null">
         ext_store_id = #{extStoreId,jdbcType=VARCHAR},
       </if>

@@ -28,7 +28,6 @@ public class Order {
 	private OrderStatus status;
 	private Long detailId;
 	private String subject;
-	private OrderDetail orderDetail;
 	private App app;
 	private Store store;
 	public long getId() {
@@ -182,15 +181,6 @@ public class Order {
 	}
 	public void setDetailId(Long detailId) {
 		this.detailId = detailId;
-	}
-	public OrderDetail getOrderDetail() {
-		return orderDetail;
-	}
-	public void setOrderDetail(OrderDetail orderDetail) {
-		this.orderDetail = orderDetail;
-		if(orderDetail!=null) {
-			this.detailId = orderDetail.getId();
-		}
 	}
 	public App getApp() {
 		return app;

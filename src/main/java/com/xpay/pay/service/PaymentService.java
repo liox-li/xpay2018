@@ -39,16 +39,10 @@ public class PaymentService {
 			String subject) {
 		StoreChannel storeChannel = null;
 		boolean isNextBailPay = store.isNextBailPay(CommonUtils.toFloat(totalFee));
-		storeChannel = orderService.findUnusedChannel(store, orderNo);
+		storeChannel = orderService.findUnusedChannel(store.getChannels(), orderNo);
 		if(isNextBailPay) {
-			long bailStoreId = store.getBailStoreId();
-			Store bailStore = storeService.findById(bailStoreId);
-			if(bailStore == null) {
-				PaymentGateway gateway = storeChannel.getPaymentGateway();
-				bailStore = findBailStore(gateway);
-			}
-
-			storeChannel = orderService.findUnusedChannel(bailStore, orderNo);
+			StoreChannel bailChannel = orderService.findUnusedChannel(store.getBailChannels(), orderNo);
+			storeChannel = bailChannel == null? storeChannel:bailChannel;
 		}
 		Assert.notNull(storeChannel, "No avaiable store channel");
 		
@@ -242,8 +236,4 @@ public class PaymentService {
 		return bill;
 	}
 	
-	public Store findBailStore(PaymentGateway gateway) {
-		return storeService.findById(gateway.getBailStoreId());
-	}
-
 }

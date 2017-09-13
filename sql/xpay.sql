@@ -223,6 +223,11 @@ ALTER TABLE bill_store ADD COLUMN bail_store_id BIGINT;
 ALTER TABLE bill_store ADD COLUMN app_id BIGINT;
 ALTER TABLE bill_store ADD COLUMN daily_limit BIGINT default -1;
 ALTER TABLE bill_order ADD COLUMN subject VARCHAR(256);
+ALTER TABLE bill_store ADD COLUMN channels VARCHAR(256);
+ALTER TABLE bill_store ADD COLUMN bail_channels VARCHAR(256);
+
+ALTER TABLE bill_store DROP COLUMN bail_store_id;
+ALTER TABLE bill_store_channel DROP COLUMN store_id;
 
 
 ALTER table bill_app OWNER TO xpay;
