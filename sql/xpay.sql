@@ -222,6 +222,7 @@ ALTER TABLE bill_store_channel ADD COLUMN bill_type VARCHAR(32);
 ALTER TABLE bill_store ADD COLUMN bail_store_id BIGINT;
 ALTER TABLE bill_store ADD COLUMN app_id BIGINT;
 ALTER TABLE bill_store ADD COLUMN daily_limit BIGINT default -1;
+ALTER TABLE bill_order ADD COLUMN subject VARCHAR(256);
 
 
 ALTER table bill_app OWNER TO xpay;

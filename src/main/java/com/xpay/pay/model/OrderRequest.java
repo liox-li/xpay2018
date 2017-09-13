@@ -12,6 +12,7 @@ public class OrderRequest {
 	private String ip;
 	private String notifyUrl;
 	private String returnUrl;
+	private String subject;
 	private OrderDetail orderDetail;
 	public String getStoreId() {
 		return storeId;
@@ -72,6 +73,12 @@ public class OrderRequest {
 	}
 	public void setReturnUrl(String returnUrl) {
 		this.returnUrl = returnUrl;
+	}
+	public String getSubject() {
+		return subject;
+	}
+	public void setSubject(String subject) {
+		this.subject = subject;
 	}
 	public OrderDetail getOrderDetail() {
 		return orderDetail;

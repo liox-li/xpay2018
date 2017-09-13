@@ -5,7 +5,6 @@ public class OrderDetail {
 	private long id;
 	private String storeName;
 	private String operator;
-	private String subject;
 	private String itemsJson;
 	private String desc;
 	
@@ -26,12 +25,6 @@ public class OrderDetail {
 	}
 	public void setOperator(String operator) {
 		this.operator = operator;
-	}
-	public String getSubject() {
-		return subject;
-	}
-	public void setSubject(String subject) {
-		this.subject = subject;
 	}
 	public String getItemsJson() {
 		return itemsJson;

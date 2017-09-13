@@ -11,7 +11,6 @@ import com.xpay.pay.exception.Assert;
 import com.xpay.pay.model.App;
 import com.xpay.pay.model.Bill;
 import com.xpay.pay.model.Order;
-import com.xpay.pay.model.OrderDetail;
 import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
 import com.xpay.pay.model.StoreChannel.PaymentGateway;
@@ -37,7 +36,7 @@ public class PaymentService {
 	public Order createOrder(App app, String orderNo, Store store, PayChannel channel,
 			String deviceId, String ip, String totalFee, String orderTime,
 			String sellerOrderNo, String attach, String notifyUrl,String returnUrl,
-			OrderDetail orderDetail) {
+			String subject) {
 		StoreChannel storeChannel = null;
 		boolean isNextBailPay = store.isNextBailPay(CommonUtils.toFloat(totalFee));
 		storeChannel = orderService.findUnusedChannel(store, orderNo);
@@ -68,7 +67,7 @@ public class PaymentService {
 		order.setAttach(attach);
 		order.setNotifyUrl(notifyUrl);
 		order.setReturnUrl(returnUrl);
-		order.setOrderDetail(orderDetail);
+		order.setSubject(subject);
 		orderService.insert(order);
 		
 		return order;
@@ -204,8 +203,8 @@ public class PaymentService {
 //		}
 //		
 		
-		if (order.getOrderDetail() != null) {
-			request.setSubject(order.getOrderDetail().getSubject());
+		if (StringUtils.isNotBlank(order.getSubject())) {
+			request.setSubject(order.getSubject());
 		} else {
 			request.setSubject(DEFAULT_SUBJECT);
 		}

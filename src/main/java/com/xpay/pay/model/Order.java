@@ -27,6 +27,7 @@ public class Order {
 	private String payInfo;
 	private OrderStatus status;
 	private Long detailId;
+	private String subject;
 	private OrderDetail orderDetail;
 	private App app;
 	private Store store;
@@ -169,6 +170,12 @@ public class Order {
 	}
 	public void setStatus(OrderStatus status) {
 		this.status = status;
+	}
+	public String getSubject() {
+		return subject;
+	}
+	public void setSubject(String subject) {
+		this.subject = subject;
 	}
 	public Long getDetailId() {
 		return detailId;
