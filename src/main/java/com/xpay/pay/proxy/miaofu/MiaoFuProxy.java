@@ -24,6 +24,7 @@ import com.xpay.pay.model.Bill;
 import com.xpay.pay.proxy.IPaymentProxy;
 import com.xpay.pay.proxy.PaymentRequest;
 import com.xpay.pay.proxy.PaymentResponse;
+import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.proxy.miaofu.MiaoFuResponse.TradeBean;
 import com.xpay.pay.util.AppConfig;
 import com.xpay.pay.util.CryptoUtils;
@@ -43,27 +44,14 @@ public class MiaoFuProxy implements IPaymentProxy {
 
 	@Override
 	public PaymentResponse unifiedOrder(PaymentRequest request) {
+		request.setPayChannel(null);
 		String url = buildUrl(MIAOFU.UnifiedOrder(), request);
-		logger.info("unifiedOrder POST: " + url);
-		long l = System.currentTimeMillis();
-		PaymentResponse response = null;
-		try {
-			HttpHeaders headers = new HttpHeaders();
-			headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
-			HttpEntity<?> httpEntity = new HttpEntity<>(headers);
-			MiaoFuResponse miaoFuResponse = miaofuProxy.exchange(url,
-					HttpMethod.POST, httpEntity, MiaoFuResponse.class)
-					.getBody();
-			logger.info("unifiedOrder result: " + miaoFuResponse.getCode()
-					+ " " + miaoFuResponse.getMsg() + ", took "
-					+ (System.currentTimeMillis() - l) + "ms");
-			response = toPaymentResponse(miaoFuResponse);
-		} catch (RestClientException e) {
-			logger.info(
-					"unifiedOrder failed, took "
-							+ (System.currentTimeMillis() - l) + "ms", e);
-			throw e;
-		}
+		PaymentResponse response = new PaymentResponse();
+		response.setCode(PaymentResponse.SUCCESS);
+		Bill bill = new Bill();
+		bill.setCodeUrl(url);
+		bill.setOrderStatus(OrderStatus.NOTPAY);
+		response.setBill(bill);
 		return response;
 	}
 
@@ -166,6 +154,9 @@ public class MiaoFuProxy implements IPaymentProxy {
 		}
 		if (StringUtils.isNotBlank(request.getSubject())) {
 			keyPairs.add(new KeyValuePair("subject", request.getSubject()));
+		}
+		if (StringUtils.isNotBlank(request.getNotifyUrl())) {
+			keyPairs.add(new KeyValuePair("redirect_url", request.getNotifyUrl()));
 		}
 		keyPairs.add(new KeyValuePair("app_id", appId));
 		keyPairs.add(new KeyValuePair("timestamp", String.valueOf(System

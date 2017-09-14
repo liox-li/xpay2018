@@ -58,6 +58,12 @@
 	</servlet>
 	
 	<servlet>
+		<servlet-name>JsPayServlet</servlet-name>
+		<display-name>JsPayServlet</display-name>
+		<servlet-class>com.xpay.pay.controller.JsPayServlet</servlet-class>
+	</servlet>
+	
+	<servlet>
 		<servlet-name>TokenServlet</servlet-name>
 		<display-name>TokenServlet</display-name>
 		<servlet-class>com.xpay.pay.controller.TokenServlet</servlet-class>
@@ -77,6 +83,11 @@
 	<servlet-mapping>
 		<servlet-name>PayNotifyServlet</servlet-name>
 		<url-pattern>/notify/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>JsPayServlet</servlet-name>
+		<url-pattern>/jspay/*</url-pattern>
 	</servlet-mapping>
 	
 	<servlet-mapping>

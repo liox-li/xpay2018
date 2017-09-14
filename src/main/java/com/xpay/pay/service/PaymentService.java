@@ -186,6 +186,9 @@ public class PaymentService {
 		}
 		else if(PaymentGateway.JUZHEN.equals(order.getStoreChannel().getPaymentGateway())) {
 			request.setServerIp(LOCAL_ID);
+		} else if(PaymentGateway.JUZHEN.equals(order.getStoreChannel().getPaymentGateway())) {
+			String notifyUrl = request.getNotifyUrl() + "/"+request.getOrderNo();
+			request.setNotifyUrl(notifyUrl);
 		}
 //		else if(PaymentGateway.RUBIPAY.equals(order.getStoreChannel().getPaymentGateway())) {
 //			request.setServerIp(LOCAL_ID);
