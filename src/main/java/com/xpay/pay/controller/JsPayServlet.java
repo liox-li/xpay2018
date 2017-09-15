@@ -18,6 +18,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import com.xpay.pay.model.Order;
 import com.xpay.pay.model.StoreChannel.PaymentGateway;
 import com.xpay.pay.proxy.PaymentRequest;
+import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.proxy.miaofu.MiaoFuProxy;
 import com.xpay.pay.service.OrderService;
 import com.xpay.pay.service.PaymentService;
@@ -51,17 +52,21 @@ public class JsPayServlet extends HttpServlet {
 		String orderNo = uri.substring(uri.lastIndexOf("/")+1);
 		
 		Order order = orderService.findActiveByOrderNo(orderNo);
-		if(order!=null) {
-			if(PaymentGateway.MIAOFU.equals(order.getStoreChannel().getPaymentGateway())) {
-				PaymentRequest paymentRequest = paymentService.toPaymentRequest(order);
-				String jsUrl = miaoFuProxy.getJsUrl(paymentRequest);
-				response.setCharacterEncoding("utf-8");
-				response.setHeader("Content-type", "text/html;charset=UTF-8");
-				String redirectUrl = encodeSubject(jsUrl);
-				response.sendRedirect(redirectUrl);
-			} else {
-				response.sendError(404, "Order not found");
-			}
+		if(order==null) {
+			response.sendError(404, "Order not found");
+			return;
+		}
+		if(!OrderStatus.NOTPAY.equals(order.getStatus())) {
+			response.sendError(400, "Order already paid");
+			return;
+		} 
+		if(PaymentGateway.MIAOFU.equals(order.getStoreChannel().getPaymentGateway())) {
+			PaymentRequest paymentRequest = paymentService.toPaymentRequest(order);
+			String jsUrl = miaoFuProxy.getJsUrl(paymentRequest);
+			response.setCharacterEncoding("utf-8");
+			response.setHeader("Content-type", "text/html;charset=UTF-8");
+			String redirectUrl = encodeSubject(jsUrl);
+			response.sendRedirect(redirectUrl);
 		} else {
 			response.sendError(404, "Order not found");
 		}
