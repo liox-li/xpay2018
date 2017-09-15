@@ -106,6 +106,7 @@ public abstract class AbstractNotifyHandler implements INotifyHandler {
 		
 		public NotifyBody(String billNo, String extOrderNo, OrderStatus status, String totalFee, String targetOrderNo) {
 			this.billNo = billNo;
+			this.extOrderNo = extOrderNo;
 			this.status = status;
 			this.totalFee = totalFee;
 			this.targetOrderNo = targetOrderNo;
