@@ -3,9 +3,10 @@ package com.xpay.pay.notify;
 import java.net.URLDecoder;
 
 import org.apache.commons.lang3.StringUtils;
-
+import org.springframework.stereotype.Service;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 
+@Service
 public class MiaoFuNotifyHandler extends AbstractNotifyHandler {
 
 	@Override

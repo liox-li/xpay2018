@@ -37,21 +37,18 @@ public abstract class AbstractNotifyHandler implements INotifyHandler {
 		Order order = null;
 		String respString = getFailedResponse();
 
-		if (StringUtils.isNotBlank(content)) {
-			NotifyBody body = this.extractNotifyBody(url, content);
-			if(body!=null) {
-				order = fetchOrder(body);
-				if(order!=null &&  CommonUtils.toInt(body.getTotalFee()) == (int) (order.getTotalFeeAsFloat() * 100)) {
-					updateOrderStatus(order, body);
-					updateBail(order);
-				}
-			} else {
-				logger.warn("Cannot parse notify content "+content);
+		NotifyBody body = this.extractNotifyBody(url, content);
+		if(body!=null) {
+			order = fetchOrder(body);
+			if(order!=null &&  CommonUtils.toInt(body.getTotalFee()) == (int) (order.getTotalFeeAsFloat() * 100)) {
+				updateOrderStatus(order, body);
+				updateBail(order);
 			}
-			respString = getSuccessResponse();
 		} else {
-			logger.warn("Cannot parse empty notify content");
+			logger.warn("Cannot parse notify content "+content);
 		}
+		respString = getSuccessResponse();
+		
 		NotifyResponse response = new NotifyResponse(respString, order);
 		response.setRedirect(this.isRedrect());
 		return response;

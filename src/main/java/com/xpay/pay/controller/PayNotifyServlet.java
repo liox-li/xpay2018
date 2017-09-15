@@ -51,17 +51,21 @@ public class PayNotifyServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		String uri = request.getRequestURI();
+		String uri = request.getRequestURI()+"/"+request.getQueryString();
 		INotifyHandler notifyHandler = factory.getNotifyHandler(uri);
 		
 		NotifyResponse notResp = null;
 		try {
 			request.setCharacterEncoding(notifyHandler.getCharacterEncoding());
-			byte[] buffer = new byte[request.getContentLength()];
-			IOUtils.readFully(request.getInputStream(), buffer);
-			String content = new String(buffer);
-			logger.info("Notify from " + uri + " content: " + content);
-			
+			String content = "";
+			if(request.getContentLength()>0) {
+				byte[] buffer = new byte[request.getContentLength()];
+				IOUtils.readFully(request.getInputStream(), buffer);
+				 new String(buffer);
+				logger.info("Notify from " + uri + " content: " + content);
+			} else {
+				logger.info("Notify from " + uri);
+			}
 			notResp = notifyHandler.handleNotification(uri, content);
 			Order order = notResp == null ? null : notResp.getOrder();
 			notify(order);

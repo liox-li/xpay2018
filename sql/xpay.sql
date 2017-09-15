@@ -228,6 +228,7 @@ ALTER TABLE bill_store ADD COLUMN bail_channels VARCHAR(256);
 
 ALTER TABLE bill_store DROP COLUMN bail_store_id;
 ALTER TABLE bill_store_channel DROP COLUMN store_id;
+ALTER TABLE bill_order ADD COLUMN return_url VARCHAR(256);
 
 
 ALTER table bill_app OWNER TO xpay;
