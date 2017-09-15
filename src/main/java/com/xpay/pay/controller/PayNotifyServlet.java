@@ -61,7 +61,7 @@ public class PayNotifyServlet extends HttpServlet {
 			if(request.getContentLength()>0) {
 				byte[] buffer = new byte[request.getContentLength()];
 				IOUtils.readFully(request.getInputStream(), buffer);
-				 new String(buffer);
+				content = new String(buffer);
 				logger.info("Notify from " + uri + " content: " + content);
 			} else {
 				logger.info("Notify from " + uri);
