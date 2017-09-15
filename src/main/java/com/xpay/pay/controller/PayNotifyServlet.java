@@ -51,7 +51,7 @@ public class PayNotifyServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		String uri = request.getRequestURI()+"?"+request.getQueryString();
+		String uri = StringUtils.isBlank(request.getQueryString())?request.getRequestURI(): request.getRequestURI()+"?"+request.getQueryString();
 		INotifyHandler notifyHandler = factory.getNotifyHandler(uri);
 		
 		NotifyResponse notResp = null;
