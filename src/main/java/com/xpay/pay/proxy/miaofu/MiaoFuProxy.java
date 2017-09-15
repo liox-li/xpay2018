@@ -38,14 +38,15 @@ public class MiaoFuProxy implements IPaymentProxy {
 	private static final String appId = config.getProperty("provider.app.id");
 	private static final String appSecret = config
 			.getProperty("provider.app.secret");
-
+	private static final String DEFAULT_JSAPI_URL = AppConfig.XPayConfig.getProperty("jsapi.endpoint");
+	
 	@Autowired
 	RestTemplate miaofuProxy;
 
 	@Override
 	public PaymentResponse unifiedOrder(PaymentRequest request) {
 		request.setPayChannel(null);
-		String url = buildUrl(MIAOFU.UnifiedOrder(), request);
+		String url = DEFAULT_JSAPI_URL + request.getOrderNo();
 		PaymentResponse response = new PaymentResponse();
 		response.setCode(PaymentResponse.SUCCESS);
 		Bill bill = new Bill();
@@ -53,6 +54,12 @@ public class MiaoFuProxy implements IPaymentProxy {
 		bill.setOrderStatus(OrderStatus.NOTPAY);
 		response.setBill(bill);
 		return response;
+	}
+	
+	public String getJsUrl(PaymentRequest request) {
+		request.setPayChannel(null);
+		String url = buildUrl(MIAOFU.UnifiedOrder(), request);
+		return url;
 	}
 
 	@Override

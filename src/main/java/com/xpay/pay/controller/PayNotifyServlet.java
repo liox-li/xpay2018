@@ -62,16 +62,24 @@ public class PayNotifyServlet extends HttpServlet {
 			String content = new String(buffer);
 			logger.info("Notify from " + uri + " content: " + content);
 			
-			notResp = notifyHandler.handleNotification(content);
+			notResp = notifyHandler.handleNotification(uri, content);
 			Order order = notResp == null ? null : notResp.getOrder();
 			notify(order);
 		} catch (Exception e) {
 			logger.error("notify failed ", e);
 		} finally {
 			if(notResp!=null) {
-				response.setCharacterEncoding(notifyHandler.getCharacterEncoding());
-				response.setHeader("Content-type", notifyHandler.getContentType());
-				response.getWriter().write(notResp.getResp());
+				if(!notResp.isRedirect) {
+					response.setCharacterEncoding(notifyHandler.getCharacterEncoding());
+					response.setHeader("Content-type", notifyHandler.getContentType());
+					response.getWriter().write(notResp.getResp());
+				} else {
+					response.setCharacterEncoding(notifyHandler.getCharacterEncoding());
+					response.setHeader("Content-type", "text/html;charset=UTF-8");
+					String redirectUrl = notResp.getOrder().getReturnUrl();
+					response.sendRedirect(redirectUrl);
+
+				}
 			}
 		}
 	}
@@ -305,6 +313,7 @@ public class PayNotifyServlet extends HttpServlet {
 
 	public static class NotifyResponse {
 		private String resp;
+		private boolean isRedirect = false;
 		private Order order;
 
 		public NotifyResponse(String resp) {
@@ -322,6 +331,14 @@ public class PayNotifyServlet extends HttpServlet {
 
 		public void setResp(String resp) {
 			this.resp = resp;
+		}
+
+		public boolean isRedirect() {
+			return isRedirect;
+		}
+
+		public void setRedirect(boolean isRedirect) {
+			this.isRedirect = isRedirect;
 		}
 
 		public Order getOrder() {

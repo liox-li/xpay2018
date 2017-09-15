@@ -16,13 +16,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.xpay.pay.model.Order;
+import com.xpay.pay.model.StoreChannel.PaymentGateway;
+import com.xpay.pay.proxy.PaymentRequest;
+import com.xpay.pay.proxy.miaofu.MiaoFuProxy;
 import com.xpay.pay.service.OrderService;
+import com.xpay.pay.service.PaymentService;
 
 public class JsPayServlet extends HttpServlet {
 	private static final long serialVersionUID = 4657984343307637580L;
 	protected final Logger logger = LogManager.getLogger("AccessLog");
 	@Autowired
 	protected OrderService orderService;
+	@Autowired
+	protected PaymentService paymentService;
+	@Autowired
+	protected MiaoFuProxy miaoFuProxy;
 	
 	@Override
 	public void init(ServletConfig config) throws ServletException {
@@ -44,10 +52,16 @@ public class JsPayServlet extends HttpServlet {
 		
 		Order order = orderService.findActiveByOrderNo(orderNo);
 		if(order!=null) {
-			response.setCharacterEncoding("utf-8");
-			response.setHeader("Content-type", "text/html;charset=UTF-8");
-			String redirectUrl = encodeSubject(order.getCodeUrl());
-			response.sendRedirect(redirectUrl);
+			if(PaymentGateway.MIAOFU.equals(order.getStoreChannel().getPaymentGateway())) {
+				PaymentRequest paymentRequest = paymentService.toPaymentRequest(order);
+				String jsUrl = miaoFuProxy.getJsUrl(paymentRequest);
+				response.setCharacterEncoding("utf-8");
+				response.setHeader("Content-type", "text/html;charset=UTF-8");
+				String redirectUrl = encodeSubject(jsUrl);
+				response.sendRedirect(redirectUrl);
+			} else {
+				response.sendError(404, "Order not found");
+			}
 		} else {
 			response.sendError(404, "Order not found");
 		}

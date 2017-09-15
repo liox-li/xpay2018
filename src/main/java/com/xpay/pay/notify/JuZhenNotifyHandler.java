@@ -10,7 +10,7 @@ import com.xpay.pay.util.JsonUtils;
 public class JuZhenNotifyHandler extends AbstractNotifyHandler {
 
 	@Override
-	protected NotifyBody extractNotifyBody(String content) {
+	protected NotifyBody extractNotifyBody(String url,String content) {
 		JuZhenNotification notification = JsonUtils.fromJson(content,
 				JuZhenNotification.class);
 		if (notification != null && StringUtils.isNoneBlank(notification.getSignature(),
@@ -19,7 +19,7 @@ public class JuZhenNotifyHandler extends AbstractNotifyHandler {
 			String orderId = notification.getOrderId();
 			String totalFee = notification.getTransAmt();
 			String status = notification.getOrdStatus();
-			return new NotifyBody(orderId, JuZhenProxy.toOrderStatus(status), totalFee, "", true);
+			return new NotifyBody(null, orderId, JuZhenProxy.toOrderStatus(status), totalFee, "");
 		}
 		return null;
 	}

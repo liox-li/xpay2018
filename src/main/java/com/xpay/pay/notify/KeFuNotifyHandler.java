@@ -11,7 +11,7 @@ import com.xpay.pay.proxy.kefu.KeFuProxy;
 public class KeFuNotifyHandler extends AbstractNotifyHandler {
 
 	@Override
-	protected NotifyBody extractNotifyBody(String content) {
+	protected NotifyBody extractNotifyBody(String url, String content) {
 
 		String billNo = "";
 		String status = "";
@@ -37,7 +37,7 @@ public class KeFuNotifyHandler extends AbstractNotifyHandler {
 		} catch (Exception e) {
 			
 		}
-		return StringUtils.isBlank(billNo)?null:new NotifyBody(billNo, KeFuProxy.toOrderStatus(status), totalFee, targetOrderNo, true);
+		return StringUtils.isBlank(billNo)?null:new NotifyBody(null, billNo, KeFuProxy.toOrderStatus(status), totalFee, targetOrderNo);
 	}
 
 
