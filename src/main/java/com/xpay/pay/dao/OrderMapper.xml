@@ -22,7 +22,8 @@
     <result column="token_id" jdbcType="VARCHAR" property="tokenId" />
     <result column="pay_info" jdbcType="VARCHAR" property="payInfo" />
     <result column="status" jdbcType="VARCHAR" property="status" />  
-    <result column="subject" jdbcType="VARCHAR" property="subject" />          
+    <result column="subject" jdbcType="VARCHAR" property="subject" />    
+    <result column="return_url" jdbcType="VARCHAR" property="returnUrl" />          
   </resultMap>
   
   <sql id="orderColumns">
@@ -45,7 +46,8 @@
     token_id,
     pay_info,
     status,
-    subject
+    subject,
+    return_url
   </sql>
 
   <select id="findById" resultMap="OrderResultMap">
@@ -136,6 +138,9 @@
       <if test="subject != null">
         subject,
       </if>  
+      <if test="returnUrl != null">
+        return_url,
+      </if>  
    </trim>
    <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="orderNo != null">
@@ -194,7 +199,10 @@
       </if>    
       <if test="subject != null">
         #{subject,jdbcType=VARCHAR},
-      </if>      
+      </if>    
+      <if test="returnUrl != null">
+        #{returnUrl,jdbcType=VARCHAR},
+      </if>   
     </trim>
   </insert> 
      

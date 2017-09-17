@@ -51,27 +51,39 @@ public class PayNotifyServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		String uri = request.getRequestURI();
+		String uri = StringUtils.isBlank(request.getQueryString())?request.getRequestURI(): request.getRequestURI()+"?"+request.getQueryString();
 		INotifyHandler notifyHandler = factory.getNotifyHandler(uri);
 		
 		NotifyResponse notResp = null;
 		try {
 			request.setCharacterEncoding(notifyHandler.getCharacterEncoding());
-			byte[] buffer = new byte[request.getContentLength()];
-			IOUtils.readFully(request.getInputStream(), buffer);
-			String content = new String(buffer);
-			logger.info("Notify from " + uri + " content: " + content);
-			
-			notResp = notifyHandler.handleNotification(content);
+			String content = "";
+			if(request.getContentLength()>0) {
+				byte[] buffer = new byte[request.getContentLength()];
+				IOUtils.readFully(request.getInputStream(), buffer);
+				content = new String(buffer);
+				logger.info("Notify from " + uri + " content: " + content);
+			} else {
+				logger.info("Notify from " + uri);
+			}
+			notResp = notifyHandler.handleNotification(uri, content);
 			Order order = notResp == null ? null : notResp.getOrder();
 			notify(order);
 		} catch (Exception e) {
 			logger.error("notify failed ", e);
 		} finally {
 			if(notResp!=null) {
-				response.setCharacterEncoding(notifyHandler.getCharacterEncoding());
-				response.setHeader("Content-type", notifyHandler.getContentType());
-				response.getWriter().write(notResp.getResp());
+				if(!notResp.isRedirect) {
+					response.setCharacterEncoding(notifyHandler.getCharacterEncoding());
+					response.setHeader("Content-type", notifyHandler.getContentType());
+					response.getWriter().write(notResp.getResp());
+				} else {
+					response.setCharacterEncoding(notifyHandler.getCharacterEncoding());
+					response.setHeader("Content-type", "text/html;charset=UTF-8");
+					String redirectUrl = notResp.getOrder().getReturnUrl();
+					response.sendRedirect(redirectUrl);
+
+				}
 			}
 		}
 	}
@@ -305,6 +317,7 @@ public class PayNotifyServlet extends HttpServlet {
 
 	public static class NotifyResponse {
 		private String resp;
+		private boolean isRedirect = false;
 		private Order order;
 
 		public NotifyResponse(String resp) {
@@ -322,6 +335,14 @@ public class PayNotifyServlet extends HttpServlet {
 
 		public void setResp(String resp) {
 			this.resp = resp;
+		}
+
+		public boolean isRedirect() {
+			return isRedirect;
+		}
+
+		public void setRedirect(boolean isRedirect) {
+			this.isRedirect = isRedirect;
 		}
 
 		public Order getOrder() {

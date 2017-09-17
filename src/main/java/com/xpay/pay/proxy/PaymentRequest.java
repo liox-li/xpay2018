@@ -109,7 +109,6 @@ public class PaymentRequest {
 		this.goods = goods;
 	}
 
-
 	public static class GoodsBean {
 		private String goodsId;
 		private String goodsName;

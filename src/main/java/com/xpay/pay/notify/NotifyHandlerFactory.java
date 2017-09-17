@@ -14,6 +14,8 @@ public class NotifyHandlerFactory {
 	JuZhenNotifyHandler juZhenHandler;
 	@Autowired
 	KeFuNotifyHandler keFuHandler;
+	@Autowired
+	MiaoFuNotifyHandler miaoFuHandler;
 	
 	public INotifyHandler getNotifyHandler(String uri) {
 		if (uri.contains(PaymentGateway.CHINAUMS.name().toLowerCase())) {
@@ -22,6 +24,8 @@ public class NotifyHandlerFactory {
 			return juZhenHandler;
 		} else if (uri.contains(PaymentGateway.KEFU.name().toLowerCase())) {
 			return keFuHandler;
+		} else if (uri.contains(PaymentGateway.MIAOFU.name().toLowerCase())) {
+			return miaoFuHandler;
 		} else {
 			return null;
 		}

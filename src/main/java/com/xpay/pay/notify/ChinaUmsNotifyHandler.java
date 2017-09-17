@@ -16,7 +16,7 @@ public class ChinaUmsNotifyHandler extends AbstractNotifyHandler {
 	OrderService orderService;
 	
 	@Override
-	protected NotifyBody extractNotifyBody(String content) {
+	protected NotifyBody extractNotifyBody(String url, String content) {
 		String billNo = "";
 		String status = "";
 		String targetOrderNo = "";
@@ -42,7 +42,7 @@ public class ChinaUmsNotifyHandler extends AbstractNotifyHandler {
 		} catch (Exception e) {
 			
 		}
-		return StringUtils.isBlank(billNo)?null:new NotifyBody(billNo, ChinaUmsProxy.toOrderStatus(status), totalFee, targetOrderNo, true);
+		return StringUtils.isBlank(billNo)?null:new NotifyBody(null, billNo, ChinaUmsProxy.toOrderStatus(status), totalFee, targetOrderNo);
 	}
 
 	private static final String SUCCESS_STR = "success";

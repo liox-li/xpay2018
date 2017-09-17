@@ -44,7 +44,7 @@ public class CryptoUtilsTest {
 	}
 
 	@Test
-	public void testSign() {
+	public void testSign1() {
 		String str = "payKey=ab828874445845469ece59792a7af982&orderPrice=10&outTradeNo=002&productType=40000303&orderTime=20170911172305&productName=测试&payBankAccountNo=123456789&orderIp=127.0.0.1&returnUrl=http://www.baidu.com&notifyUrl=http://106.14.47.193/xpay/notify/kekepay";
 		List<KeyValuePair> keyPairs = new ArrayList<KeyValuePair>();	
 		String[] keyValues = str.split("&");
@@ -57,6 +57,23 @@ public class CryptoUtilsTest {
 		}
 		
 		String signature = this.signature(keyPairs, "paySecret", "5da3fbfa777e4189b41638b1f80f1e36");
+		System.out.println(signature);
+	}
+	
+	@Test
+	public void testSign2() {
+		String str = "busi_code=T2016093011252905060661&dev_id=127.0.0.1&amount=0.01&raw_data=a&down_trade_no=X003005120170914142313755789&subject=测试&redirect_url=http://106.14.47.193/xpay/notify/miaofu&app_id=149026948119189&timestamp=1505370193&version=v3";
+		List<KeyValuePair> keyPairs = new ArrayList<KeyValuePair>();	
+		String[] keyValues = str.split("&");
+		for(String keyValue: keyValues) {
+			String[] split = keyValue.split("=");
+			String key = split[0];
+			String value = split[1];
+			KeyValuePair pair = new KeyValuePair(key, value);
+			keyPairs.add(pair);
+		}
+		
+		String signature = this.signature(keyPairs, "APP_SECRET", "DQaEecPIRgQCjIvNHWjJOarJLeGfIJap");
 		System.out.println(signature);
 	}
 

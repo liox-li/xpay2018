@@ -28,26 +28,29 @@ public abstract class AbstractNotifyHandler implements INotifyHandler {
 	}
 	
 	@Override
-	public NotifyResponse handleNotification(String content) {
+	public boolean isRedrect() {
+		return false;
+	}
+	
+	@Override
+	public NotifyResponse handleNotification(String url, String content) {
 		Order order = null;
 		String respString = getFailedResponse();
 
-		if (StringUtils.isNotBlank(content)) {
-			NotifyBody body = this.extractNotifyBody(content);
-			if(body!=null) {
-				order = fetchOrder(body);
-				if(order!=null &&  CommonUtils.toInt(body.getTotalFee()) == (int) (order.getTotalFeeAsFloat() * 100)) {
-					updateOrderStatus(order, body);
-					updateBail(order);
-				}
-			} else {
-				logger.warn("Cannot parse notify content "+content);
+		NotifyBody body = this.extractNotifyBody(url, content);
+		if(body!=null) {
+			order = fetchOrder(body);
+			if(order!=null &&  CommonUtils.toInt(body.getTotalFee()) == (int) (order.getTotalFeeAsFloat() * 100)) {
+				updateOrderStatus(order, body);
+				updateBail(order);
 			}
-			respString = getSuccessResponse();
 		} else {
-			logger.warn("Cannot parse empty notify content");
+			logger.warn("Cannot parse notify content "+content);
 		}
+		respString = getSuccessResponse();
+		
 		NotifyResponse response = new NotifyResponse(respString, order);
+		response.setRedirect(this.isRedrect());
 		return response;
 	}
 	
@@ -65,16 +68,20 @@ public abstract class AbstractNotifyHandler implements INotifyHandler {
 	
 	private Order fetchOrder(NotifyBody body) {
 		String billNo = body.getBillNo();
-		if(body.isExtOrderNo()) {
-			return orderService.findActiveByExtOrderNo(billNo);
-		} else {
+		String extOrderNo = body.getExtOrderNo();
+		if(StringUtils.isNotBlank(billNo)) {
 			return orderService.findActiveByOrderNo(billNo);
+		} else {
+			return orderService.findActiveByExtOrderNo(extOrderNo);
 		}
 	}
 	
 	private void updateOrderStatus(Order order, NotifyBody body) {
 		if (order != null && !OrderStatus.SUCCESS.equals(order.getStatus())) {
 			order.setStatus(body.getStatus());
+			if(StringUtils.isNotBlank(body.getExtOrderNo())) {
+				order.setExtOrderNo(body.getExtOrderNo());
+			}
 			order.setTargetOrderNo(body.getTargetOrderNo());
 			orderService.update(order);
 		}
@@ -86,23 +93,23 @@ public abstract class AbstractNotifyHandler implements INotifyHandler {
 		}
 	}
 	
-	protected abstract NotifyBody extractNotifyBody(String content);
+	protected abstract NotifyBody extractNotifyBody(String url, String content);
 	protected abstract String getSuccessResponse();
 	protected abstract String getFailedResponse();
 
 	protected static class NotifyBody {
 		private String billNo;
 		private OrderStatus status;
+		private String extOrderNo;
 		private String targetOrderNo;
 		private String totalFee;
-		private boolean isExtOrderNo = true;
 		
-		public NotifyBody(String billNo, OrderStatus status, String totalFee, String targetOrderNo, boolean isExtOrderNo) {
+		public NotifyBody(String billNo, String extOrderNo, OrderStatus status, String totalFee, String targetOrderNo) {
 			this.billNo = billNo;
+			this.extOrderNo = extOrderNo;
 			this.status = status;
 			this.totalFee = totalFee;
 			this.targetOrderNo = targetOrderNo;
-			this.isExtOrderNo = isExtOrderNo;
 		}
 		
 		public String getBillNo() {
@@ -111,9 +118,19 @@ public abstract class AbstractNotifyHandler implements INotifyHandler {
 		public void setBillNo(String billNo) {
 			this.billNo = billNo;
 		}
+		
 		public OrderStatus getStatus() {
 			return status;
 		}
+		
+		public String getExtOrderNo() {
+			return extOrderNo;
+		}
+
+		public void setExtOrderNo(String extOrderNo) {
+			this.extOrderNo = extOrderNo;
+		}
+
 		public void setStatus(OrderStatus status) {
 			this.status = status;
 		}
@@ -130,14 +147,5 @@ public abstract class AbstractNotifyHandler implements INotifyHandler {
 		public void setTotalFee(String totalFee) {
 			this.totalFee = totalFee;
 		}
-
-		public boolean isExtOrderNo() {
-			return isExtOrderNo;
-		}
-		public void setExtOrderNo(boolean isExtOrderNo) {
-			this.isExtOrderNo = isExtOrderNo;
-		}
-		
-		
 	}
 }
