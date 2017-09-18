@@ -1,5 +1,6 @@
 package com.xpay.pay.proxy;
 
+import com.xpay.pay.proxy.kekepay.KekePayProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,8 @@ public class PaymentProxyFactory {
 	private JuZhenProxy juZhenProxy;
 	@Autowired
 	private KeFuProxy keFuProxy;
+	@Autowired
+	private KekePayProxy kekePayProxy;
 //	@Autowired
 //	private RubiPayProxy rubiPayProxy;
 
@@ -39,8 +42,10 @@ public class PaymentProxyFactory {
 				return keFuProxy;
 			case MIAOFU:
 				return miaoFuProxy;
-			default: 
-				return chinaUmsV2Proxy;
+			case KEKEPAY:
+				return kekePayProxy;
+      default:
+        return chinaUmsV2Proxy;
 		}
 //		if (PaymentGateway.CHINAUMSV2.equals(channel)) {
 //			return chinaUmsV2Proxy;
