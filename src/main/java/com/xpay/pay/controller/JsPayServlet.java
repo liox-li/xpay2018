@@ -1,5 +1,6 @@
 package com.xpay.pay.controller;
 
+import com.xpay.pay.proxy.kekepay.KekePayProxy;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -32,7 +33,9 @@ public class JsPayServlet extends HttpServlet {
 	protected PaymentService paymentService;
 	@Autowired
 	protected MiaoFuProxy miaoFuProxy;
-	
+	@Autowired
+	protected KekePayProxy kekePayProxy;
+
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this,
@@ -66,6 +69,13 @@ public class JsPayServlet extends HttpServlet {
 			response.setCharacterEncoding("utf-8");
 			response.setHeader("Content-type", "text/html;charset=UTF-8");
 			response.sendRedirect(jsUrl);
+		} else if(PaymentGateway.KEKEPAY.equals(order.getStoreChannel().getPaymentGateway())){
+			if(uri.contains(KekePayProxy.TOPAY)){
+				PaymentRequest paymentRequest = paymentService.toPaymentRequest(order);
+				response.sendRedirect(kekePayProxy.getJsUrl(paymentRequest));
+			}else if(uri.contains(KekePayProxy.PAYED)){
+				response.sendRedirect(order.getReturnUrl());
+			}
 		} else {
 			response.sendError(404, "Order not found");
 		}

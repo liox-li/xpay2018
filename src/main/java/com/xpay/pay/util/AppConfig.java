@@ -42,7 +42,9 @@ public class AppConfig {
 	public static final AppConfig JuZhenConfig = new AppConfig(load("juzhen.config"));
 	
 	public static final AppConfig XPayConfig = new AppConfig(load("xpay.config"));
-	
+
+	public static final AppConfig kekePayConfig = new AppConfig(load("kekepay.config"));
+
 	public AppConfig(Properties properties) {
 		this.properties = properties;
 	}
