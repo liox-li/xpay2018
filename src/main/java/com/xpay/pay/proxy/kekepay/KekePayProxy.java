@@ -1,5 +1,6 @@
 package com.xpay.pay.proxy.kekepay;
 
+import com.xpay.pay.exception.GatewayException;
 import com.xpay.pay.model.Bill;
 import com.xpay.pay.proxy.IPaymentProxy;
 import com.xpay.pay.proxy.PaymentRequest;
@@ -16,15 +17,22 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Component
 public class KekePayProxy implements IPaymentProxy {
 
+  public static final String PAYED = "PAYED";
+  public static final String TOPAY = "TOPAY";
   protected static final Logger logger = LogManager.getLogger("AccessLog");
   private static final AppConfig config = AppConfig.kekePayConfig;
   private static final String BASE_ENDPOINT = config.getProperty("provider.endpoint");
@@ -35,9 +43,20 @@ public class KekePayProxy implements IPaymentProxy {
   private static final String PRODUCT_TYPE = config.getProperty("provider.product.type");
   private static final String DEFAULT_JSAPI_URL = AppConfig.XPayConfig
       .getProperty("jsapi.endpoint");
-  public static final String PAYED = "PAYED";
-  public static final String TOPAY = "TOPAY";
+  @Autowired
+  RestTemplate kekePayProxy;
 
+  public static OrderStatus toOrderStatus(String ordStatus) {
+    if ("FINISH".equalsIgnoreCase(ordStatus) || "SUCCESS".equalsIgnoreCase(ordStatus)) {
+      return OrderStatus.SUCCESS;
+    } else if (ordStatus.equals("WAITING_PAYMENT")) {
+      return OrderStatus.USERPAYING;
+    } else if (ordStatus.equals("FAILED")) {
+      return OrderStatus.PAYERROR;
+    } else {
+      return OrderStatus.NOTPAY;
+    }
+  }
 
   @Override
   public PaymentResponse unifiedOrder(PaymentRequest request) {
@@ -80,6 +99,13 @@ public class KekePayProxy implements IPaymentProxy {
       e.printStackTrace();
     }
     return null;
+  }
+
+  private MultiValueMap<String, String> getKeyPairs(PaymentRequest paymentRequest) {
+    MultiValueMap<String, String> keyPairs = new LinkedMultiValueMap<>();
+    keyPairs.add("payKey", appId);
+    keyPairs.add("outTradeNo", paymentRequest.getOrderNo());
+    return keyPairs;
   }
 
   private MultiValueMap<String, String> getKeyPairs(KekePayRequest kekePayRequest) {
@@ -139,11 +165,58 @@ public class KekePayProxy implements IPaymentProxy {
 
   @Override
   public PaymentResponse query(PaymentRequest request) {
-    return null;
+    String url = QUERY_ENDPOINT;
+    logger.info("query POST: " + url);
+    long l = System.currentTimeMillis();
+    PaymentResponse response = null;
+    try {
+
+      MultiValueMap<String, String> keyPairs = this.getKeyPairs(request);
+      String sign = this.signature(keyPairs, appSecret);
+      keyPairs.add("sign", sign);
+      HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+      headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+      HttpEntity<?> httpEntity = new HttpEntity<>(keyPairs, headers);
+      KekePayQueryResponse kekePayQueryResponse = kekePayProxy
+          .exchange(url, HttpMethod.POST, httpEntity, KekePayQueryResponse.class).getBody();
+
+      response = toPaymentResponse(kekePayQueryResponse);
+      logger.info("query result: " + kekePayQueryResponse.getResultCode() + " "
+          + kekePayQueryResponse.getErrMsg() + " "
+          + response.getBill().getOrderStatus() + ", took "
+          + (System.currentTimeMillis() - l) + "ms");
+    } catch (RestClientException e) {
+      logger.info("query failed, took "
+          + (System.currentTimeMillis() - l) + "ms", e);
+      throw e;
+    }
+    return response;
   }
 
   @Override
   public PaymentResponse refund(PaymentRequest request) {
     return null;
   }
+
+  private PaymentResponse toPaymentResponse(KekePayQueryResponse kekePayQueryResponse) {
+    if (kekePayQueryResponse == null
+        || !KekePayQueryResponse.SUCCESS.equals(kekePayQueryResponse.getResultCode())) {
+      String code = kekePayQueryResponse == null ? NO_RESPONSE : kekePayQueryResponse
+          .getResultCode();
+      String msg = kekePayQueryResponse == null ? "No response"
+          : kekePayQueryResponse.getErrMsg();
+      throw new GatewayException(code, msg);
+    }
+    PaymentResponse response = new PaymentResponse();
+    response.setCode(PaymentResponse.SUCCESS);
+    Bill bill = new Bill();
+    bill.setOrderNo(kekePayQueryResponse.getOutTradeNo());
+    bill.setGatewayOrderNo(kekePayQueryResponse.getTrxNo());
+    bill.setOrderStatus(toOrderStatus(kekePayQueryResponse.getOrderStatus()));
+    response.setBill(bill);
+    return response;
+  }
+
+
 }

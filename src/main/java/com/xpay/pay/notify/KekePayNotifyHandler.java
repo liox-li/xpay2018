@@ -1,6 +1,7 @@
 package com.xpay.pay.notify;
 
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
+import com.xpay.pay.proxy.kekepay.KekePayProxy;
 import com.xpay.pay.util.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -9,18 +10,6 @@ import org.apache.commons.lang3.StringUtils;
  * Description:
  */
 public class KekePayNotifyHandler extends AbstractNotifyHandler {
-
-  public static OrderStatus toOrderStatus(String ordStatus) {
-    if ("FINISH".equalsIgnoreCase(ordStatus) || "SUCCESS".equalsIgnoreCase(ordStatus)) {
-      return OrderStatus.SUCCESS;
-    } else if (ordStatus.equals("WAITING_PAYMENT")) {
-      return OrderStatus.USERPAYING;
-    } else if (ordStatus.equals("FAILED")) {
-      return OrderStatus.PAYERROR;
-    } else {
-      return OrderStatus.NOTPAY;
-    }
-  }
 
   @Override
   protected NotifyBody extractNotifyBody(String url, String content) {
@@ -33,7 +22,7 @@ public class KekePayNotifyHandler extends AbstractNotifyHandler {
       String trxNo = notification.getTrxNo();
       String totalFee = String.valueOf((int) (Float.valueOf(notification.getOrderPrice()) * 100));
       String status = notification.getTradeStatus();
-      return new NotifyBody(orderId, trxNo, toOrderStatus(status), totalFee, "");
+      return new NotifyBody(orderId, trxNo, KekePayProxy.toOrderStatus(status), totalFee, "");
     }
     return null;
   }
