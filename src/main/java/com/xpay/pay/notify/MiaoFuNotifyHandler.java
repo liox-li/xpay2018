@@ -16,6 +16,8 @@ public class MiaoFuNotifyHandler extends AbstractNotifyHandler {
 		String totalFee = "";
 		OrderStatus status = OrderStatus.NOTPAY;
 		try {
+			billNo = url.substring(url.lastIndexOf("/")+1);
+			billNo = billNo.substring(0, billNo.indexOf("?"));
 			String paramStr = url.substring(url.indexOf("?")+1);
 			String decoded = URLDecoder.decode(paramStr, "utf-8");
 			String[] params = decoded.split("&");
@@ -23,9 +25,7 @@ public class MiaoFuNotifyHandler extends AbstractNotifyHandler {
 			for (String param : params) {
 				String[] pair = param.split("=");
 				String key = pair[0];
-				if ("down_trade_no".equals(key)) {
-					billNo = pair[1];
-				} else if ("trade_status".equals(key)) {
+				if ("trade_status".equals(key)) {
 					status = "ok".equalsIgnoreCase(pair[1])?OrderStatus.SUCCESS:status;
 				} else if ("total_amount".equals(key)) {
 					totalFee = String.valueOf((int)(Float.valueOf(pair[1])*100));
