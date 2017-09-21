@@ -59,6 +59,10 @@ public class MiaoFuProxy implements IPaymentProxy {
 	}
 	
 	public String getJsUrl(PaymentRequest request) {
+//		request.setPayChannel(null);
+//		String url = buildUrl(MIAOFU.UnifiedOrder(), request);
+//		return url;
+
 		return jsUrl.replace("%storeId%", request.getExtStoreId())
 			.replace("%amount%", request.getTotalFee())
 			.replace("%subject%", CommonUtils.urlEncode(request.getSubject()))
@@ -67,7 +71,8 @@ public class MiaoFuProxy implements IPaymentProxy {
 	
 	@Override
 	public PaymentResponse query(PaymentRequest request) {
-		request.setTradeNoType(TradeNoType.Gateway);
+		request.setOrderNo(null);
+		request.setTradeNoType(TradeNoType.MiaoFu);
 		String url = buildUrl(MIAOFU.Query(), request);
 		logger.info("query POST: " + url);
 		long l = System.currentTimeMillis();
@@ -95,7 +100,8 @@ public class MiaoFuProxy implements IPaymentProxy {
 	@Override
 	public PaymentResponse refund(PaymentRequest request) {
 		request.setTotalFee(null);
-		request.setTradeNoType(TradeNoType.Gateway);
+		request.setOrderNo(null);
+		request.setTradeNoType(TradeNoType.MiaoFu);
 		String url = buildUrl(MIAOFU.Refund(), request);
 		logger.info("refund POST: " + url);
 		long l = System.currentTimeMillis();
@@ -157,6 +163,9 @@ public class MiaoFuProxy implements IPaymentProxy {
 		}
 		if (StringUtils.isNotBlank(request.getOrderNo())) {
 			keyPairs.add(new KeyValuePair("down_trade_no", request.getOrderNo()));
+		}
+		if (StringUtils.isNotBlank(request.getGatewayOrderNo())) {
+			keyPairs.add(new KeyValuePair("trade_no", request.getGatewayOrderNo()));
 		}
 		if (request.getTradeNoType() != null) {
 			keyPairs.add(new KeyValuePair("trade_no_type", String

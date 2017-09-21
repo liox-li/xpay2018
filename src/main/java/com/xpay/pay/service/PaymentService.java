@@ -219,6 +219,8 @@ public class PaymentService {
 				|| PaymentGateway.KEFU.equals(order.getStoreChannel().getPaymentGateway())) {
 			request.setOrderTime(order.getOrderTime());
 			request.setGatewayOrderNo(order.getExtOrderNo());
+		} else if(PaymentGateway.MIAOFU.equals(order.getStoreChannel().getPaymentGateway())) {
+			request.setGatewayOrderNo(order.getExtOrderNo());
 		}
 		request.setExtStoreId(order.getStoreChannel().getExtStoreId());
 		request.setPayChannel(order.getPayChannel());
