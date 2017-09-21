@@ -65,27 +65,9 @@ public class JsPayServlet extends HttpServlet {
 			String jsUrl = miaoFuProxy.getJsUrl(paymentRequest);
 			response.setCharacterEncoding("utf-8");
 			response.setHeader("Content-type", "text/html;charset=UTF-8");
-			String redirectUrl = encodeSubject(jsUrl);
-			response.sendRedirect(redirectUrl);
+			response.sendRedirect(jsUrl);
 		} else {
 			response.sendError(404, "Order not found");
 		}
-	}
-
-	private static String encodeSubject(String codeUrl) {
-		String str1 = codeUrl.substring(0, codeUrl.indexOf("&subject=")+9);
-		String str2 =  codeUrl.substring(codeUrl.indexOf("&subject=")+9);
-		String str3 = str2.substring(str2.indexOf("&"));
-		String str4 = str2.substring(0, str2.indexOf("&"));
-		try {
-			return str1 +URLEncoder.encode(str4, "UTF-8") + str3;
-		} catch (UnsupportedEncodingException e) {
-			return codeUrl;
-		}
-	}
-	
-	public static void main(String args[]) {
-		String str = "http://www.quick-pass.net/miaofuapi/v3/pay/jspay?busi_code=T2016093011252905060661&dev_id=127.0.0.1&amount=0.01&raw_data=a&down_trade_no=X003005120170914142313755789&subject=测试&redirect_url=http://106.14.47.193/xpay/notify/miaofu&app_id=149026948119189&timestamp=1505370193&version=v3&sign=AA16D9ACE0CD3E208FB6CA89991D2F8D";
-		System.out.println(encodeSubject(str));
 	}
 }

@@ -27,6 +27,7 @@ import com.xpay.pay.proxy.PaymentResponse;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.proxy.miaofu.MiaoFuResponse.TradeBean;
 import com.xpay.pay.util.AppConfig;
+import com.xpay.pay.util.CommonUtils;
 import com.xpay.pay.util.CryptoUtils;
 
 @Component
@@ -38,6 +39,7 @@ public class MiaoFuProxy implements IPaymentProxy {
 	private static final String appId = config.getProperty("provider.app.id");
 	private static final String appSecret = config
 			.getProperty("provider.app.secret");
+	private static final String jsUrl = config.getProperty("provider.jsuri");
 	private static final String DEFAULT_JSAPI_URL = AppConfig.XPayConfig.getProperty("jsapi.endpoint");
 	
 	@Autowired
@@ -57,11 +59,12 @@ public class MiaoFuProxy implements IPaymentProxy {
 	}
 	
 	public String getJsUrl(PaymentRequest request) {
-		request.setPayChannel(null);
-		String url = buildUrl(MIAOFU.UnifiedOrder(), request);
-		return url;
+		return jsUrl.replace("%storeId%", request.getExtStoreId())
+			.replace("%amount%", request.getTotalFee())
+			.replace("%subject%", CommonUtils.urlEncode(request.getSubject()))
+			.replace("%redirectUrl%", request.getNotifyUrl());
 	}
-
+	
 	@Override
 	public PaymentResponse query(PaymentRequest request) {
 		request.setTradeNoType(TradeNoType.Gateway);

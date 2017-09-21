@@ -3,6 +3,7 @@ package com.xpay.pay.util;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -15,6 +16,14 @@ import java.util.Enumeration;
 import org.apache.commons.collections.CollectionUtils;
 
 public class CommonUtils {
+	public static String urlEncode(String param) 
+	{
+		try {
+			return URLEncoder.encode(param, "UTF-8");
+		} catch(Exception e) {
+			return param;
+		}
+	}
 	public static String iso88591(String str) {
 		try {
 			return new String(str.toString().getBytes(), "ISO8859-1");
