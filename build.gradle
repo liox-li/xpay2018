@@ -73,6 +73,14 @@ sourceSets {
 			srcDir 'src/main/java' 
 		}
 	}
+	test{
+		java{
+			srcDir 'src/test/java'
+		}
+		resources{
+			srcDir 'src/test/resource'
+		}
+	}
 	integration {
 		java {
 			srcDir 'src/integration/java'
