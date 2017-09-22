@@ -1,9 +1,6 @@
 package com.xpay.pay.controller;
 
-import com.xpay.pay.proxy.kekepay.KekePayProxy;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -20,6 +17,7 @@ import com.xpay.pay.model.Order;
 import com.xpay.pay.model.StoreChannel.PaymentGateway;
 import com.xpay.pay.proxy.PaymentRequest;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
+import com.xpay.pay.proxy.kekepay.KekePayProxy;
 import com.xpay.pay.proxy.miaofu.MiaoFuProxy;
 import com.xpay.pay.service.OrderService;
 import com.xpay.pay.service.PaymentService;
