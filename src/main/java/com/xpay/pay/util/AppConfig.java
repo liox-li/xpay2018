@@ -1,6 +1,3 @@
-/**
- * Copyright (c) 2014, Blackboard Inc. All Rights Reserved.
- */
 package com.xpay.pay.util;
 
 import java.io.File;
@@ -13,13 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-/**
- * ClassName: CommonPropertiesLoader
- * Function: TODO
- *
- * @Author: lhjiang
- * @Date: Dec 18, 2014 6:10:40 PM
- */
 public class AppConfig {
 
 	private static final Logger LOG = LogManager.getLogger(AppConfig.class);

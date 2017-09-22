@@ -1,6 +1,3 @@
-/**
- * Copyright (c) 2016, Blackboard Inc. All Rights Reserved.
- */
 package com.xpay.pay.util;
 
 import static com.xpay.pay.ApplicationConstants.CODE_ERROR_JSON;
@@ -19,12 +16,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xpay.pay.exception.DBException;
 
-/**
- * ClassName: JsonObjectTypeHandler
- *
- * @Author: lshen
- * @Date: Jun 2, 2016 3:17:19 PM
- */
 public class JsonArrayTypeHandler<T extends Object> extends BaseTypeHandler<T> {
 
 	protected ObjectMapper objectMapper = JsonUtils.jsonMapper;

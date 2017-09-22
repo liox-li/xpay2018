@@ -1,6 +1,3 @@
-/**
- * Copyright (c) 2014, Blackboard Inc. All Rights Reserved.
- */
 package com.xpay.pay.util;
 
 import java.io.IOException;
@@ -12,14 +9,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
-/**
- * ClassName: JacksonHttpMessageConverter Function: What we do here is to
- * configure objectMapper for enabling or disabling some features when
- * serializing or deserializing object.
- *
- * @Author: kevinwang
- * @Date: Oct 13, 2014 11:26:30 AM
- */
 public class JacksonHttpMessageConverter extends MappingJackson2HttpMessageConverter {
     
    public JacksonHttpMessageConverter() {
