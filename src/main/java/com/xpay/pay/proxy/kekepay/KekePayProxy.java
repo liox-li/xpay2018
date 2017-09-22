@@ -88,15 +88,16 @@ public class KekePayProxy implements IPaymentProxy {
 
     UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
     builder.queryParams(keyPairs);
-    builder.queryParam("paySecret", appSecret);
-    String params = builder.build().toString().substring(1);
-    logger.debug("sorted params: " + params);
-    String md5 = CryptoUtils.md5(params);
-    logger.debug("md5 upper: " + md5.toUpperCase());
     try {
-      return builder.build().encode("UTF-8").getQuery() + "&sign=" + md5.toUpperCase();
+      String baseUrl = builder.build().encode("UTF-8").getQuery();
+      builder.queryParam("paySecret", appSecret);
+      String params = builder.build().toString().substring(1);
+      logger.debug("sorted params: " + params);
+      String md5 = CryptoUtils.md5(params);
+      logger.debug("md5 upper: " + md5.toUpperCase());
+      return baseUrl + "&sign=" + md5.toUpperCase();
     } catch (UnsupportedEncodingException e) {
-      e.printStackTrace();
+      logger.error(e, e);
     }
     return null;
   }
