@@ -23,7 +23,29 @@ public class CryptoUtils {
 		}
 	}
 	
-	public static final String signParams(List<KeyValuePair> keyPairs, String signKey, String secretKey, String appSecret) {
+	public static final String signParams(List<KeyValuePair> keyPairs, String secretKey, String appSecret) {
+		keyPairs.sort((x1, x2) -> {
+			return x1.getKey().compareTo(x2.getKey());
+		});
+
+		UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
+		for (KeyValuePair pair : keyPairs) {
+			builder.queryParam(pair.getKey(), pair.getValue());
+		}
+		String params;
+		if(StringUtils.isNotBlank(secretKey)) {
+			builder.queryParam(secretKey, appSecret);
+			params = builder.build().toString().substring(1);
+		} else {
+			params = builder.build().toString().substring(1);
+			params += appSecret;
+		}
+		String md5 = CryptoUtils.md5(params).toUpperCase();
+		return md5;
+	}
+	
+	
+	public static final String signQueryParams(List<KeyValuePair> keyPairs, String signKey, String secretKey, String appSecret) {
 		keyPairs.sort((x1, x2) -> {
 			return x1.getKey().compareTo(x2.getKey());
 		});

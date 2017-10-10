@@ -1,5 +1,7 @@
 package com.xpay.pay.proxy.chinaumsh5;
 
+import static com.xpay.pay.model.StoreChannel.PaymentGateway.CHINAUMSH5;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,13 +9,22 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.util.KeyValuePair;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
+import com.xpay.pay.exception.GatewayException;
 import com.xpay.pay.model.Bill;
 import com.xpay.pay.proxy.IPaymentProxy;
 import com.xpay.pay.proxy.PaymentRequest;
 import com.xpay.pay.proxy.PaymentResponse;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
+import com.xpay.pay.proxy.chinaums.ChinaUmsResponse;
 import com.xpay.pay.util.AppConfig;
 import com.xpay.pay.util.CryptoUtils;
 import com.xpay.pay.util.IDGenerator;
@@ -31,7 +42,9 @@ public class ChinaUmsH5Proxy implements IPaymentProxy {
 	private static final String tId = config.getProperty("provider.tid");
 	private static final String instMid = config.getProperty("provider.inst.mid");
 	private static final String DEFAULT_JSAPI_URL = AppConfig.XPayConfig.getProperty("jsapi.endpoint");
-
+	@Autowired
+	RestTemplate chinaUmsProxy;
+	
 	@Override
 	public PaymentResponse unifiedOrder(PaymentRequest request) {
 		String url = DEFAULT_JSAPI_URL + request.getOrderNo();
@@ -46,10 +59,63 @@ public class ChinaUmsH5Proxy implements IPaymentProxy {
 	}
 
 	public String getJsUrl(PaymentRequest request) {
-		ChinaUmsH5Request chinaUmsH5Request = this.toChinaUmsH5Request(request);
+		ChinaUmsH5Request chinaUmsH5Request = this.toChinaUmsH5Request(CHINAUMSH5.UnifiedOrder(), request);
 		List<KeyValuePair> keyPairs = this.getKeyPairs(chinaUmsH5Request);
-		String queryParams = CryptoUtils.signParams(keyPairs, "sign", null, appSecret);
+		String queryParams = CryptoUtils.signQueryParams(keyPairs, "sign", null, appSecret);
 		return jsPayEndpoint + "?" + queryParams;
+	}
+	
+	@Override
+	public PaymentResponse query(PaymentRequest request) {
+		String url = baseEndpoint;
+		long l = System.currentTimeMillis();
+		PaymentResponse response = null;
+		try {
+			ChinaUmsH5Request chinaUmsH5Request = this.toChinaUmsH5Request(CHINAUMSH5.Query(),request);
+			
+			List<KeyValuePair> keyPairs = this.getKeyPairs(chinaUmsH5Request);
+			String sign = CryptoUtils.signParams(keyPairs, null, appSecret);
+			chinaUmsH5Request.setSign(sign);
+			logger.info("query POST: " + url+", body "+JsonUtils.toJson(chinaUmsH5Request));
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+			HttpEntity<?> httpEntity = new HttpEntity<>(chinaUmsH5Request, headers);
+			ChinaUmsH5Response chinaUmsH5Response = chinaUmsProxy.exchange(url, HttpMethod.POST, httpEntity, ChinaUmsH5Response.class).getBody();
+			logger.info("query result: " + chinaUmsH5Response.getErrCode() + " "+chinaUmsH5Response.getErrMsg() + " "+chinaUmsH5Response.getStatus() + ", took "
+					+ (System.currentTimeMillis() - l) + "ms");
+			response = toPaymentResponse(request, chinaUmsH5Response);
+		} catch (RestClientException e) {
+			logger.info("query failed, took " + (System.currentTimeMillis() - l) + "ms", e);
+			throw e;
+		}
+		return response;
+	}
+	
+	@Override
+	public PaymentResponse refund(PaymentRequest request) {
+		String url = baseEndpoint;
+		long l = System.currentTimeMillis();
+		PaymentResponse response = null;
+		try {
+			ChinaUmsH5Request chinaUmsH5Request = this.toChinaUmsH5Request(CHINAUMSH5.Refund(),request);
+			chinaUmsH5Request.setRefundAmount(chinaUmsH5Request.getTotalAmount());
+			List<KeyValuePair> keyPairs = this.getKeyPairs(chinaUmsH5Request);
+			String sign = CryptoUtils.signParams(keyPairs, null, appSecret);
+			chinaUmsH5Request.setSign(sign);
+			logger.info("refund POST: " + url+", body "+JsonUtils.toJson(chinaUmsH5Request));
+			
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+			HttpEntity<?> httpEntity = new HttpEntity<>(chinaUmsH5Request, headers);
+			ChinaUmsH5Response chinaUmsH5Response = chinaUmsProxy.exchange(url, HttpMethod.POST, httpEntity, ChinaUmsH5Response.class).getBody();
+			logger.info("refund result: " + chinaUmsH5Response.getErrCode() + " "+chinaUmsH5Response.getErrMsg() + ", took "
+					+ (System.currentTimeMillis() - l) + "ms");
+			response = toPaymentResponse(request, chinaUmsH5Response);
+		} catch (RestClientException e) {
+			logger.info("refund failed, took " + (System.currentTimeMillis() - l) + "ms", e);
+			throw e;
+		}
+		return response;
 	}
 	
 	private List<KeyValuePair> getKeyPairs(ChinaUmsH5Request paymentRequest) {
@@ -96,10 +162,10 @@ public class ChinaUmsH5Proxy implements IPaymentProxy {
 	}
 	
 	
-	private ChinaUmsH5Request toChinaUmsH5Request(PaymentRequest request) {
+	private ChinaUmsH5Request toChinaUmsH5Request(String method, PaymentRequest request) {
 		ChinaUmsH5Request chinaUmsH5Request = new ChinaUmsH5Request();
 		chinaUmsH5Request.setMsgSrc(appName);
-		chinaUmsH5Request.setMsgType("WXPay.jsPay");
+		chinaUmsH5Request.setMsgType(method);
 		chinaUmsH5Request.setRequestTimestamp(IDGenerator.formatTime());
 		chinaUmsH5Request.setMerOrderId(request.getGatewayOrderNo());
 		chinaUmsH5Request.setMid(request.getExtStoreId());
@@ -114,17 +180,36 @@ public class ChinaUmsH5Proxy implements IPaymentProxy {
 		chinaUmsH5Request.setReturnUrl(request.getReturnUrl());
 		return chinaUmsH5Request;
 	}
-
-	@Override
-	public PaymentResponse query(PaymentRequest request) {
-		// TODO Auto-generated method stub
-		return null;
+	
+	private PaymentResponse toPaymentResponse(PaymentRequest paymentRequest, ChinaUmsH5Response chinaUmsResponse) {
+		if (chinaUmsResponse == null || !ChinaUmsResponse.SUCCESS.equals(chinaUmsResponse.getErrCode())
+				|| StringUtils.isBlank(chinaUmsResponse.getTargetOrderId())) {
+			String code = chinaUmsResponse == null ? NO_RESPONSE : chinaUmsResponse.getErrCode();
+			String msg = chinaUmsResponse == null ? "No response" : chinaUmsResponse.getErrMsg();
+			throw new GatewayException(code, msg);
+		}
+		PaymentResponse response = new PaymentResponse();
+		response.setCode(PaymentResponse.SUCCESS);
+		Bill bill = new Bill();
+		bill.setOrderNo(paymentRequest.getOrderNo());
+		bill.setGatewayOrderNo(paymentRequest.getGatewayOrderNo());
+		bill.setTargetOrderNo(chinaUmsResponse.getTargetOrderId());
+		bill.setOrderStatus(toOrderStatus(chinaUmsResponse.getStatus()));
+		response.setBill(bill);
+		return response;
 	}
-
-	@Override
-	public PaymentResponse refund(PaymentRequest request) {
-		// TODO Auto-generated method stub
-		return null;
+	
+	public static OrderStatus toOrderStatus(String billStatus) {
+		if("PAID".equals(billStatus) || "TRADE_SUCCESS".equals(billStatus)) {
+			return OrderStatus.SUCCESS;
+		} else if("UNPAID".equals(billStatus)) {
+			return OrderStatus.NOTPAY;
+		}else if("REFUND".equals(billStatus) || "TRADE_REFUND".equals(billStatus)) {
+			return OrderStatus.REFUND;
+		}else if("CLOSED".equals(billStatus)) {
+			return OrderStatus.CLOSED;
+		} else {
+			return OrderStatus.NOTPAY;
+		}
 	}
-
 }
