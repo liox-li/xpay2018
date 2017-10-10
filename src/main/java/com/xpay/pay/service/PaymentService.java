@@ -163,8 +163,6 @@ public class PaymentService {
 		}
 	}
 
-	private static final String DEFAULT_SUBJECT = "游戏";
-	private static final String DEFAULT_SUBJECT_CHINAUMS = "投诉热线: 95534";
 	private static final String LOCAL_ID = CommonUtils.getLocalIP();
 	private static final String DEFAULT_NOTIFY_URL = AppConfig.XPayConfig.getProperty("notify.endpoint");
 	public PaymentRequest toPaymentRequest(Order order) {
@@ -178,10 +176,9 @@ public class PaymentService {
 		request.setAttach(order.getAttach());
 		request.setOrderNo(order.getOrderNo());
 		request.setNotifyUrl(DEFAULT_NOTIFY_URL+order.getStoreChannel().getPaymentGateway().toString().toLowerCase());
-		if(PaymentGateway.CHINAUMSV2.equals(order.getStoreChannel().getPaymentGateway())) {
-			request.setReturnUrl(order.getReturnUrl());
-		}
-		else if(PaymentGateway.CHINAUMS.equals(order.getStoreChannel().getPaymentGateway())) {
+		if(PaymentGateway.CHINAUMSV2.equals(order.getStoreChannel().getPaymentGateway()) 
+			|| PaymentGateway.CHINAUMSH5.equals(order.getStoreChannel().getPaymentGateway())
+			|| PaymentGateway.CHINAUMS.equals(order.getStoreChannel().getPaymentGateway())) {
 			request.setReturnUrl(order.getReturnUrl());
 		}
 		else if(PaymentGateway.JUZHEN.equals(order.getStoreChannel().getPaymentGateway())) {
@@ -207,9 +204,7 @@ public class PaymentService {
 		} else {
 			request.setSubject(DEFAULT_SUBJECT);
 		}
-		if(PaymentGateway.CHINAUMS.equals(order.getStoreChannel().getPaymentGateway()) || PaymentGateway.CHINAUMSV2.equals(order.getStoreChannel().getPaymentGateway())) {
-			request.setSubject(request.getSubject()+"  ( "+DEFAULT_SUBJECT_CHINAUMS+" )");
-		}
+		request.setSubject(this.customizeCsrTel(request.getSubject(), order));
 		return request;
 	}
 	
@@ -217,6 +212,7 @@ public class PaymentService {
 		PaymentRequest request = new PaymentRequest();
 		if(PaymentGateway.CHINAUMS.equals(order.getStoreChannel().getPaymentGateway()) 
 				|| PaymentGateway.CHINAUMSV2.equals(order.getStoreChannel().getPaymentGateway()) 
+				|| PaymentGateway.CHINAUMSH5.equals(order.getStoreChannel().getPaymentGateway()) 
 				|| PaymentGateway.JUZHEN.equals(order.getStoreChannel().getPaymentGateway())
 				|| PaymentGateway.KEFU.equals(order.getStoreChannel().getPaymentGateway())) {
 			request.setOrderTime(order.getOrderTime());
@@ -241,6 +237,21 @@ public class PaymentService {
 		bill.setOrderStatus(order.getStatus());
 		bill.setOrder(order);
 		return bill;
+	}
+	
+	private static final String DEFAULT_SUBJECT = "游戏";
+	private static final String DEFAULT_SUBJECT_STORE = "投诉热线:<TEL>";
+	private static final String DEFAULT_SUBJECT_CHINAUMS = "投诉热线: 95534";
+	private String customizeCsrTel(String subject, Order order) {
+		String storeTel = order.getStore().getCsrTel();
+		if(StringUtils.isNotBlank(storeTel)) {
+			return subject + "("+DEFAULT_SUBJECT_STORE.replace("<TEL>", storeTel) +")";
+		} else if(PaymentGateway.CHINAUMS.equals(order.getStoreChannel().getPaymentGateway()) 
+				|| PaymentGateway.CHINAUMSV2.equals(order.getStoreChannel().getPaymentGateway())
+				|| PaymentGateway.CHINAUMSH5.equals(order.getStoreChannel().getPaymentGateway())) {
+			return subject+"("+DEFAULT_SUBJECT_CHINAUMS+")";
+		}
+		return subject;
 	}
 	
 }

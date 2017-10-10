@@ -16,6 +16,7 @@ public class Store {
 	private List<StoreChannel> bailChannels;
 	private long dailyLimit;
 	private String channelIds;
+	private String csrTel;
 	private List<StoreChannel> channels;
 
 	public long getId() {
@@ -146,6 +147,14 @@ public class Store {
 
 	public void setChannelIds(String channelIds) {
 		this.channelIds = channelIds;
+	}
+
+	public String getCsrTel() {
+		return csrTel;
+	}
+
+	public void setCsrTel(String csrTel) {
+		this.csrTel = csrTel;
 	}
 
 	private static final int SECURE_LOW_BOUNDER = 50;

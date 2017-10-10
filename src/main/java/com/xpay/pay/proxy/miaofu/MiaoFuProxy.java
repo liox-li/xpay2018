@@ -63,10 +63,12 @@ public class MiaoFuProxy implements IPaymentProxy {
 //		String url = buildUrl(MIAOFU.UnifiedOrder(), request);
 //		return url;
 
-		return jsUrl.replace("%storeId%", request.getExtStoreId())
+		String url = jsUrl.replace("%storeId%", request.getExtStoreId())
 			.replace("%amount%", request.getTotalFee())
 			.replace("%subject%", CommonUtils.urlEncode(request.getSubject()))
 			.replace("%redirectUrl%", request.getNotifyUrl());
+		logger.info("unified order GET: " + url);
+		return url;
 	}
 	
 	@Override

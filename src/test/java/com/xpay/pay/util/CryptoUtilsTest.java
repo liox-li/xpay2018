@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.util.KeyValuePair;
 import org.junit.Assert;
 import org.junit.Test;
@@ -76,6 +77,23 @@ public class CryptoUtilsTest {
 		String signature = this.signature(keyPairs, "APP_SECRET", "DQaEecPIRgQCjIvNHWjJOarJLeGfIJap");
 		System.out.println(signature);
 	}
+	
+	@Test
+	public void testSign3() {
+		String str = "msgSrc=WWW.TEST.COM&msgType=WXPay.jsPay&requestTimestamp=2017-10-09 15:11:02&merOrderId=319400002017100902&msgSrcId=3194&mid=898340149000005&tid=88880001&instMid=YUEDANDEFAULT&totalAmount=1&goods=[{\"body\":\"微信二维码测试\",\"price\":\"1\",\"goodsName\":\"微信二维码测试\",\"goodsId\":\"1\",\"quantity\":\"1\",\"goodsCategory\":\"TEST\"}]&notifyUrl=http://106.14.47.193/xpay/notify/CHINAUMS&returnUrl=http://www.baidu.com&sceneType=IOS_WAP&merAppName=纳优官网&merAppId=http://www.zmpay.xyz";
+		List<KeyValuePair> keyPairs = new ArrayList<KeyValuePair>();	
+		String[] keyValues = str.split("&");
+		for(String keyValue: keyValues) {
+			String[] split = keyValue.split("=");
+			String key = split[0];
+			String value = split[1];
+			KeyValuePair pair = new KeyValuePair(key, value);
+			keyPairs.add(pair);
+		}
+		
+		String signature = this.signature(keyPairs, null, "fcAmtnx7MwismjWNhNKdHC44mNXtnEQeJkRrhKJwyrW2ysRR");
+		System.out.println(signature);
+	}
 
 	private String signature(List<KeyValuePair> keyPairs, String signKey,
 			String appSecret) {
@@ -87,8 +105,14 @@ public class CryptoUtilsTest {
 		for (KeyValuePair pair : keyPairs) {
 			builder.queryParam(pair.getKey(), pair.getValue());
 		}
-		builder.queryParam(signKey, appSecret);
-		String params = builder.build().toString().substring(1);
+		String params = null;
+		if(StringUtils.isNotBlank(signKey)) {
+			builder.queryParam(signKey, appSecret);
+			params = builder.build().toString().substring(1);
+		} else {
+			params = builder.build().toString().substring(1);
+			params += appSecret;
+		}
 		System.out.println("sorted params: " + params);
 		String md5 = CryptoUtils.md5(params);
 		System.out.println("md5 upper: " + md5.toUpperCase());

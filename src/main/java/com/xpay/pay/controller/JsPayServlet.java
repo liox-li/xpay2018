@@ -17,6 +17,7 @@ import com.xpay.pay.model.Order;
 import com.xpay.pay.model.StoreChannel.PaymentGateway;
 import com.xpay.pay.proxy.PaymentRequest;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
+import com.xpay.pay.proxy.chinaumsh5.ChinaUmsH5Proxy;
 import com.xpay.pay.proxy.kekepay.KekePayProxy;
 import com.xpay.pay.proxy.miaofu.MiaoFuProxy;
 import com.xpay.pay.service.OrderService;
@@ -31,6 +32,8 @@ public class JsPayServlet extends HttpServlet {
 	protected PaymentService paymentService;
 	@Autowired
 	protected MiaoFuProxy miaoFuProxy;
+	@Autowired
+	protected ChinaUmsH5Proxy chinaUmsH5Proxy;
 	@Autowired
 	protected KekePayProxy kekePayProxy;
 
@@ -61,7 +64,14 @@ public class JsPayServlet extends HttpServlet {
 			response.sendError(400, "Order already paid");
 			return;
 		} 
-		if(PaymentGateway.MIAOFU.equals(order.getStoreChannel().getPaymentGateway())) {
+		if(PaymentGateway.CHINAUMSH5.equals(order.getStoreChannel().getPaymentGateway())) {
+			PaymentRequest paymentRequest = paymentService.toPaymentRequest(order);
+			paymentRequest.setGatewayOrderNo(order.getExtOrderNo());
+			String jsUrl = chinaUmsH5Proxy.getJsUrl(paymentRequest);
+			response.setCharacterEncoding("utf-8");
+			response.setHeader("Content-type", "text/html;charset=UTF-8");
+			response.sendRedirect(jsUrl);
+		}else if(PaymentGateway.MIAOFU.equals(order.getStoreChannel().getPaymentGateway())) {
 			PaymentRequest paymentRequest = paymentService.toPaymentRequest(order);
 			String jsUrl = miaoFuProxy.getJsUrl(paymentRequest);
 			response.setCharacterEncoding("utf-8");

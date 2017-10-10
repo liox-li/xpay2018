@@ -34,6 +34,8 @@ public class AppConfig {
 	public static final AppConfig XPayConfig = new AppConfig(load("xpay.config"));
 
 	public static final AppConfig kekePayConfig = new AppConfig(load("kekepay.config"));
+	
+	public static final AppConfig ChinaUmsH5Config = new AppConfig(load("chinaumsh5.config"));
 
 	public AppConfig(Properties properties) {
 		this.properties = properties;
