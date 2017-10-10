@@ -12,10 +12,33 @@ import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.core.util.KeyValuePair;
+import org.springframework.web.util.UriComponentsBuilder;
 
 public class CommonUtils {
+
+	public static final String buildQueryParams(List<KeyValuePair> keyPairs, String signKey, String sign, String encodeKeys) {
+		keyPairs.sort((x1, x2) -> {
+			return x1.getKey().compareTo(x2.getKey());
+		});
+
+		UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
+		for (KeyValuePair pair : keyPairs) {
+			String value = pair.getValue();
+			if(StringUtils.indexOf(encodeKeys, pair.getKey())>=0) {
+				value = urlEncode(pair.getValue());
+			} 
+			builder.queryParam(pair.getKey(), value);
+		}
+		builder.queryParam(signKey, sign);
+		return builder.build().toString();
+	}
+	
+	
 	public static String urlEncode(String param) 
 	{
 		try {

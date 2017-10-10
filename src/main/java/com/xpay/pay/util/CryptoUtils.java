@@ -44,31 +44,7 @@ public class CryptoUtils {
 		return md5;
 	}
 	
-	
-	public static final String signQueryParams(List<KeyValuePair> keyPairs, String signKey, String secretKey, String appSecret) {
-		keyPairs.sort((x1, x2) -> {
-			return x1.getKey().compareTo(x2.getKey());
-		});
-
-		UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
-		for (KeyValuePair pair : keyPairs) {
-			builder.queryParam(pair.getKey(), pair.getValue());
-		}
-		String params;
-		String paramsToBeSign;
-		if(StringUtils.isNotBlank(secretKey)) {
-			params = builder.build().toString().substring(1);
-			builder.queryParam(secretKey, appSecret);
-			paramsToBeSign = builder.build().toString().substring(1);
-		} else {
-			params = builder.build().toString().substring(1);
-			paramsToBeSign = params+appSecret;
-		}
-		String md5 = CryptoUtils.md5(paramsToBeSign).toUpperCase();
-		return params+"&"+signKey+"="+md5;
-	}
-	
-    public static final String md5KeFu(String str, String key) {
+	public static final String md5KeFu(String str, String key) {
         try {
             MessageDigest md5 = MessageDigest.getInstance("MD5");
             md5.update(str.getBytes("UTF-8"));

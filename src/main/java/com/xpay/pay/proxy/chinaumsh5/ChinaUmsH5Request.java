@@ -12,8 +12,8 @@ public class ChinaUmsH5Request {
 	private String instMid;
 	private GoodsBean[] goods;
 	private String orderDesc;
-	private int totalAmount;
-	private int refundAmount;
+	private String totalAmount;
+	private String refundAmount;
 	private String notifyUrl;
 	private String returnUrl;
 	private String sign;
@@ -90,19 +90,19 @@ public class ChinaUmsH5Request {
 		this.orderDesc = orderDesc;
 	}
 
-	public int getTotalAmount() {
+	public String getTotalAmount() {
 		return totalAmount;
 	}
 
-	public void setTotalAmount(int totalAmount) {
+	public void setTotalAmount(String totalAmount) {
 		this.totalAmount = totalAmount;
 	}
 
-	public int getRefundAmount() {
+	public String getRefundAmount() {
 		return refundAmount;
 	}
 
-	public void setRefundAmount(int refundAmount) {
+	public void setRefundAmount(String refundAmount) {
 		this.refundAmount = refundAmount;
 	}
 

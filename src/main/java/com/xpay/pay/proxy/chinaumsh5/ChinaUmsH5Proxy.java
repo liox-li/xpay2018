@@ -25,13 +25,18 @@ import com.xpay.pay.proxy.PaymentRequest;
 import com.xpay.pay.proxy.PaymentResponse;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.proxy.chinaums.ChinaUmsResponse;
+import com.xpay.pay.proxy.chinaumsv2.ChinaUmsV2Proxy;
 import com.xpay.pay.util.AppConfig;
+import com.xpay.pay.util.CommonUtils;
 import com.xpay.pay.util.CryptoUtils;
 import com.xpay.pay.util.IDGenerator;
 import com.xpay.pay.util.JsonUtils;
 
 @Component
 public class ChinaUmsH5Proxy implements IPaymentProxy {
+	@Autowired
+	ChinaUmsV2Proxy chinaUmsV2Proxy;
+	
 	protected final Logger logger = LogManager.getLogger("AccessLog");
 	private static final AppConfig config = AppConfig.ChinaUmsH5Config;
 	private static final String baseEndpoint = config.getProperty("provider.endpoint");
@@ -61,8 +66,11 @@ public class ChinaUmsH5Proxy implements IPaymentProxy {
 	public String getJsUrl(PaymentRequest request) {
 		ChinaUmsH5Request chinaUmsH5Request = this.toChinaUmsH5Request(CHINAUMSH5.UnifiedOrder(), request);
 		List<KeyValuePair> keyPairs = this.getKeyPairs(chinaUmsH5Request);
-		String queryParams = CryptoUtils.signQueryParams(keyPairs, "sign", null, appSecret);
-		return jsPayEndpoint + "?" + queryParams;
+		String sign = CryptoUtils.signParams(keyPairs, null, appSecret);
+		String queryParams = CommonUtils.buildQueryParams(keyPairs, "sign", sign, "orderDesc");
+		String jsUrl = jsPayEndpoint + queryParams;
+		logger.info("Redirect to: " + jsUrl);
+		return jsUrl;
 	}
 	
 	@Override
@@ -151,7 +159,12 @@ public class ChinaUmsH5Proxy implements IPaymentProxy {
 		if (StringUtils.isNotBlank(paymentRequest.getOrderDesc())) {
 			keyPairs.add(new KeyValuePair("orderDesc", paymentRequest.getOrderDesc()));
 		}
-		keyPairs.add(new KeyValuePair("totalAmount", String.valueOf(paymentRequest.getTotalAmount())));
+		if(StringUtils.isNotBlank(paymentRequest.getTotalAmount())) {
+			keyPairs.add(new KeyValuePair("totalAmount", paymentRequest.getTotalAmount()));
+		}
+		if(StringUtils.isNotBlank(paymentRequest.getRefundAmount())) {
+			keyPairs.add(new KeyValuePair("refundAmount", paymentRequest.getRefundAmount()));
+		}
 		if (StringUtils.isNotBlank(paymentRequest.getNotifyUrl())) {
 			keyPairs.add(new KeyValuePair("notifyUrl", paymentRequest.getNotifyUrl()));
 		}
@@ -174,7 +187,7 @@ public class ChinaUmsH5Proxy implements IPaymentProxy {
 		chinaUmsH5Request.setGoods(request.getGoods());
 		chinaUmsH5Request.setOrderDesc(request.getSubject());
 		if(StringUtils.isNotBlank(request.getTotalFee())) {
-			chinaUmsH5Request.setTotalAmount((int)(request.getTotalFeeAsFloat()*100));
+			chinaUmsH5Request.setTotalAmount(String.valueOf((int)(request.getTotalFeeAsFloat()*100)));
 		}
 		chinaUmsH5Request.setNotifyUrl(request.getNotifyUrl());
 		chinaUmsH5Request.setReturnUrl(request.getReturnUrl());
