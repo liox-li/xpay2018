@@ -11,6 +11,7 @@ import com.xpay.pay.proxy.juzhen.JuZhenProxy;
 import com.xpay.pay.proxy.kefu.KeFuProxy;
 import com.xpay.pay.proxy.kekepay.KekePayProxy;
 import com.xpay.pay.proxy.miaofu.MiaoFuProxy;
+import com.xpay.pay.proxy.upay.UPayProxy;
 
 @Service
 public class PaymentProxyFactory {
@@ -30,6 +31,8 @@ public class PaymentProxyFactory {
 	private KeFuProxy keFuProxy;
 	@Autowired
 	private KekePayProxy kekePayProxy;
+	@Autowired
+	private UPayProxy upayProxy;
 //	@Autowired
 //	private RubiPayProxy rubiPayProxy;
 
@@ -41,6 +44,8 @@ public class PaymentProxyFactory {
 				return chinaUmsH5Proxy;
 			case CHINAUMS:
 				return chinaUmsProxy;
+			case UPAY:
+				return upayProxy;
 			case  JUZHEN:
 				return juZhenProxy;
 			case  KEFU:
@@ -49,6 +54,7 @@ public class PaymentProxyFactory {
 				return miaoFuProxy;
 			case KEKEPAY:
 				return kekePayProxy;
+ 
       default:
         return chinaUmsV2Proxy;
 		}

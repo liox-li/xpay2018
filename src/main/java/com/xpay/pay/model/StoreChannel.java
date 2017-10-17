@@ -35,6 +35,7 @@ public class StoreChannel {
 		CHINAUMS("yuedan.getQRCode", "yuedan.query", "yuedan.refund"), 
 		CHINAUMSV2("bills.getQRCode", "bills.query", "bills.refund"), 
 		CHINAUMSH5("WXPay.jsPay", "query", "refund"),
+		UPAY("", "", ""),
 		RUBIPAY("unified.trade.pay", "unified.trade.query", "unified.trade.refund"),
 		BAIFU("trade.weixin.gzpay", "query", "unified.trade.refund"), 
 		JUZHEN("070201", "070101", ""), 

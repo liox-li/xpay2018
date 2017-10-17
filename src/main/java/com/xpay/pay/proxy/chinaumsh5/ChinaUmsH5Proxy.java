@@ -116,7 +116,7 @@ public class ChinaUmsH5Proxy implements IPaymentProxy {
 			headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 			HttpEntity<?> httpEntity = new HttpEntity<>(chinaUmsH5Request, headers);
 			ChinaUmsH5Response chinaUmsH5Response = chinaUmsProxy.exchange(url, HttpMethod.POST, httpEntity, ChinaUmsH5Response.class).getBody();
-			logger.info("refund result: " + chinaUmsH5Response.getErrCode() + " "+chinaUmsH5Response.getErrMsg() + ", took "
+			logger.info("refund result: " + chinaUmsH5Response.getErrCode() + " "+JsonUtils.toJson(chinaUmsH5Response) + ", took "
 					+ (System.currentTimeMillis() - l) + "ms");
 			response = toPaymentResponse(request, chinaUmsH5Response);
 		} catch (RestClientException e) {

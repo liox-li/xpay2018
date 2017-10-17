@@ -77,7 +77,7 @@ public abstract class AbstractNotifyHandler implements INotifyHandler {
 	}
 	
 	private void updateOrderStatus(Order order, NotifyBody body) {
-		if (order != null && !OrderStatus.SUCCESS.equals(order.getStatus())) {
+		if (order != null && !body.getStatus().equals(order.getStatus())) {
 			order.setStatus(body.getStatus());
 			if(StringUtils.isNotBlank(body.getExtOrderNo())) {
 				order.setExtOrderNo(body.getExtOrderNo());

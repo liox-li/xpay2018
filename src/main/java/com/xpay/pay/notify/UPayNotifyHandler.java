@@ -3,31 +3,33 @@ package com.xpay.pay.notify;
 import java.net.URLDecoder;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
 
 import com.xpay.pay.proxy.chinaums.ChinaUmsProxy;
 
-@Service
-public class ChinaUmsH5NotifyHandler extends AbstractNotifyHandler {
+public class UPayNotifyHandler extends AbstractNotifyHandler {
 	
 	@Override
 	protected NotifyBody extractNotifyBody(String url, String content) {
-		String billNo = "";
+		String orderNo = "";
+		String extOrderNo = "";
 		String status = "";
 		String targetOrderNo = "";
 		String totalFee = "";
 		try {
-			String decoded = URLDecoder.decode(content, "utf-8");
+			orderNo = url.substring(url.lastIndexOf("/")+1);
+			orderNo = orderNo.substring(0, orderNo.indexOf("?"));
+
+			String decoded = URLDecoder.decode(url, "utf-8");
 			String[] params = decoded.split("&");
 
 			for (String param : params) {
 				String[] pair = param.split("=");
 				String key = pair[0];
-				if ("merOrderId".equals(key)) {
-					billNo = pair[1];
-				} else if ("status".equals(key)) {
+				if ("trade_no".equals(key)) {
+					extOrderNo = pair[1];
+				} else if ("order_status".equals(key)) {
 					status = pair[1];
-				} else if ("totalAmount".equals(key)) {
+				} else if ("total_amount".equals(key)) {
 					totalFee = pair[1];
 				} else if ("targetOrderId".equals(key)) {
 					targetOrderNo = pair[1];
@@ -36,7 +38,7 @@ public class ChinaUmsH5NotifyHandler extends AbstractNotifyHandler {
 		} catch (Exception e) {
 			
 		}
-		return StringUtils.isBlank(billNo)?null:new NotifyBody(null, billNo, ChinaUmsProxy.toOrderStatus(status), totalFee, targetOrderNo);
+		return StringUtils.isBlank(orderNo)?null:new NotifyBody(orderNo, extOrderNo, ChinaUmsProxy.toOrderStatus(status), totalFee, targetOrderNo);
 	}
 
 	private static final String SUCCESS_STR = "SUCCESS";

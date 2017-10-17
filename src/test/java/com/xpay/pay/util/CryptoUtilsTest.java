@@ -106,8 +106,10 @@ public class CryptoUtilsTest {
 	
 	@Test
 	public void testSign4() {
-		String str = "client_sn=20170829682411240&operator=287627262&payway=1&return_url=https://www.baidu.com&subject=测试&terminal_sn=100003690002145578&total_amount=1&notify_url=http://106.14.47.193/xpay/notify/upay";
+		//String str = "client_sn=20170829682411240&operator=287627262&payway=1&return_url=https://www.baidu.com&subject=测试&terminal_sn=100003690002145578&total_amount=1&notify_url=http://106.14.47.193/xpay/notify/upay";
 		//String str = "terminal_sn=100003690002145578&client_sn=abcd&total_amount=1&subject=测试& operator=abc&notify_url=http://106.14.47.193/xpay/notify/upay&return_url=http://www.baidu.com";
+		//https://m.wosai.cn/qr/gateway?client_sn=X003000820171017141835803974&notify_url=http://www.zmpay.xyz/xpay/notify/upay&operator=nayou001&payway=3&return_url=http://www.zmpay.xyz/xpay/jspay/POST/X003000820171017141835803974&subject=%E6%B8%B8%E6%88%8F&terminal_sn=100003690002145578&total_amount=1&sign=34A2211486A9CE0AF64E279F3AF27385
+		String str = "client_sn=X003000820171017141835803974&notify_url=http://www.zmpay.xyz/xpay/notify/upay&operator=nayou001&payway=3&return_url=http://www.zmpay.xyz/xpay/jspay/POST/X003000820171017141835803974&subject=游戏&terminal_sn=100003690002145578&total_amount=1";
 		List<KeyValuePair> keyPairs = new ArrayList<KeyValuePair>();	
 		String[] keyValues = str.split("&");
 		for(String keyValue: keyValues) {
