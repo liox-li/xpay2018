@@ -18,12 +18,16 @@ public class NotifyHandlerFactory {
 	KeFuNotifyHandler keFuHandler;
 	@Autowired
 	MiaoFuNotifyHandler miaoFuHandler;
+	@Autowired
+	UPayNotifyHandler uPayHandler;
 	
 	public INotifyHandler getNotifyHandler(String uri) {
 		if (uri.contains(PaymentGateway.CHINAUMSH5.name().toLowerCase())) {
 			return chinaUmsH5Handler;
 		} else if (uri.contains(PaymentGateway.CHINAUMS.name().toLowerCase())) {
 			return chinaUmsHandler;
+		} else if (uri.contains(PaymentGateway.UPAY.name().toLowerCase())) {
+			return uPayHandler;
 		} else if (uri.contains(PaymentGateway.JUZHEN.name().toLowerCase())) {
 			return juZhenHandler;
 		} else if (uri.contains(PaymentGateway.KEFU.name().toLowerCase())) {

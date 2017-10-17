@@ -1,11 +1,12 @@
 package com.xpay.pay.notify;
 
-import java.net.URLDecoder;
-
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
 
-import com.xpay.pay.proxy.chinaums.ChinaUmsProxy;
+import com.xpay.pay.proxy.upay.UPayProxy;
+import com.xpay.pay.util.JsonUtils;
 
+@Service
 public class UPayNotifyHandler extends AbstractNotifyHandler {
 	
 	@Override
@@ -16,40 +17,65 @@ public class UPayNotifyHandler extends AbstractNotifyHandler {
 		String targetOrderNo = "";
 		String totalFee = "";
 		try {
-			orderNo = url.substring(url.lastIndexOf("/")+1);
-			orderNo = orderNo.substring(0, orderNo.indexOf("?"));
-
-			String decoded = URLDecoder.decode(url, "utf-8");
-			String[] params = decoded.split("&");
-
-			for (String param : params) {
-				String[] pair = param.split("=");
-				String key = pair[0];
-				if ("trade_no".equals(key)) {
-					extOrderNo = pair[1];
-				} else if ("order_status".equals(key)) {
-					status = pair[1];
-				} else if ("total_amount".equals(key)) {
-					totalFee = pair[1];
-				} else if ("targetOrderId".equals(key)) {
-					targetOrderNo = pair[1];
-				}
-			}
+			UPayNotification notObject = JsonUtils.fromJson(content, UPayNotification.class);
+			orderNo = notObject.getClient_sn();
+			extOrderNo = notObject.getTrade_no();
+			status = notObject.getOrder_status();
+			totalFee = notObject.getTotal_amount();
+			
 		} catch (Exception e) {
 			
 		}
-		return StringUtils.isBlank(orderNo)?null:new NotifyBody(orderNo, extOrderNo, ChinaUmsProxy.toOrderStatus(status), totalFee, targetOrderNo);
+		return StringUtils.isBlank(orderNo)?null:new NotifyBody(orderNo, extOrderNo, UPayProxy.toOrderStatus(status), totalFee, targetOrderNo);
 	}
 
-	private static final String SUCCESS_STR = "SUCCESS";
+	private static final String SUCCESS_STR = "success";
 	@Override
 	protected String getSuccessResponse() {
 		return SUCCESS_STR;
 	}
 
-	private static final String FAIL_STR = "FAILED";
+	private static final String FAIL_STR = "failed";
 	@Override
 	protected String getFailedResponse() {
 		return FAIL_STR;
+	}
+	
+	public static class UPayNotification {
+		private String client_sn;
+		private String status;
+		private String order_status;
+		private String trade_no;
+		private String total_amount;
+		public String getClient_sn() {
+			return client_sn;
+		}
+		public void setClient_sn(String client_sn) {
+			this.client_sn = client_sn;
+		}
+		public String getStatus() {
+			return status;
+		}
+		public void setStatus(String status) {
+			this.status = status;
+		}
+		public String getOrder_status() {
+			return order_status;
+		}
+		public void setOrder_status(String order_status) {
+			this.order_status = order_status;
+		}
+		public String getTrade_no() {
+			return trade_no;
+		}
+		public void setTrade_no(String trade_no) {
+			this.trade_no = trade_no;
+		}
+		public String getTotal_amount() {
+			return total_amount;
+		}
+		public void setTotal_amount(String total_amount) {
+			this.total_amount = total_amount;
+		}
 	}
 }

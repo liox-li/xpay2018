@@ -44,7 +44,7 @@ public class UPayProxy implements IPaymentProxy {
 	public String getJsUrl(PaymentRequest request) {
 		UPayRequest upayRequest = this.toUPayRequest(UPAY.UnifiedOrder(), request);
 		List<KeyValuePair> keyPairs = this.getKeyPairs(upayRequest);
-		String sign = CryptoUtils.signQueryParams(keyPairs, null, appSecret);
+		String sign = CryptoUtils.signQueryParams(keyPairs, "key", appSecret);
 		String queryParams = CommonUtils.buildQueryParams(keyPairs, "sign", sign, "subject");
 		String jsUrl = jsPayEndpoint + queryParams;
 		logger.info("Redirect to: " + jsUrl);
