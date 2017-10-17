@@ -46,7 +46,7 @@ public class ChinaUmsH5Proxy implements IPaymentProxy {
 	private static final String appName = config.getProperty("provider.app.name");
 	private static final String tId = config.getProperty("provider.tid");
 	private static final String instMid = config.getProperty("provider.inst.mid");
-	private static final String DEFAULT_JSAPI_URL = AppConfig.XPayConfig.getProperty("jsapi.endpoint");
+
 	@Autowired
 	RestTemplate chinaUmsProxy;
 	
@@ -66,7 +66,7 @@ public class ChinaUmsH5Proxy implements IPaymentProxy {
 	public String getJsUrl(PaymentRequest request) {
 		ChinaUmsH5Request chinaUmsH5Request = this.toChinaUmsH5Request(CHINAUMSH5.UnifiedOrder(), request);
 		List<KeyValuePair> keyPairs = this.getKeyPairs(chinaUmsH5Request);
-		String sign = CryptoUtils.signParams(keyPairs, null, appSecret);
+		String sign = CryptoUtils.signQueryParams(keyPairs, null, appSecret);
 		String queryParams = CommonUtils.buildQueryParams(keyPairs, "sign", sign, "orderDesc");
 		String jsUrl = jsPayEndpoint + queryParams;
 		logger.info("Redirect to: " + jsUrl);
@@ -82,7 +82,7 @@ public class ChinaUmsH5Proxy implements IPaymentProxy {
 			ChinaUmsH5Request chinaUmsH5Request = this.toChinaUmsH5Request(CHINAUMSH5.Query(),request);
 			
 			List<KeyValuePair> keyPairs = this.getKeyPairs(chinaUmsH5Request);
-			String sign = CryptoUtils.signParams(keyPairs, null, appSecret);
+			String sign = CryptoUtils.signQueryParams(keyPairs, null, appSecret);
 			chinaUmsH5Request.setSign(sign);
 			logger.info("query POST: " + url+", body "+JsonUtils.toJson(chinaUmsH5Request));
 			HttpHeaders headers = new HttpHeaders();
@@ -108,7 +108,7 @@ public class ChinaUmsH5Proxy implements IPaymentProxy {
 			ChinaUmsH5Request chinaUmsH5Request = this.toChinaUmsH5Request(CHINAUMSH5.Refund(),request);
 			chinaUmsH5Request.setRefundAmount(chinaUmsH5Request.getTotalAmount());
 			List<KeyValuePair> keyPairs = this.getKeyPairs(chinaUmsH5Request);
-			String sign = CryptoUtils.signParams(keyPairs, null, appSecret);
+			String sign = CryptoUtils.signQueryParams(keyPairs, null, appSecret);
 			chinaUmsH5Request.setSign(sign);
 			logger.info("refund POST: " + url+", body "+JsonUtils.toJson(chinaUmsH5Request));
 			
@@ -190,7 +190,7 @@ public class ChinaUmsH5Proxy implements IPaymentProxy {
 			chinaUmsH5Request.setTotalAmount(String.valueOf((int)(request.getTotalFeeAsFloat()*100)));
 		}
 		chinaUmsH5Request.setNotifyUrl(request.getNotifyUrl());
-		chinaUmsH5Request.setReturnUrl(request.getReturnUrl());
+		chinaUmsH5Request.setReturnUrl(DEFAULT_JSAPI_URL + PAYED + "/" + request.getOrderNo());
 		return chinaUmsH5Request;
 	}
 	

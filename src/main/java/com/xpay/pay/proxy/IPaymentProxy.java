@@ -2,9 +2,17 @@ package com.xpay.pay.proxy;
 
 import java.util.Arrays;
 
+import com.xpay.pay.util.AppConfig;
+
 public interface IPaymentProxy {
 	public static final String NO_RESPONSE = "-100";
 	public static final int DEFAULT_TIMEOUT = 3000;
+
+	public static final String PAYED = "POST";
+	public static final String TOPAY = "TOPAY";
+	public static final String DEFAULT_JSAPI_URL = AppConfig.XPayConfig
+		      .getProperty("jsapi.endpoint");
+		 
 	public PaymentResponse unifiedOrder(PaymentRequest request);
 	
 	public PaymentResponse query(PaymentRequest request);

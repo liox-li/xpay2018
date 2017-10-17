@@ -23,7 +23,19 @@ public class CryptoUtils {
 		}
 	}
 	
-	public static final String signParams(List<KeyValuePair> keyPairs, String secretKey, String appSecret) {
+	public static final String sha512(String str) {
+		try {
+			MessageDigest messageDigest =  MessageDigest.getInstance("SHA512");
+			messageDigest.reset();
+			messageDigest.update(str.getBytes("UTF-8"));
+			byte[] byteArray = messageDigest.digest();
+			return bytesToHex(byteArray);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	public static final String signQueryParams(List<KeyValuePair> keyPairs, String secretKey, String appSecret) {
 		keyPairs.sort((x1, x2) -> {
 			return x1.getKey().compareTo(x2.getKey());
 		});

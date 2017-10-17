@@ -240,12 +240,11 @@ public class PaymentService {
 	}
 	
 	private static final String DEFAULT_SUBJECT = "游戏";
-	private static final String DEFAULT_SUBJECT_STORE = "投诉热线:<TEL>";
-	private static final String DEFAULT_SUBJECT_CHINAUMS = "投诉热线: 95534";
+	private static final String DEFAULT_SUBJECT_CHINAUMS = "投诉热线:95534";
 	private String customizeCsrTel(String subject, Order order) {
 		String storeTel = order.getStore().getCsrTel();
 		if(StringUtils.isNotBlank(storeTel)) {
-			return subject + "("+DEFAULT_SUBJECT_STORE.replace("<TEL>", storeTel) +")";
+			return subject + storeTel;
 		} else if(PaymentGateway.CHINAUMS.equals(order.getStoreChannel().getPaymentGateway()) 
 				|| PaymentGateway.CHINAUMSV2.equals(order.getStoreChannel().getPaymentGateway())
 				|| PaymentGateway.CHINAUMSH5.equals(order.getStoreChannel().getPaymentGateway())) {

@@ -40,7 +40,6 @@ public class MiaoFuProxy implements IPaymentProxy {
 	private static final String appSecret = config
 			.getProperty("provider.app.secret");
 	private static final String jsUrl = config.getProperty("provider.jsuri");
-	private static final String DEFAULT_JSAPI_URL = AppConfig.XPayConfig.getProperty("jsapi.endpoint");
 	
 	@Autowired
 	RestTemplate miaofuProxy;

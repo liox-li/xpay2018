@@ -27,7 +27,16 @@ public class CryptoUtilsTest {
 		String sign = CryptoUtils.md5(stringSignTemp).toUpperCase();
 		Assert.assertEquals("9A0A8659F005D6984697E2CA0A9CF3B7", sign);
 	}
-
+	
+	@Test
+	public void testMd53() {
+		String json = "{\"client_sn\": \"15081239262772329\", \"subject\": \"测试\", \"total_amount\": \"1\", \"payway\": \"3\", \"terminal_sn\": \"100003690002145578\", \"notify_url\": \"http://106.14.47.193/xpay/notify/upay\"}";
+		String key = "7a9b97ef2444523c659109e17d5b484d";
+		String body = json + key;
+		String sn = "100003690002145578";
+		System.out.println(sn + " " +CryptoUtils.md5(body));
+	}
+	
 	@Test
 	public void testStream() {
 		for (int i = 0; i < 1000; i++) {
@@ -93,6 +102,25 @@ public class CryptoUtilsTest {
 		
 		String signature = this.signature(keyPairs, null, "fcAmtnx7MwismjWNhNKdHC44mNXtnEQeJkRrhKJwyrW2ysRR");
 		System.out.println(signature);
+	}
+	
+	@Test
+	public void testSign4() {
+		String str = "client_sn=20170829682411240&operator=287627262&payway=1&return_url=https://www.baidu.com&subject=测试&terminal_sn=100003690002145578&total_amount=1&notify_url=http://106.14.47.193/xpay/notify/upay";
+		//String str = "terminal_sn=100003690002145578&client_sn=abcd&total_amount=1&subject=测试& operator=abc&notify_url=http://106.14.47.193/xpay/notify/upay&return_url=http://www.baidu.com";
+		List<KeyValuePair> keyPairs = new ArrayList<KeyValuePair>();	
+		String[] keyValues = str.split("&");
+		for(String keyValue: keyValues) {
+			String[] split = keyValue.split("=");
+			String key = split[0];
+			String value = split[1];
+			KeyValuePair pair = new KeyValuePair(key, value);
+			keyPairs.add(pair);
+		}
+		
+		String signature = this.signature(keyPairs, "key", "7a9b97ef2444523c659109e17d5b484d");
+		System.out.println(signature);
+	
 	}
 
 	private String signature(List<KeyValuePair> keyPairs, String signKey,

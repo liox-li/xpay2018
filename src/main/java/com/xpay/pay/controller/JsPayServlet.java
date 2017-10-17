@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.xpay.pay.model.Order;
 import com.xpay.pay.model.StoreChannel.PaymentGateway;
+import com.xpay.pay.proxy.IPaymentProxy;
 import com.xpay.pay.proxy.PaymentRequest;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.proxy.chinaumsh5.ChinaUmsH5Proxy;
@@ -60,17 +62,32 @@ public class JsPayServlet extends HttpServlet {
 			response.sendError(404, "Order not found");
 			return;
 		}
-		if(!OrderStatus.NOTPAY.equals(order.getStatus())) {
-			response.sendError(400, "Order already paid");
-			return;
-		} 
+//		if(!OrderStatus.NOTPAY.equals(order.getStatus())) {
+//			response.sendError(400, "Order already paid");
+//			return;
+//		} 
+		String path = request.getPathInfo();
+		String parameters = StringUtils.isBlank(request.getQueryString())?"":"?"+request.getQueryString();
+		logger.info("Jspay: "+path + parameters);
 		if(PaymentGateway.CHINAUMSH5.equals(order.getStoreChannel().getPaymentGateway())) {
-			PaymentRequest paymentRequest = paymentService.toPaymentRequest(order);
-			paymentRequest.setGatewayOrderNo(order.getExtOrderNo());
-			String jsUrl = chinaUmsH5Proxy.getJsUrl(paymentRequest);
-			response.setCharacterEncoding("utf-8");
-			response.setHeader("Content-type", "text/html;charset=UTF-8");
-			response.sendRedirect(jsUrl);
+			if(!path.startsWith("/"+IPaymentProxy.PAYED)) {
+				if(!OrderStatus.NOTPAY.equals(order.getStatus())) {
+					response.sendError(400, "Order already paid");
+					return;
+				} 
+				PaymentRequest paymentRequest = paymentService.toPaymentRequest(order);
+				paymentRequest.setGatewayOrderNo(order.getExtOrderNo());
+				String jsUrl = chinaUmsH5Proxy.getJsUrl(paymentRequest);
+				response.setCharacterEncoding("utf-8");
+				response.setHeader("Content-type", "text/html;charset=UTF-8");
+				response.sendRedirect(jsUrl);
+			} else {
+				String status = request.getParameter("status");
+				OrderStatus orderStatus = ChinaUmsH5Proxy.toOrderStatus(status);
+				String returnUrl = order.getReturnUrl()+"?status="+orderStatus.getValue();
+				logger.info("Return to: "+returnUrl);
+				response.sendRedirect(returnUrl);
+			}
 		}else if(PaymentGateway.MIAOFU.equals(order.getStoreChannel().getPaymentGateway())) {
 			PaymentRequest paymentRequest = paymentService.toPaymentRequest(order);
 			String jsUrl = miaoFuProxy.getJsUrl(paymentRequest);
@@ -78,10 +95,10 @@ public class JsPayServlet extends HttpServlet {
 			response.setHeader("Content-type", "text/html;charset=UTF-8");
 			response.sendRedirect(jsUrl);
 		} else if(PaymentGateway.KEKEPAY.equals(order.getStoreChannel().getPaymentGateway())){
-			if(uri.contains(KekePayProxy.TOPAY)){
+			if(uri.contains(IPaymentProxy.TOPAY)){
 				PaymentRequest paymentRequest = paymentService.toPaymentRequest(order);
 				response.sendRedirect(kekePayProxy.getJsUrl(paymentRequest));
-			}else if(uri.contains(KekePayProxy.PAYED)){
+			}else if(uri.contains(IPaymentProxy.PAYED)){
 				response.sendRedirect(order.getReturnUrl());
 			}
 		} else {

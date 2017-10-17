@@ -33,9 +33,6 @@ import com.xpay.pay.util.CryptoUtils;
 
 @Component
 public class KekePayProxy implements IPaymentProxy {
-
-  public static final String PAYED = "PAYED";
-  public static final String TOPAY = "TOPAY";
   protected static final Logger logger = LogManager.getLogger("AccessLog");
   private static final AppConfig config = AppConfig.kekePayConfig;
   private static final String BASE_ENDPOINT = config.getProperty("provider.endpoint");
@@ -44,8 +41,7 @@ public class KekePayProxy implements IPaymentProxy {
   private static final String appId = config.getProperty("provider.app.id");
   private static final String appSecret = config.getProperty("provider.app.secret");
   private static final String PRODUCT_TYPE = config.getProperty("provider.product.type");
-  private static final String DEFAULT_JSAPI_URL = AppConfig.XPayConfig
-      .getProperty("jsapi.endpoint");
+  
   @Autowired
   RestTemplate kekePayProxy;
 
