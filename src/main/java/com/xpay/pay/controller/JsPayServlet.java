@@ -65,10 +65,6 @@ public class JsPayServlet extends HttpServlet {
 			response.sendError(404, "Order not found");
 			return;
 		}
-//		if(!OrderStatus.NOTPAY.equals(order.getStatus())) {
-//			response.sendError(400, "Order already paid");
-//			return;
-//		} 
 		String path = request.getPathInfo();
 		String parameters = StringUtils.isBlank(request.getQueryString())?"":"?"+request.getQueryString();
 		logger.info("Jspay: "+path + parameters);

@@ -37,8 +37,8 @@ public class UPayProxy implements IPaymentProxy {
 	private static final AppConfig config = AppConfig.UPayConfig;
 	private static final String baseEndpoint = config.getProperty("provider.endpoint");
 	private static final String jsPayEndpoint = config.getProperty("provider.jspay.endpoint");
-	private static final String appId = config.getProperty("provider.app.id");
-	private static final String appSecret = config.getProperty("provider.app.secret");
+//	private static final String appId = config.getProperty("provider.app.id");
+//	private static final String appSecret = config.getProperty("provider.app.secret");
 	private static final String operator = config.getProperty("provider.operator");
 	@Autowired
 	RestTemplate uPayProxy;
@@ -55,9 +55,10 @@ public class UPayProxy implements IPaymentProxy {
 	}
 
 	public String getJsUrl(PaymentRequest request) {
+		String[] appKeys = getAppKeys(request.getExtStoreId());
 		UPayRequest upayRequest = this.toUPayRequest(UPAY.UnifiedOrder(), request);
 		List<KeyValuePair> keyPairs = this.getKeyPairs(upayRequest);
-		String sign = CryptoUtils.signQueryParams(keyPairs, "key", appSecret);
+		String sign = CryptoUtils.signQueryParams(keyPairs, "key", appKeys[2]);
 		String queryParams = CommonUtils.buildQueryParams(keyPairs, "sign", sign, "subject");
 		String jsUrl = jsPayEndpoint + queryParams;
 		logger.info("Redirect to: " + jsUrl);
@@ -70,11 +71,12 @@ public class UPayProxy implements IPaymentProxy {
 		long l = System.currentTimeMillis();
 		PaymentResponse response = null;
 		try {
+			String[] appKeys = getAppKeys(request.getExtStoreId());
 			UPayRequest upayRequest = new UPayRequest();
-			upayRequest.setTerminal_sn(appId);
+			upayRequest.setTerminal_sn(appKeys[1]);
 			upayRequest.setClient_sn(request.getOrderNo());
 			String json = JsonUtils.toJson(upayRequest);
-			String sign = appId + " " +CryptoUtils.md5(json + appSecret).toUpperCase();
+			String sign = appKeys[1] + " " +CryptoUtils.md5(json + appKeys[2]).toUpperCase();
 			logger.info("query POST: " + url+", body "+JsonUtils.toJson(upayRequest));
 			
 			HttpHeaders headers = new HttpHeaders();
@@ -99,14 +101,15 @@ public class UPayProxy implements IPaymentProxy {
 		long l = System.currentTimeMillis();
 		PaymentResponse response = null;
 		try {
+			String[] appKeys = getAppKeys(request.getExtStoreId());
 			UPayRequest upayRequest = new UPayRequest();
-			upayRequest.setTerminal_sn(appId);
+			upayRequest.setTerminal_sn(appKeys[1]);
 			upayRequest.setClient_sn(request.getOrderNo());
 			upayRequest.setRefund_request_no(request.getOrderNo());
 			upayRequest.setRefund_amount(String.valueOf((int)(request.getTotalFeeAsFloat() * 100)));
 			upayRequest.setOperator(operator);
 			String json = JsonUtils.toJson(upayRequest);
-			String sign = appId + " " +CryptoUtils.md5(json + appSecret).toUpperCase();
+			String sign = appKeys[1] + " " +CryptoUtils.md5(json + appKeys[2]).toUpperCase();
 			logger.info("refund POST: " + url+", body "+JsonUtils.toJson(upayRequest));
 			
 			HttpHeaders headers = new HttpHeaders();
@@ -126,9 +129,10 @@ public class UPayProxy implements IPaymentProxy {
 	}
 	
 	private UPayRequest toUPayRequest(String method, PaymentRequest request) {
+		String[] appKeys = getAppKeys(request.getExtStoreId());
 		UPayRequest upayRequest = new UPayRequest();
 		upayRequest.setClient_sn(request.getOrderNo());
-		upayRequest.setTerminal_sn(appId);
+		upayRequest.setTerminal_sn(appKeys[1]);
 		upayRequest.setPayway(toPayway(request.getPayChannel()));
 		upayRequest.setSubject(request.getSubject());
 		if(StringUtils.isNotBlank(request.getTotalFee())) {
@@ -195,6 +199,10 @@ public class UPayProxy implements IPaymentProxy {
 		bill.setOrderStatus(toOrderStatus(upayResponse.getBiz_response().getData().getOrder_status()));
 		response.setBill(bill);
 		return response;
+	}
+	
+	private String[] getAppKeys(String extStoreNo) {
+		return extStoreNo.split(",");
 	}
 	
 	public static OrderStatus toOrderStatus(String billStatus) {
