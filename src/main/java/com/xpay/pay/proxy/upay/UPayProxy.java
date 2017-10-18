@@ -9,8 +9,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.util.KeyValuePair;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
+import com.xpay.pay.exception.GatewayException;
 import com.xpay.pay.model.Bill;
 import com.xpay.pay.proxy.IPaymentProxy;
 import com.xpay.pay.proxy.PaymentRequest;
@@ -19,16 +27,19 @@ import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.util.AppConfig;
 import com.xpay.pay.util.CommonUtils;
 import com.xpay.pay.util.CryptoUtils;
+import com.xpay.pay.util.JsonUtils;
 
 @Component
 public class UPayProxy implements IPaymentProxy {
 	protected final Logger logger = LogManager.getLogger("AccessLog");
 	
 	private static final AppConfig config = AppConfig.UPayConfig;
-//	private static final String baseEndpoint = config.getProperty("provider.endpoint");
+	private static final String baseEndpoint = config.getProperty("provider.endpoint");
 	private static final String jsPayEndpoint = config.getProperty("provider.jspay.endpoint");
 	private static final String appId = config.getProperty("provider.app.id");
 	private static final String appSecret = config.getProperty("provider.app.secret");
+	@Autowired
+	RestTemplate uPayProxy;
 	
 	public PaymentResponse unifiedOrder(PaymentRequest request) {
 		String url = DEFAULT_JSAPI_URL + request.getOrderNo();
@@ -53,8 +64,30 @@ public class UPayProxy implements IPaymentProxy {
 
 	@Override
 	public PaymentResponse query(PaymentRequest request) {
-		// TODO Auto-generated method stub
-		return null;
+		String url = baseEndpoint + UPAY.Query();
+		long l = System.currentTimeMillis();
+		PaymentResponse response = null;
+		try {
+			UPayRequest upayRequest = new UPayRequest();
+			upayRequest.setTerminal_sn(appId);
+			upayRequest.setClient_sn(request.getOrderNo());
+			String json = JsonUtils.toJson(upayRequest);
+			String sign = appId + " " +CryptoUtils.md5(json + appSecret).toUpperCase();
+			logger.info("query POST: " + url+", body "+JsonUtils.toJson(upayRequest));
+			
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+			headers.set("Authorization", sign);
+			HttpEntity<?> httpEntity = new HttpEntity<>(upayRequest, headers);
+			UPayResponse upayResponse = uPayProxy.exchange(url, HttpMethod.POST, httpEntity, UPayResponse.class).getBody();
+			logger.info("query result: " + upayResponse.getError_code() + ", took "
+					+ (System.currentTimeMillis() - l) + "ms");
+			response = toPaymentResponse(request, upayResponse);
+		} catch (RestClientException e) {
+			logger.info("query failed, took " + (System.currentTimeMillis() - l) + "ms", e);
+			throw e;
+		}
+		return response;
 	}
 
 	@Override
@@ -117,6 +150,22 @@ public class UPayProxy implements IPaymentProxy {
 		case ALIPAY: return "1";
 		default: return "3";
 		}
+	}
+	
+	private PaymentResponse toPaymentResponse(PaymentRequest request, UPayResponse upayResponse) {
+		if (upayResponse == null || !upayResponse.isSuccess()) {
+			String code = upayResponse == null ? NO_RESPONSE : upayResponse.getError_code();
+			String msg = upayResponse == null ? "No response" : upayResponse.getError_message();
+			throw new GatewayException(code, msg);
+		}
+		PaymentResponse response = new PaymentResponse();
+		response.setCode(PaymentResponse.SUCCESS);
+		Bill bill = new Bill();
+		bill.setOrderNo(request.getOrderNo());
+		bill.setGatewayOrderNo(request.getGatewayOrderNo());
+		bill.setOrderStatus(toOrderStatus(upayResponse.getBiz_response().getData().getOrder_status()));
+		response.setBill(bill);
+		return response;
 	}
 	
 	public static OrderStatus toOrderStatus(String billStatus) {
