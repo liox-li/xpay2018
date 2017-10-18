@@ -9,6 +9,8 @@ public class UPayRequest {
 	private String operator;
 	private String return_url;
 	private String notify_url;
+	private String refund_request_no;
+	private String refund_amount;
 	public String getClient_sn() {
 		return client_sn;
 	}
@@ -57,4 +59,17 @@ public class UPayRequest {
 	public void setNotify_url(String notify_url) {
 		this.notify_url = notify_url;
 	}
+	public String getRefund_request_no() {
+		return refund_request_no;
+	}
+	public void setRefund_request_no(String refund_request_no) {
+		this.refund_request_no = refund_request_no;
+	}
+	public String getRefund_amount() {
+		return refund_amount;
+	}
+	public void setRefund_amount(String refund_amount) {
+		this.refund_amount = refund_amount;
+	}
+	
 }

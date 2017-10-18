@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import com.xpay.pay.exception.Assert;
 import com.xpay.pay.exception.GatewayException;
 import com.xpay.pay.model.Bill;
 import com.xpay.pay.proxy.IPaymentProxy;
@@ -38,6 +39,7 @@ public class UPayProxy implements IPaymentProxy {
 	private static final String jsPayEndpoint = config.getProperty("provider.jspay.endpoint");
 	private static final String appId = config.getProperty("provider.app.id");
 	private static final String appSecret = config.getProperty("provider.app.secret");
+	private static final String operator = config.getProperty("provider.operator");
 	@Autowired
 	RestTemplate uPayProxy;
 	
@@ -80,7 +82,8 @@ public class UPayProxy implements IPaymentProxy {
 			headers.set("Authorization", sign);
 			HttpEntity<?> httpEntity = new HttpEntity<>(upayRequest, headers);
 			UPayResponse upayResponse = uPayProxy.exchange(url, HttpMethod.POST, httpEntity, UPayResponse.class).getBody();
-			logger.info("query result: " + upayResponse.getError_code() + ", took "
+			Assert.notNull(upayResponse, "query failed, no response");
+			logger.info("query result: " + upayResponse.getResult_code() + ", " + upayResponse.isSuccess() + ", took "
 					+ (System.currentTimeMillis() - l) + "ms");
 			response = toPaymentResponse(request, upayResponse);
 		} catch (RestClientException e) {
@@ -92,8 +95,34 @@ public class UPayProxy implements IPaymentProxy {
 
 	@Override
 	public PaymentResponse refund(PaymentRequest request) {
-		// TODO Auto-generated method stub
-		return null;
+		String url = baseEndpoint + UPAY.Refund();
+		long l = System.currentTimeMillis();
+		PaymentResponse response = null;
+		try {
+			UPayRequest upayRequest = new UPayRequest();
+			upayRequest.setTerminal_sn(appId);
+			upayRequest.setClient_sn(request.getOrderNo());
+			upayRequest.setRefund_request_no(request.getOrderNo());
+			upayRequest.setRefund_amount(String.valueOf((int)(request.getTotalFeeAsFloat() * 100)));
+			upayRequest.setOperator(operator);
+			String json = JsonUtils.toJson(upayRequest);
+			String sign = appId + " " +CryptoUtils.md5(json + appSecret).toUpperCase();
+			logger.info("refund POST: " + url+", body "+JsonUtils.toJson(upayRequest));
+			
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+			headers.set("Authorization", sign);
+			HttpEntity<?> httpEntity = new HttpEntity<>(upayRequest, headers);
+			UPayResponse upayResponse = uPayProxy.exchange(url, HttpMethod.POST, httpEntity, UPayResponse.class).getBody();
+			Assert.notNull(upayResponse, "refund failed, no response");
+			logger.info("refund result: " + upayResponse.getResult_code() + ", " + upayResponse.isSuccess() + ", took "
+					+ (System.currentTimeMillis() - l) + "ms");
+			response = toPaymentResponse(request, upayResponse);
+		} catch (RestClientException e) {
+			logger.info("refund failed, took " + (System.currentTimeMillis() - l) + "ms", e);
+			throw e;
+		}
+		return response;
 	}
 	
 	private UPayRequest toUPayRequest(String method, PaymentRequest request) {
@@ -105,7 +134,7 @@ public class UPayProxy implements IPaymentProxy {
 		if(StringUtils.isNotBlank(request.getTotalFee())) {
 			upayRequest.setTotal_amount(String.valueOf((int)(request.getTotalFeeAsFloat()*100)));
 		}
-		upayRequest.setOperator("nayou001");
+		upayRequest.setOperator(operator);
 		upayRequest.setNotify_url(request.getNotifyUrl());
 		upayRequest.setReturn_url(DEFAULT_JSAPI_URL + PAYED + "/" + request.getOrderNo());
 		return upayRequest;
