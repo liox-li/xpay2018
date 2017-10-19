@@ -30,11 +30,23 @@ public class CryptoUtilsTest {
 	
 	@Test
 	public void testMd53() {
-		//String json = "{\"client_sn\": \"15081239262772329\", \"subject\": \"测试\", \"total_amount\": \"1\", \"payway\": \"3\", \"terminal_sn\": \"100003690002145578\", \"notify_url\": \"http://106.14.47.193/xpay/notify/upay\"}";
-		String json = "{\"client_sn\":\"X003006320171017163053738411\",\"terminal_sn\":\"100003690002145578\"}";
+		String json = "{\"client_sn\": \"15081239262772329\", \"subject\": \"测试\", \"total_amount\": \"1\", \"payway\": \"3\", \"terminal_sn\": \"100003690002145578\", \"notify_url\": \"http://106.14.47.193/xpay/notify/upay\"}";
+		//String json = "{\"client_sn\":\"X003006320171017163053738411\",\"terminal_sn\":\"100003690002145578\"}";
+//		String json = "{\"app_id\": \"2017101300000369\", \"code\": \"\", \"device_id\": \"127.0.0.1\"}";
 		String key = "7a9b97ef2444523c659109e17d5b484d";
 		String body = json + key;
 		String sn = "100003690002145578";
+		System.out.println(sn + " " +CryptoUtils.md5(body));
+	}
+	
+	
+	@Test
+	public void testMd54() {
+		//POST: https://api.shouqianba.com/terminal/activate header: Authorization: sign,  {"app_id": "2017101300000369", "code": "39100900", "device_id": "127.0.0.3"}
+		String json = "{\"app_id\": \"2017101300000369\", \"code\": \"39100900\", \"device_id\": \"127.0.0.3\"}";
+		String key = "4fb216bfdd0fc1554107b981c0bfcf7b";
+		String body = json + key;
+		String sn = "91800209";
 		System.out.println(sn + " " +CryptoUtils.md5(body));
 	}
 	

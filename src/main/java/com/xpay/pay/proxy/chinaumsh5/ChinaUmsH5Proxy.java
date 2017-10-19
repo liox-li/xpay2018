@@ -25,7 +25,6 @@ import com.xpay.pay.proxy.PaymentRequest;
 import com.xpay.pay.proxy.PaymentResponse;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.proxy.chinaums.ChinaUmsResponse;
-import com.xpay.pay.proxy.chinaumsv2.ChinaUmsV2Proxy;
 import com.xpay.pay.util.AppConfig;
 import com.xpay.pay.util.CommonUtils;
 import com.xpay.pay.util.CryptoUtils;
@@ -34,8 +33,6 @@ import com.xpay.pay.util.JsonUtils;
 
 @Component
 public class ChinaUmsH5Proxy implements IPaymentProxy {
-	@Autowired
-	ChinaUmsV2Proxy chinaUmsV2Proxy;
 	
 	protected final Logger logger = LogManager.getLogger("AccessLog");
 	private static final AppConfig config = AppConfig.ChinaUmsH5Config;
