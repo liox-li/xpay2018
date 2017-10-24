@@ -43,7 +43,7 @@ public class CryptoUtilsTest {
 	@Test
 	public void testMd54() {
 		//POST: https://api.shouqianba.com/terminal/activate header: Authorization: sign,  {"app_id": "2017101300000369", "code": "39100900", "device_id": "127.0.0.3"}
-		String json = "{\"app_id\": \"2017101300000369\", \"code\": \"39100900\", \"device_id\": \"127.0.0.3\"}";
+		String json = "{\"app_id\": \"2017101300000369\", \"code\": \"46113936\", \"device_id\": \"127.0.0.7\"}";
 		String key = "4fb216bfdd0fc1554107b981c0bfcf7b";
 		String body = json + key;
 		String sn = "91800209";

@@ -1,9 +1,9 @@
 package com.xpay.pay.notify;
 
-import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
+import org.apache.commons.lang3.StringUtils;
+
 import com.xpay.pay.proxy.kekepay.KekePayProxy;
 import com.xpay.pay.util.JsonUtils;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * Created by sunjian on Date: 2017/9/21 下午3:12

@@ -17,6 +17,7 @@ public class Store {
 	private long dailyLimit;
 	private String channelIds;
 	private String csrTel;
+	private String proxyUrl;
 	private List<StoreChannel> channels;
 
 	public long getId() {
@@ -155,6 +156,14 @@ public class Store {
 
 	public void setCsrTel(String csrTel) {
 		this.csrTel = csrTel;
+	}
+
+	public String getProxyUrl() {
+		return proxyUrl;
+	}
+
+	public void setProxyUrl(String proxyUrl) {
+		this.proxyUrl = proxyUrl;
 	}
 
 	private static final int SECURE_LOW_BOUNDER = 50;

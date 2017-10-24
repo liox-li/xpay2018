@@ -278,29 +278,37 @@ public class PayNotifyServlet extends HttpServlet {
 */
 
 
-	private static final Executor executor = Executors.newFixedThreadPool(50);
+	private static final Executor executor = Executors.newFixedThreadPool(80);
 	@SuppressWarnings("rawtypes")
 	private void notify(final Order order) {
 		if (order != null && StringUtils.isNotBlank(order.getNotifyUrl())
 				&& order.isSettle()) {
 			CompletableFuture.runAsync(() -> {
-				NotificationResponse notification = new NotificationResponse();
-				notification.setOrderNo(order.getOrderNo());
-				notification.setSellerOrderNo(order.getSellerOrderNo());
-				notification.setExtOrderNo(order.getExtOrderNo());
-				notification.setTargetOrderNo(order.getTargetOrderNo());
-				notification.setCodeUrl(order.getCodeUrl());
-				notification.setPrepayId(order.getPrepayId());
-				notification.setTokenId(order.getTokenId());
-				notification.setTotalFee(order.getTotalFee());
-				notification.setOrderStatus(order.getStatus().getValue());
-				notification.setAttach(order.getAttach());
+				NotificationResponse notification = this.toNotResponse(order);
 				BaseResponse response = null;
+				boolean storeNotified = false;
+				boolean proxyNotified = false;
 				for (int i=0;i<3;i++) {
 					try {
-						response = notifyProxy.notify(order.getNotifyUrl(), order.getApp(),
-							notification);
-						if(response != null && response.getStatus()==ApplicationConstants.STATUS_OK) {
+						if(!storeNotified) {
+							response = notifyProxy.notify(order.getNotifyUrl(), order.getApp(), notification);
+							if(response != null && response.getStatus()==ApplicationConstants.STATUS_OK) {
+								storeNotified = true;
+							}
+						}
+						
+						if(!proxyNotified && StringUtils.isNotBlank(order.getStore().getProxyUrl())) {
+							notification.setStoreId(order.getStore().getCode());
+							notification.setStoreName(order.getStore().getName());
+							response = notifyProxy.notify(order.getStore().getProxyUrl(), order.getApp(), notification);
+							if(response != null && response.getStatus()==ApplicationConstants.STATUS_OK) {
+								proxyNotified = true;
+							}
+						} else {
+							proxyNotified = true;
+						}
+						
+						if(storeNotified && proxyNotified) {
 							return;
 						}
 					} catch(Exception e) {
@@ -314,7 +322,26 @@ public class PayNotifyServlet extends HttpServlet {
 			}, executor);
 		}
 	}
-
+	private NotificationResponse toNotResponse(Order order) {
+		try {
+			NotificationResponse notification = new NotificationResponse();
+			notification.setOrderNo(order.getOrderNo());
+			notification.setSellerOrderNo(order.getSellerOrderNo());
+			notification.setExtOrderNo(order.getExtOrderNo());
+			notification.setTargetOrderNo(order.getTargetOrderNo());
+			notification.setCodeUrl(order.getCodeUrl());
+			notification.setPrepayId(order.getPrepayId());
+			notification.setTokenId(order.getTokenId());
+			notification.setTotalFee(order.getTotalFee());
+			notification.setOrderStatus(order.getStatus().getValue());
+			notification.setAttach(order.getAttach());
+			return notification;
+		} catch(Exception e) {
+			logger.error("convert to NotResponse failed", e);
+			return null;
+		}
+	}
+	
 	public static class NotifyResponse {
 		private String resp;
 		private boolean isRedirect = false;

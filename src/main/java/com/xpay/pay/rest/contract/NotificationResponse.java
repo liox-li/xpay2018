@@ -3,6 +3,7 @@ package com.xpay.pay.rest.contract;
 public class NotificationResponse {
 	private String orderNo;
 	private String storeId;
+	private String storeName;
 	private String sellerOrderNo;
 	private String codeUrl;
 	private String tokenId;
@@ -24,6 +25,12 @@ public class NotificationResponse {
 	}
 	public void setStoreId(String storeId) {
 		this.storeId = storeId;
+	}
+	public String getStoreName() {
+		return storeName;
+	}
+	public void setStoreName(String storeName) {
+		this.storeName = storeName;
 	}
 	public String getSellerOrderNo() {
 		return sellerOrderNo;

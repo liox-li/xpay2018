@@ -133,6 +133,20 @@ public class CommonUtils {
 		}
 	} 
 	
+	public static boolean isOneOf(String source, String target, String sep) {
+		if(StringUtils.isBlank(source) || StringUtils.isBlank(target) || StringUtils.isBlank(sep)) {
+			return false;
+		}
+		
+		String[] strs = source.split(sep);
+		for(String str : strs) {
+			if(target.equals(str)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	private static boolean isValidIp(String ip) {
 		if(ip == null || ip.trim().length()==0) {
 			return false;
