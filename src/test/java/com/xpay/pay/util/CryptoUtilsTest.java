@@ -102,7 +102,8 @@ public class CryptoUtilsTest {
 	
 	@Test
 	public void testSign3() {
-		String str = "msgSrc=WWW.TEST.COM&msgType=WXPay.jsPay&requestTimestamp=2017-10-09 15:11:02&merOrderId=319400002017100902&msgSrcId=3194&mid=898340149000005&tid=88880001&instMid=YUEDANDEFAULT&totalAmount=1&goods=[{\"body\":\"微信二维码测试\",\"price\":\"1\",\"goodsName\":\"微信二维码测试\",\"goodsId\":\"1\",\"quantity\":\"1\",\"goodsCategory\":\"TEST\"}]&notifyUrl=http://106.14.47.193/xpay/notify/CHINAUMS&returnUrl=http://www.baidu.com&sceneType=IOS_WAP&merAppName=纳优官网&merAppId=http://www.zmpay.xyz";
+		//String str = "msgSrc=WWW.TEST.COM&msgType=WXPay.h5Pay&requestTimestamp=2017-10-09 15:11:02&merOrderId=319400002017100902&msgSrcId=3194&mid=898340149000005&tid=88880001&instMid=YUEDANDEFAULT&totalAmount=1&goods=[{\"body\":\"微信二维码测试\",\"price\":\"1\",\"goodsName\":\"微信二维码测试\",\"goodsId\":\"1\",\"quantity\":\"1\",\"goodsCategory\":\"TEST\"}]&notifyUrl=http://106.14.47.193/xpay/notify/CHINAUMS&returnUrl=http://www.baidu.com&sceneType=IOS_WAP&merAppName=纳优官网&merAppId=http://www.zmpay.xyz";
+		String str = "returnUrl=http://www.baidu.com&requestTimestamp=2017-10-26 10:34:21&instMid=YUEDANDEFAULT&attacheData=Ext&merAppId=com.tecent.tmgp.sgame&msgSrc=WWW.SHHNYXXJSH.COM&sceneType=AND_SDK&goods=[{\"price\":\"5500\",\"goodsName\":\"联想Y480\"}]&merAppName=王者荣耀&totalAmount=1&msgId=12131&msgType=WXPay.h5Pay&systemId=17102600324219&mid=898319848160342&tid=00000001&notifyUrl=http://106.14.47.193/xpay/notify/CHINAUMSH5&merOrderId=3251201710261041300460121062";
 		List<KeyValuePair> keyPairs = new ArrayList<KeyValuePair>();	
 		String[] keyValues = str.split("&");
 		for(String keyValue: keyValues) {
@@ -113,7 +114,7 @@ public class CryptoUtilsTest {
 			keyPairs.add(pair);
 		}
 		
-		String signature = this.signature(keyPairs, null, "fcAmtnx7MwismjWNhNKdHC44mNXtnEQeJkRrhKJwyrW2ysRR");
+		String signature = this.signature(keyPairs, null, "HSzPCZwDYERrj25dawRNYMyb2Pz7QNSmyMynW2NrXMiP8Z3E");
 		System.out.println(signature);
 	}
 	

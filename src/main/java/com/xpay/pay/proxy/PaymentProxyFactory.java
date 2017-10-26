@@ -7,6 +7,7 @@ import com.xpay.pay.model.StoreChannel.PaymentGateway;
 import com.xpay.pay.proxy.chinaums.ChinaUmsProxy;
 import com.xpay.pay.proxy.chinaumsh5.ChinaUmsH5Proxy;
 import com.xpay.pay.proxy.chinaumsv2.ChinaUmsV2Proxy;
+import com.xpay.pay.proxy.chinaumswap.ChinaUmsWapProxy;
 import com.xpay.pay.proxy.juzhen.JuZhenProxy;
 import com.xpay.pay.proxy.kefu.KeFuProxy;
 import com.xpay.pay.proxy.kekepay.KekePayProxy;
@@ -26,6 +27,8 @@ public class PaymentProxyFactory {
 	@Autowired
 	private ChinaUmsH5Proxy chinaUmsH5Proxy;
 	@Autowired
+	private ChinaUmsWapProxy chinaUmsWapProxy;
+	@Autowired
 	private JuZhenProxy juZhenProxy;
 	@Autowired
 	private KeFuProxy keFuProxy;
@@ -42,6 +45,8 @@ public class PaymentProxyFactory {
 				return chinaUmsV2Proxy;
 			case CHINAUMSH5:
 				return chinaUmsH5Proxy;
+			case CHINAUMSWAP:
+				return chinaUmsWapProxy;
 			case CHINAUMS:
 				return chinaUmsProxy;
 			case UPAY:

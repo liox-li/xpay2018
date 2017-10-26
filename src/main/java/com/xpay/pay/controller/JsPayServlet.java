@@ -20,6 +20,7 @@ import com.xpay.pay.proxy.IPaymentProxy;
 import com.xpay.pay.proxy.PaymentRequest;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.proxy.chinaumsh5.ChinaUmsH5Proxy;
+import com.xpay.pay.proxy.chinaumswap.ChinaUmsWapProxy;
 import com.xpay.pay.proxy.kekepay.KekePayProxy;
 import com.xpay.pay.proxy.miaofu.MiaoFuProxy;
 import com.xpay.pay.proxy.upay.UPayProxy;
@@ -37,6 +38,8 @@ public class JsPayServlet extends HttpServlet {
 	protected MiaoFuProxy miaoFuProxy;
 	@Autowired
 	protected ChinaUmsH5Proxy chinaUmsH5Proxy;
+	@Autowired
+	protected ChinaUmsWapProxy chinaUmsH5V2Proxy;
 	@Autowired
 	protected UPayProxy upayProxy;
 	@Autowired
@@ -77,6 +80,25 @@ public class JsPayServlet extends HttpServlet {
 				PaymentRequest paymentRequest = paymentService.toPaymentRequest(order);
 				paymentRequest.setGatewayOrderNo(order.getExtOrderNo());
 				String jsUrl = chinaUmsH5Proxy.getJsUrl(paymentRequest);
+				response.setCharacterEncoding("utf-8");
+				response.setHeader("Content-type", "text/html;charset=UTF-8");
+				response.sendRedirect(jsUrl);
+			} else {
+				String status = request.getParameter("status");
+				OrderStatus orderStatus = ChinaUmsH5Proxy.toOrderStatus(status);
+				String returnUrl = order.getReturnUrl()+"?status="+orderStatus.getValue();
+				logger.info("Return to: "+returnUrl);
+				response.sendRedirect(returnUrl);
+			}
+		} else if(PaymentGateway.CHINAUMSWAP.equals(order.getStoreChannel().getPaymentGateway())) {
+			if(!path.startsWith("/"+IPaymentProxy.PAYED)) {
+				if(!OrderStatus.NOTPAY.equals(order.getStatus())) {
+					response.sendError(400, "Order already paid");
+					return;
+				} 
+				PaymentRequest paymentRequest = paymentService.toPaymentRequest(order);
+				paymentRequest.setGatewayOrderNo(order.getExtOrderNo());
+				String jsUrl = chinaUmsH5V2Proxy.getJsUrl(paymentRequest);
 				response.setCharacterEncoding("utf-8");
 				response.setHeader("Content-type", "text/html;charset=UTF-8");
 				response.sendRedirect(jsUrl);
