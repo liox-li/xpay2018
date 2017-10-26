@@ -37,7 +37,7 @@ public class AppConfig {
 	
 	public static final AppConfig ChinaUmsH5Config = new AppConfig(load("chinaumsh5.config"));
 	
-	public static final AppConfig ChinaUmsH5V2Config = new AppConfig(load("chinaumsh5v2.config"));
+	public static final AppConfig ChinaUmsWapConfig = new AppConfig(load("chinaumswap.config"));
 	
 	public static final AppConfig UPayConfig = new AppConfig(load("upay.config"));
 

@@ -37,7 +37,7 @@ import com.xpay.pay.util.JsonUtils;
 public class ChinaUmsWapProxy implements IPaymentProxy {
 	
 	protected final Logger logger = LogManager.getLogger("AccessLog");
-	private static final AppConfig config = AppConfig.ChinaUmsH5V2Config;
+	private static final AppConfig config = AppConfig.ChinaUmsWapConfig;
 	private static final String baseEndpoint = config.getProperty("provider.endpoint");
 	private static final String jsPayEndpoint = config.getProperty("provider.jspay.endpoint");
 	private static final String appId = config.getProperty("provider.app.id");
