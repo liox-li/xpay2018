@@ -39,7 +39,7 @@ public class JsPayServlet extends HttpServlet {
 	@Autowired
 	protected ChinaUmsH5Proxy chinaUmsH5Proxy;
 	@Autowired
-	protected ChinaUmsWapProxy chinaUmsH5V2Proxy;
+	protected ChinaUmsWapProxy chinaUmsWapProxy;
 	@Autowired
 	protected UPayProxy upayProxy;
 	@Autowired
@@ -98,7 +98,7 @@ public class JsPayServlet extends HttpServlet {
 				} 
 				PaymentRequest paymentRequest = paymentService.toPaymentRequest(order);
 				paymentRequest.setGatewayOrderNo(order.getExtOrderNo());
-				String jsUrl = chinaUmsH5V2Proxy.getJsUrl(paymentRequest);
+				String jsUrl = chinaUmsWapProxy.getJsUrl(paymentRequest);
 				response.setCharacterEncoding("utf-8");
 				response.setHeader("Content-type", "text/html;charset=UTF-8");
 				response.sendRedirect(jsUrl);
