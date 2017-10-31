@@ -296,7 +296,11 @@ public class PayNotifyServlet extends HttpServlet {
 								storeNotified = true;
 							}
 						}
+					} catch(Exception e) {
 						
+					}
+					
+					try {
 						if(!proxyNotified && StringUtils.isNotBlank(order.getStore().getProxyUrl())) {
 							notification.setStoreId(order.getStore().getCode());
 							notification.setStoreName(order.getStore().getName());
@@ -307,13 +311,14 @@ public class PayNotifyServlet extends HttpServlet {
 						} else {
 							proxyNotified = true;
 						}
-						
-						if(storeNotified && proxyNotified) {
-							return;
-						}
 					} catch(Exception e) {
 						
 					}
+					
+					if(storeNotified && proxyNotified) {
+						return;
+					}
+					
 					try {
 						Thread.sleep(30000);
 					} catch (Exception e) {
