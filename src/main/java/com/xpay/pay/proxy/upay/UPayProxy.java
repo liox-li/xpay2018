@@ -140,7 +140,8 @@ public class UPayProxy implements IPaymentProxy {
 		}
 		upayRequest.setOperator(operator);
 		upayRequest.setNotify_url(request.getNotifyUrl());
-		upayRequest.setReturn_url(DEFAULT_JSAPI_URL + PAYED + "/" + request.getOrderNo());
+		upayRequest.setReturn_url(request.getReturnUrl());
+//		upayRequest.setReturn_url(DEFAULT_JSAPI_URL + PAYED + "/" + request.getOrderNo());
 		return upayRequest;
 	}
 	

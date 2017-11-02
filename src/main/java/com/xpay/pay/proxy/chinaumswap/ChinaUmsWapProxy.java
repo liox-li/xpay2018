@@ -189,7 +189,8 @@ public class ChinaUmsWapProxy implements IPaymentProxy {
 			chinaUmsH5Request.setTotalAmount(String.valueOf((int)(request.getTotalFeeAsFloat()*100)));
 		}
 		chinaUmsH5Request.setNotifyUrl(request.getNotifyUrl());
-		chinaUmsH5Request.setReturnUrl(DEFAULT_JSAPI_URL + PAYED + "/" + request.getOrderNo());
+		chinaUmsH5Request.setReturnUrl(request.getReturnUrl());
+//		chinaUmsH5Request.setReturnUrl(DEFAULT_JSAPI_URL + PAYED + "/" + request.getOrderNo());
 		return chinaUmsH5Request;
 	}
 	

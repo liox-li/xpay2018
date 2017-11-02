@@ -252,7 +252,8 @@ public class PaymentService {
 		return PaymentGateway.CHINAUMS.equals(gateway) ||
 				PaymentGateway.CHINAUMSV2.equals(gateway) ||
 				PaymentGateway.CHINAUMSH5.equals(gateway) ||
-				PaymentGateway.CHINAUMSWAP.equals(gateway);
+				PaymentGateway.CHINAUMSWAP.equals(gateway) ||
+				PaymentGateway.UPAY.equals(gateway);
 	}
 	
 }
