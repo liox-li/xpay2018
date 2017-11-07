@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,9 +14,11 @@ import com.google.common.collect.Lists;
 import com.xpay.pay.cache.CacheManager;
 import com.xpay.pay.cache.ICache;
 import com.xpay.pay.dao.StoreChannelMapper;
+import com.xpay.pay.dao.StoreLinkMapper;
 import com.xpay.pay.dao.StoreMapper;
 import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
+import com.xpay.pay.model.StoreLink;
 
 @Service
 public class StoreService {
@@ -23,7 +26,10 @@ public class StoreService {
 	protected StoreMapper storeMapper;
 	@Autowired
 	protected StoreChannelMapper storeChannelMapper;
+	@Autowired
+	protected StoreLinkMapper storeLinkMapper;
 	private static ICache<Long, StoreChannel> channelCache = CacheManager.create(StoreChannel.class, 2000);
+	private static ICache<Long, List<StoreLink>> linkCache = CacheManager.create(List.class, 5000);
 	
 	public Store findByCode(String code) {
 		Store store = storeMapper.findByCode(code);
@@ -32,6 +38,7 @@ public class StoreService {
 		Assert.notEmpty(channels, "No valid channel for store "+code);
 		store.setChannels(channels);
 		store.setBailChannels(this.findChannelByIds(store.getBailChannelIds()));
+		store.setLinks(this.findStoreLinkByStoreId(store.getId()));
 		return store;
 	}
 
@@ -42,6 +49,7 @@ public class StoreService {
 		Assert.notEmpty(channels, "No valid channel for store "+id);
 		store.setChannels(channels);
 		store.setBailChannels(this.findChannelByIds(store.getBailChannelIds()));
+		store.setLinks(this.findStoreLinkByStoreId(store.getId()));
 		return store;
 	}
 	
@@ -53,12 +61,23 @@ public class StoreService {
 		return channelCache.get(id);
 	}
 	
+	public List<StoreLink> findStoreLinkByStoreId(long storeId) {
+		List<StoreLink> links = linkCache.get(storeId);
+		if(CollectionUtils.isEmpty(links)) {
+			links = storeLinkMapper.findByStoreId(storeId);
+			linkCache.put(storeId, links);
+		}
+		return links;
+	}
+	
 	public void refreshCache() {
 		channelCache.destroy();
 		List<StoreChannel> channels = storeChannelMapper.findAll();
 		for(StoreChannel channel: channels) {
 			channelCache.put(channel.getId(), channel);
 		}
+		
+		linkCache.destroy();
 	}
 	
 	@PostConstruct

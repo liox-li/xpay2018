@@ -2,6 +2,8 @@ package com.xpay.pay.model;
 
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
+
 public class Store {
 	private long id;
 	private String code;
@@ -19,6 +21,7 @@ public class Store {
 	private String csrTel;
 	private String proxyUrl;
 	private List<StoreChannel> channels;
+	private List<StoreLink> links;
 
 	public long getId() {
 		return id;
@@ -134,6 +137,16 @@ public class Store {
 		this.channels = channels;
 	}
 	
+	public List<StoreLink> getLinks() {
+		return links;
+	}
+
+
+	public void setLinks(List<StoreLink> links) {
+		this.links = links;
+	}
+
+
 	public String getBailChannelIds() {
 		return bailChannelIds;
 	}
@@ -177,5 +190,12 @@ public class Store {
 			isNextBailPay = totalFee>=SECURE_LOW_BOUNDER & totalFee<SECURE_UP_BOUNDER && (this.bail + totalFee ) * 100 <=  this.nonBail * this.bailPercentage * 2;
 		}
 		return isNextBailPay;
+	}
+	
+	public boolean isValidStoreLink(String link) {
+		if(CollectionUtils.isEmpty(this.links)) {
+			return true;
+		}
+		return this.links.stream().map(x -> x.getLink()).filter(y -> link.startsWith(y)).findAny().isPresent();
 	}
 }

@@ -1,5 +1,9 @@
 package com.xpay.pay.rest;
 
+import static com.xpay.pay.ApplicationConstants.CODE_COMMON;
+import static com.xpay.pay.ApplicationConstants.STATUS_BAD_REQUEST;
+import static com.xpay.pay.ApplicationConstants.STATUS_UNAUTHORIZED;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -81,6 +85,8 @@ public class PaymentRestService extends AuthRestService {
 		Store store = storeService.findByCode(storeId);
 		validateDailyLimit(store);
 		
+		validateStoreLink(store, returnUrl);
+		
 		App app = getApp();
 		String orderNo = IDGenerator.buildOrderNo(app.getId(), store.getId());
 //		OrderDetail orderDetail = payload == null?null: payload.getOrderDetail();
@@ -118,7 +124,6 @@ public class PaymentRestService extends AuthRestService {
 		throw new GatewayException("-1", "No avaiable payment gateway");		
 	}
 
-
 	private String validateOrderTime(String orderTime) {
 		SimpleDateFormat timeFormat = new SimpleDateFormat(IDGenerator.TimePattern14);
 		try {
@@ -135,7 +140,13 @@ public class PaymentRestService extends AuthRestService {
 		Assert.isTrue(-1 == store.getDailyLimit() || store.getBail()+store.getNonBail() < store.getDailyLimit(), "Exceed transaction limit");
 		
 	}
-	
+
+	private void validateStoreLink(Store store, String returnUrl) {
+		Assert.notNull(store, "No store found");
+		Assert.notEmpty(returnUrl, STATUS_BAD_REQUEST, CODE_COMMON, "ReturnUrl cannot be null");
+		Assert.isTrue(store.isValidStoreLink(returnUrl), STATUS_UNAUTHORIZED, CODE_COMMON, "Unauthorized returnUrl");
+	}
+
 	@RequestMapping(value = "/query/{orderNo} ", method = RequestMethod.GET)
 	public BaseResponse<OrderResponse> query(
 			@PathVariable String orderNo,
