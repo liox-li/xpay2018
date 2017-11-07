@@ -3,6 +3,9 @@ package com.xpay.pay.model;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import com.xpay.pay.util.CommonUtils;
 
 public class Store {
 	private long id;
@@ -196,6 +199,10 @@ public class Store {
 		if(CollectionUtils.isEmpty(this.links)) {
 			return true;
 		}
-		return this.links.stream().map(x -> x.getLink()).filter(y -> link.startsWith(y)).findAny().isPresent();
+		String domainName = CommonUtils.getDomainName(link);
+		if(StringUtils.isBlank(domainName)) {
+			return false;
+		}
+		return this.links.stream().map(x -> x.getLink()).filter(y -> y.equalsIgnoreCase(domainName)).findAny().isPresent();
 	}
 }

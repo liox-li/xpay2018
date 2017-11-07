@@ -3,6 +3,7 @@ package com.xpay.pay.util;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -160,6 +161,16 @@ public class CommonUtils {
 			return false;
 		}
 		return true;
+	}
+	
+	public static String getDomainName(String url) {
+		try {
+			URI uri = new URI(url);
+			String domain = uri.getHost();
+			return domain.startsWith("www.") ? domain.substring(4) : domain;
+		} catch(Exception e) {
+			return null;
+		}
 	}
 	
 }
