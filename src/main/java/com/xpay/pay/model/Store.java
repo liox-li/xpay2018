@@ -203,6 +203,6 @@ public class Store {
 		if(StringUtils.isBlank(domainName)) {
 			return false;
 		}
-		return this.links.stream().map(x -> x.getLink()).filter(y -> y.equalsIgnoreCase(domainName)).findAny().isPresent();
+		return this.links.stream().map(x -> x.getLink()).filter(y -> y.indexOf(domainName)>=0).findAny().isPresent();
 	}
 }
