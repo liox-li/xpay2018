@@ -44,7 +44,8 @@ public class StoreChannel {
 	private static final long BLOCK_TIME_NIGHT= 60*1000;
 	public boolean isAvailable() {
 		long blockTime = TimeUtils.isNowDayTime()?BLOCK_TIME_DAY:BLOCK_TIME_NIGHT;
-		return System.currentTimeMillis()-this.lastUseTime>blockTime;
+		boolean avail = System.currentTimeMillis()-this.lastUseTime>blockTime;
+		return avail;
 	}
 
 	public enum PaymentGateway {

@@ -65,73 +65,38 @@ public class JsPayServlet extends HttpServlet {
 		
 		Order order = orderService.findActiveByOrderNo(orderNo);
 		if(order==null) {
-			response.sendError(404, "Order not found");
+			response.sendError(400, "无效订单");
 			return;
 		}
 		String path = request.getPathInfo();
 		String parameters = StringUtils.isBlank(request.getQueryString())?"":"?"+request.getQueryString();
 		logger.info("Jspay: "+path + parameters);
 		if(!order.getStoreChannel().isAvailable()) {
-			response.sendError(400, "No avaiable channel");
+			response.setCharacterEncoding("utf-8");
+			response.setHeader("Content-type", "text/html;charset=UTF-8");
+			response.sendError(400, "操作太频繁,请稍后再试");
+			return;
 		} else {
 			order.getStoreChannel().setLastUseTime(System.currentTimeMillis());
 		}
 		if(PaymentGateway.CHINAUMSH5.equals(order.getStoreChannel().getPaymentGateway())) {
-			if(!path.startsWith("/"+IPaymentProxy.PAYED)) {
-				if(!OrderStatus.NOTPAY.equals(order.getStatus())) {
-					response.sendError(400, "Order already paid");
-					return;
-				} 
-				PaymentRequest paymentRequest = paymentService.toPaymentRequest(order);
-				paymentRequest.setGatewayOrderNo(order.getExtOrderNo());
-				String jsUrl = chinaUmsH5Proxy.getJsUrl(paymentRequest);
-				response.setCharacterEncoding("utf-8");
-				response.setHeader("Content-type", "text/html;charset=UTF-8");
-				response.sendRedirect(jsUrl);
-			} else {
-				String status = request.getParameter("status");
-				OrderStatus orderStatus = ChinaUmsH5Proxy.toOrderStatus(status);
-				String returnUrl = order.getReturnUrl()+"?status="+orderStatus.getValue();
-				logger.info("Return to: "+returnUrl);
-				response.sendRedirect(returnUrl);
-			}
+			String status = request.getParameter("status");
+			OrderStatus orderStatus = ChinaUmsH5Proxy.toOrderStatus(status);
+			String returnUrl = order.getReturnUrl()+"?status="+orderStatus.getValue();
+			logger.info("Return to: "+returnUrl);
+			response.sendRedirect(returnUrl);
 		} else if(PaymentGateway.CHINAUMSWAP.equals(order.getStoreChannel().getPaymentGateway())) {
-			if(!path.startsWith("/"+IPaymentProxy.PAYED)) {
-				if(!OrderStatus.NOTPAY.equals(order.getStatus())) {
-					response.sendError(400, "Order already paid");
-					return;
-				} 
-				PaymentRequest paymentRequest = paymentService.toPaymentRequest(order);
-				paymentRequest.setGatewayOrderNo(order.getExtOrderNo());
-				String jsUrl = chinaUmsWapProxy.getJsUrl(paymentRequest);
-				response.setCharacterEncoding("utf-8");
-				response.setHeader("Content-type", "text/html;charset=UTF-8");
-				response.sendRedirect(jsUrl);
-			} else {
-				String status = request.getParameter("status");
-				OrderStatus orderStatus = ChinaUmsH5Proxy.toOrderStatus(status);
-				String returnUrl = order.getReturnUrl()+"?status="+orderStatus.getValue();
-				logger.info("Return to: "+returnUrl);
-				response.sendRedirect(returnUrl);
-			}
+			String status = request.getParameter("status");
+			OrderStatus orderStatus = ChinaUmsH5Proxy.toOrderStatus(status);
+			String returnUrl = order.getReturnUrl()+"?status="+orderStatus.getValue();
+			logger.info("Return to: "+returnUrl);
+			response.sendRedirect(returnUrl);
 		} else if(PaymentGateway.UPAY.equals(order.getStoreChannel().getPaymentGateway())) {
-			if(!path.startsWith("/"+IPaymentProxy.PAYED)) {
-				if(!OrderStatus.NOTPAY.equals(order.getStatus())) {
-					response.sendError(400, "Order already paid");
-					return;
-				} 
-				PaymentRequest paymentRequest = paymentService.toPaymentRequest(order);
-				String jsUrl = upayProxy.getJsUrl(paymentRequest);
-				response.setCharacterEncoding("utf-8");
-				response.setHeader("Content-type", "text/html;charset=UTF-8");
-				response.sendRedirect(jsUrl);
-			} else {
-				String status = request.getParameter("status");
-				OrderStatus orderStatus = UPayProxy.toOrderStatus(status);
-				String returnUrl = order.getReturnUrl()+"?status="+orderStatus.getValue();
-				logger.info("Return to: "+returnUrl);
-				response.sendRedirect(returnUrl);
-			}
+			String status = request.getParameter("status");
+			OrderStatus orderStatus = UPayProxy.toOrderStatus(status);
+			String returnUrl = order.getReturnUrl()+"?status="+orderStatus.getValue();
+			logger.info("Return to: "+returnUrl);
+			response.sendRedirect(returnUrl);
 		} else if(PaymentGateway.MIAOFU.equals(order.getStoreChannel().getPaymentGateway())) {
 			PaymentRequest paymentRequest = paymentService.toPaymentRequest(order);
 			String jsUrl = miaoFuProxy.getJsUrl(paymentRequest);
@@ -146,7 +111,7 @@ public class JsPayServlet extends HttpServlet {
 				response.sendRedirect(order.getReturnUrl());
 			}
 		} else {
-			response.sendError(404, "Order not found");
+			response.sendError(400, "无效订单");
 		}
 	}
 }
