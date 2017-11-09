@@ -80,23 +80,37 @@ public class JsPayServlet extends HttpServlet {
 			order.getStoreChannel().setLastUseTime(System.currentTimeMillis());
 		}
 		if(PaymentGateway.CHINAUMSH5.equals(order.getStoreChannel().getPaymentGateway())) {
-			String status = request.getParameter("status");
-			OrderStatus orderStatus = ChinaUmsH5Proxy.toOrderStatus(status);
-			String returnUrl = order.getReturnUrl()+"?status="+orderStatus.getValue();
-			logger.info("Return to: "+returnUrl);
-			response.sendRedirect(returnUrl);
+			if(!OrderStatus.NOTPAY.equals(order.getStatus())) {
+				response.sendError(400, "订单已支付");
+				return;
+			} 
+			PaymentRequest paymentRequest = paymentService.toPaymentRequest(order);
+			paymentRequest.setGatewayOrderNo(order.getExtOrderNo());
+			String jsUrl = chinaUmsH5Proxy.getJsUrl(paymentRequest);
+			response.setCharacterEncoding("utf-8");
+			response.setHeader("Content-type", "text/html;charset=UTF-8");
+			response.sendRedirect(jsUrl);
 		} else if(PaymentGateway.CHINAUMSWAP.equals(order.getStoreChannel().getPaymentGateway())) {
-			String status = request.getParameter("status");
-			OrderStatus orderStatus = ChinaUmsH5Proxy.toOrderStatus(status);
-			String returnUrl = order.getReturnUrl()+"?status="+orderStatus.getValue();
-			logger.info("Return to: "+returnUrl);
-			response.sendRedirect(returnUrl);
+			if(!OrderStatus.NOTPAY.equals(order.getStatus())) {
+				response.sendError(400, "订单已支付");
+				return;
+			} 
+			PaymentRequest paymentRequest = paymentService.toPaymentRequest(order);
+			paymentRequest.setGatewayOrderNo(order.getExtOrderNo());
+			String jsUrl = chinaUmsWapProxy.getJsUrl(paymentRequest);
+			response.setCharacterEncoding("utf-8");
+			response.setHeader("Content-type", "text/html;charset=UTF-8");
+			response.sendRedirect(jsUrl);
 		} else if(PaymentGateway.UPAY.equals(order.getStoreChannel().getPaymentGateway())) {
-			String status = request.getParameter("status");
-			OrderStatus orderStatus = UPayProxy.toOrderStatus(status);
-			String returnUrl = order.getReturnUrl()+"?status="+orderStatus.getValue();
-			logger.info("Return to: "+returnUrl);
-			response.sendRedirect(returnUrl);
+			if(!OrderStatus.NOTPAY.equals(order.getStatus())) {
+				response.sendError(400, "订单已支付");
+				return;
+			} 
+			PaymentRequest paymentRequest = paymentService.toPaymentRequest(order);
+			String jsUrl = upayProxy.getJsUrl(paymentRequest);
+			response.setCharacterEncoding("utf-8");
+			response.setHeader("Content-type", "text/html;charset=UTF-8");
+			response.sendRedirect(jsUrl);
 		} else if(PaymentGateway.MIAOFU.equals(order.getStoreChannel().getPaymentGateway())) {
 			PaymentRequest paymentRequest = paymentService.toPaymentRequest(order);
 			String jsUrl = miaoFuProxy.getJsUrl(paymentRequest);
