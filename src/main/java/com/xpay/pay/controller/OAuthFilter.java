@@ -21,6 +21,8 @@ import net.oauth.SimpleOAuthValidator;
 import net.oauth.server.OAuthServlet;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.util.KeyValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
@@ -35,6 +37,8 @@ import com.xpay.pay.service.AppService;
 import com.xpay.pay.util.JsonUtils;
 
 public class OAuthFilter implements Filter {
+	protected final Logger logger = LogManager.getLogger(OAuthFilter.class);
+	
 	@Autowired
 	protected AppService appService;
 	private static final SimpleOAuthValidator validator=new SimpleOAuthValidator();
@@ -60,7 +64,7 @@ public class OAuthFilter implements Filter {
 					request.setAttribute(ApplicationConstants.ATTRIBUTE_APP, app);
 					chain.doFilter(request, response);
 				} else {
-					throw new AuthException("401", "Unauthorized, please check your key/secret");
+					throw new AuthException("401", String.format("Unauthorized, please check your token: %s", token));
 				}
 			} else {
 				String oauth = httpRequest.getHeader(ApplicationConstants.HEADER_OAUTH);
@@ -74,6 +78,7 @@ public class OAuthFilter implements Filter {
 				}
 			}
 		} catch (ApplicationException e) {
+			logger.error("Unauthorized request", e);
 			printErrorResponse(response, e);
 		} finally {
 			if(System.currentTimeMillis()- lastReleaseTime.get()>releasePeriod) {
@@ -137,8 +142,7 @@ public class OAuthFilter implements Filter {
 			ApplicationException exception) throws JsonProcessingException, IOException {
 		BaseResponse<?> errorResponse = new BaseResponse<Object>();
 		errorResponse.setStatus(exception.getStatus());
-		errorResponse
-				.setMessage("The request was rejected because authentication failed.");
+		errorResponse.setMessage("The request was rejected because authentication failed.");
 		errorResponse.setCode(exception.getCode());
 
 		if (response instanceof HttpServletResponse) {
