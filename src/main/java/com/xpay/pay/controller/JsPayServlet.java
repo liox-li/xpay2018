@@ -71,6 +71,11 @@ public class JsPayServlet extends HttpServlet {
 		String path = request.getPathInfo();
 		String parameters = StringUtils.isBlank(request.getQueryString())?"":"?"+request.getQueryString();
 		logger.info("Jspay: "+path + parameters);
+		if(!order.getStoreChannel().isAvailable()) {
+			response.sendError(400, "No avaiable channel");
+		} else {
+			order.getStoreChannel().setLastUseTime(System.currentTimeMillis());
+		}
 		if(PaymentGateway.CHINAUMSH5.equals(order.getStoreChannel().getPaymentGateway())) {
 			if(!path.startsWith("/"+IPaymentProxy.PAYED)) {
 				if(!OrderStatus.NOTPAY.equals(order.getStatus())) {

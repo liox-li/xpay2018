@@ -1,9 +1,12 @@
 package com.xpay.pay.model;
 
+import com.xpay.pay.util.TimeUtils;
+
 public class StoreChannel {
 	private long id;
 	private String extStoreId;
 	private PaymentGateway paymentGateway;
+	private long lastUseTime;
 	
 	public long getId() {
 		return id;
@@ -27,6 +30,21 @@ public class StoreChannel {
 
 	public void setPaymentGateway(PaymentGateway paymentGateway) {
 		this.paymentGateway = paymentGateway;
+	}
+	
+	public long getLastUseTime() {
+		return lastUseTime;
+	}
+
+	public void setLastUseTime(long lastUseTime) {
+		this.lastUseTime = lastUseTime;
+	}
+	
+	private static final long BLOCK_TIME_DAY= 40*1000;
+	private static final long BLOCK_TIME_NIGHT= 60*1000;
+	public boolean isAvailable() {
+		long blockTime = TimeUtils.isNowDayTime()?BLOCK_TIME_DAY:BLOCK_TIME_NIGHT;
+		return System.currentTimeMillis()-this.lastUseTime>blockTime;
 	}
 
 	public enum PaymentGateway {
