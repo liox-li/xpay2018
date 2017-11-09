@@ -37,9 +37,11 @@ public class UPayProxy implements IPaymentProxy {
 	private static final AppConfig config = AppConfig.UPayConfig;
 	private static final String baseEndpoint = config.getProperty("provider.endpoint");
 	private static final String jsPayEndpoint = config.getProperty("provider.jspay.endpoint");
-//	private static final String appId = config.getProperty("provider.app.id");
-//	private static final String appSecret = config.getProperty("provider.app.secret");
+	private static final String activiateEndpoint = config.getProperty("provider.activiate.endpoint");
 	private static final String operator = config.getProperty("provider.operator");
+	private static final String appId = config.getProperty("provider.app.id");
+	private static final String vendorSn = config.getProperty("provider.vendor.sn");
+	private static final String vendorKey = config.getProperty("provider.vendor.key");
 	@Autowired
 	RestTemplate uPayProxy;
 	
@@ -54,6 +56,32 @@ public class UPayProxy implements IPaymentProxy {
 		return response;
 	}
 
+	public ActiviateResponse activiate(String activiateCode, String deviceId) {
+		long l = System.currentTimeMillis();
+		ActiviateResponse response = null;
+		try {
+			ActiviateRequest request = new ActiviateRequest();
+			request.setApp_id(appId);
+			request.setCode(activiateCode);
+			request.setDevice_id(deviceId);
+			String json = JsonUtils.toJson(request);
+			String sign = vendorSn + " " +CryptoUtils.md5(json + vendorKey).toUpperCase();
+			logger.info("activiate POST: " + activiateEndpoint+", body "+JsonUtils.toJson(request));
+			
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+			headers.set("Authorization", sign);
+			HttpEntity<?> httpEntity = new HttpEntity<>(request, headers);
+			response  = uPayProxy.exchange(activiateEndpoint, HttpMethod.POST, httpEntity, ActiviateResponse.class).getBody();
+			Assert.notNull(response, "activiate, no response");
+			logger.info("activiate result: " + response.getResult_code() + ", took "+ (System.currentTimeMillis() - l) + "ms");
+		} catch (RestClientException e) {
+			logger.info("activiate failed, took " + (System.currentTimeMillis() - l) + "ms", e);
+			throw e;
+		}
+		return response;
+	}
+	
 	public String getJsUrl(PaymentRequest request) {
 		String[] appKeys = getAppKeys(request.getExtStoreId());
 		UPayRequest upayRequest = this.toUPayRequest(UPAY.UnifiedOrder(), request);

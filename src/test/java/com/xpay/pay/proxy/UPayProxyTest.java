@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.xpay.pay.BaseSpringJunitTest;
+import com.xpay.pay.proxy.upay.ActiviateResponse;
 import com.xpay.pay.proxy.upay.UPayProxy;
 
 public class UPayProxyTest  extends BaseSpringJunitTest {
@@ -29,5 +30,15 @@ public class UPayProxyTest  extends BaseSpringJunitTest {
 		System.out.println("response code: "+ response.getCode()+" "+response.getMsg());
 		
 		System.out.println(response.getBill().getTokenId());
+	}
+	
+	@Test
+	public void testActiviate() {
+		String code = "36694908";
+		String deviceId = "192.0.0.2";
+		
+		ActiviateResponse response = uPayProxy.activiate(code, deviceId);
+		
+		System.out.println(response.getBiz_response().getTerminal_sn()+"   " + response.getBiz_response().getTerminal_key());
 	}
 }
