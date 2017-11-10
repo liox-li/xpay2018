@@ -56,8 +56,9 @@ public class OAuthFilter implements Filter {
 			FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 
+		String token = httpRequest.getHeader(ApplicationConstants.HEADER_ACCESS_TOKEN);
 		try {
-			String token = httpRequest.getHeader(ApplicationConstants.HEADER_ACCESS_TOKEN);
+			
 			if(StringUtils.isNotBlank(token) && token.length()>=32) {
 				App app = checkToken(token);
 				if(app!=null) {
@@ -78,7 +79,7 @@ public class OAuthFilter implements Filter {
 				}
 			}
 		} catch (ApplicationException e) {
-			logger.error("Unauthorized request", e);
+			logger.error(String.format("Unauthorized request, %s", token), e);
 			printErrorResponse(response, e);
 		} finally {
 			if(System.currentTimeMillis()- lastReleaseTime.get()>releasePeriod) {

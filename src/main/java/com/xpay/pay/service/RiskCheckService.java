@@ -15,7 +15,8 @@ import com.xpay.pay.util.RoundRobinList;
 public class RiskCheckService {
 	private static final Logger LOG = LogManager.getLogger(RiskCheckService.class);
 	private static boolean feeCheck = XPayConfig.getProperty("risk.check.fee", false);
-	private static ICache<String, RoundRobinList<Float>> feeCache = CacheManager.create(RoundRobinList.class, 200);
+	private static long DEFAULT_TTL = 10*60*1000L;
+	private static ICache<String, RoundRobinList<Float>> feeCache = CacheManager.create(RoundRobinList.class, 1000);
 
 
 	public boolean checkFee(Store store, float fee) {
@@ -26,7 +27,7 @@ public class RiskCheckService {
 		RoundRobinList<Float> list = feeCache.get(store.getCode());
 		if(list == null) {
 			list = new RoundRobinList<Float>(3);
-			feeCache.put(store.getCode(), list);
+			feeCache.put(store.getCode(), list, DEFAULT_TTL);
 		}
 		list.add(fee);
 		if(list.size()<3) {
@@ -36,7 +37,7 @@ public class RiskCheckService {
 		float f1 = list.get(0);
 		float f2 = list.get(1);
 		float f3 = list.get(2);
-		if(f1<50f && equals(f1, f2) && equals(f2,f3)) {
+		if(f1<30f && equals(f1, f2) && equals(f2,f3)) {
 			LOG.warn(String.format("checkFee failed : %s,%s,%s", f1,f2,f3) );
 			return false;
 		}
