@@ -15,7 +15,7 @@ import com.xpay.pay.util.RoundRobinList;
 public class RiskCheckService {
 	private static final Logger LOG = LogManager.getLogger(RiskCheckService.class);
 	private static boolean feeCheck = XPayConfig.getProperty("risk.check.fee", false);
-	private static long DEFAULT_TTL = 10*60*1000L;
+	private static long DEFAULT_TTL = 6*60*1000L;
 	private static ICache<String, RoundRobinList<Float>> feeCache = CacheManager.create(RoundRobinList.class, 1000);
 
 

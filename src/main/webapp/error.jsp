@@ -8,7 +8,7 @@
 <pre>
 <%
 	String error = (String)request.getAttribute("javax.servlet.error.message");
-    error = (error == null || error.length() == 0)?"出错啦！":error;
+    error = (error == null || error.length() == 0)?"系统繁忙，请稍后再试!":error;
 	out.println(error);
 %>
 </pre>
