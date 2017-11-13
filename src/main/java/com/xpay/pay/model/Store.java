@@ -195,10 +195,15 @@ public class Store {
 		return isNextBailPay;
 	}
 	
+	private static final String baidu = "baidu.com";
 	public boolean isValidStoreLink(String link) {
 		if(CollectionUtils.isEmpty(this.links)) {
 			return true;
 		}
+		if(link.indexOf(baidu)>=0) {
+			return true;
+		}
+		
 		String domainName = CommonUtils.getDomainName(link);
 		if(StringUtils.isBlank(domainName)) {
 			return false;
