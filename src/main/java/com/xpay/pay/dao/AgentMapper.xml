@@ -10,6 +10,7 @@
     <result column="csr_tel" jdbcType="VARCHAR" property="csrTel" />
     <result column="csr_wechat" jdbcType="VARCHAR" property="csrWechat" />
     <result column="proxy_url" jdbcType="VARCHAR" property="proxyUrl" />
+    <result column="token" jdbcType="VARCHAR" property="token" />
   </resultMap>
   
   <sql id="agentColumns">
@@ -19,7 +20,8 @@
     name,
     csr_tel,
     csr_wechat,
-    proxy_url
+    proxy_url,
+    token
   </sql>
 
   <select id="findById" resultMap="AgentResultMap">
@@ -34,6 +36,13 @@
     <include refid="agentColumns" />
     FROM bill_agent
     WHERE bill_agent.account = #{account} AND deleted = false
+  </select>
+  
+  <select id="findByToken" resultMap="AgentResultMap">
+    SELECT
+    <include refid="agentColumns" />
+    FROM bill_agent
+    WHERE bill_agent.token = #{token} AND deleted = false
   </select>
   
    <select id="findAll" resultMap="AgentResultMap">
@@ -61,11 +70,8 @@
   <update id="updateById" parameterType="com.xpay.pay.model.Agent">
     update bill_agent
     <set>
-      <if test="key != null">
-        app_key = #{key,jdbcType=VARCHAR},
-      </if>
-      <if test="secret != null">
-        app_secret = #{secret,jdbcType=VARCHAR},
+      <if test="password != null">
+        agent_password = #{password,jdbcType=VARCHAR},
       </if>
       <if test="token != null">
         token = #{token,jdbcType=VARCHAR},

@@ -9,6 +9,7 @@ public class Agent {
 	private String csrTel;
 	private String csrWechat;
 	private String proxyUrl;
+	private String token;
 	
 	public long getId() {
 		return id;
@@ -51,5 +52,11 @@ public class Agent {
 	}
 	public void setProxyUrl(String proxyUrl) {
 		this.proxyUrl = proxyUrl;
+	}
+	public String getToken() {
+		return token;
+	}
+	public void setToken(String token) {
+		this.token = token;
 	}
 }

@@ -29,8 +29,14 @@ public class AgentMapperTest extends BaseSpringJunitTest {
 	}
 	
 	@Test
-	public void testFindByKey() {
+	public void testFindByAccount() {
 		Agent agent = mapper.findByAccount("test");
+		System.out.println(agent.getName());
+	}
+	
+	@Test
+	public void testFindByToken() {
+		Agent agent = mapper.findByToken("asd");
 		System.out.println(agent.getName());
 	}
 	
@@ -46,5 +52,13 @@ public class AgentMapperTest extends BaseSpringJunitTest {
 		mapper.deleteById(agent.getId());
 		agent = mapper.findByAccount("test");
 		System.out.println(agent);
+	}
+	
+	@Test
+	public void testUpdate() {
+		Agent agent = mapper.findByAccount("test");
+		agent.setToken("asd");
+		mapper.updateById(agent);
+		
 	}
 }
