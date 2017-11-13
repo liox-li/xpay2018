@@ -46,7 +46,7 @@
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
      	#{key,jdbcType=VARCHAR},
-     	#{secret,jdbcType=VARCHAR}
+     	#{secret,jdbcType=VARCHAR},
      	#{token,jdbcType=VARCHAR}
     </trim>
   </insert>

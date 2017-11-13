@@ -160,9 +160,29 @@ ALTER TABLE bill_order ADD COLUMN return_url VARCHAR(256);
 ALTER TABLE bill_store ADD COLUMN proxy_url VARCHAR(256);
 
 
+CREATE TABLE IF NOT EXISTS bill_agent (
+	id BIGSERIAL PRIMARY KEY,
+	account varchar(32) NOT NULL,
+	agent_password varchar(32) NOT NULL,
+	name varchar(64) NOT NULL,
+	csr_tel varchar(32),
+	csr_wechat varchar(32),
+	proxy_url VARCHAR(256),
+	create_date TIMESTAMP WITH TIME ZONE NOT NULL default now(), 
+	update_date TIMESTAMP WITH TIME ZONE NOT NULL default now(),
+	deleted boolean DEFAULT FALSE
+);	
+ALTER SEQUENCE bill_agent_id_seq RESTART 10;
+CREATE INDEX idx_bill_agent_account ON bill_agent(account); 
+
+ALTER TABLE bill_store ADD COLUMN agent_id BIGINT;
+ALTER TABLE bill_store_channel ADD COLUMN agent_id BIGINT;
+ALTER TABLE bill_app ADD COLUMN agent_id BIGINT;
+
 ALTER table bill_app OWNER TO xpay;
 ALTER table bill_store OWNER TO xpay;
 ALTER table bill_store_channel OWNER TO xpay;
 ALTER table bill_order OWNER TO xpay;
 ALTER table bill_order_detail OWNER TO xpay;
+ALTER table bill_store_link OWNER TO xpay;
 

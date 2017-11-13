@@ -20,7 +20,8 @@ public class UPayNotifyHandler extends AbstractNotifyHandler {
 			UPayNotification notObject = JsonUtils.fromJson(content, UPayNotification.class);
 			if(notObject!=null) {
 				orderNo = notObject.getClient_sn();
-				extOrderNo = notObject.getTrade_no();
+				extOrderNo = notObject.getSn();
+				targetOrderNo = notObject.getTrade_no();
 				status = notObject.getOrder_status();
 				totalFee = notObject.getTotal_amount();
 			}
@@ -42,11 +43,19 @@ public class UPayNotifyHandler extends AbstractNotifyHandler {
 	}
 	
 	public static class UPayNotification {
+		private String sn;
 		private String client_sn;
 		private String status;
 		private String order_status;
 		private String trade_no;
 		private String total_amount;
+		
+		public String getSn() {
+			return sn;
+		}
+		public void setSn(String sn) {
+			this.sn = sn;
+		}
 		public String getClient_sn() {
 			return client_sn;
 		}
