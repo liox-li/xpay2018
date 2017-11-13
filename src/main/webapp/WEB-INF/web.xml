@@ -79,6 +79,11 @@
 		<servlet-name>pay</servlet-name>
 		<url-pattern>/rest/*</url-pattern>
 	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>pay</servlet-name>
+		<url-pattern>/agent/*</url-pattern>
+	</servlet-mapping>
 	
 	<servlet-mapping>
 		<servlet-name>PayNotifyServlet</servlet-name>

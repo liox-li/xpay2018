@@ -47,4 +47,11 @@ public class AppMapperTest extends BaseSpringJunitTest {
 		app = appMapper.findByKey("123");
 		System.out.println(app);
 	}
+	
+	@Test
+	public void testFindByAgentId() {
+		long agentId = 10;
+		List<App> apps = appMapper.findByAgentId(agentId);
+		System.out.println(apps.size());
+	}
 }

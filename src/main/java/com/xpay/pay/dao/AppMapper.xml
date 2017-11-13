@@ -32,6 +32,13 @@
     WHERE bill_app.app_key = #{key} AND deleted = false
   </select>
   
+  <select id="findByAgentId" resultMap="AppResultMap">
+    SELECT
+    <include refid="appColumns" />
+    FROM bill_app
+    WHERE bill_app.agent_id = #{agentId} AND deleted = false
+  </select>
+  
    <select id="findAll" resultMap="AppResultMap">
     SELECT
     <include refid="appColumns" />

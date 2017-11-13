@@ -49,6 +49,10 @@ public class AppService {
 		return apps.stream().filter(x -> x.getId() == id).findFirst()
 				.orElse(null);
 	}
+	
+	public List<App> findByAgentId(long agentId) {
+		return mapper.findByAgentId(agentId);
+	}
 
 	public void refreshToken(App app) {
 		if (isTokenExpired(app.getToken())) {

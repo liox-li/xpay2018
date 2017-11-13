@@ -180,6 +180,7 @@ CREATE INDEX idx_bill_agent_token ON bill_agent(token);
 ALTER TABLE bill_store ADD COLUMN agent_id BIGINT;
 ALTER TABLE bill_store_channel ADD COLUMN agent_id BIGINT;
 ALTER TABLE bill_app ADD COLUMN agent_id BIGINT;
+CREATE INDEX idx_bill_app_agent ON bill_app(agent_id); 
 
 ALTER table bill_app OWNER TO xpay;
 ALTER table bill_store OWNER TO xpay;
