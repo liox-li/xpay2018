@@ -17,6 +17,7 @@ import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
 import com.xpay.pay.rest.contract.BaseResponse;
 import com.xpay.pay.rest.contract.LoginRequest;
+import com.xpay.pay.rest.contract.UpdateStoreChannelRequest;
 import com.xpay.pay.service.AgentService;
 import com.xpay.pay.service.AppService;
 import com.xpay.pay.service.StoreService;
@@ -77,12 +78,12 @@ public class AgentRestService {
 	}
 	
 	@RequestMapping(value = "/{id}/stores/{storeId}/channels", method = RequestMethod.PATCH)
-	public BaseResponse<String> updateStoreChannels(@PathVariable long id, 
+	public BaseResponse<long[]> updateStoreChannels(@PathVariable long id, 
 			@PathVariable long storeId,
-			@RequestBody(required = true) String[] channelIds) {
-		storeService.updateStoreChannels(storeId, channelIds);
-		BaseResponse<String> response = new BaseResponse<String>();
-		response.setData(StringUtils.join(channelIds, ","));
+			@RequestBody(required = true) UpdateStoreChannelRequest request) {
+		storeService.updateStoreChannels(storeId, request.getChannelIds());
+		BaseResponse<long[]> response = new BaseResponse<long[]>();
+		response.setData(request.getChannelIds());
 		return response;
 	}
 }

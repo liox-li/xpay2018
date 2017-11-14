@@ -78,10 +78,10 @@ public class StoreService {
 		return links;
 	}
 	
-	public void updateStoreChannels(long storeId, String[] channelIds) {
+	public void updateStoreChannels(long storeId, long[] channelIds) {
 		Store store = new Store();
 		store.setId(storeId);
-		String channels = StringUtils.join(channelIds, ",");
+		String channels = StringUtils.join(channelIds, ',');
 		store.setChannelIds(channels);
 		storeMapper.updateById(store);
 	}
