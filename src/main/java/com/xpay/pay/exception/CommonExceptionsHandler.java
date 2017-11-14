@@ -41,8 +41,7 @@ public class CommonExceptionsHandler {
 	@ExceptionHandler(ApplicationException.class)
 	public @ResponseBody ResponseEntity<BaseResponse> applicationExceptionHandler(
 			ApplicationException e) {
-		LOG.error(e.getMessage(), e);
-
+		LOG.error(e.getMessage());
 		BaseResponse response = new BaseResponse();
 		response.setMessage(e.getMessage());
 		response.setStatus(e.getStatus());

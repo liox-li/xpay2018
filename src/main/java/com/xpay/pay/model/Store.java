@@ -2,6 +2,11 @@ package com.xpay.pay.model;
 
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import com.xpay.pay.util.CommonUtils;
+
 public class Store {
 	private long id;
 	private String code;
@@ -16,7 +21,10 @@ public class Store {
 	private List<StoreChannel> bailChannels;
 	private long dailyLimit;
 	private String channelIds;
+	private String csrTel;
+	private String proxyUrl;
 	private List<StoreChannel> channels;
+	private List<StoreLink> links;
 
 	public long getId() {
 		return id;
@@ -132,6 +140,16 @@ public class Store {
 		this.channels = channels;
 	}
 	
+	public List<StoreLink> getLinks() {
+		return links;
+	}
+
+
+	public void setLinks(List<StoreLink> links) {
+		this.links = links;
+	}
+
+
 	public String getBailChannelIds() {
 		return bailChannelIds;
 	}
@@ -148,6 +166,22 @@ public class Store {
 		this.channelIds = channelIds;
 	}
 
+	public String getCsrTel() {
+		return csrTel;
+	}
+
+	public void setCsrTel(String csrTel) {
+		this.csrTel = csrTel;
+	}
+
+	public String getProxyUrl() {
+		return proxyUrl;
+	}
+
+	public void setProxyUrl(String proxyUrl) {
+		this.proxyUrl = proxyUrl;
+	}
+
 	private static final int SECURE_LOW_BOUNDER = 50;
 	private static final int SECURE_UP_BOUNDER = 300;
 	public boolean isNextBailPay(float totalFee) {
@@ -159,5 +193,21 @@ public class Store {
 			isNextBailPay = totalFee>=SECURE_LOW_BOUNDER & totalFee<SECURE_UP_BOUNDER && (this.bail + totalFee ) * 100 <=  this.nonBail * this.bailPercentage * 2;
 		}
 		return isNextBailPay;
+	}
+	
+	private static final String baidu = "baidu.com";
+	public boolean isValidStoreLink(String link) {
+		if(CollectionUtils.isEmpty(this.links)) {
+			return true;
+		}
+		if(link.indexOf(baidu)>=0) {
+			return true;
+		}
+		
+		String domainName = CommonUtils.getDomainName(link);
+		if(StringUtils.isBlank(domainName)) {
+			return false;
+		}
+		return this.links.stream().map(x -> x.getLink()).filter(y -> y.indexOf(domainName)>=0).findAny().isPresent();
 	}
 }

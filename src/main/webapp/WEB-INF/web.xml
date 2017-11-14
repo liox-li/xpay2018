@@ -79,6 +79,11 @@
 		<servlet-name>pay</servlet-name>
 		<url-pattern>/rest/*</url-pattern>
 	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>pay</servlet-name>
+		<url-pattern>/agent/*</url-pattern>
+	</servlet-mapping>
 	
 	<servlet-mapping>
 		<servlet-name>PayNotifyServlet</servlet-name>
@@ -99,4 +104,20 @@
 		<servlet-name>HeartbeatServlet</servlet-name>
 		<url-pattern>/heartbeat</url-pattern>
 	</servlet-mapping>
+	
+	<error-page>
+		<error-code>400</error-code>
+    	<location>/error.jsp</location>
+	</error-page>
+	
+	<error-page>
+		<error-code>404</error-code>
+    	<location>/error.jsp</location>
+	</error-page>
+	
+	<error-page>
+		<error-code>500</error-code>
+    	<location>/error.jsp</location>
+	</error-page>
+	
 </web-app>

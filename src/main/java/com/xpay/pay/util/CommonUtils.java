@@ -3,6 +3,7 @@ package com.xpay.pay.util;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,10 +13,33 @@ import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.core.util.KeyValuePair;
+import org.springframework.web.util.UriComponentsBuilder;
 
 public class CommonUtils {
+
+	public static final String buildQueryParams(List<KeyValuePair> keyPairs, String signKey, String sign, String encodeKeys) {
+		keyPairs.sort((x1, x2) -> {
+			return x1.getKey().compareTo(x2.getKey());
+		});
+
+		UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
+		for (KeyValuePair pair : keyPairs) {
+			String value = pair.getValue();
+			if(StringUtils.indexOf(encodeKeys, pair.getKey())>=0) {
+				value = urlEncode(pair.getValue());
+			} 
+			builder.queryParam(pair.getKey(), value);
+		}
+		builder.queryParam(signKey, sign);
+		return builder.build().toString();
+	}
+	
+	
 	public static String urlEncode(String param) 
 	{
 		try {
@@ -110,6 +134,20 @@ public class CommonUtils {
 		}
 	} 
 	
+	public static boolean isOneOf(String source, String target, String sep) {
+		if(StringUtils.isBlank(source) || StringUtils.isBlank(target) || StringUtils.isBlank(sep)) {
+			return false;
+		}
+		
+		String[] strs = source.split(sep);
+		for(String str : strs) {
+			if(target.equals(str)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	private static boolean isValidIp(String ip) {
 		if(ip == null || ip.trim().length()==0) {
 			return false;
@@ -123,6 +161,16 @@ public class CommonUtils {
 			return false;
 		}
 		return true;
+	}
+	
+	public static String getDomainName(String url) {
+		try {
+			URI uri = new URI(url);
+			String domain = uri.getHost();
+			return domain.startsWith("www.") ? domain.substring(4) : domain;
+		} catch(Exception e) {
+			return null;
+		}
 	}
 	
 }

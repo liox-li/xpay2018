@@ -32,11 +32,15 @@ public class PaymentService {
 	private OrderService orderService;
 	@Autowired
 	private StoreService storeService;
+	@Autowired
+	private RiskCheckService riskCheckService;
 
 	public Order createOrder(App app, String orderNo, Store store, PayChannel channel,
 			String deviceId, String ip, String totalFee, String orderTime,
 			String sellerOrderNo, String attach, String notifyUrl,String returnUrl,
 			String subject) {
+		Assert.isTrue(riskCheckService.checkFee(store, CommonUtils.toFloat(totalFee)), String.format("Invalid total fee: %s, sellerOrderNo: %s",totalFee, StringUtils.trimToEmpty(sellerOrderNo)));
+		
 		StoreChannel storeChannel = null;
 		boolean isNextBailPay = store.isNextBailPay(CommonUtils.toFloat(totalFee));
 		storeChannel = orderService.findUnusedChannel(store.getChannels(), orderNo);
@@ -44,7 +48,7 @@ public class PaymentService {
 			StoreChannel bailChannel = orderService.findUnusedChannel(store.getBailChannels(), orderNo);
 			storeChannel = bailChannel == null? storeChannel:bailChannel;
 		}
-		Assert.notNull(storeChannel, "No avaiable store channel");
+		Assert.notNull(storeChannel, String.format("No avaiable store channel, please try later, sellerOrderNo: %s", StringUtils.trimToEmpty(sellerOrderNo)));
 		
 		Order order = new Order();
 		order.setApp(app);
@@ -163,8 +167,6 @@ public class PaymentService {
 		}
 	}
 
-	private static final String DEFAULT_SUBJECT = "游戏";
-	private static final String DEFAULT_SUBJECT_CHINAUMS = "投诉热线: 95534";
 	private static final String LOCAL_ID = CommonUtils.getLocalIP();
 	private static final String DEFAULT_NOTIFY_URL = AppConfig.XPayConfig.getProperty("notify.endpoint");
 	public PaymentRequest toPaymentRequest(Order order) {
@@ -178,18 +180,17 @@ public class PaymentService {
 		request.setAttach(order.getAttach());
 		request.setOrderNo(order.getOrderNo());
 		request.setNotifyUrl(DEFAULT_NOTIFY_URL+order.getStoreChannel().getPaymentGateway().toString().toLowerCase());
-		if(PaymentGateway.CHINAUMSV2.equals(order.getStoreChannel().getPaymentGateway())) {
+		
+		PaymentGateway gateway = order.getStoreChannel().getPaymentGateway();
+		if(isChinaUmsChannel(gateway) ) {
 			request.setReturnUrl(order.getReturnUrl());
 		}
-		else if(PaymentGateway.CHINAUMS.equals(order.getStoreChannel().getPaymentGateway())) {
-			request.setReturnUrl(order.getReturnUrl());
-		}
-		else if(PaymentGateway.JUZHEN.equals(order.getStoreChannel().getPaymentGateway())) {
+		else if(PaymentGateway.JUZHEN.equals(gateway)) {
 			request.setServerIp(LOCAL_ID);
-		} else if(PaymentGateway.MIAOFU.equals(order.getStoreChannel().getPaymentGateway())) {
+		} else if(PaymentGateway.MIAOFU.equals(gateway)) {
 			String notifyUrl = request.getNotifyUrl() + "/"+request.getOrderNo();
 			request.setNotifyUrl(notifyUrl);
-		} else if(PaymentGateway.KEKEPAY.equals(order.getStoreChannel().getPaymentGateway())){
+		} else if(PaymentGateway.KEKEPAY.equals(gateway)){
 			request.setServerIp(LOCAL_ID);
 		}
 //		else if(PaymentGateway.RUBIPAY.equals(order.getStoreChannel().getPaymentGateway())) {
@@ -207,21 +208,17 @@ public class PaymentService {
 		} else {
 			request.setSubject(DEFAULT_SUBJECT);
 		}
-		if(PaymentGateway.CHINAUMS.equals(order.getStoreChannel().getPaymentGateway()) || PaymentGateway.CHINAUMSV2.equals(order.getStoreChannel().getPaymentGateway())) {
-			request.setSubject(request.getSubject()+"  ( "+DEFAULT_SUBJECT_CHINAUMS+" )");
-		}
+		request.setSubject(this.customizeCsrTel(request.getSubject(), order));
 		return request;
 	}
 	
 	private PaymentRequest toQueryRequest(Order order) {
 		PaymentRequest request = new PaymentRequest();
-		if(PaymentGateway.CHINAUMS.equals(order.getStoreChannel().getPaymentGateway()) 
-				|| PaymentGateway.CHINAUMSV2.equals(order.getStoreChannel().getPaymentGateway()) 
-				|| PaymentGateway.JUZHEN.equals(order.getStoreChannel().getPaymentGateway())
-				|| PaymentGateway.KEFU.equals(order.getStoreChannel().getPaymentGateway())) {
+		PaymentGateway gateway = order.getStoreChannel().getPaymentGateway();
+		if(isChinaUmsChannel(gateway) || PaymentGateway.JUZHEN.equals(gateway) || PaymentGateway.KEFU.equals(gateway)) {
 			request.setOrderTime(order.getOrderTime());
 			request.setGatewayOrderNo(order.getExtOrderNo());
-		} else if(PaymentGateway.MIAOFU.equals(order.getStoreChannel().getPaymentGateway())) {
+		} else if(PaymentGateway.MIAOFU.equals(gateway)) {
 			request.setGatewayOrderNo(order.getExtOrderNo());
 		}
 		request.setExtStoreId(order.getStoreChannel().getExtStoreId());
@@ -241,6 +238,26 @@ public class PaymentService {
 		bill.setOrderStatus(order.getStatus());
 		bill.setOrder(order);
 		return bill;
+	}
+	
+	private static final String DEFAULT_SUBJECT = "游戏";
+	private static final String DEFAULT_SUBJECT_CHINAUMS = "投诉热线:95534";
+	private String customizeCsrTel(String subject, Order order) {
+		String storeTel = order.getStore().getCsrTel();
+		if(StringUtils.isNotBlank(storeTel)) {
+			return subject + storeTel;
+		} else if(isChinaUmsChannel(order.getStoreChannel().getPaymentGateway())) {
+			return subject+"("+DEFAULT_SUBJECT_CHINAUMS+")";
+		}
+		return subject;
+	}
+	
+	private boolean isChinaUmsChannel(PaymentGateway gateway) {
+		return PaymentGateway.CHINAUMS.equals(gateway) ||
+				PaymentGateway.CHINAUMSV2.equals(gateway) ||
+				PaymentGateway.CHINAUMSH5.equals(gateway) ||
+				PaymentGateway.CHINAUMSWAP.equals(gateway) ||
+				PaymentGateway.UPAY.equals(gateway);
 	}
 	
 }

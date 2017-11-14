@@ -1,18 +1,11 @@
 package com.xpay.pay.proxy.kekepay;
 
-import com.xpay.pay.exception.GatewayException;
-import com.xpay.pay.model.Bill;
-import com.xpay.pay.proxy.IPaymentProxy;
-import com.xpay.pay.proxy.PaymentRequest;
-import com.xpay.pay.proxy.PaymentResponse;
-import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
-import com.xpay.pay.util.AppConfig;
-import com.xpay.pay.util.CryptoUtils;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,11 +21,18 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.xpay.pay.ApplicationConstants;
+import com.xpay.pay.exception.GatewayException;
+import com.xpay.pay.model.Bill;
+import com.xpay.pay.proxy.IPaymentProxy;
+import com.xpay.pay.proxy.PaymentRequest;
+import com.xpay.pay.proxy.PaymentResponse;
+import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
+import com.xpay.pay.util.AppConfig;
+import com.xpay.pay.util.CryptoUtils;
+
 @Component
 public class KekePayProxy implements IPaymentProxy {
-
-  public static final String PAYED = "PAYED";
-  public static final String TOPAY = "TOPAY";
   protected static final Logger logger = LogManager.getLogger("AccessLog");
   private static final AppConfig config = AppConfig.kekePayConfig;
   private static final String BASE_ENDPOINT = config.getProperty("provider.endpoint");
@@ -41,8 +41,7 @@ public class KekePayProxy implements IPaymentProxy {
   private static final String appId = config.getProperty("provider.app.id");
   private static final String appSecret = config.getProperty("provider.app.secret");
   private static final String PRODUCT_TYPE = config.getProperty("provider.product.type");
-  private static final String DEFAULT_JSAPI_URL = AppConfig.XPayConfig
-      .getProperty("jsapi.endpoint");
+  
   @Autowired
   RestTemplate kekePayProxy;
 
@@ -60,6 +59,10 @@ public class KekePayProxy implements IPaymentProxy {
 
   @Override
   public PaymentResponse unifiedOrder(PaymentRequest request) {
+	  if(request.getTotalFeeAsFloat()<10f) {
+		  throw new GatewayException(ApplicationConstants.CODE_COMMON, "Total fee must be more than 10.");
+	  }
+
     String url = DEFAULT_JSAPI_URL + TOPAY + "/" + request.getOrderNo();
     PaymentResponse response = new PaymentResponse();
     response.setCode(PaymentResponse.SUCCESS);

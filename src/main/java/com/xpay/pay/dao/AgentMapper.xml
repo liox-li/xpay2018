@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xpay.pay.dao.AgentMapper">
+
+  <resultMap id="AgentResultMap" type="com.xpay.pay.model.Agent">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="account" jdbcType="VARCHAR" property="account" />
+    <result column="agent_password" jdbcType="VARCHAR" property="password" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="csr_tel" jdbcType="VARCHAR" property="csrTel" />
+    <result column="csr_wechat" jdbcType="VARCHAR" property="csrWechat" />
+    <result column="proxy_url" jdbcType="VARCHAR" property="proxyUrl" />
+    <result column="token" jdbcType="VARCHAR" property="token" />
+  </resultMap>
+  
+  <sql id="agentColumns">
+    id,
+    account,
+    agent_password,
+    name,
+    csr_tel,
+    csr_wechat,
+    proxy_url,
+    token
+  </sql>
+
+  <select id="findById" resultMap="AgentResultMap">
+    SELECT
+    <include refid="agentColumns" />
+    FROM bill_agent
+    WHERE bill_agent.id = #{id} AND deleted = false
+  </select>
+  
+  <select id="findByAccount" resultMap="AgentResultMap">
+    SELECT
+    <include refid="agentColumns" />
+    FROM bill_agent
+    WHERE bill_agent.account = #{account} AND deleted = false
+  </select>
+  
+  <select id="findByToken" resultMap="AgentResultMap">
+    SELECT
+    <include refid="agentColumns" />
+    FROM bill_agent
+    WHERE bill_agent.token = #{token} AND deleted = false
+  </select>
+  
+   <select id="findAll" resultMap="AgentResultMap">
+    SELECT
+    <include refid="agentColumns" />
+    FROM bill_agent
+    WHERE deleted = false
+  </select>
+  
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.Agent">
+    insert into bill_agent
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+     account, agent_password, name, csr_tel, csr_wechat, proxy_url
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+     	#{account,jdbcType=VARCHAR},
+     	#{password,jdbcType=VARCHAR},
+     	#{name,jdbcType=VARCHAR},
+     	#{csrTel,jdbcType=VARCHAR},
+     	#{csrWechat,jdbcType=VARCHAR},
+     	#{proxyUrl,jdbcType=VARCHAR},
+    </trim>
+  </insert>
+  
+  <update id="updateById" parameterType="com.xpay.pay.model.Agent">
+    update bill_agent
+    <set>
+      <if test="password != null">
+        agent_password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="token != null">
+        token = #{token,jdbcType=VARCHAR},
+      </if>
+      update_date = now()
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+      and deleted = false
+  </update>
+  
+  <update id="deleteById">
+    update bill_agent
+    <set>
+      deleted = true,
+      update_date = now()
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+      and deleted = false
+  </update>
+  
+</mapper>

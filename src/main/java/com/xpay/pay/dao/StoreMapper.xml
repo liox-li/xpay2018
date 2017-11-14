@@ -15,6 +15,8 @@
     <result column="channels" jdbcType="VARCHAR" property="channelIds" />
     <result column="bail_channels" jdbcType="VARCHAR" property="bailChannelIds" />
     <result column="daily_limit" jdbcType="BIGINT" property="dailyLimit" />
+    <result column="csr_tel" jdbcType="VARCHAR" property="csrTel" />
+    <result column="proxy_url" jdbcType="VARCHAR" property="proxyUrl" />
   </resultMap>
   
   <sql id="storeColumns">
@@ -29,7 +31,9 @@
     rotation_index,
     channels,
     bail_channels,
-    daily_limit
+    daily_limit,
+    csr_tel,
+    proxy_url
   </sql>
 
   <select id="findById" resultMap="StoreResultMap">

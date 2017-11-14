@@ -2,6 +2,7 @@ package com.xpay.pay.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 public class TimeUtils {
@@ -20,5 +21,10 @@ public class TimeUtils {
 		} catch (ParseException e) {
 			return null;
 		}
+	}
+	
+	public static boolean isNowDayTime() {
+		int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+		return hour>9 && hour<22;
 	}
 }

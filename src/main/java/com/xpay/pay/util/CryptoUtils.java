@@ -6,6 +6,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.core.util.KeyValuePair;
+import org.springframework.web.util.UriComponentsBuilder;
+
 public class CryptoUtils {
 	public static final String md5(String str) {
 		try {
@@ -19,7 +23,40 @@ public class CryptoUtils {
 		}
 	}
 	
-    public static String md5KeFu(String str, String key) {
+	public static final String sha512(String str) {
+		try {
+			MessageDigest messageDigest =  MessageDigest.getInstance("SHA512");
+			messageDigest.reset();
+			messageDigest.update(str.getBytes("UTF-8"));
+			byte[] byteArray = messageDigest.digest();
+			return bytesToHex(byteArray);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	public static final String signQueryParams(List<KeyValuePair> keyPairs, String secretKey, String appSecret) {
+		keyPairs.sort((x1, x2) -> {
+			return x1.getKey().compareTo(x2.getKey());
+		});
+
+		UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
+		for (KeyValuePair pair : keyPairs) {
+			builder.queryParam(pair.getKey(), pair.getValue());
+		}
+		String params;
+		if(StringUtils.isNotBlank(secretKey)) {
+			builder.queryParam(secretKey, appSecret);
+			params = builder.build().toString().substring(1);
+		} else {
+			params = builder.build().toString().substring(1);
+			params += appSecret;
+		}
+		String md5 = CryptoUtils.md5(params).toUpperCase();
+		return md5;
+	}
+	
+	public static final String md5KeFu(String str, String key) {
         try {
             MessageDigest md5 = MessageDigest.getInstance("MD5");
             md5.update(str.getBytes("UTF-8"));

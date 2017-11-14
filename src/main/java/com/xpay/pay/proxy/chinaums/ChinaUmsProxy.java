@@ -246,11 +246,11 @@ public class ChinaUmsProxy implements IPaymentProxy {
 	}
 
 	public static OrderStatus toOrderStatus(String billStatus) {
-		if("PAID".equals(billStatus)) {
+		if("PAID".equals(billStatus) || "TRADE_SUCCESS".equals(billStatus)) {
 			return OrderStatus.SUCCESS;
 		} else if("UNPAID".equals(billStatus)) {
 			return OrderStatus.NOTPAY;
-		}else if("REFUND".equals(billStatus)) {
+		}else if("REFUND".equals(billStatus) || "TRADE_REFUND".equals(billStatus)) {
 			return OrderStatus.REFUND;
 		}else if("CLOSED".equals(billStatus)) {
 			return OrderStatus.CLOSED;

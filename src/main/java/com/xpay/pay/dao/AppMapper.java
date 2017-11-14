@@ -9,4 +9,6 @@ public interface AppMapper extends BaseMapper<App> {
 
 
 	public App findByKey(String key);
+	
+	public List<App> findByAgentId(long agentId);
 }
