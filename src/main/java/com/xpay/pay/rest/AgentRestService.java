@@ -2,6 +2,7 @@ package com.xpay.pay.rest;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,10 +13,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.xpay.pay.exception.Assert;
 import com.xpay.pay.model.Agent;
 import com.xpay.pay.model.App;
+import com.xpay.pay.model.Store;
+import com.xpay.pay.model.StoreChannel;
 import com.xpay.pay.rest.contract.BaseResponse;
 import com.xpay.pay.rest.contract.LoginRequest;
 import com.xpay.pay.service.AgentService;
 import com.xpay.pay.service.AppService;
+import com.xpay.pay.service.StoreService;
 
 @RestController
 public class AgentRestService {
@@ -23,7 +27,17 @@ public class AgentRestService {
 	private AgentService agentService;
 	@Autowired
 	private AppService appService;
+	@Autowired
+	private StoreService storeService;
 	
+	@RequestMapping(value = "/", method = RequestMethod.GET)
+	public BaseResponse<List<Agent>> findAll() {
+		List<Agent> agents = agentService.findAll();
+		
+		BaseResponse<List<Agent>> response = new BaseResponse<List<Agent>>();
+		response.setData(agents);
+		return response;
+	}
 	
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public BaseResponse<Agent> login(
@@ -46,5 +60,29 @@ public class AgentRestService {
 		return response;
 	}
 			
-
+	@RequestMapping(value = "/{id}/channels", method = RequestMethod.GET)
+	public BaseResponse<List<StoreChannel>> getAgentChannels(@PathVariable long id) {
+		List<StoreChannel> channels = storeService.findChannelsByAgentId(id);
+		BaseResponse<List<StoreChannel>> response = new BaseResponse<List<StoreChannel>>();
+		response.setData(channels);
+		return response;
+	}
+	
+	@RequestMapping(value = "/{id}/stores", method = RequestMethod.GET)
+	public BaseResponse<List<Store>> getAgentStores(@PathVariable long id) {
+		List<Store> channels = storeService.findByAgentId(id);
+		BaseResponse<List<Store>> response = new BaseResponse<List<Store>>();
+		response.setData(channels);
+		return response;
+	}
+	
+	@RequestMapping(value = "/{id}/stores/{storeId}/channels", method = RequestMethod.PATCH)
+	public BaseResponse<String> updateStoreChannels(@PathVariable long id, 
+			@PathVariable long storeId,
+			@RequestBody(required = true) String[] channelIds) {
+		storeService.updateStoreChannels(storeId, channelIds);
+		BaseResponse<String> response = new BaseResponse<String>();
+		response.setData(StringUtils.join(channelIds, ","));
+		return response;
+	}
 }

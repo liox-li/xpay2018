@@ -71,7 +71,7 @@ public class JsPayServlet extends HttpServlet {
 		String path = request.getPathInfo();
 		String parameters = StringUtils.isBlank(request.getQueryString())?"":"?"+request.getQueryString();
 		logger.info("Jspay: "+path + parameters);
-		if(!order.getStoreChannel().isAvailable()) {
+		if(!order.getStoreChannel().available()) {
 			response.setCharacterEncoding("utf-8");
 			response.setHeader("Content-type", "text/html;charset=UTF-8");
 			response.sendError(400, "操作太频繁,请稍后再试");

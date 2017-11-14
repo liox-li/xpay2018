@@ -1,7 +1,7 @@
 branch=refs/heads/master
-buildTimestamp=2017-11-13 09:07:24 +0000
-buildVersion=652
-commitId=2c65c2fc530c1df9902e4b18ac34ffa33d96c805
+buildTimestamp=2017-11-14 01:50:32 +0000
+buildVersion=658
+commitId=097cff519692d306eaf5f1da2273325b74fa78d2
 
 hostname=zaiping.local
 isSnapshot=true
@@ -12,4 +12,4 @@ osName=Mac OS X
 osVersion=10.11.6
 project=XPAY
 username=zma
-version=0.1.652
+version=0.1.658
