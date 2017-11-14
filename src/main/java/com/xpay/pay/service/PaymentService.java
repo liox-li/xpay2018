@@ -167,7 +167,7 @@ public class PaymentService {
 		}
 	}
 
-	private static final String LOCAL_ID = CommonUtils.getLocalIP();
+	private static final String LOCAL_ID = AppConfig.XPayConfig.getProperty("inRequest.address", CommonUtils.getLocalIP());
 	private static final String DEFAULT_NOTIFY_URL = AppConfig.XPayConfig.getProperty("notify.endpoint");
 	public PaymentRequest toPaymentRequest(Order order) {
 		PaymentRequest request = new PaymentRequest();

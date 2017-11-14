@@ -1,15 +1,15 @@
 branch=refs/heads/master
-buildTimestamp=2017-11-13 09:07:24 +0000
-buildVersion=652
-commitId=2c65c2fc530c1df9902e4b18ac34ffa33d96c805
+buildTimestamp=2017-11-14 06:15:56 +0000
+buildVersion=658
+commitId=36133822d69158e4953bf570eaa38f53f2825c92
 
-hostname=zaiping.local
+hostname=sunjiandeMacBook-Pro.local
 isSnapshot=true
-javaVersion=1.8.0_91
+javaVersion=1.8.0_45
 majorVersion=0
 minorVersion=1
 osName=Mac OS X
-osVersion=10.11.6
+osVersion=10.13.1
 project=XPAY
-username=zma
-version=0.1.652
+username=sunjian
+version=0.1.658
