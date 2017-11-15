@@ -82,7 +82,7 @@
 
 	<servlet-mapping>
 		<servlet-name>pay</servlet-name>
-		<url-pattern>/agent/*</url-pattern>
+		<url-pattern>/admin/*</url-pattern>
 	</servlet-mapping>
 	
 	<servlet-mapping>

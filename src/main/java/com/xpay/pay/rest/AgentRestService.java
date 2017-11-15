@@ -2,8 +2,8 @@ package com.xpay.pay.rest;
 
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +22,7 @@ import com.xpay.pay.service.AgentService;
 import com.xpay.pay.service.AppService;
 import com.xpay.pay.service.StoreService;
 
+@CrossOrigin(maxAge = 3600)
 @RestController
 public class AgentRestService {
 	@Autowired
