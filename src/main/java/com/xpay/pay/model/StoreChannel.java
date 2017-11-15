@@ -7,6 +7,7 @@ public class StoreChannel {
 	private String extStoreId;
 	private PaymentGateway paymentGateway;
 	private long lastUseTime;
+	private String extStoreName;
 	
 	public long getId() {
 		return id;
@@ -40,9 +41,19 @@ public class StoreChannel {
 		this.lastUseTime = lastUseTime;
 	}
 	
+	public String getExtStoreName() {
+		return extStoreName;
+	}
+
+	public void setExtStoreName(String extStoreName) {
+		this.extStoreName = extStoreName;
+	}
+
+
+
 	private static final long BLOCK_TIME_DAY= 40*1000;
 	private static final long BLOCK_TIME_NIGHT= 60*1000;
-	public boolean isAvailable() {
+	public boolean available() {
 		long blockTime = TimeUtils.isNowDayTime()?BLOCK_TIME_DAY:BLOCK_TIME_NIGHT;
 		boolean avail = System.currentTimeMillis()-this.lastUseTime>blockTime;
 		return avail;

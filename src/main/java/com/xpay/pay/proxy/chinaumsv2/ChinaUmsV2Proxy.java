@@ -134,9 +134,15 @@ public class ChinaUmsV2Proxy implements IPaymentProxy {
 	private ChinaUmsRequest toChinaUmsRequest(String method, PaymentRequest request) {
 		ChinaUmsRequest chinaUmsRequest = new ChinaUmsRequest();
 		chinaUmsRequest.setMsgSrc(appName);
-		chinaUmsRequest.setMid(request.getExtStoreId());
+		String[] strArrays = request.getExtStoreId().split(",");
+		if(strArrays.length==1) {
+			chinaUmsRequest.setMid(request.getExtStoreId());
+			chinaUmsRequest.setTid(tId);
+		} else {
+			chinaUmsRequest.setMid(strArrays[0]);
+			chinaUmsRequest.setTid(strArrays[1]);
+		}
 		chinaUmsRequest.setInstMid(instMid);
-		chinaUmsRequest.setTid(tId);
 		chinaUmsRequest.setBillNo(request.getGatewayOrderNo());
 		chinaUmsRequest.setRequestTimeStamp(IDGenerator.formatTime());
 		if(CHINAUMSV2.UnifiedOrder().equals(method)) {

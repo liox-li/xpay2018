@@ -1,5 +1,7 @@
 package com.xpay.pay.service;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,10 @@ public class AgentService {
 		}  else {
 			return null;
 		}
+	}
+	
+	public List<Agent> findAll() {
+		return agentMapper.findAll();
 	}
 	
 }

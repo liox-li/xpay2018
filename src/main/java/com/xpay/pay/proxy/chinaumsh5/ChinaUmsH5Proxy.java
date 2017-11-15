@@ -178,8 +178,14 @@ public class ChinaUmsH5Proxy implements IPaymentProxy {
 		chinaUmsH5Request.setMsgType(method);
 		chinaUmsH5Request.setRequestTimestamp(IDGenerator.formatTime());
 		chinaUmsH5Request.setMerOrderId(request.getGatewayOrderNo());
-		chinaUmsH5Request.setMid(request.getExtStoreId());
-		chinaUmsH5Request.setTid(tId);
+		String[] strArrays = request.getExtStoreId().split(",");
+		if(strArrays.length==1) {
+			chinaUmsH5Request.setMid(request.getExtStoreId());
+			chinaUmsH5Request.setTid(tId);
+		} else {
+			chinaUmsH5Request.setMid(strArrays[0]);
+			chinaUmsH5Request.setTid(strArrays[1]);
+		}
 		chinaUmsH5Request.setInstMid(instMid);
 		chinaUmsH5Request.setGoods(request.getGoods());
 		chinaUmsH5Request.setOrderDesc(request.getSubject());

@@ -8,4 +8,6 @@ public interface StoreMapper extends BaseMapper<Store> {
 	public List<Store> findAll();
 	
 	public Store findByCode(String code);
+	
+	public List<Store> findByAgentId(long agentId);
 }

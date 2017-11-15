@@ -62,7 +62,7 @@ public class OrderService {
 				.stream().map(x -> x.getStoreChannelId())
 				.collect(Collectors.toList());
 
-		StoreChannel channel = channels.stream().filter(x -> x.isAvailable() && !CommonUtils.in(usedChannels, x.getId()))
+		StoreChannel channel = channels.stream().filter(x -> x.available() && !CommonUtils.in(usedChannels, x.getId()))
 				.collect(Collectors.collectingAndThen(Collectors.toList(), collected -> {
 				      Collections.shuffle(collected);
 				      return collected.stream();

@@ -50,6 +50,13 @@
     WHERE bill_store.code = #{code} AND deleted = false
   </select>
   
+  <select id="findByAgentId" resultMap="StoreResultMap">
+    SELECT
+    <include refid="storeColumns" />
+    FROM bill_store
+    WHERE bill_store.agent_id = #{agentId} AND deleted = false
+  </select>
+  
    <select id="findAll" resultMap="StoreResultMap">
     SELECT
     <include refid="storeColumns" />

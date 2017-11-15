@@ -5,12 +5,14 @@
   <resultMap id="StoreChannelResultMap" type="com.xpay.pay.model.StoreChannel">
     <result column="id" jdbcType="BIGINT" property="id" />
     <result column="ext_store_id" jdbcType="VARCHAR" property="extStoreId" />
+    <result column="ext_store_name" jdbcType="VARCHAR" property="extStoreName" />
     <result column="payment_gateway" jdbcType="VARCHAR" property="paymentGateway" />
   </resultMap>
   
   <sql id="storeChannelColumns">
   	id,
     ext_store_id,
+    ext_store_name,
     payment_gateway
   </sql>
 
@@ -28,13 +30,21 @@
     WHERE deleted = false
   </select>
   
+  <select id="findByAgentId" resultMap="StoreChannelResultMap">
+    SELECT
+    <include refid="storeChannelColumns" />
+    FROM bill_store_channel
+    WHERE bill_store_channel.agent_id = #{agentId} and deleted = false
+  </select>
+  
   <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.StoreChannel">
     insert into bill_store_channel
     <trim prefix="(" suffix=")" suffixOverrides=",">
-     ext_store_id, payment_gateway
+     ext_store_id, ext_store_name, payment_gateway
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
      	#{extStoreId,jdbcType=VARCHAR},
+     	#{extStoreName,jdbcType=VARCHAR},
      	#{paymentGateway,jdbcType=VARCHAR}
     </trim>
   </insert>

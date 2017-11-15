@@ -53,6 +53,14 @@ public class StoreService {
 		return store;
 	}
 	
+	public List<Store> findByAgentId(long agentId) {
+		return storeMapper.findByAgentId(agentId);
+	}
+	
+	public List<StoreChannel> findChannelsByAgentId(long agentId) {
+		return storeChannelMapper.findByAgentId(agentId);
+	}
+	
 	public boolean updateById(Store store) {
 		return storeMapper.updateById(store);
 	}
@@ -68,6 +76,14 @@ public class StoreService {
 			linkCache.put(storeId, links);
 		}
 		return links;
+	}
+	
+	public void updateStoreChannels(long storeId, long[] channelIds) {
+		Store store = new Store();
+		store.setId(storeId);
+		String channels = StringUtils.join(channelIds, ',');
+		store.setChannelIds(channels);
+		storeMapper.updateById(store);
 	}
 	
 	public void refreshCache() {
