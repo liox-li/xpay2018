@@ -78,12 +78,12 @@ public class AgentRestService {
 	}
 	
 	@RequestMapping(value = "/{id}/stores/{storeId}/channels", method = RequestMethod.PATCH)
-	public BaseResponse<long[]> updateStoreChannels(@PathVariable long id, 
+	public BaseResponse<UpdateStoreChannelRequest> updateStoreChannels(@PathVariable long id, 
 			@PathVariable long storeId,
 			@RequestBody(required = true) UpdateStoreChannelRequest request) {
 		storeService.updateStoreChannels(storeId, request.getChannelIds());
-		BaseResponse<long[]> response = new BaseResponse<long[]>();
-		response.setData(request.getChannelIds());
+		BaseResponse<UpdateStoreChannelRequest> response = new BaseResponse<UpdateStoreChannelRequest>();
+		response.setData(request);
 		return response;
 	}
 }

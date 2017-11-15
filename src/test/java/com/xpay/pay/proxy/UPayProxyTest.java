@@ -1,5 +1,9 @@
 package com.xpay.pay.proxy;
 
+import java.io.FileInputStream;
+import java.util.List;
+
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -41,5 +45,27 @@ public class UPayProxyTest  extends BaseSpringJunitTest {
 		ActiviateResponse response = uPayProxy.activiate(code, deviceId);
 		
 		System.out.println(code+","+response.getBiz_response().getTerminal_sn()+"," + response.getBiz_response().getTerminal_key());
+	}
+	
+	@Test
+	public void testBatchActiviate() {
+		String[] codes = {"71551891","65346938", "93236212", "56765017", "56254936", "36945528", "95736154", "14491575", "35654568", "96688820"};
+		
+		String sql = "insert into bill_store_channel (ext_store_id, ext_store_name, payment_gateway, bill_type) values ('%ext_store_id%', '%ext_store_name%', '%payment_gateway%', 'T1');";
+		String extStoreName = "豆豆信息";
+		String paymenGateway = "UPAY";
+		String deviceId = "192.0.0.";
+		int ip=53;
+		int i=100;
+		for(String code : codes) {
+			ActiviateResponse response = uPayProxy.activiate(code, deviceId+ip);
+			String extStoreId = code+","+response.getBiz_response().getTerminal_sn()+"," + response.getBiz_response().getTerminal_key();
+			String replacedSql = sql.replace("%ext_store_id%", extStoreId)
+			.replace("%ext_store_name%", extStoreName+i)
+			.replace("%payment_gateway%", paymenGateway);
+			System.out.println(replacedSql);
+			i++;
+			ip++;
+		}
 	}
 }
