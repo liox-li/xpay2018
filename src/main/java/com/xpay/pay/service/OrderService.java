@@ -67,6 +67,9 @@ public class OrderService {
 				      Collections.shuffle(collected);
 				      return collected.stream();
 				  })).findFirst().orElse(null);
+		if(channel!=null) {
+			channel.setLastUseTime(System.currentTimeMillis());
+		}
 		return channel;
 	}
 	

@@ -58,9 +58,6 @@ public class StoreChannel {
 	public boolean available() {
 		long blockTime = TimeUtils.isNowDayTime()?BLOCK_TIME_DAY:BLOCK_TIME_NIGHT;
 		boolean avail = System.currentTimeMillis()-this.lastUseTime.get()>blockTime;
-		if(avail) {
-			this.lastUseTime.set(System.currentTimeMillis());
-		}
 		return avail;
 	}
 

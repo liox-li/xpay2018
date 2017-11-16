@@ -285,6 +285,7 @@ public class PayNotifyServlet extends HttpServlet {
 				&& order.isSettle()) {
 			CompletableFuture.runAsync(() -> {
 				NotificationResponse notification = this.toNotResponse(order);
+				notification.setChannelNo(order.getStoreChannelId());
 				BaseResponse response = null;
 				boolean storeNotified = false;
 				boolean proxyNotified = false;
