@@ -37,10 +37,10 @@ public class RiskCheckService {
 		float f1 = list.get(0);
 		float f2 = list.get(1);
 		float f3 = list.get(2);
-		if(f1<30f && equals(f1, f2) && equals(f2,f3)) {
-			LOG.warn(String.format("checkFee failed : %s,%s,%s", f1,f2,f3) );
-			return false;
-		}
+//		if(f1<30f && equals(f1, f2) && equals(f2,f3)) {
+//			LOG.warn(String.format("checkFee failed : %s,%s,%s", f1,f2,f3) );
+//			return false;
+//		}
 		
 		boolean result = false;
 		for(float totalFee: list) {

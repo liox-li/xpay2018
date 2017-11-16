@@ -57,11 +57,26 @@ public class IDGeneratorTest {
 		//gropu2: 1328 ~ 1427
 		//group3: 1428 ~ 1527
 		
-		String sql = "update bill_store set channels='%channels%', bail_channels='%bail_channels%' where code='%code%';";
+		// T20171019105442016 1535~1574
+		
+//		T20171026135944105 | 千汇万兴H51
+//		 T20171108135349455 | 千汇万兴H55
+//		 T20171019094321369 | 千汇万兴支付宝
+//		 T20170817172200539 | 千汇万兴2
+//		 T20171115171807614 | 千汇万兴H57
+//		 T20170817172114691 | 千汇万兴1
+//		 T20171102093434226 | 千汇万兴H52
+//		 T20171106150701151 | 千汇万兴H53
+//		 T20171108125604706 | 千汇万兴H54
+//		 T20171109092733192 | 千汇万兴H56
+//       T20171019105442016 		
+		
+		
+		String sql = "update bill_store set channels='%channels%'  where code='%code%';";
 		String code = "T20171019105442016";
-		String bail_channels="13,14,16,17,19,20,21,22,23";
+//		String bail_channels="1,2,3,4,5,6,7,8,9,10";
 		long startChannelId = 1535;
-		long endChannelId =1574;
+		long endChannelId =1554;
 		StringBuilder sb = new StringBuilder();
 		for(long l=startChannelId; l<=endChannelId; l++) {
 			sb.append(l);
@@ -70,7 +85,7 @@ public class IDGeneratorTest {
 		sb.setLength(sb.length()-1);
 		
 		String replacedSql = sql.replace("%channels%", sb.toString())
-				.replace("%bail_channels%", bail_channels)
+//				.replace("%bail_channels%", bail_channels)
 				.replace("%code%", code);
 		System.out.println(replacedSql);
 	}
