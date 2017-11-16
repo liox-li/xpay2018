@@ -304,6 +304,7 @@ public class PayNotifyServlet extends HttpServlet {
 						if(!proxyNotified && StringUtils.isNotBlank(order.getStore().getProxyUrl())) {
 							notification.setStoreId(order.getStore().getCode());
 							notification.setStoreName(order.getStore().getName());
+							notification.setChannelNo(order.getStoreChannelId());
 							response = notifyProxy.notify(order.getStore().getProxyUrl(), order.getApp(), notification);
 							if(response != null && response.getStatus()==ApplicationConstants.STATUS_OK) {
 								proxyNotified = true;

@@ -14,6 +14,8 @@ public class NotificationResponse {
 	private String targetOrderNo;
 	private String attach;
 	private String payInfo;
+	private long channelNo;
+	
 	public String getOrderNo() {
 		return orderNo;
 	}
@@ -91,5 +93,11 @@ public class NotificationResponse {
 	}
 	public void setPayInfo(String payInfo) {
 		this.payInfo = payInfo;
+	}
+	public long getChannelNo() {
+		return channelNo;
+	}
+	public void setChannelNo(long channelNo) {
+		this.channelNo = channelNo;
 	}
 }

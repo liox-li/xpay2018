@@ -73,10 +73,10 @@ public class IDGeneratorTest {
 		
 		
 		String sql = "update bill_store set channels='%channels%'  where code='%code%';";
-		String code = "T20171019105442016";
+		String code = "T20171116100636953";
 //		String bail_channels="1,2,3,4,5,6,7,8,9,10";
-		long startChannelId = 1535;
-		long endChannelId =1554;
+		long startChannelId = 1388;
+		long endChannelId =1397;
 		StringBuilder sb = new StringBuilder();
 		for(long l=startChannelId; l<=endChannelId; l++) {
 			sb.append(l);
