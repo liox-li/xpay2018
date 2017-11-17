@@ -53,8 +53,8 @@ public class StoreChannel {
 
 
 
-	private static final long BLOCK_TIME_DAY= 30*1000;
-	private static final long BLOCK_TIME_NIGHT= 60*1000;
+	private static final long BLOCK_TIME_DAY= 2*1000;
+	private static final long BLOCK_TIME_NIGHT= 5*1000;
 	public boolean available() {
 		long blockTime = TimeUtils.isNowDayTime()?BLOCK_TIME_DAY:BLOCK_TIME_NIGHT;
 		boolean avail = System.currentTimeMillis()-this.lastUseTime.get()>blockTime;
