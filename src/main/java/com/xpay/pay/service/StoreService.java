@@ -54,7 +54,12 @@ public class StoreService {
 	}
 	
 	public List<Store> findByAgentId(long agentId) {
-		return storeMapper.findByAgentId(agentId);
+		List<Store> stores = storeMapper.findByAgentId(agentId);
+		List<Store> result = Lists.newArrayList();
+		for(Store store : stores) {
+			result.add(this.findById(store.getId()));
+		}
+		return result;
 	}
 	
 	public List<StoreChannel> findChannelsByAgentId(long agentId) {
@@ -67,6 +72,11 @@ public class StoreService {
 	
 	public StoreChannel findStoreChannelById(long id) {
 		return channelCache.get(id);
+	}
+	
+	public Boolean deleteStoreChannel(StoreChannel channel) {
+		channelCache.remove(channel.getId());
+		return storeChannelMapper.deleteById(channel.getId());
 	}
 	
 	public List<StoreLink> findStoreLinkByStoreId(long storeId) {

@@ -1,5 +1,6 @@
 package com.xpay.pay.rest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
 import com.xpay.pay.rest.contract.BaseResponse;
 import com.xpay.pay.rest.contract.LoginRequest;
+import com.xpay.pay.rest.contract.StoreResponse;
 import com.xpay.pay.rest.contract.UpdateStoreChannelRequest;
 import com.xpay.pay.service.AgentService;
 import com.xpay.pay.service.AppService;
@@ -70,11 +72,30 @@ public class AgentRestService {
 		return response;
 	}
 	
+	@RequestMapping(value = "/{id}/channels/{channelId}", method = RequestMethod.DELETE)
+	public BaseResponse<Boolean> deleteAgentChannel(@PathVariable long id, @PathVariable long channelId) {
+		StoreChannel channel = storeService.findStoreChannelById(channelId);
+		Assert.notNull(channel, String.format("Channel not found, channelId: %s, agentId: %s", channelId, id));
+		boolean deleted = storeService.deleteStoreChannel(channel);
+		BaseResponse<Boolean> response = new BaseResponse<Boolean>();
+		response.setData(deleted);
+		return response;
+	}
+	
 	@RequestMapping(value = "/{id}/stores", method = RequestMethod.GET)
-	public BaseResponse<List<Store>> getAgentStores(@PathVariable long id) {
-		List<Store> channels = storeService.findByAgentId(id);
-		BaseResponse<List<Store>> response = new BaseResponse<List<Store>>();
-		response.setData(channels);
+	public BaseResponse<List<StoreResponse>> getAgentStores(@PathVariable long id) {
+		List<Store> stores = storeService.findByAgentId(id);
+		List<StoreResponse> storeResponses = new ArrayList<StoreResponse>();
+		for(Store store: stores) {
+			StoreResponse storeResponse = new StoreResponse();
+			storeResponse.setId(store.getId());
+			storeResponse.setCode(store.getCode());
+			storeResponse.setName(store.getName());
+			storeResponse.setChannels(store.getChannels());
+			storeResponses.add(storeResponse);
+		}
+		BaseResponse<List<StoreResponse>> response = new BaseResponse<List<StoreResponse>>();
+		response.setData(storeResponses);
 		return response;
 	}
 	
