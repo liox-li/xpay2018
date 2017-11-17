@@ -59,24 +59,26 @@ public class IDGeneratorTest {
 		
 		// T20171019105442016 1535~1574
 		
-//		T20171026135944105 | 千汇万兴H51
+//		T20171116100636953 | 千汇万兴6
 //		 T20171108135349455 | 千汇万兴H55
-//		 T20171019094321369 | 千汇万兴支付宝
-//		 T20170817172200539 | 千汇万兴2
 //		 T20171115171807614 | 千汇万兴H57
-//		 T20170817172114691 | 千汇万兴1
+//		 T20171026135944105 | 千汇万兴H51
+//		 T20171116100636952 | 千汇万兴5
+//		 T20171116100636951 | 千汇万兴4
+//		 T20171116100636950 | 千汇万兴3
 //		 T20171102093434226 | 千汇万兴H52
+//		 T20170817172200539 | 千汇万兴2
+//		 T20170817172114691 | 千汇万兴1
 //		 T20171106150701151 | 千汇万兴H53
 //		 T20171108125604706 | 千汇万兴H54
-//		 T20171109092733192 | 千汇万兴H56
-//       T20171019105442016 		
+//		 T20171109092733192 | 千汇万兴H56	
 		
 		
-		String sql = "update bill_store set channels='%channels%'  where code='%code%';";
-		String code = "T20171116100636953";
-//		String bail_channels="1,2,3,4,5,6,7,8,9,10";
-		long startChannelId = 1388;
-		long endChannelId =1397;
+		String sql = "update bill_store set channels='%channels%', bail_channels='%bail_channels%' where code='%code%';";
+		String code = "T20171109092733192";
+		String bail_channels="2,3,4,5,6,7,8,9,10";
+		long startChannelId = 1227;
+		long endChannelId =1527;
 		StringBuilder sb = new StringBuilder();
 		for(long l=startChannelId; l<=endChannelId; l++) {
 			sb.append(l);
@@ -85,7 +87,7 @@ public class IDGeneratorTest {
 		sb.setLength(sb.length()-1);
 		
 		String replacedSql = sql.replace("%channels%", sb.toString())
-//				.replace("%bail_channels%", bail_channels)
+				.replace("%bail_channels%", bail_channels)
 				.replace("%code%", code);
 		System.out.println(replacedSql);
 	}

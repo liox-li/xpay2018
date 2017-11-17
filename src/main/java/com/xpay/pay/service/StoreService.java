@@ -88,11 +88,7 @@ public class StoreService {
 	
 	public void refreshCache() {
 		channelCache.destroy();
-		List<StoreChannel> channels = storeChannelMapper.findAll();
-		for(StoreChannel channel: channels) {
-			channelCache.put(channel.getId(), channel);
-		}
-		
+		initStoreChannelCache();
 		linkCache.destroy();
 	}
 	
@@ -107,10 +103,15 @@ public class StoreService {
 	}
 	
 	private List<StoreChannel> findChannelByIds(String channelIds) {
+		initStoreChannelCache();
+		
 		List<StoreChannel> list = Lists.newArrayList();
 		String[] idStrs = StringUtils.split(channelIds, ",");
 		for(String idStr: idStrs) {
-			list.add(channelCache.get(Long.valueOf(idStr)));
+			StoreChannel channel = channelCache.get(Long.valueOf(idStr));
+			if(channel!=null) {
+				list.add(channel);
+			}
 		}
 		return list;
 	}
