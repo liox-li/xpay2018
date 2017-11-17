@@ -38,15 +38,19 @@ public class PaymentService {
 	public Order createOrder(App app, String orderNo, Store store, PayChannel channel,
 			String deviceId, String ip, String totalFee, String orderTime,
 			String sellerOrderNo, String attach, String notifyUrl,String returnUrl,
-			String subject) {
+			String subject, String storeChannelId) {
 		Assert.isTrue(riskCheckService.checkFee(store, CommonUtils.toFloat(totalFee)), String.format("Invalid total fee: %s, sellerOrderNo: %s",totalFee, StringUtils.trimToEmpty(sellerOrderNo)));
 		
 		StoreChannel storeChannel = null;
-		boolean isNextBailPay = store.isNextBailPay(CommonUtils.toFloat(totalFee));
-		storeChannel = orderService.findUnusedChannel(store.getChannels(), orderNo);
-		if(isNextBailPay) {
-			StoreChannel bailChannel = orderService.findUnusedChannel(store.getBailChannels(), orderNo);
-			storeChannel = bailChannel == null? storeChannel:bailChannel;
+		if(StringUtils.isNotBlank(storeChannelId)) {
+			storeService.findStoreChannelById(Long.valueOf(storeChannelId));
+		} else {
+			boolean isNextBailPay = store.isNextBailPay(CommonUtils.toFloat(totalFee));
+			storeChannel = orderService.findUnusedChannel(store.getChannels(), orderNo);
+			if(isNextBailPay) {
+				StoreChannel bailChannel = orderService.findUnusedChannel(store.getBailChannels(), orderNo);
+				storeChannel = bailChannel == null? storeChannel:bailChannel;
+			}
 		}
 		Assert.notNull(storeChannel, String.format("No avaiable store channel, please try later, sellerOrderNo: %s", StringUtils.trimToEmpty(sellerOrderNo)));
 		

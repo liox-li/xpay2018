@@ -60,6 +60,7 @@ public class PaymentRestService extends AuthRestService {
 			@RequestParam(required = false) String notifyUrl,
 			@RequestParam(required = false) String returnUrl,
 			@RequestParam(required = false) String subject,
+			@RequestParam(required = false) String storeChannel,
 			@RequestBody(required = false) OrderRequest payload) {
 		if(StringUtils.isBlank(storeId)) {
 			Assert.notNull(payload, "Order request can not be null");
@@ -97,7 +98,7 @@ public class PaymentRestService extends AuthRestService {
 		Order order = null;
 		Bill bill = null;
 		do {
-			order = paymentService.createOrder(app, orderNo, store, channel, deviceId, ip, totalFee, orderDate, sellerOrderNo, attach, notifyUrl, returnUrl, subject);
+			order = paymentService.createOrder(app, orderNo, store, channel, deviceId, ip, totalFee, orderDate, sellerOrderNo, attach, notifyUrl, returnUrl, subject, storeChannel);
 			Assert.notNull(order,"Create order failed");
 			
 			try {
