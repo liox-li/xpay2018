@@ -9,6 +9,7 @@ public class App {
 	private String name;
 	private String token;
 	private Date updateDate;
+	private Long agentId;
 	
 	public int getId() {
 		return id;
@@ -45,5 +46,11 @@ public class App {
 	}
 	public void setUpdateDate(Date updateDate) {
 		this.updateDate = updateDate;
+	}
+	public Long getAgentId() {
+		return agentId;
+	}
+	public void setAgentId(Long agentId) {
+		this.agentId = agentId;
 	}
 }

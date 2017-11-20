@@ -28,8 +28,12 @@ public class AgentService {
 		}
 	}
 	
+	public Agent findByToken(String token) {
+		Agent agent = agentMapper.findByToken(token);
+		return agent;
+	}
+	
 	public List<Agent> findAll() {
 		return agentMapper.findAll();
 	}
-	
 }

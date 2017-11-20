@@ -99,6 +99,8 @@ CREATE INDEX idx_ext_order_no ON bill_order(ext_order_no);
 CREATE INDEX idx_order_store_id ON bill_order(store_id, update_date); 
 ALTER TABLE bill_order ADD COLUMN target_order_no varchar(64);
 CREATE INDEX idx_target_order_no ON bill_order(target_order_no); 
+CREATE INDEX idx_order_store_channel ON bill_order(store_channel); 
+
 
 CREATE TABLE IF NOT EXISTS bill_order_detail (
 	id BIGSERIAL PRIMARY KEY,

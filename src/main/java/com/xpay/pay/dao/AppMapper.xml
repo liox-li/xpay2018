@@ -8,6 +8,7 @@
     <result column="app_secret" jdbcType="VARCHAR" property="secret" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="token" jdbcType="VARCHAR" property="token" />
+    <result column="agent_id" jdbcType="VARCHAR" property="agentId" />
     <result column="update_date" jdbcType="VARCHAR" property="updateDate" />
   </resultMap>
   
@@ -17,6 +18,7 @@
     app_secret as secret,
     name,
     token,
+    agent_id,
     update_date
   </sql>
 

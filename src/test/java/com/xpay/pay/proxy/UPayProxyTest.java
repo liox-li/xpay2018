@@ -49,14 +49,14 @@ public class UPayProxyTest  extends BaseSpringJunitTest {
 	
 	@Test
 	public void testBatchActiviate() {
-		String[] codes = {"71551891","65346938", "93236212", "56765017", "56254936", "36945528", "95736154", "14491575", "35654568", "96688820"};
+		String[] codes = {"60945533", "81878173", "26629642", "56282700", "33948002", "93090977", "97792995", "40058043", "51474768", "51392379"};
 		
 		String sql = "insert into bill_store_channel (ext_store_id, ext_store_name, payment_gateway, bill_type) values ('%ext_store_id%', '%ext_store_name%', '%payment_gateway%', 'T1');";
-		String extStoreName = "豆豆信息";
+		String extStoreName = "米动游戏";
 		String paymenGateway = "UPAY";
 		String deviceId = "192.0.0.";
-		int ip=53;
-		int i=100;
+		int ip=64;
+		int i=110;
 		for(String code : codes) {
 			ActiviateResponse response = uPayProxy.activiate(code, deviceId+ip);
 			String extStoreId = code+","+response.getBiz_response().getTerminal_sn()+"," + response.getBiz_response().getTerminal_key();

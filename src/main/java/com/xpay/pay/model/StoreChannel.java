@@ -11,6 +11,7 @@ public class StoreChannel {
 	private PaymentGateway paymentGateway;
 	private AtomicLong lastUseTime = new AtomicLong(0);
 	private String extStoreName;
+	
 	private Date updateDate;
 	
 	public long getId() {
