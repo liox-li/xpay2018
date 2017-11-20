@@ -6,6 +6,7 @@
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="app_key" jdbcType="VARCHAR" property="key" />
     <result column="app_secret" jdbcType="VARCHAR" property="secret" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="token" jdbcType="VARCHAR" property="token" />
     <result column="update_date" jdbcType="VARCHAR" property="updateDate" />
   </resultMap>
@@ -14,6 +15,7 @@
     id,
     app_key as key,
     app_secret as secret,
+    name,
     token,
     update_date
   </sql>

@@ -34,7 +34,7 @@ public class AgentRestService {
 	@Autowired
 	private StoreService storeService;
 	
-	@RequestMapping(value = "/", method = RequestMethod.GET)
+	@RequestMapping(value = "/agents", method = RequestMethod.GET)
 	public BaseResponse<List<Agent>> findAll() {
 		List<Agent> agents = agentService.findAll();
 		
