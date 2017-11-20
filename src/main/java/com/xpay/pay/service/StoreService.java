@@ -79,6 +79,12 @@ public class StoreService {
 		return storeChannelMapper.deleteById(channel.getId());
 	}
 	
+	public Boolean updateStoreChannel(StoreChannel channel) {
+		StoreChannel storeChannel = new StoreChannel();
+		storeChannel.setId(channel.getId());
+		return storeChannelMapper.updateById(storeChannel);
+	}
+	
 	public List<StoreLink> findStoreLinkByStoreId(long storeId) {
 		List<StoreLink> links = linkCache.get(storeId);
 		if(CollectionUtils.isEmpty(links)) {

@@ -7,13 +7,15 @@
     <result column="ext_store_id" jdbcType="VARCHAR" property="extStoreId" />
     <result column="ext_store_name" jdbcType="VARCHAR" property="extStoreName" />
     <result column="payment_gateway" jdbcType="VARCHAR" property="paymentGateway" />
+    <result column="update_date" jdbcType="VARCHAR" property="updateDate" />
   </resultMap>
   
   <sql id="storeChannelColumns">
   	id,
     ext_store_id,
     ext_store_name,
-    payment_gateway
+    payment_gateway,
+    update_date
   </sql>
 
   <select id="findById" resultMap="StoreChannelResultMap">

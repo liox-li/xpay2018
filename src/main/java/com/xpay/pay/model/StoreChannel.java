@@ -1,5 +1,6 @@
 package com.xpay.pay.model;
 
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.xpay.pay.util.TimeUtils;
@@ -10,6 +11,7 @@ public class StoreChannel {
 	private PaymentGateway paymentGateway;
 	private AtomicLong lastUseTime = new AtomicLong(0);
 	private String extStoreName;
+	private Date updateDate;
 	
 	public long getId() {
 		return id;
@@ -49,6 +51,14 @@ public class StoreChannel {
 
 	public void setExtStoreName(String extStoreName) {
 		this.extStoreName = extStoreName;
+	}
+
+	public Date getUpdateDate() {
+		return updateDate;
+	}
+
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
 	}
 
 

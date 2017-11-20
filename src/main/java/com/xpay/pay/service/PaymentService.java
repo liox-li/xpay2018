@@ -119,7 +119,7 @@ public class PaymentService {
 		}
 		return true;
 	}
-
+	
 	public Bill query(int appId, String orderNo, String storeCode, boolean isCsr) {
 		Order order = orderService.findActiveByOrderNo(orderNo);
 		Assert.isTrue(storeCode.equals(order.getStore().getCode()), "No such order found for the store");

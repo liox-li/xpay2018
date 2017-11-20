@@ -33,16 +33,16 @@ public class IDGeneratorTest {
 	
 	@Test
 	public void testNewStoreChannels() throws FileNotFoundException, IOException {
-		String sql = "insert into bill_store_channel (id, ext_store_id, ext_store_name, payment_gateway, bill_type) values ('%id%', '%ext_store_id%', '%ext_store_name%', '%payment_gateway%', 'T1');";
-		String extStoreName = "上海纳优信息技术有限公司";
+		String sql = "insert into bill_store_channel (ext_store_id, ext_store_name, payment_gateway, bill_type) values ('%ext_store_id%', '%ext_store_name%', '%payment_gateway%', 'T1');";
+		String extStoreName = "中海兴盛（天津）科技发展有限公司";
 		String paymenGateway = "CHINAUMSH5";
 		
-		String filePath = "/data/store_id_nayou.txt";
+		String filePath = "/data/store_id_qianhui.txt";
 		List<String> lines = IOUtils.readLines(new FileInputStream(filePath));
 		int i=1;
 		for(String line : lines) {
 			String replacedSql = sql.replace("%id%", i+"")
-			.replace("%ext_store_id%", line.replace("    ", ","))
+			.replace("%ext_store_id%", line.trim())
 			.replace("%ext_store_name%", extStoreName)
 			.replace("%payment_gateway%", paymenGateway);
 			System.out.println(replacedSql);
@@ -74,11 +74,11 @@ public class IDGeneratorTest {
 //		 T20171109092733192 | 千汇万兴H56	
 		
 		
-		String sql = "update bill_store set channels='%channels%', bail_channels='%bail_channels%' where code='%code%';";
+		String sql = "update bill_store set channels='%channels%' where code='%code%';";
 		String code = "T20171019105442016";
-		String bail_channels="13";
-		long startChannelId = 1535;
-		long endChannelId =1574;
+//		String bail_channels="13";
+		long startChannelId = 1617;
+		long endChannelId =1916;
 		StringBuilder sb = new StringBuilder();
 		for(long l=startChannelId; l<=endChannelId; l++) {
 			sb.append(l);
@@ -87,7 +87,7 @@ public class IDGeneratorTest {
 		sb.setLength(sb.length()-1);
 		
 		String replacedSql = sql.replace("%channels%", sb.toString())
-				.replace("%bail_channels%", bail_channels)
+	//			.replace("%bail_channels%", bail_channels)
 				.replace("%code%", code);
 		System.out.println(replacedSql);
 	}
