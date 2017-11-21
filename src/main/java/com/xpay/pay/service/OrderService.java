@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.xpay.pay.dao.OrderMapper;
 import com.xpay.pay.exception.Assert;
 import com.xpay.pay.model.Order;
+import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.util.CommonUtils;
@@ -54,6 +55,21 @@ public class OrderService {
 		order.setStore(storeService.findById(order.getStoreId()));
 		order.setStoreChannel(storeService.findStoreChannelById(order.getStoreChannelId()));
 		return order;
+	}
+	
+	public StoreChannel findUnusedChannel(Store store, String orderNo) {
+		if(store == null) {
+			return null;
+		}
+		StoreChannel channel = null;
+		if(!CollectionUtils.isEmpty(store.getChannels())) {
+			channel = findUnusedChannel(store.getChannels(), orderNo);
+		} 
+		if(channel == null) {
+			List<StoreChannel> agentChannes = storeService.findChannelsByAgentId(store.getAgentId());
+			channel = findUnusedChannel(agentChannes, orderNo);
+		}
+		return channel;
 	}
 
 	public StoreChannel findUnusedChannel(List<StoreChannel> channels, String orderNo) {

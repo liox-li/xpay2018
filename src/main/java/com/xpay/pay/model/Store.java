@@ -25,7 +25,8 @@ public class Store {
 	private String proxyUrl;
 	private List<StoreChannel> channels;
 	private List<StoreLink> links;
-
+	private long agentId;
+	
 	public long getId() {
 		return id;
 	}
@@ -180,6 +181,15 @@ public class Store {
 
 	public void setProxyUrl(String proxyUrl) {
 		this.proxyUrl = proxyUrl;
+	}
+
+	public long getAgentId() {
+		return agentId;
+	}
+
+
+	public void setAgentId(long agentId) {
+		this.agentId = agentId;
 	}
 
 	private static final int SECURE_LOW_BOUNDER = 50;
