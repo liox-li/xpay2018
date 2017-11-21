@@ -22,10 +22,20 @@ public class CryptoUtilsTest {
 
 	@Test
 	public void testMd52() {
-		String str = "appid=wxd930ea5d5a258f4f&body=test&device_info=1000&mch_id=10000100&nonce_str=ibuaiVcKdpRxkhJA";
-		String stringSignTemp = str + "&key=192006250b4c09247ec02edce69f6a2d";
-		String sign = CryptoUtils.md5(stringSignTemp).toUpperCase();
-		Assert.assertEquals("9A0A8659F005D6984697E2CA0A9CF3B7", sign);
+		String str = "orderNo=X001010220171109170734055356&sellerOrderNo=1214&codeUrl=http://www.zmpay.top/xpay/jspay/X001010220171109170734055356&orderStatus=0&totalFee=0.01&extOrderNo=3251201711091707340907923578&attach=atach&channelNo=108";
+		List<KeyValuePair> keyPairs = new ArrayList<KeyValuePair>();	
+		String[] keyValues = str.split("&");
+		for(String keyValue: keyValues) {
+			System.out.println(keyValue);
+			String[] split = keyValue.split("=");
+			String key = split[0];
+			String value = split[1];
+			KeyValuePair pair = new KeyValuePair(key, value);
+			keyPairs.add(pair);
+		}
+		String appSecret = "93039FAF4719BCA16CF51DA9D86D8BCD";
+		String sign = CryptoUtils.signQueryParams(keyPairs, null, appSecret);
+		System.out.println(sign);
 	}
 	
 	@Test

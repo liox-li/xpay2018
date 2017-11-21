@@ -5,11 +5,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -18,13 +20,15 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+
 import com.xpay.pay.ApplicationConstants;
 import com.xpay.pay.model.Order;
 import com.xpay.pay.notify.INotifyHandler;
 import com.xpay.pay.notify.NotifyHandlerFactory;
 import com.xpay.pay.proxy.notify.NotifyProxy;
 import com.xpay.pay.rest.contract.BaseResponse;
-import com.xpay.pay.rest.contract.NotificationResponse;
+import com.xpay.pay.rest.contract.NotificationResponse;import com.xpay.pay.util.CryptoUtils;
+
 
 public class PayNotifyServlet extends HttpServlet {
 	private static final long serialVersionUID = -4617898543988945707L;
@@ -286,6 +290,8 @@ public class PayNotifyServlet extends HttpServlet {
 			CompletableFuture.runAsync(() -> {
 				NotificationResponse notification = this.toNotResponse(order);
 				notification.setChannelNo(order.getStoreChannelId());
+				String sign = CryptoUtils.signQueryParams(notification.toKeyValuePairs(), null, order.getApp().getSecret());
+				notification.setSign(sign);
 				BaseResponse response = null;
 				boolean storeNotified = false;
 				boolean proxyNotified = false;
