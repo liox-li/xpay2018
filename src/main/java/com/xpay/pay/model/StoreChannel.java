@@ -11,7 +11,7 @@ public class StoreChannel {
 	private PaymentGateway paymentGateway;
 	private AtomicLong lastUseTime = new AtomicLong(0);
 	private String extStoreName;
-	
+	private Long agentId;
 	private Date updateDate;
 	
 	public long getId() {
@@ -52,6 +52,14 @@ public class StoreChannel {
 
 	public void setExtStoreName(String extStoreName) {
 		this.extStoreName = extStoreName;
+	}
+
+	public Long getAgentId() {
+		return agentId;
+	}
+
+	public void setAgentId(Long agentId) {
+		this.agentId = agentId;
 	}
 
 	public Date getUpdateDate() {

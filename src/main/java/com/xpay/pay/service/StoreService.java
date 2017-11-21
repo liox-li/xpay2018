@@ -35,7 +35,7 @@ public class StoreService {
 		Store store = storeMapper.findByCode(code);
 		Assert.notNull(store, "Unknow storeId "+code);
 		List<StoreChannel> channels = this.findChannelByIds(store.getChannelIds());
-		Assert.notEmpty(channels, "No valid channel for store "+code);
+	//	Assert.notEmpty(channels, "No valid channel for store "+code);
 		store.setChannels(channels);
 		store.setBailChannels(this.findChannelByIds(store.getBailChannelIds()));
 		store.setLinks(this.findStoreLinkByStoreId(store.getId()));
@@ -119,6 +119,9 @@ public class StoreService {
 	}
 	
 	private List<StoreChannel> findChannelByIds(String channelIds) {
+		if(StringUtils.isBlank(channelIds)) {
+			return null;
+		}
 		initStoreChannelCache();
 		
 		List<StoreChannel> list = Lists.newArrayList();
