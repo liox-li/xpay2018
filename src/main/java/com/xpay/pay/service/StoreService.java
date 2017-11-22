@@ -35,7 +35,7 @@ public class StoreService {
 		Store store = storeMapper.findByCode(code);
 		Assert.notNull(store, "Unknow storeId "+code);
 		List<StoreChannel> channels = this.findChannelByIds(store.getChannelIds());
-		Assert.notEmpty(channels, "No valid channel for store "+code);
+	//	Assert.notEmpty(channels, "No valid channel for store "+code);
 		store.setChannels(channels);
 		store.setBailChannels(this.findChannelByIds(store.getBailChannelIds()));
 		store.setLinks(this.findStoreLinkByStoreId(store.getId()));
@@ -54,7 +54,12 @@ public class StoreService {
 	}
 	
 	public List<Store> findByAgentId(long agentId) {
-		return storeMapper.findByAgentId(agentId);
+		List<Store> stores = storeMapper.findByAgentId(agentId);
+		List<Store> result = Lists.newArrayList();
+		for(Store store : stores) {
+			result.add(this.findById(store.getId()));
+		}
+		return result;
 	}
 	
 	public List<StoreChannel> findChannelsByAgentId(long agentId) {
@@ -67,6 +72,17 @@ public class StoreService {
 	
 	public StoreChannel findStoreChannelById(long id) {
 		return channelCache.get(id);
+	}
+	
+	public Boolean deleteStoreChannel(StoreChannel channel) {
+		channelCache.remove(channel.getId());
+		return storeChannelMapper.deleteById(channel.getId());
+	}
+	
+	public Boolean updateStoreChannel(StoreChannel channel) {
+		StoreChannel storeChannel = new StoreChannel();
+		storeChannel.setId(channel.getId());
+		return storeChannelMapper.updateById(storeChannel);
 	}
 	
 	public List<StoreLink> findStoreLinkByStoreId(long storeId) {
@@ -88,11 +104,7 @@ public class StoreService {
 	
 	public void refreshCache() {
 		channelCache.destroy();
-		List<StoreChannel> channels = storeChannelMapper.findAll();
-		for(StoreChannel channel: channels) {
-			channelCache.put(channel.getId(), channel);
-		}
-		
+		initStoreChannelCache();
 		linkCache.destroy();
 	}
 	
@@ -107,10 +119,18 @@ public class StoreService {
 	}
 	
 	private List<StoreChannel> findChannelByIds(String channelIds) {
+		if(StringUtils.isBlank(channelIds)) {
+			return null;
+		}
+		initStoreChannelCache();
+		
 		List<StoreChannel> list = Lists.newArrayList();
 		String[] idStrs = StringUtils.split(channelIds, ",");
 		for(String idStr: idStrs) {
-			list.add(channelCache.get(Long.valueOf(idStr)));
+			StoreChannel channel = channelCache.get(Long.valueOf(idStr));
+			if(channel!=null) {
+				list.add(channel);
+			}
 		}
 		return list;
 	}

@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 public class LocalCache<K, V> implements ICache<K, V>{
 	private Map<K,CacheItem<V>> map = new ConcurrentHashMap<K, CacheItem<V>>();
 	
-	public static final long DEFAULT_TTL = 360 * 24 * 60 * 60 * 1000L;// 360 days
+	public static final long DEFAULT_TTL = 5 * 60 * 1000L;// 5minutes
 	private int maxSize = 100000;
 	
 	public LocalCache() {

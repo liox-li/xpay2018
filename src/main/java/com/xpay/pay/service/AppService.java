@@ -23,10 +23,14 @@ public class AppService {
 	protected AppMapper mapper;
 
 	public App findByKey(String key) {
+		initCache();
+		
 		return cache.get(key);
 	}
 
 	public App findByToken(String token) {
+		initCache();
+		
 		List<App> apps = cache.values();
 		if (CollectionUtils.isEmpty(apps)) {
 			return null;
@@ -41,6 +45,8 @@ public class AppService {
 	}
 
 	public App findById(int id) {
+		initCache();
+		
 		List<App> apps = cache.values();
 		if (CollectionUtils.isEmpty(apps)) {
 			return null;
@@ -92,10 +98,7 @@ public class AppService {
 	
 	public void refreshCache() {
 		cache.destroy();
-		List<App> apps = mapper.findAll();
-		for (App app : apps) {
-			cache.put(app.getKey(), app);
-		}
+		initCache();
 	}
 
 }

@@ -1,13 +1,18 @@
 package com.xpay.pay.model;
 
+import java.util.Date;
+import java.util.concurrent.atomic.AtomicLong;
+
 import com.xpay.pay.util.TimeUtils;
 
 public class StoreChannel {
 	private long id;
 	private String extStoreId;
 	private PaymentGateway paymentGateway;
-	private long lastUseTime;
+	private AtomicLong lastUseTime = new AtomicLong(0);
 	private String extStoreName;
+	private Long agentId;
+	private Date updateDate;
 	
 	public long getId() {
 		return id;
@@ -34,11 +39,11 @@ public class StoreChannel {
 	}
 	
 	public long getLastUseTime() {
-		return lastUseTime;
+		return this.lastUseTime.get();
 	}
 
 	public void setLastUseTime(long lastUseTime) {
-		this.lastUseTime = lastUseTime;
+		this.lastUseTime.set(lastUseTime);;
 	}
 	
 	public String getExtStoreName() {
@@ -49,13 +54,29 @@ public class StoreChannel {
 		this.extStoreName = extStoreName;
 	}
 
+	public Long getAgentId() {
+		return agentId;
+	}
+
+	public void setAgentId(Long agentId) {
+		this.agentId = agentId;
+	}
+
+	public Date getUpdateDate() {
+		return updateDate;
+	}
+
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
+	}
 
 
-	private static final long BLOCK_TIME_DAY= 40*1000;
-	private static final long BLOCK_TIME_NIGHT= 60*1000;
+
+	private static final long BLOCK_TIME_DAY= 2*1000;
+	private static final long BLOCK_TIME_NIGHT= 5*1000;
 	public boolean available() {
 		long blockTime = TimeUtils.isNowDayTime()?BLOCK_TIME_DAY:BLOCK_TIME_NIGHT;
-		boolean avail = System.currentTimeMillis()-this.lastUseTime>blockTime;
+		boolean avail = System.currentTimeMillis()-this.lastUseTime.get()>blockTime;
 		return avail;
 	}
 

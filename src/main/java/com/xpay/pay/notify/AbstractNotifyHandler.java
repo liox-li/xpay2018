@@ -8,9 +8,11 @@ import org.springframework.stereotype.Service;
 
 import com.xpay.pay.controller.PayNotifyServlet.NotifyResponse;
 import com.xpay.pay.model.Order;
+import com.xpay.pay.model.StoreChannel;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.service.OrderService;
 import com.xpay.pay.service.PaymentService;
+import com.xpay.pay.service.StoreService;
 import com.xpay.pay.util.CommonUtils;
 
 @Service
@@ -19,6 +21,8 @@ public abstract class AbstractNotifyHandler implements INotifyHandler {
 	
 	@Autowired
 	protected OrderService orderService;
+	@Autowired
+	protected StoreService storeService;
 	@Autowired
 	protected PaymentService paymentService;
 	
@@ -43,6 +47,7 @@ public abstract class AbstractNotifyHandler implements INotifyHandler {
 			if(order!=null &&  CommonUtils.toInt(body.getTotalFee()) == (int) (order.getTotalFeeAsFloat() * 100)) {
 				updateOrderStatus(order, body);
 				updateBail(order);
+				updateStoreChannel(order.getStoreChannel());
 			}
 		} else {
 			logger.warn("Cannot parse notify content "+content);
@@ -90,6 +95,14 @@ public abstract class AbstractNotifyHandler implements INotifyHandler {
 	private void updateBail(Order order) {
 		if(order!=null && OrderStatus.SUCCESS.equals(order.getStatus())) {
 			paymentService.updateBail(order, true);
+		}
+	}
+	
+	private void updateStoreChannel(StoreChannel channel) {
+		try {
+			storeService.updateStoreChannel(channel);
+		} catch(Exception e) {
+			
 		}
 	}
 	

@@ -71,14 +71,7 @@ public class JsPayServlet extends HttpServlet {
 		String path = request.getPathInfo();
 		String parameters = StringUtils.isBlank(request.getQueryString())?"":"?"+request.getQueryString();
 		logger.info("Jspay: "+path + parameters);
-		if(!order.getStoreChannel().available()) {
-			response.setCharacterEncoding("utf-8");
-			response.setHeader("Content-type", "text/html;charset=UTF-8");
-			response.sendError(400, "操作太频繁,请稍后再试");
-			return;
-		} else {
-			order.getStoreChannel().setLastUseTime(System.currentTimeMillis());
-		}
+
 		if(PaymentGateway.CHINAUMSH5.equals(order.getStoreChannel().getPaymentGateway())) {
 			if(!OrderStatus.NOTPAY.equals(order.getStatus())) {
 				response.sendError(400, "订单已支付");

@@ -6,7 +6,9 @@
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="app_key" jdbcType="VARCHAR" property="key" />
     <result column="app_secret" jdbcType="VARCHAR" property="secret" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="token" jdbcType="VARCHAR" property="token" />
+    <result column="agent_id" jdbcType="BIGINT" property="agentId" />
     <result column="update_date" jdbcType="VARCHAR" property="updateDate" />
   </resultMap>
   
@@ -14,7 +16,9 @@
     id,
     app_key as key,
     app_secret as secret,
+    name,
     token,
+    agent_id,
     update_date
   </sql>
 
@@ -49,12 +53,13 @@
   <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.App">
     insert into bill_app
     <trim prefix="(" suffix=")" suffixOverrides=",">
-     app_key, app_secret, token
+     app_key, app_secret, token, agent_id
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
      	#{key,jdbcType=VARCHAR},
      	#{secret,jdbcType=VARCHAR},
-     	#{token,jdbcType=VARCHAR}
+     	#{token,jdbcType=VARCHAR},
+     	#{agentId,jdbcType=BIGINT}
     </trim>
   </insert>
   
