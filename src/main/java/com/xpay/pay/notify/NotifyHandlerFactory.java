@@ -17,6 +17,8 @@ public class NotifyHandlerFactory {
 	@Autowired
 	KeFuNotifyHandler keFuHandler;
 	@Autowired
+	KekePayNotifyHandler keKeHandler;
+	@Autowired
 	MiaoFuNotifyHandler miaoFuHandler;
 	@Autowired
 	UPayNotifyHandler uPayHandler;
@@ -30,6 +32,8 @@ public class NotifyHandlerFactory {
 			return uPayHandler;
 		} else if (uri.contains(PaymentGateway.JUZHEN.name().toLowerCase())) {
 			return juZhenHandler;
+		}  else if (uri.contains(PaymentGateway.KEKEPAY.name().toLowerCase())) {
+			return keKeHandler;
 		} else if (uri.contains(PaymentGateway.KEFU.name().toLowerCase())) {
 			return keFuHandler;
 		} else if (uri.contains(PaymentGateway.MIAOFU.name().toLowerCase())) {
