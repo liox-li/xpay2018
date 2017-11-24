@@ -1,9 +1,5 @@
 package com.xpay.pay.proxy;
 
-import java.io.FileInputStream;
-import java.util.List;
-
-import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -49,12 +45,13 @@ public class UPayProxyTest  extends BaseSpringJunitTest {
 	
 	@Test
 	public void testBatchActiviate() {
-		String[] codes = {"39951945", "42605148", "39221355", "47884862", "16927700", "21936063", "48437830", "87558598", "93111946", "29534027", "64912351"};
-		String sql = "insert into bill_store_channel (ext_store_id, ext_store_name, payment_gateway, bill_type) values ('%ext_store_id%', '%ext_store_name%', '%payment_gateway%', 'T1');";
-		String extStoreName = "天荣游戏";
+		String[] codes = {"44442366", "48418578", "55601151", "56520479", "80240969", "63221097", "35076642", "38866394", "51702259", "20714769"};
+		
+		String sql = "insert into bill_store_channel (ext_store_id, ext_store_name, payment_gateway, bill_type, agent_id) values ('%ext_store_id%', '%ext_store_name%', '%payment_gateway%', 'T1', 10);";
+		String extStoreName = "纳优游戏";
 		String paymenGateway = "UPAY";
 		String deviceId = "192.0.0.";
-		int ip=75;
+		int ip=86;
 		int i=100;
 		for(String code : codes) {
 			ActiviateResponse response = uPayProxy.activiate(code, deviceId+ip);
