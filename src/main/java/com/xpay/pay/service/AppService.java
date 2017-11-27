@@ -80,7 +80,7 @@ public class AppService {
 
 	public static final long token_timeout = 24 * 60 * 60 * 1000L;
 	private boolean isTokenExpired(String token) {
-		if (StringUtils.isBlank(token)) {
+		if (StringUtils.isBlank(token) || token.length()<25) {
 			return true;
 		}
 		try {
