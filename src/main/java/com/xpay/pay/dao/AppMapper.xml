@@ -53,12 +53,13 @@
   <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.App">
     insert into bill_app
     <trim prefix="(" suffix=")" suffixOverrides=",">
-     app_key, app_secret, token, agent_id
+     app_key, app_secret, token, name, agent_id
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
      	#{key,jdbcType=VARCHAR},
      	#{secret,jdbcType=VARCHAR},
      	#{token,jdbcType=VARCHAR},
+     	#{name,jdbcType=VARCHAR},
      	#{agentId,jdbcType=BIGINT}
     </trim>
   </insert>

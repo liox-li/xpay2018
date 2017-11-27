@@ -106,6 +106,9 @@ public class AgentRestService {
 			storeResponse.setCode(store.getCode());
 			storeResponse.setName(store.getName());
 			storeResponse.setChannels(store.getChannels());
+			storeResponse.setBailPercentage(store.getBailPercentage());
+			storeResponse.setAppId(store.getAppId());
+			storeResponse.setProxyUrl(store.getProxyUrl());
 			storeResponses.add(storeResponse);
 		}
 		BaseResponse<List<StoreResponse>> response = new BaseResponse<List<StoreResponse>>();
@@ -114,10 +117,11 @@ public class AgentRestService {
 	}
 	
 	@RequestMapping(value = "/{id}/stores", method = RequestMethod.PUT)
-	public BaseResponse<StoreResponse> createAgentStores(@PathVariable long id, 
+	public BaseResponse<StoreResponse> createAgentStore(@PathVariable long id, 
 			@RequestBody(required = true) CreateStoreRequest request) {
 		Assert.notNull(request, "Create store request body can't be null");
 		Assert.notNull(request.getName(), "Store name can't be null");
+		Assert.notNull(request.getAppId(), "AppId cant' be null");
 		
 		Store store = storeService.createStore(id, request.getName(), request.getBailPercentage(), request.getAppId(), request.getCsrTel(), request.getProxyUrl());
 		StoreResponse storeResponse = new StoreResponse();

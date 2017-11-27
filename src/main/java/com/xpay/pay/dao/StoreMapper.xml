@@ -17,7 +17,7 @@
     <result column="daily_limit" jdbcType="BIGINT" property="dailyLimit" />
     <result column="csr_tel" jdbcType="VARCHAR" property="csrTel" />
     <result column="proxy_url" jdbcType="VARCHAR" property="proxyUrl" />
-    <result column="app_id" jdbcType="BIGINT" property="app_id" />
+    <result column="app_id" jdbcType="BIGINT" property="appId" />
     <result column="agent_id" jdbcType="BIGINT" property="agentId" />
   </resultMap>
   
@@ -71,7 +71,7 @@
   <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.Store">
     insert into bill_store
     <trim prefix="(" suffix=")" suffixOverrides=",">
-     code, name, agent_id,
+     code, name, 
      <if test="bar != null">
         bar,
       </if>
@@ -103,7 +103,6 @@
     <trim prefix="values (" suffix=")" suffixOverrides=",">
      	#{code,jdbcType=VARCHAR},
      	#{name,jdbcType=VARCHAR},
-     	#{agentId,jdbcType=BIGINT},
      	<if test="bar != null">
         	#{bar,jdbcType=NUMERIC},
         </if>

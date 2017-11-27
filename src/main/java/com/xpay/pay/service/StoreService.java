@@ -47,7 +47,7 @@ public class StoreService {
 		Store store = storeMapper.findById(id);
 		Assert.notNull(store, "Unknow storeId "+id);
 		List<StoreChannel> channels = this.findChannelByIds(store.getChannelIds());
-		Assert.notEmpty(channels, "No valid channel for store "+id);
+//		Assert.notEmpty(channels, "No valid channel for store "+id);
 		store.setChannels(channels);
 		store.setBailChannels(this.findChannelByIds(store.getBailChannelIds()));
 		store.setLinks(this.findStoreLinkByStoreId(store.getId()));
@@ -80,6 +80,7 @@ public class StoreService {
 		Store store = new Store();
 		store.setBar(100f);
 		store.setAgentId(agentId);
+		store.setAppId(appId);
 		store.setCode(IDGenerator.buildStoreCode());
 		store.setName(name);
 		store.setBailPercentage(thisBaiPercentage);
