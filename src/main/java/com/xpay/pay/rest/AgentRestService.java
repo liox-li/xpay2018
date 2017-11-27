@@ -17,6 +17,8 @@ import com.xpay.pay.model.App;
 import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
 import com.xpay.pay.rest.contract.BaseResponse;
+import com.xpay.pay.rest.contract.CreateAppRequest;
+import com.xpay.pay.rest.contract.CreateStoreRequest;
 import com.xpay.pay.rest.contract.LoginRequest;
 import com.xpay.pay.rest.contract.StoreResponse;
 import com.xpay.pay.rest.contract.UpdateStoreChannelRequest;
@@ -63,6 +65,18 @@ public class AgentRestService {
 		response.setData(apps);
 		return response;
 	}
+	
+	@RequestMapping(value = "/{id}/apps", method = RequestMethod.PUT)
+	public BaseResponse<App> createAgentApp(@PathVariable long id, 
+			@RequestBody(required = true) CreateAppRequest request) {
+		Assert.notNull(request, "Create app request body can't be null");
+		Assert.notNull(request.getName(), "App name can't be null");
+		
+		App app = appService.createApp(id, request.getName());
+		BaseResponse<App> response = new BaseResponse<App>();
+		response.setData(app);
+		return response;
+	}
 			
 	@RequestMapping(value = "/{id}/channels", method = RequestMethod.GET)
 	public BaseResponse<List<StoreChannel>> getAgentChannels(@PathVariable long id) {
@@ -96,6 +110,26 @@ public class AgentRestService {
 		}
 		BaseResponse<List<StoreResponse>> response = new BaseResponse<List<StoreResponse>>();
 		response.setData(storeResponses);
+		return response;
+	}
+	
+	@RequestMapping(value = "/{id}/stores", method = RequestMethod.PUT)
+	public BaseResponse<StoreResponse> createAgentStores(@PathVariable long id, 
+			@RequestBody(required = true) CreateStoreRequest request) {
+		Assert.notNull(request, "Create store request body can't be null");
+		Assert.notNull(request.getName(), "Store name can't be null");
+		
+		Store store = storeService.createStore(id, request.getName(), request.getBailPercentage(), request.getAppId(), request.getCsrTel(), request.getProxyUrl());
+		StoreResponse storeResponse = new StoreResponse();
+		storeResponse.setId(store.getId());
+		storeResponse.setCode(store.getCode());
+		storeResponse.setName(store.getName());
+		storeResponse.setBailPercentage(store.getBailPercentage());
+		storeResponse.setCsrTel(store.getCsrTel());
+		storeResponse.setAppId(store.getAppId());
+		storeResponse.setProxyUrl(store.getProxyUrl());
+		BaseResponse<StoreResponse> response = new BaseResponse<StoreResponse>();
+		response.setData(storeResponse);
 		return response;
 	}
 	

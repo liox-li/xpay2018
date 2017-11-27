@@ -60,6 +60,16 @@ public class AppService {
 		return mapper.findByAgentId(agentId);
 	}
 
+	public App createApp(long agentId, String name) {
+		App app = new App();
+		app.setAgentId(agentId);
+		app.setName(name);
+		app.setKey(IDGenerator.buildAuthKey());
+		app.setSecret(IDGenerator.buildAuthSecret());
+		mapper.insert(app);
+		return app;
+	}
+	
 	public void refreshToken(App app) {
 		if (isTokenExpired(app.getToken())) {
 			app.setToken(buildToken());
