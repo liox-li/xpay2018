@@ -19,6 +19,7 @@ import com.xpay.pay.dao.StoreMapper;
 import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
 import com.xpay.pay.model.StoreLink;
+import com.xpay.pay.util.IDGenerator;
 
 @Service
 public class StoreService {
@@ -46,7 +47,7 @@ public class StoreService {
 		Store store = storeMapper.findById(id);
 		Assert.notNull(store, "Unknow storeId "+id);
 		List<StoreChannel> channels = this.findChannelByIds(store.getChannelIds());
-		Assert.notEmpty(channels, "No valid channel for store "+id);
+//		Assert.notEmpty(channels, "No valid channel for store "+id);
 		store.setChannels(channels);
 		store.setBailChannels(this.findChannelByIds(store.getBailChannelIds()));
 		store.setLinks(this.findStoreLinkByStoreId(store.getId()));
@@ -72,6 +73,21 @@ public class StoreService {
 	
 	public StoreChannel findStoreChannelById(long id) {
 		return channelCache.get(id);
+	}
+	
+	public Store createStore(long agentId, String name, int bailPercentage, long appId, String csrTel, String proxyUrl) {
+		int thisBaiPercentage = bailPercentage>0 && bailPercentage<5?bailPercentage:2;
+		Store store = new Store();
+		store.setBar(100f);
+		store.setAgentId(agentId);
+		store.setAppId(appId);
+		store.setCode(IDGenerator.buildStoreCode());
+		store.setName(name);
+		store.setBailPercentage(thisBaiPercentage);
+		store.setCsrTel(csrTel);
+		store.setProxyUrl(proxyUrl);
+		storeMapper.insert(store);
+		return store;
 	}
 	
 	public Boolean deleteStoreChannel(StoreChannel channel) {

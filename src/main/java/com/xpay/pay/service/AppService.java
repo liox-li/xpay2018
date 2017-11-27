@@ -60,6 +60,16 @@ public class AppService {
 		return mapper.findByAgentId(agentId);
 	}
 
+	public App createApp(long agentId, String name) {
+		App app = new App();
+		app.setAgentId(agentId);
+		app.setName(name);
+		app.setKey(IDGenerator.buildAuthKey());
+		app.setSecret(IDGenerator.buildAuthSecret());
+		mapper.insert(app);
+		return app;
+	}
+	
 	public void refreshToken(App app) {
 		if (isTokenExpired(app.getToken())) {
 			app.setToken(buildToken());
@@ -70,7 +80,7 @@ public class AppService {
 
 	public static final long token_timeout = 24 * 60 * 60 * 1000L;
 	private boolean isTokenExpired(String token) {
-		if (StringUtils.isBlank(token)) {
+		if (StringUtils.isBlank(token) || token.length()<25) {
 			return true;
 		}
 		try {

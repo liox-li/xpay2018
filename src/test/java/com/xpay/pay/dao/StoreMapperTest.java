@@ -42,6 +42,13 @@ public class StoreMapperTest extends BaseSpringJunitTest {
 	}
 	
 	@Test
+	public void testFindByAgentId() {
+		Long agentId = 10L;
+		List<Store> stores = mapper.findByAgentId(agentId);
+		System.out.println(stores.size());
+	}
+	
+	@Test
 	public void testUpdate() {
 		Store store = mapper.findById(100);
 		store.setName("Updated");

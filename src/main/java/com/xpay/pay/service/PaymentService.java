@@ -2,6 +2,7 @@ package com.xpay.pay.service;
 
 import static com.xpay.pay.proxy.IPaymentProxy.NO_RESPONSE;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,7 +35,8 @@ public class PaymentService {
 	private StoreService storeService;
 	@Autowired
 	private RiskCheckService riskCheckService;
-
+	private static final long DEFAULT_BAIL_ID = 10L;
+	
 	public Order createOrder(App app, String orderNo, Store store, PayChannel channel,
 			String deviceId, String ip, String totalFee, String orderTime,
 			String sellerOrderNo, String attach, String notifyUrl,String returnUrl,
@@ -47,9 +49,13 @@ public class PaymentService {
 		} else {
 			boolean isNextBailPay = store.isNextBailPay(CommonUtils.toFloat(totalFee));
 			if(isNextBailPay) {
-				storeChannel = orderService.findUnusedChannel(store.getBailChannels(), orderNo);
+				if(CollectionUtils.isEmpty(store.getBailChannels())) {
+					storeChannel = orderService.findUnusedChannelByAgent(DEFAULT_BAIL_ID, orderNo);
+				} else {
+					storeChannel = orderService.findUnusedChannel(store.getBailChannels(), orderNo);
+				}
 			}
-			storeChannel = storeChannel==null? orderService.findUnusedChannel(store, orderNo):storeChannel;
+			storeChannel = storeChannel==null? orderService.findUnusedChannelByStore(store, orderNo):storeChannel;
 
 			
 		}
@@ -187,16 +193,14 @@ public class PaymentService {
 		request.setNotifyUrl(DEFAULT_NOTIFY_URL+order.getStoreChannel().getPaymentGateway().toString().toLowerCase());
 		
 		PaymentGateway gateway = order.getStoreChannel().getPaymentGateway();
-		if(isChinaUmsChannel(gateway) ) {
+		if(isDirectReturnChannel(gateway) ) {
 			request.setReturnUrl(order.getReturnUrl());
 		}
-		else if(PaymentGateway.JUZHEN.equals(gateway)) {
+		if(PaymentGateway.JUZHEN.equals(gateway) || PaymentGateway.KEKEPAY.equals(gateway)) {
 			request.setServerIp(LOCAL_ID);
 		} else if(PaymentGateway.MIAOFU.equals(gateway)) {
 			String notifyUrl = request.getNotifyUrl() + "/"+request.getOrderNo();
 			request.setNotifyUrl(notifyUrl);
-		} else if(PaymentGateway.KEKEPAY.equals(gateway)){
-			request.setServerIp(LOCAL_ID);
 		}
 //		else if(PaymentGateway.RUBIPAY.equals(order.getStoreChannel().getPaymentGateway())) {
 //			request.setServerIp(LOCAL_ID);
@@ -261,8 +265,16 @@ public class PaymentService {
 		return PaymentGateway.CHINAUMS.equals(gateway) ||
 				PaymentGateway.CHINAUMSV2.equals(gateway) ||
 				PaymentGateway.CHINAUMSH5.equals(gateway) ||
+				PaymentGateway.CHINAUMSWAP.equals(gateway);
+	}
+	
+	private boolean isDirectReturnChannel(PaymentGateway gateway) {
+		return PaymentGateway.CHINAUMS.equals(gateway) ||
+				PaymentGateway.CHINAUMSV2.equals(gateway) ||
+				PaymentGateway.CHINAUMSH5.equals(gateway) ||
 				PaymentGateway.CHINAUMSWAP.equals(gateway) ||
-				PaymentGateway.UPAY.equals(gateway);
+				PaymentGateway.UPAY.equals(gateway) ||
+				PaymentGateway.KEKEPAY.equals(gateway);
 	}
 	
 }

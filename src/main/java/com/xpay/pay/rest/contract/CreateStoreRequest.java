@@ -1,30 +1,11 @@
 package com.xpay.pay.rest.contract;
 
-import java.util.List;
-
-import com.xpay.pay.model.StoreChannel;
-
-public class StoreResponse {
-	private long id;
-	private String code;
+public class CreateStoreRequest {
 	private String name;
 	private int bailPercentage;
 	private long appId;
 	private String csrTel;
 	private String proxyUrl;
-	private List<StoreChannel> channels;
-	public long getId() {
-		return id;
-	}
-	public void setId(long id) {
-		this.id = id;
-	}
-	public String getCode() {
-		return code;
-	}
-	public void setCode(String code) {
-		this.code = code;
-	}
 	public String getName() {
 		return name;
 	}
@@ -55,10 +36,5 @@ public class StoreResponse {
 	public void setProxyUrl(String proxyUrl) {
 		this.proxyUrl = proxyUrl;
 	}
-	public List<StoreChannel> getChannels() {
-		return channels;
-	}
-	public void setChannels(List<StoreChannel> channels) {
-		this.channels = channels;
-	}
+	
 }

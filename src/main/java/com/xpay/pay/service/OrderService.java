@@ -57,7 +57,7 @@ public class OrderService {
 		return order;
 	}
 	
-	public StoreChannel findUnusedChannel(Store store, String orderNo) {
+	public StoreChannel findUnusedChannelByStore(Store store, String orderNo) {
 		if(store == null) {
 			return null;
 		}
@@ -65,10 +65,16 @@ public class OrderService {
 		if(!CollectionUtils.isEmpty(store.getChannels())) {
 			channel = findUnusedChannel(store.getChannels(), orderNo);
 		} 
+		
 		if(channel == null) {
-			List<StoreChannel> agentChannes = storeService.findChannelsByAgentId(store.getAgentId());
-			channel = findUnusedChannel(agentChannes, orderNo);
+			channel = findUnusedChannelByAgent(store.getAgentId(), orderNo);
 		}
+		return channel;
+	}
+	
+	public StoreChannel findUnusedChannelByAgent(long agentId, String orderNo) {
+		List<StoreChannel> agentChannes = storeService.findChannelsByAgentId(agentId);
+		StoreChannel channel = findUnusedChannel(agentChannes, orderNo);
 		return channel;
 	}
 

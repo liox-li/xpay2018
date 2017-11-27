@@ -22,6 +22,8 @@ public class AppConfig {
 	public static final AppConfig ChinaUmsConfig = new AppConfig(load("chinaums.config"));
 
 	public static final AppConfig ChinaUmsV2Config = new AppConfig(load("chinaumsv2.config"));
+	
+	public static final AppConfig ChinaUmsV3Config = new AppConfig(load("chinaumsv3.config"));
 
 	public static final AppConfig KeFuConfig = new AppConfig(load("kefu.config"));
 

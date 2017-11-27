@@ -25,6 +25,7 @@ public class Store {
 	private String proxyUrl;
 	private List<StoreChannel> channels;
 	private List<StoreLink> links;
+	private Long appId;
 	private Long agentId;
 	
 	public long getId() {
@@ -182,6 +183,17 @@ public class Store {
 	public void setProxyUrl(String proxyUrl) {
 		this.proxyUrl = proxyUrl;
 	}
+
+	
+	public Long getAppId() {
+		return appId;
+	}
+
+
+	public void setAppId(Long appId) {
+		this.appId = appId;
+	}
+
 
 	public Long getAgentId() {
 		return agentId;
