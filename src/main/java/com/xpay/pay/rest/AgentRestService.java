@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -50,6 +51,10 @@ public class AgentRestService extends AdminRestService {
 		
 		BaseResponse<List<Agent>> response = new BaseResponse<List<Agent>>();
 		response.setData(agents);
+		if(CollectionUtils.isNotEmpty(agents)) {
+			response.setCount(agents.size());
+		}
+
 		return response;
 	}
 	
@@ -78,6 +83,9 @@ public class AgentRestService extends AdminRestService {
 		List<App> apps = appService.findByAgentId(id);
 		BaseResponse<List<App>> response = new BaseResponse<List<App>>();
 		response.setData(apps);
+		if(CollectionUtils.isNotEmpty(apps)) {
+			response.setCount(apps.size());
+		}
 		return response;
 	}
 	
@@ -91,6 +99,7 @@ public class AgentRestService extends AdminRestService {
 		App app = appService.createApp(id, request.getName());
 		BaseResponse<App> response = new BaseResponse<App>();
 		response.setData(app);
+		
 		return response;
 	}
 			
@@ -100,6 +109,9 @@ public class AgentRestService extends AdminRestService {
 		List<StoreChannel> channels = storeService.findChannelsByAgentId(id);
 		BaseResponse<List<StoreChannel>> response = new BaseResponse<List<StoreChannel>>();
 		response.setData(channels);
+		if(CollectionUtils.isNotEmpty(channels)) {
+			response.setCount(channels.size());
+		}
 		return response;
 	}
 	
@@ -134,6 +146,9 @@ public class AgentRestService extends AdminRestService {
 		}
 		BaseResponse<List<StoreResponse>> response = new BaseResponse<List<StoreResponse>>();
 		response.setData(storeResponses);
+		if(CollectionUtils.isNotEmpty(storeResponses)) {
+			response.setCount(storeResponses.size());
+		}
 		return response;
 	}
 	
@@ -183,6 +198,9 @@ public class AgentRestService extends AdminRestService {
 		startTime = startTime == null?TimeUtils.beginOfToday(): startTime;
 		Date endTime = TimeUtils.parseTime(endDate, TimeUtils.TimePatternTime);
 		endTime = endTime == null?new Date(): endTime;
+		
+		Assert.isTrue(TimeUtils.daysBetween(startTime, endTime)<3, "Can only fetch orders within two days.");
+		
 		List<Order> orders = null;
 		if(StringUtils.isBlank(storeId)) {
 			orders = orderService.findByAgentIdAndTime(id, startTime, endTime);
@@ -191,6 +209,9 @@ public class AgentRestService extends AdminRestService {
 		}
 		
 		BaseResponse<List<Order>> response = new BaseResponse<List<Order>>();
+		if(CollectionUtils.isNotEmpty(orders)) {
+			response.setCount(orders.size());
+		}
 		response.setData(orders);
 		return response;
 	}

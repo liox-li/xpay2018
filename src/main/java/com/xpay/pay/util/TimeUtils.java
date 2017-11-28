@@ -2,6 +2,7 @@ package com.xpay.pay.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -42,5 +43,14 @@ public class TimeUtils {
 		c.set(Calendar.SECOND, 0);
 		c.set(Calendar.MILLISECOND, 0);
 		return c.getTime();
+	}
+	
+	public static int daysBetween(Date startDate, Date endDate) {
+		if(startDate == null || endDate == null) {
+			return Integer.MAX_VALUE;
+		}
+		long difference = Math.abs(endDate.getTime() - startDate.getTime());
+	    long differenceDates = difference / (24 * 60 * 60 * 1000);
+	    return (int)differenceDates;
 	}
 }
