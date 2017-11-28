@@ -45,7 +45,8 @@ public class AgentRestService extends AdminRestService {
 	
 	@RequestMapping(value = "/agents", method = RequestMethod.GET)
 	public BaseResponse<List<Agent>> findAll() {
-		this.getAgent();
+		Agent agent = this.getAgent();
+		Assert.isTrue(agent.getId() == 10, 401, "401", "You are not allowed to access this API.");
 		
 		List<Agent> agents = agentService.findAll();
 		
@@ -141,6 +142,7 @@ public class AgentRestService extends AdminRestService {
 			storeResponse.setChannels(store.getChannels());
 			storeResponse.setBailPercentage(store.getBailPercentage());
 			storeResponse.setAppId(store.getAppId());
+			storeResponse.setCsrTel(store.getCsrTel());
 			storeResponse.setProxyUrl(store.getProxyUrl());
 			storeResponses.add(storeResponse);
 		}
