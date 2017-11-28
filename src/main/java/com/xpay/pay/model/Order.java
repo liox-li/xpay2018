@@ -1,5 +1,7 @@
 package com.xpay.pay.model;
 
+import java.util.Date;
+
 import com.xpay.pay.proxy.IPaymentProxy.PayChannel;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 
@@ -30,6 +32,8 @@ public class Order {
 	private String subject;
 	private App app;
 	private Store store;
+	private Date createDate;
+	
 	public long getId() {
 		return id;
 	}
@@ -199,6 +203,12 @@ public class Order {
 		if(store!=null) {
 			this.storeId = store.getId();
 		}
+	}
+	public Date getCreateDate() {
+		return createDate;
+	}
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
 	}
 	public boolean isRemoteQueralbe() {
 		return !OrderStatus.REFUND.equals(this.status) && !OrderStatus.REVOKED.equals(this.status);

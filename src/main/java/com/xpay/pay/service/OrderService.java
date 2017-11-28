@@ -1,6 +1,8 @@
 package com.xpay.pay.service;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -93,6 +95,36 @@ public class OrderService {
 			channel.setLastUseTime(System.currentTimeMillis());
 		}
 		return channel;
+	}
+	
+	public List<Order> findByStoreIdAndTime(String storeCode, Date startTime, Date endTime) {
+		Store store = storeService.findByCode(storeCode);
+		Assert.notNull(store, String.format("Unknown store - %s", storeCode));
+		Assert.notNull(startTime, "Start time cant't be null");
+		
+		Date thisEndTime = endTime==null?new Date():endTime;
+		return orderMapper.findByStoreIdAndTime(store.getId(), startTime, thisEndTime);
+	}
+	
+	public List<Order> findByAgentIdAndTime(Long agentId, Date startTime, Date endTime) {
+		Assert.notNull(startTime, "Start time cant't be null");
+		
+		List<Store> stores = storeService.findByAgentId(agentId);
+		Assert.notEmpty(stores, String.format("No store found under agent - %s", agentId));
+		
+		List<Order> result = new ArrayList<Order>();
+		for(Store store: stores) {
+			List<Order> orders = orderMapper.findByStoreIdAndTime(store.getId(), startTime, endTime);
+			if(CollectionUtils.isNotEmpty(orders)) {
+				result.addAll(orders);
+			}
+		}
+		
+		result.sort((x, y) -> {
+			return (int)(x.getId()-y.getId());
+		});
+		
+		return result;
 	}
 	
 	public boolean insert(Order order) {
