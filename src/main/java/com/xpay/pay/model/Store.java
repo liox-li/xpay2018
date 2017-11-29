@@ -212,7 +212,7 @@ public class Store {
 		}
 		boolean isNextBailPay = this.bail * 100 <= this.nonBail * this.bailPercentage;
 		if(!isNextBailPay) {
-			isNextBailPay = totalFee>=SECURE_LOW_BOUNDER & totalFee<SECURE_UP_BOUNDER && (this.bail + totalFee ) * 100 <=  this.nonBail * this.bailPercentage * 2;
+			isNextBailPay = totalFee>=SECURE_LOW_BOUNDER && totalFee<SECURE_UP_BOUNDER && (this.bail + totalFee ) * 100 <=  this.nonBail * (this.bailPercentage + 1);
 		}
 		return isNextBailPay;
 	}

@@ -23,7 +23,8 @@
     <result column="pay_info" jdbcType="VARCHAR" property="payInfo" />
     <result column="status" jdbcType="VARCHAR" property="status" />  
     <result column="subject" jdbcType="VARCHAR" property="subject" />    
-    <result column="return_url" jdbcType="VARCHAR" property="returnUrl" />          
+    <result column="return_url" jdbcType="VARCHAR" property="returnUrl" />    
+    <result column="create_date" jdbcType="VARCHAR" property="createDate" />         
   </resultMap>
   
   <sql id="orderColumns">
@@ -47,7 +48,8 @@
     pay_info,
     status,
     subject,
-    return_url
+    return_url,
+    create_date
   </sql>
 
   <select id="findById" resultMap="OrderResultMap">

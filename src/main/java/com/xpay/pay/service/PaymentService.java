@@ -33,16 +33,13 @@ public class PaymentService {
 	private OrderService orderService;
 	@Autowired
 	private StoreService storeService;
-	@Autowired
-	private RiskCheckService riskCheckService;
+
 	private static final long DEFAULT_BAIL_ID = 10L;
 	
 	public Order createOrder(App app, String orderNo, Store store, PayChannel channel,
 			String deviceId, String ip, String totalFee, String orderTime,
 			String sellerOrderNo, String attach, String notifyUrl,String returnUrl,
 			String subject, String storeChannelId) {
-		Assert.isTrue(riskCheckService.checkFee(store, CommonUtils.toFloat(totalFee)), String.format("Invalid total fee: %s, sellerOrderNo: %s",totalFee, StringUtils.trimToEmpty(sellerOrderNo)));
-		
 		StoreChannel storeChannel = null;
 		if(StringUtils.isNotBlank(storeChannelId)) {
 			storeService.findStoreChannelById(Long.valueOf(storeChannelId));
@@ -56,8 +53,6 @@ public class PaymentService {
 				}
 			}
 			storeChannel = storeChannel==null? orderService.findUnusedChannelByStore(store, orderNo):storeChannel;
-
-			
 		}
 		Assert.notNull(storeChannel, String.format("No avaiable store channel, please try later, sellerOrderNo: %s", StringUtils.trimToEmpty(sellerOrderNo)));
 		

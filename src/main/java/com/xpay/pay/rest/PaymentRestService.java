@@ -31,6 +31,7 @@ import com.xpay.pay.rest.contract.OrderResponse;
 import com.xpay.pay.service.AppService;
 import com.xpay.pay.service.OrderService;
 import com.xpay.pay.service.PaymentService;
+import com.xpay.pay.service.RiskCheckService;
 import com.xpay.pay.service.StoreService;
 import com.xpay.pay.util.CommonUtils;
 import com.xpay.pay.util.IDGenerator;
@@ -46,7 +47,9 @@ public class PaymentRestService extends AuthRestService {
 	private OrderService orderService;
 	@Autowired
 	private AppService appService;
-
+	@Autowired
+	private RiskCheckService riskCheckService;
+	
 	@RequestMapping(value = "/unifiedorder ", method = RequestMethod.POST)
 	public BaseResponse<OrderResponse> unifiedOrder(
 			@RequestParam(required = false) String storeId,   //Store.code
@@ -88,12 +91,11 @@ public class PaymentRestService extends AuthRestService {
 		
 		validateStoreLink(store, returnUrl);
 		
+		Assert.isTrue(riskCheckService.checkFee(store, CommonUtils.toFloat(totalFee)), String.format("Invalid total fee: %s, sellerOrderNo: %s",totalFee, StringUtils.trimToEmpty(sellerOrderNo)));
+		
+
 		App app = getApp();
 		String orderNo = IDGenerator.buildOrderNo(app.getId(), store.getId());
-//		OrderDetail orderDetail = payload == null?null: payload.getOrderDetail();
-//		if(orderDetail != null) {
-//			orderService.insert(orderDetail);
-//		}
 		BaseResponse<OrderResponse> response = new BaseResponse<OrderResponse>();
 		Order order = null;
 		Bill bill = null;
@@ -116,9 +118,9 @@ public class PaymentRestService extends AuthRestService {
 				response.setStatus(ApplicationConstants.STATUS_INTERNAL_SERVER_ERROR);
 				response.setCode(e.getCode());
 				response.setMessage(e.getMessage());
+				break;
 			} finally {
 				paymentService.updateBill(order, bill);
-//				paymentService.updateBail(store, bill, true);
 			}
 		} while(order != null);
 		
@@ -138,7 +140,7 @@ public class PaymentRestService extends AuthRestService {
 
 	private void validateDailyLimit(Store store) {
 		Assert.notNull(store, "No store found");
-		Assert.isTrue(-1 == store.getDailyLimit() || store.getBail()+store.getNonBail() < store.getDailyLimit(), "Exceed transaction limit");
+		Assert.isTrue(-1 == store.getDailyLimit() || store.getNonBail() < store.getDailyLimit(), "Exceed transaction limit");
 		
 	}
 

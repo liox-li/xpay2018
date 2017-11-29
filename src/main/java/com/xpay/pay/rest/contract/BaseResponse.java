@@ -22,6 +22,7 @@ public class BaseResponse<DTO> {
 	protected String code;
 	protected String message;
 	protected String developerMessage;
+	protected Integer count;
 	protected DTO data;
 
 	public BaseResponse() {
@@ -63,6 +64,15 @@ public class BaseResponse<DTO> {
 	public void setDeveloperMessage(String developerMessage) {
 		this.developerMessage = developerMessage;
 	}
+	
+	public Integer getCount() {
+		return count;
+	}
+
+	public void setCount(Integer count) {
+		this.count = count;
+	}
+
 	public DTO getData() {
 		return data;
 	}
