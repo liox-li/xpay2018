@@ -199,7 +199,7 @@ public class AgentRestService extends AdminRestService {
 		Date startTime = TimeUtils.parseTime(startDate, TimeUtils.TimePatternDate);
 		startTime = startTime == null?TimeUtils.beginOfDay(new Date()): startTime;
 		Date endTime = TimeUtils.parseTime(endDate, TimeUtils.TimePatternDate);
-		endTime = endTime == null?new Date(): TimeUtils.endOfToday(endTime);
+		endTime = endTime == null?new Date(): TimeUtils.endOfDay(endTime);
 		
 		Assert.isTrue(TimeUtils.daysBetween(startTime, endTime)<3, "Can only fetch orders within two days.");
 		
