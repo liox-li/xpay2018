@@ -96,10 +96,6 @@ public class PaymentRestService extends AuthRestService {
 
 		App app = getApp();
 		String orderNo = IDGenerator.buildOrderNo(app.getId(), store.getId());
-//		OrderDetail orderDetail = payload == null?null: payload.getOrderDetail();
-//		if(orderDetail != null) {
-//			orderService.insert(orderDetail);
-//		}
 		BaseResponse<OrderResponse> response = new BaseResponse<OrderResponse>();
 		Order order = null;
 		Bill bill = null;
@@ -125,7 +121,6 @@ public class PaymentRestService extends AuthRestService {
 				break;
 			} finally {
 				paymentService.updateBill(order, bill);
-//				paymentService.updateBail(store, bill, true);
 			}
 		} while(order != null);
 		
