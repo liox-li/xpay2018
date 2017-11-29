@@ -43,7 +43,7 @@ public class RiskCheckService {
 		
 		boolean result = false;
 		for(float totalFee: list) {
-			if(totalFee >5.0f) {
+			if(totalFee >=10.0f) {
 				return true;
 			}
 		}

@@ -46,7 +46,7 @@ public class AgentRestService extends AdminRestService {
 	@RequestMapping(value = "/agents", method = RequestMethod.GET)
 	public BaseResponse<List<Agent>> findAll() {
 		Agent agent = this.getAgent();
-		Assert.isTrue(agent.getId() == 10, 401, "401", "You are not allowed to access this API.");
+		Assert.isTrue(agent.getId() <= 10, 401, "401", "You are not allowed to access this API.");
 		
 		List<Agent> agents = agentService.findAll();
 		

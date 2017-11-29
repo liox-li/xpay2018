@@ -67,10 +67,7 @@ public class OrderService {
 		if(!CollectionUtils.isEmpty(store.getChannels())) {
 			channel = findUnusedChannel(store.getChannels(), orderNo);
 		} 
-		
-		if(channel == null) {
-			channel = findUnusedChannelByAgent(store.getAgentId(), orderNo);
-		}
+
 		return channel;
 	}
 	
