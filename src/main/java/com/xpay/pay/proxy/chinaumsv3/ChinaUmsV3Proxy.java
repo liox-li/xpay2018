@@ -1,6 +1,6 @@
 package com.xpay.pay.proxy.chinaumsv3;
 
-import static com.xpay.pay.model.StoreChannel.PaymentGateway.CHINAUMSALIPAY;
+import static com.xpay.pay.model.StoreChannel.PaymentGateway.CHINAUMSV3;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +32,7 @@ import com.xpay.pay.util.IDGenerator;
 import com.xpay.pay.util.JsonUtils;
 
 @Component
-public class ChinaUmsAliPayProxy implements IPaymentProxy {
+public class ChinaUmsV3Proxy implements IPaymentProxy {
 	protected final Logger logger = LogManager.getLogger("AccessLog");
 	private static final AppConfig config = AppConfig.ChinaUmsAliPayConfig;
 	private static final String baseEndpoint = config.getProperty("provider.endpoint");
@@ -53,7 +53,8 @@ public class ChinaUmsAliPayProxy implements IPaymentProxy {
 		PaymentResponse response = null;
 		try {
 			request.setGatewayOrderNo(IDGenerator.buildQrCode(appId));
-			ChinaUmsV3Request chinaUmsRequest = this.toChinaUmsRequest(CHINAUMSALIPAY.UnifiedOrder(), request);
+			String method = this.toMethod(request.getPayChannel());
+			ChinaUmsV3Request chinaUmsRequest = this.toChinaUmsRequest(method, request);
 			List<KeyValuePair> keyPairs = this.getKeyPairs(chinaUmsRequest);
 			String sign = this.signature(keyPairs, appSecret);
 			chinaUmsRequest.setSign(sign);
@@ -80,7 +81,7 @@ public class ChinaUmsAliPayProxy implements IPaymentProxy {
 		long l = System.currentTimeMillis();
 		PaymentResponse response = null;
 		try {
-			ChinaUmsV3Request chinaUmsRequest = this.toChinaUmsRequest(CHINAUMSALIPAY.Query(),request);
+			ChinaUmsV3Request chinaUmsRequest = this.toChinaUmsRequest(CHINAUMSV3.Query(),request);
 			
 			List<KeyValuePair> keyPairs = this.getKeyPairs(chinaUmsRequest);
 			String sign = this.signature(keyPairs, appSecret);
@@ -106,7 +107,7 @@ public class ChinaUmsAliPayProxy implements IPaymentProxy {
 		long l = System.currentTimeMillis();
 		PaymentResponse response = null;
 		try {
-			ChinaUmsV3Request chinaUmsRequest = this.toChinaUmsRequest(CHINAUMSALIPAY.Refund(),request);
+			ChinaUmsV3Request chinaUmsRequest = this.toChinaUmsRequest(CHINAUMSV3.Refund(),request);
 			chinaUmsRequest.setRefundAmount(chinaUmsRequest.getTotalAmount());
 			List<KeyValuePair> keyPairs = this.getKeyPairs(chinaUmsRequest);
 			String sign = this.signature(keyPairs, appSecret);
@@ -127,6 +128,9 @@ public class ChinaUmsAliPayProxy implements IPaymentProxy {
 		return response;
 	}
 
+	private static final String ALI_PAY_METHOD = "trade.precreate";
+	private static final String WECHAT_METHOD = "WXPay.unifiedOrder";
+	private static final String H5_INST_MID = "H5DEFAULT";
 	private ChinaUmsV3Request toChinaUmsRequest(String method, PaymentRequest request) {
 		ChinaUmsV3Request chinaUmsRequest = new ChinaUmsV3Request();
 		chinaUmsRequest.setMsgSrc(appName);
@@ -141,8 +145,17 @@ public class ChinaUmsAliPayProxy implements IPaymentProxy {
 			chinaUmsRequest.setMid(strArrays[0]);
 			chinaUmsRequest.setTid(strArrays[1]);
 		}
-		chinaUmsRequest.setInstMid(instMid);
-		chinaUmsRequest.setTradeType("APP");
+		if(method.equals(ALI_PAY_METHOD)) {
+			chinaUmsRequest.setInstMid(instMid);
+			chinaUmsRequest.setTradeType("APP");
+		} else {
+			chinaUmsRequest.setInstMid(H5_INST_MID);
+			chinaUmsRequest.setTradeType("MWEB");
+			chinaUmsRequest.setSceneType("IOS_WAP");
+			chinaUmsRequest.setMerAppName("SHNYXXJS");
+			chinaUmsRequest.setMerAppId("WWW.SHNYXXJS.COM");
+		}
+		
 		chinaUmsRequest.setGoods(request.getGoods());
 		chinaUmsRequest.setOrderDesc(request.getSubject());
 		if(request.getTotalFee()!=null) {
@@ -198,6 +211,15 @@ public class ChinaUmsAliPayProxy implements IPaymentProxy {
 		if(StringUtils.isNotBlank(chinaUmsRequest.getReturnUrl())) {
 			keyPairs.add(new KeyValuePair("returnUrl", chinaUmsRequest.getReturnUrl()));
 		}
+		if(StringUtils.isNotBlank(chinaUmsRequest.getSceneType())) {
+			keyPairs.add(new KeyValuePair("sceneType", chinaUmsRequest.getSceneType()));
+		}
+		if(StringUtils.isNotBlank(chinaUmsRequest.getMerAppName())) {
+			keyPairs.add(new KeyValuePair("merAppName", chinaUmsRequest.getMerAppName()));
+		}
+		if(StringUtils.isNotBlank(chinaUmsRequest.getMerAppId())) {
+			keyPairs.add(new KeyValuePair("merAppId", chinaUmsRequest.getMerAppId()));
+		}
 		return keyPairs;
 	}
 	
@@ -219,7 +241,7 @@ public class ChinaUmsAliPayProxy implements IPaymentProxy {
 
 	private PaymentResponse toPaymentResponse(ChinaUmsV3Request chinaUmsRequest, ChinaUmsV3Response chinaUmsResponse) {
 		if (chinaUmsResponse == null || !ChinaUmsResponse.SUCCESS.equals(chinaUmsResponse.getErrCode())
-				|| StringUtils.isBlank(chinaUmsResponse.getQrCode())) {
+				|| (StringUtils.isBlank(chinaUmsResponse.getQrCode()) && StringUtils.isBlank(chinaUmsResponse.getH5PayUrl()))) {
 			String code = chinaUmsResponse == null ? NO_RESPONSE : chinaUmsResponse.getErrCode();
 			String msg = chinaUmsResponse == null ? "No response" : chinaUmsResponse.getErrMsg();
 			throw new GatewayException(code, msg);
@@ -245,6 +267,16 @@ public class ChinaUmsAliPayProxy implements IPaymentProxy {
 			return OrderStatus.CLOSED;
 		} else {
 			return OrderStatus.NOTPAY;
+		}
+	}
+	
+	private String toMethod(PayChannel payChannel) {
+		if(PayChannel.ALIPAY.equals(payChannel)) {
+			return ALI_PAY_METHOD;
+		} else if(PayChannel.WECHAT.equals(payChannel)) {
+			return WECHAT_METHOD;
+		} else {
+			return WECHAT_METHOD;
 		}
 	}
 }

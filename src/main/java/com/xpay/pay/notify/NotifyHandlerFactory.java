@@ -25,7 +25,7 @@ public class NotifyHandlerFactory {
 	
 	public INotifyHandler getNotifyHandler(String uri) {
 		if (uri.contains(PaymentGateway.CHINAUMSH5.name().toLowerCase()) || uri.contains(PaymentGateway.CHINAUMSWAP.name().toLowerCase())
-				|| uri.contains(PaymentGateway.CHINAUMSALIPAY.name().toLowerCase())) {
+				|| uri.contains(PaymentGateway.CHINAUMSV3.name().toLowerCase())) {
 			return chinaUmsH5Handler;
 		} else if (uri.contains(PaymentGateway.CHINAUMS.name().toLowerCase())) {
 			return chinaUmsHandler;
