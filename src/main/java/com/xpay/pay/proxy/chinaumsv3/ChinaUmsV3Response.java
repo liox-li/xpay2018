@@ -8,7 +8,7 @@ public class ChinaUmsV3Response {
 	private String mid;
 	private String tid;
 	private String instMid;
-	private String h5PayUrl;
+	private String qrCode;
 	public String getErrCode() {
 		return errCode;
 	}
@@ -51,10 +51,10 @@ public class ChinaUmsV3Response {
 	public void setInstMid(String instMid) {
 		this.instMid = instMid;
 	}
-	public String getH5PayUrl() {
-		return h5PayUrl;
+	public String getQrCode() {
+		return qrCode;
 	}
-	public void setH5PayUrl(String h5PayUrl) {
-		this.h5PayUrl = h5PayUrl;
+	public void setQrCode(String qrCode) {
+		this.qrCode = qrCode;
 	}
 }

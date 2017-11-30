@@ -26,7 +26,7 @@ public class PaymentProxyFactory {
 	@Autowired
 	private ChinaUmsV2Proxy chinaUmsV2Proxy;
 	@Autowired
-	private ChinaUmsV3Proxy chinaUmsV3Proxy;
+	private ChinaUmsV3Proxy chinaUmsAliPayProxy;
 	@Autowired
 	private ChinaUmsH5Proxy chinaUmsH5Proxy;
 	@Autowired
@@ -46,8 +46,8 @@ public class PaymentProxyFactory {
 		switch (channel) {
 			case CHINAUMSV2:
 				return chinaUmsV2Proxy;
-			case CHINAUMSV3:
-				return chinaUmsV3Proxy;
+			case CHINAUMSALIPAY:
+				return chinaUmsAliPayProxy;
 			case CHINAUMSH5:
 				return chinaUmsH5Proxy;
 			case CHINAUMSWAP:
