@@ -25,7 +25,7 @@ public class ChinaUmsProxyTest extends BaseSpringJunitTest {
 		request.setExtStoreId("898340149000005");
 		request.setDeviceId("1213");
 		request.setPayChannel(PayChannel.WECHAT);
-		request.setTotalFee("0.01");
+		request.setTotalFee(0.01f);
 		request.setOrderNo("3116201707311003354995996114");
 		request.setSubject("测试商品");
 		request.setAttach("atach");
@@ -49,7 +49,7 @@ public class ChinaUmsProxyTest extends BaseSpringJunitTest {
 		request.setExtStoreId("898340149000005");
 		request.setDeviceId("1213");
 		request.setPayChannel(PayChannel.WECHAT);
-		request.setTotalFee("0.01");
+		request.setTotalFee(0.01f);
 		request.setOrderNo("3116201704121003354995996119");
 		request.setSubject("No Subject");
 		request.setAttach("atach");
@@ -63,7 +63,7 @@ public class ChinaUmsProxyTest extends BaseSpringJunitTest {
 		request.setExtStoreId("898340149000005");
 		request.setDeviceId("1213");
 		request.setPayChannel(PayChannel.WECHAT);
-		request.setTotalFee("0.01");
+		request.setTotalFee(0.01f);
 		request.setOrderNo("3116201704121003354995996119");
 		request.setSubject("No Subject");
 		request.setAttach("atach");

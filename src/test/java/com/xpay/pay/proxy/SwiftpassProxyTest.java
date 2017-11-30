@@ -15,7 +15,7 @@ public class SwiftpassProxyTest extends BaseSpringJunitTest {
 		PaymentRequest request = new PaymentRequest();
 		request.setExtStoreId("755437000006"); //
 		request.setDeviceId("1213");
-		request.setTotalFee("0.01");
+		request.setTotalFee(0.01f);
 		request.setOrderNo("X011010220170502141421434144");
 		request.setSubject("No Subject");
 		request.setAttach("atach");
@@ -43,7 +43,7 @@ public class SwiftpassProxyTest extends BaseSpringJunitTest {
 		request.setExtStoreId("102520441241");
 		request.setDeviceId("1213");
 		request.setOrderNo("X011010220170407141421434141");
-		request.setTotalFee("10");
+		request.setTotalFee(0.01f);
 		PaymentResponse response = proxy.refund(request);
 		System.out.println("response code: "+ response.getCode()+" "+response.getMsg());
 	}

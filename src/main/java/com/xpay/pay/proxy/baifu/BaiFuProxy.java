@@ -88,8 +88,8 @@ public class BaiFuProxy implements IPaymentProxy {
 		request.setOut_trade_no(paymentRequest.getOrderNo());
 		request.setBody(paymentRequest.getSubject());
 		request.setDetail(paymentRequest.getAttach());
-		if(StringUtils.isNotBlank(paymentRequest.getTotalFee())) {
-			request.setTotal_fee(String.valueOf((int) (paymentRequest.getTotalFeeAsFloat() * 100)));
+		if(paymentRequest.getTotalFee()!=null) {
+			request.setTotal_fee(String.valueOf((int) (paymentRequest.getTotalFee() * 100)));
 		}
 		request.setSpbill_create_ip(paymentRequest.getServerIp());
 		request.setNotify_url(paymentRequest.getNotifyUrl());

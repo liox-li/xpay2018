@@ -145,8 +145,8 @@ public class ChinaUmsV3Proxy implements IPaymentProxy {
 		chinaUmsRequest.setTradeType("APP");
 		chinaUmsRequest.setGoods(request.getGoods());
 		chinaUmsRequest.setOrderDesc(request.getSubject());
-		if(StringUtils.isNotBlank(request.getTotalFee())) {
-			chinaUmsRequest.setTotalAmount(String.valueOf((int)(request.getTotalFeeAsFloat()*100)));
+		if(request.getTotalFee()!=null) {
+			chinaUmsRequest.setTotalAmount(String.valueOf((int)(request.getTotalFee()*100)));
 		}
 		chinaUmsRequest.setNotifyUrl(request.getNotifyUrl());
 		chinaUmsRequest.setReturnUrl(request.getReturnUrl());

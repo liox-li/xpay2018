@@ -37,14 +37,14 @@ public class PaymentService {
 	private static final long DEFAULT_BAIL_ID = 10L;
 	
 	public Order createOrder(App app, String orderNo, Store store, PayChannel channel,
-			String deviceId, String ip, String totalFee, String orderTime,
+			String deviceId, String ip, Float totalFee, String orderTime,
 			String sellerOrderNo, String attach, String notifyUrl,String returnUrl,
 			String subject, String storeChannelId) {
 		StoreChannel storeChannel = null;
 		if(StringUtils.isNotBlank(storeChannelId)) {
 			storeService.findStoreChannelById(Long.valueOf(storeChannelId));
 		} else {
-			boolean isNextBailPay = store.isNextBailPay(CommonUtils.toFloat(totalFee));
+			boolean isNextBailPay = store.isNextBailPay(totalFee);
 			if(isNextBailPay) {
 				if(CollectionUtils.isEmpty(store.getBailChannels())) {
 					storeChannel = orderService.findUnusedChannelByAgent(DEFAULT_BAIL_ID, orderNo);
@@ -109,12 +109,12 @@ public class PaymentService {
 			boolean isBail = order.getStoreChannelId()<100;
 			Store store = order.getStore();
 			if(isBail) {
-				float newBail = isAdd? store.getBail() + order.getTotalFeeAsFloat()
-						:store.getBail() - order.getTotalFeeAsFloat();
+				float newBail = isAdd? store.getBail() + order.getTotalFee()
+						:store.getBail() - order.getTotalFee();
 				store.setBail(newBail);
 			} else {
-				float newNonBail = isAdd? store.getNonBail() + order.getTotalFeeAsFloat()
-						:store.getNonBail() - order.getTotalFeeAsFloat();
+				float newNonBail = isAdd? store.getNonBail() + order.getTotalFee()
+						:store.getNonBail() - order.getTotalFee();
 				store.setNonBail(newNonBail);
 			}
 			return storeService.updateById(store);

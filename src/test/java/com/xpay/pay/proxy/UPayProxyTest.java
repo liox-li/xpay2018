@@ -25,7 +25,7 @@ public class UPayProxyTest  extends BaseSpringJunitTest {
 	public void testRefund() {
 		PaymentRequest request = new PaymentRequest();
 		request.setOrderNo("X003006320171017163053738411");
-		request.setTotalFee("0.01");
+		request.setTotalFee(0.01f);
 		request.setExtStoreId("36694908,100003690002293222,0690940a8521e01b438b45c053cc4397");
 		PaymentResponse response = uPayProxy.refund(request);
 		System.out.println("response code: "+ response.getCode()+" "+response.getMsg());

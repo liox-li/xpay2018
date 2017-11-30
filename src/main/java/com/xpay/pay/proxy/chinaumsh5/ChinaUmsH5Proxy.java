@@ -189,8 +189,8 @@ public class ChinaUmsH5Proxy implements IPaymentProxy {
 		chinaUmsH5Request.setInstMid(instMid);
 		chinaUmsH5Request.setGoods(request.getGoods());
 		chinaUmsH5Request.setOrderDesc(request.getSubject());
-		if(StringUtils.isNotBlank(request.getTotalFee())) {
-			chinaUmsH5Request.setTotalAmount(String.valueOf((int)(request.getTotalFeeAsFloat()*100)));
+		if(request.getTotalFee()!=null) {
+			chinaUmsH5Request.setTotalAmount(String.valueOf((int)(request.getTotalFee()*100)));
 		}
 		chinaUmsH5Request.setNotifyUrl(request.getNotifyUrl());
 		chinaUmsH5Request.setReturnUrl(request.getReturnUrl());

@@ -16,7 +16,7 @@ public class NotificationResponse {
 	private String tokenId;
 	private String prepayId;
 	private int orderStatus;
-	private String totalFee;
+	private Float totalFee;
 	private String extOrderNo;
 	private String targetOrderNo;
 	private String attach;
@@ -72,10 +72,10 @@ public class NotificationResponse {
 	public void setOrderStatus(int orderStatus) {
 		this.orderStatus = orderStatus;
 	}
-	public String getTotalFee() {
+	public Float getTotalFee() {
 		return totalFee;
 	}
-	public void setTotalFee(String totalFee) {
+	public void setTotalFee(Float totalFee) {
 		this.totalFee = totalFee;
 	}
 	public String getExtOrderNo() {
@@ -139,8 +139,8 @@ public class NotificationResponse {
 			keyValues.add(new KeyValuePair("prepayId", prepayId));
 		}
 		keyValues.add(new KeyValuePair("orderStatus", String.valueOf(orderStatus)));
-		if(StringUtils.isNotBlank(totalFee)) {
-			keyValues.add(new KeyValuePair("totalFee", totalFee));
+		if(totalFee!=null) {
+			keyValues.add(new KeyValuePair("totalFee", String.valueOf(totalFee)));
 		}
 		if(StringUtils.isNotBlank(extOrderNo)) {
 			keyValues.add(new KeyValuePair("extOrderNo", extOrderNo));

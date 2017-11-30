@@ -14,7 +14,7 @@ public class KekePayProxyTest extends BaseSpringJunitTest {
   public void testUnifiedOrder() {
     PaymentRequest request = new PaymentRequest();
     request.setExtStoreId("测试");
-    request.setTotalFee("10.00");
+    request.setTotalFee(0.01f);
     request.setServerIp("203.156.236.194");
     request.setNotifyUrl("http://127.0.0.1");
     request.setReturnUrl("http://www.baidu.com");

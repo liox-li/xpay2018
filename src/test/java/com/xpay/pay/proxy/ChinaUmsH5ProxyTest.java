@@ -18,7 +18,7 @@ public class ChinaUmsH5ProxyTest extends BaseSpringJunitTest {
 		request.setExtStoreId("898310172991173");
 		request.setDeviceId("1213");
 		request.setPayChannel(PayChannel.WECHAT);
-		request.setTotalFee("0.01");
+		request.setTotalFee(0.01f);
 		request.setOrderNo("3251201710261618354995996111");
 		request.setGatewayOrderNo(IDGenerator.buildQrCode("3354"));
 		request.setReturnUrl("http://www.baidu.com");

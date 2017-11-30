@@ -20,7 +20,7 @@ public class RubiPayProxyTest  extends BaseSpringJunitTest {
 		PaymentRequest request = new PaymentRequest();
 		request.setExtStoreId("103590012926");
 		request.setDeviceId("1213");
-		request.setTotalFee("0.01");
+		request.setTotalFee(0.01f);
 		request.setOrderNo("X011010220170507141421434142");
 		request.setSubject("No Subject");
 		request.setAttach("atach");

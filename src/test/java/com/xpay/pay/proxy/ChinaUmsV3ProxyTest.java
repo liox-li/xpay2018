@@ -23,7 +23,7 @@ public class ChinaUmsV3ProxyTest extends BaseSpringJunitTest {
 		request.setDeviceId("127.0.0.1");
 		request.setServerIp("127.0.0.1");
 		request.setReturnUrl("http://www.baidu.com");
-		request.setTotalFee("0.01");
+		request.setTotalFee(0.01f);
 		request.setNotifyUrl("http://106.14.47.193/xpay/notify/chinaumsh5");
 		request.setPayChannel(PayChannel.ALIPAY);
 		GoodsBean[] goods = new GoodsBean[1];

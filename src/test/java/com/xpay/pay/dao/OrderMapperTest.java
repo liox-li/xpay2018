@@ -23,7 +23,7 @@ public class OrderMapperTest extends BaseSpringJunitTest {
 		order.setAppId(10);
 		order.setStoreId(100);
 		order.setStoreChannelId(100);
-		order.setTotalFee("0.01");
+		order.setTotalFee(0.01f);
 		order.setOrderTime("20170329142345");
 		order.setPayChannel(PayChannel.ALIPAY);
 		mapper.insert(order);

@@ -141,8 +141,8 @@ public class ChinaUmsProxy implements IPaymentProxy {
 			chinaUmsRequest.setBillDate(IDGenerator.formatDate(IDGenerator.TimePattern14, request.getOrderTime()));
 		}
 		chinaUmsRequest.setBillDesc(request.getSubject());
-		if(StringUtils.isNotBlank(request.getTotalFee())) {
-			chinaUmsRequest.setTotalAmount(String.valueOf((int)(request.getTotalFeeAsFloat()*100)));
+		if(request.getTotalFee()!=null) {
+			chinaUmsRequest.setTotalAmount(String.valueOf((int)(request.getTotalFee()*100)));
 		}
 		chinaUmsRequest.setGoods(request.getGoods());
 		chinaUmsRequest.setNotifyUrl(request.getNotifyUrl());

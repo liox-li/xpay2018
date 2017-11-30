@@ -100,7 +100,7 @@ public class PaymentRestService extends AuthRestService {
 		Order order = null;
 		Bill bill = null;
 		do {
-			order = paymentService.createOrder(app, orderNo, store, channel, deviceId, ip, totalFee, orderDate, sellerOrderNo, attach, notifyUrl, returnUrl, subject, storeChannel);
+			order = paymentService.createOrder(app, orderNo, store, channel, deviceId, ip, fee, orderDate, sellerOrderNo, attach, notifyUrl, returnUrl, subject, storeChannel);
 			Assert.notNull(order,"Create order failed");
 			
 			try {

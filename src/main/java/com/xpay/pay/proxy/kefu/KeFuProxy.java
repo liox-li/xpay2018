@@ -103,7 +103,7 @@ public class KeFuProxy implements IPaymentProxy {
 		KeFuRequest keFuRequest = new KeFuRequest();
 		keFuRequest.setCustomerId(request.getExtStoreId());
 		keFuRequest.setChannelFlag(this.channel2Flag(request.getPayChannel()));
-		keFuRequest.setAmount(request.getTotalFee());
+		keFuRequest.setAmount(String.valueOf(request.getTotalFee()));
 		keFuRequest.setOrderId(request.getOrderNo());
 		keFuRequest.setNotifyUrl(request.getNotifyUrl());
 		keFuRequest.setGoodsName(request.getSubject());

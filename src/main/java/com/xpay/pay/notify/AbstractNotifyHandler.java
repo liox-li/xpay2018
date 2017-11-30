@@ -44,7 +44,7 @@ public abstract class AbstractNotifyHandler implements INotifyHandler {
 		NotifyBody body = this.extractNotifyBody(url, content);
 		if(body!=null) {
 			order = fetchOrder(body);
-			if(order!=null &&  CommonUtils.toInt(body.getTotalFee()) == (int) (order.getTotalFeeAsFloat() * 100)) {
+			if(order!=null &&  CommonUtils.toInt(body.getTotalFee()) == (int) (order.getTotalFee() * 100)) {
 				updateOrderStatus(order, body);
 				updateBail(order);
 				updateStoreChannel(order.getStoreChannel());
