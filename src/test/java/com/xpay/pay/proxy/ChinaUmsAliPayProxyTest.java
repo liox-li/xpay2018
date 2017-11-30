@@ -6,11 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.xpay.pay.BaseSpringJunitTest;
 import com.xpay.pay.proxy.IPaymentProxy.PayChannel;
 import com.xpay.pay.proxy.PaymentRequest.GoodsBean;
-import com.xpay.pay.proxy.chinaumsv3.ChinaUmsV3Proxy;
+import com.xpay.pay.proxy.chinaumsv3.ChinaUmsAliPayProxy;
 
-public class ChinaUmsV3ProxyTest extends BaseSpringJunitTest {
+public class ChinaUmsAliPayProxyTest extends BaseSpringJunitTest {
 	@Autowired 
-	private ChinaUmsV3Proxy proxy;
+	private ChinaUmsAliPayProxy proxy;
 	
 //	private String extStoreId = "898310060514010";
 	private String extStoreId = "898340149000005";

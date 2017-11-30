@@ -32,9 +32,9 @@ import com.xpay.pay.util.IDGenerator;
 import com.xpay.pay.util.JsonUtils;
 
 @Component
-public class ChinaUmsV3Proxy implements IPaymentProxy {
+public class ChinaUmsAliPayProxy implements IPaymentProxy {
 	protected final Logger logger = LogManager.getLogger("AccessLog");
-	private static final AppConfig config = AppConfig.ChinaUmsV3Config;
+	private static final AppConfig config = AppConfig.ChinaUmsAliPayConfig;
 	private static final String baseEndpoint = config.getProperty("provider.endpoint");
 	private static final String appId = config.getProperty("provider.app.id");
 	private static final String appSecret = config.getProperty("provider.app.secret");
