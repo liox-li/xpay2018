@@ -30,6 +30,7 @@ import com.xpay.pay.rest.contract.RechargeRequest;
 import com.xpay.pay.rest.contract.StoreResponse;
 import com.xpay.pay.rest.contract.UpdateStoreChannelRequest;
 import com.xpay.pay.rest.contract.UpdateStoreChannelResponse;
+import com.xpay.pay.rest.contract.UpdateStoreRequest;
 import com.xpay.pay.service.AppService;
 import com.xpay.pay.service.OrderService;
 import com.xpay.pay.service.StoreService;
@@ -170,7 +171,19 @@ public class AgentRestService extends AdminRestService {
 		Assert.notNull(request.getName(), "Store name can't be null");
 		Assert.notNull(request.getAppId(), "AppId cant' be null");
 		
-		Store store = storeService.createStore(id, request.getName(), request.getBailPercentage(), request.getAppId(), request.getCsrTel(), request.getProxyUrl());
+		Store store = storeService.createStore(id, request.getName(), request.getBailPercentage(), request.getAppId(), request.getCsrTel(), request.getProxyUrl(), request.getDailyLimit());
+		StoreResponse storeResponse = toStoreResponse(store);
+		BaseResponse<StoreResponse> response = new BaseResponse<StoreResponse>();
+		response.setData(storeResponse);
+		return response;
+	}
+	
+	@RequestMapping(value = "/{id}/stores", method = RequestMethod.PATCH)
+	public BaseResponse<StoreResponse> updateAgentStore(@PathVariable long id, 
+			@RequestBody(required = true) UpdateStoreRequest request) {
+		validateAgent(id);
+		
+		Store store = storeService.updateStore(request.getAgentId(), request.getStoreId(), request.getName(), request.getBailPercentage(), request.getAppId(), request.getCsrTel(), request.getProxyUrl(), request.getDailyLimit());
 		StoreResponse storeResponse = toStoreResponse(store);
 		BaseResponse<StoreResponse> response = new BaseResponse<StoreResponse>();
 		response.setData(storeResponse);
@@ -249,6 +262,7 @@ public class AgentRestService extends AdminRestService {
 		storeResponse.setCsrTel(store.getCsrTel());
 		storeResponse.setAppId(store.getAppId());
 		storeResponse.setProxyUrl(store.getProxyUrl());
+		storeResponse.setDailyLimit(store.getDailyLimit());
 		storeResponse.setTodayTradeAmount(store.getNonBail());
 		storeResponse.setQuota(store.getQuota());
 		return storeResponse;

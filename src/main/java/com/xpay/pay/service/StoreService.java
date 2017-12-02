@@ -81,7 +81,8 @@ public class StoreService {
 	}
 	
 	private static final Float INIT_FREE_QUOTA = 2000f;
-	public Store createStore(long agentId, String name, Float bailPercentage, long appId, String csrTel, String proxyUrl) {
+	private static final Long DEFAULT_DAILY_LIMIT = 50000L;
+	public Store createStore(long agentId, String name, Float bailPercentage, long appId, String csrTel, String proxyUrl, Long dailyLimit) {
 		Float thisBaiPercentage = bailPercentage>0 && bailPercentage<5?bailPercentage:2;
 		Store store = new Store();
 		store.setBar(100f);
@@ -94,6 +95,8 @@ public class StoreService {
 		store.setProxyUrl(proxyUrl);
 		store.setNonBail(0f);
 		store.setQuota(INIT_FREE_QUOTA);
+		long thisDailyLimit = dailyLimit == null ?DEFAULT_DAILY_LIMIT:dailyLimit;
+		store.setDailyLimit(thisDailyLimit);
 		storeMapper.insert(store);
 		
 		StoreTransaction transaction = new StoreTransaction();
@@ -105,6 +108,33 @@ public class StoreService {
 		transaction.setBailPercentage(store.getBailPercentage());
 		storeTransactionMapper.insert(transaction);
 		
+		return store;
+	}
+	
+	public Store updateStore(Long agentId, Long storeId, String name, Float bailPercentage, Long appId, String csrTel, String proxyUrl, Long dailyLimit) {
+		Store store = storeMapper.findById(storeId);
+		if(agentId!=null) {
+			store.setAgentId(agentId);
+		}
+		if(StringUtils.isNotBlank(name)) {
+			store.setName(name);
+		}
+		if(bailPercentage!=null) {
+			store.setBailPercentage(bailPercentage);
+		}
+		if(appId!=null) {
+			store.setAppId(appId);
+		}
+		if(StringUtils.isNotBlank(csrTel)) {
+			store.setCsrTel(csrTel);
+		}
+		if(StringUtils.isNotBlank(proxyUrl)) {
+			store.setProxyUrl(proxyUrl);
+		}
+		if(dailyLimit!=null) {
+			store.setDailyLimit(dailyLimit);
+		}
+		storeMapper.updateById(store);
 		return store;
 	}
 	

@@ -13,6 +13,7 @@ public class StoreResponse {
 	private String csrTel;
 	private String proxyUrl;
 	private Float todayTradeAmount;
+	private Long dailyLimit;
 	private Float quota;
 	private List<StoreChannel> channels;
 	public long getId() {
@@ -62,6 +63,12 @@ public class StoreResponse {
 	}
 	public void setTodayTradeAmount(Float todayTradeAmount) {
 		this.todayTradeAmount = todayTradeAmount;
+	}
+	public Long getDailyLimit() {
+		return dailyLimit;
+	}
+	public void setDailyLimit(Long dailyLimit) {
+		this.dailyLimit = dailyLimit;
 	}
 	public Float getQuota() {
 		return quota;
