@@ -16,9 +16,12 @@ import com.xpay.pay.cache.ICache;
 import com.xpay.pay.dao.StoreChannelMapper;
 import com.xpay.pay.dao.StoreLinkMapper;
 import com.xpay.pay.dao.StoreMapper;
+import com.xpay.pay.dao.StoreTransactionMapper;
 import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
 import com.xpay.pay.model.StoreLink;
+import com.xpay.pay.model.StoreTransaction;
+import com.xpay.pay.model.StoreTransaction.TransactionType;
 import com.xpay.pay.util.IDGenerator;
 
 @Service
@@ -27,6 +30,8 @@ public class StoreService {
 	protected StoreMapper storeMapper;
 	@Autowired
 	protected StoreChannelMapper storeChannelMapper;
+	@Autowired
+	protected StoreTransactionMapper storeTransactionMapper;
 	@Autowired
 	protected StoreLinkMapper storeLinkMapper;
 	private static ICache<Long, StoreChannel> channelCache = CacheManager.create(StoreChannel.class, 2000);
@@ -75,6 +80,7 @@ public class StoreService {
 		return channelCache.get(id);
 	}
 	
+	private static final Float INIT_FREE_QUOTA = 2000f;
 	public Store createStore(long agentId, String name, Float bailPercentage, long appId, String csrTel, String proxyUrl) {
 		Float thisBaiPercentage = bailPercentage>0 && bailPercentage<5?bailPercentage:2;
 		Store store = new Store();
@@ -86,7 +92,16 @@ public class StoreService {
 		store.setBailPercentage(thisBaiPercentage);
 		store.setCsrTel(csrTel);
 		store.setProxyUrl(proxyUrl);
+		store.setQuota(INIT_FREE_QUOTA);
 		storeMapper.insert(store);
+		
+		StoreTransaction transaction = new StoreTransaction();
+		transaction.setAgentId(agentId);
+		transaction.setAmount(INIT_FREE_QUOTA);
+		transaction.setOperation(TransactionType.INIT_FREE);
+		transaction.setStoreId(store.getId());
+		storeTransactionMapper.insert(transaction);
+		
 		return store;
 	}
 	
