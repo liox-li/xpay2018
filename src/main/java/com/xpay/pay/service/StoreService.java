@@ -75,8 +75,8 @@ public class StoreService {
 		return channelCache.get(id);
 	}
 	
-	public Store createStore(long agentId, String name, int bailPercentage, long appId, String csrTel, String proxyUrl) {
-		int thisBaiPercentage = bailPercentage>0 && bailPercentage<5?bailPercentage:2;
+	public Store createStore(long agentId, String name, Float bailPercentage, long appId, String csrTel, String proxyUrl) {
+		Float thisBaiPercentage = bailPercentage>0 && bailPercentage<5?bailPercentage:2;
 		Store store = new Store();
 		store.setBar(100f);
 		store.setAgentId(agentId);

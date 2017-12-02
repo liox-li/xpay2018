@@ -19,6 +19,7 @@
     <result column="proxy_url" jdbcType="VARCHAR" property="proxyUrl" />
     <result column="app_id" jdbcType="BIGINT" property="appId" />
     <result column="agent_id" jdbcType="BIGINT" property="agentId" />
+    <result column="quota" jdbcType="NUMERIC" property="quota" />
   </resultMap>
   
   <sql id="storeColumns">
@@ -37,7 +38,8 @@
     csr_tel,
     proxy_url,
     app_id,
-    agent_id
+    agent_id,
+    quota
   </sql>
 
   <select id="findById" resultMap="StoreResultMap">
@@ -98,6 +100,9 @@
       </if>      
       <if test="agentId != null">
         agent_id,
+      </if>  
+       <if test="quota != null">
+        quota,
       </if>      
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -129,6 +134,9 @@
         </if>
          <if test="agentId != null">
         	#{agentId,jdbcType=BIGINT},
+        </if>
+         <if test="quota != null">
+        	#{quota,jdbcType=NUMERIC},
         </if>
     </trim>
   </insert>
@@ -177,6 +185,9 @@
       </if>
       <if test="appId != null">
         app_id = #{appId,jdbcType=BIGINT},
+      </if> 
+      <if test="quota != null">
+        quota = #{quota,jdbcType=NUMERIC},
       </if> 
       update_date = now()
     </set>

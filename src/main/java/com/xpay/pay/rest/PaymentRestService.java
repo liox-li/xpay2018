@@ -87,7 +87,7 @@ public class PaymentRestService extends AuthRestService {
 		Assert.isTrue(fee>=0.01f && fee<=3000, String.format("Invalid total fee: %s, sellerOrderNo: %s",totalFee, StringUtils.trimToEmpty(sellerOrderNo)));
 		String orderDate = validateOrderTime(orderTime);
 		Store store = storeService.findByCode(storeId);
-		validateDailyLimit(store);
+		validateQuota(store);
 		
 		validateStoreLink(store, returnUrl);
 		
@@ -138,8 +138,9 @@ public class PaymentRestService extends AuthRestService {
 	}
 
 
-	private void validateDailyLimit(Store store) {
+	private void validateQuota(Store store) {
 		Assert.notNull(store, "No store found");
+		Assert.isTrue(store.getNonBail()<store.getQuota(), "No enough quota remained");
 		Assert.isTrue(-1 == store.getDailyLimit() || store.getNonBail() < store.getDailyLimit(), "Exceed transaction limit");
 		
 	}

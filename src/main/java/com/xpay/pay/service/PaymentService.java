@@ -2,7 +2,6 @@ package com.xpay.pay.service;
 
 import static com.xpay.pay.proxy.IPaymentProxy.NO_RESPONSE;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,8 +33,6 @@ public class PaymentService {
 	@Autowired
 	private StoreService storeService;
 
-	private static final long DEFAULT_BAIL_ID = 10L;
-	
 	public Order createOrder(App app, String orderNo, Store store, PayChannel channel,
 			String deviceId, String ip, Float totalFee, String orderTime,
 			String sellerOrderNo, String attach, String notifyUrl,String returnUrl,
@@ -44,15 +41,8 @@ public class PaymentService {
 		if(StringUtils.isNotBlank(storeChannelId)) {
 			storeService.findStoreChannelById(Long.valueOf(storeChannelId));
 		} else {
-			boolean isNextBailPay = store.isNextBailPay(totalFee);
-			if(isNextBailPay) {
-				if(CollectionUtils.isEmpty(store.getBailChannels())) {
-					storeChannel = orderService.findUnusedChannelByAgent(DEFAULT_BAIL_ID, orderNo);
-				} else {
-					storeChannel = orderService.findUnusedChannel(store.getBailChannels(), orderNo);
-				}
-			}
-			storeChannel = storeChannel==null? orderService.findUnusedChannelByStore(store, orderNo):storeChannel;
+			storeChannel = orderService.findUnusedChannelByStore(store, orderNo);
+			storeChannel = storeChannel == null? orderService.findUnusedChannelByAgent(store.getAgentId(), orderNo): storeChannel;
 		}
 		Assert.notNull(storeChannel, String.format("No avaiable store channel, please try later, sellerOrderNo: %s", StringUtils.trimToEmpty(sellerOrderNo)));
 		
@@ -104,19 +94,11 @@ public class PaymentService {
 		return orderService.update(order);
 	}
 	
-	public boolean updateBail(Order order, boolean isAdd) {
+	public boolean updateTradeAmount(Order order) {
 		if(order != null) {
-			boolean isBail = order.getStoreChannelId()<100;
 			Store store = order.getStore();
-			if(isBail) {
-				float newBail = isAdd? store.getBail() + order.getTotalFee()
-						:store.getBail() - order.getTotalFee();
-				store.setBail(newBail);
-			} else {
-				float newNonBail = isAdd? store.getNonBail() + order.getTotalFee()
-						:store.getNonBail() - order.getTotalFee();
-				store.setNonBail(newNonBail);
-			}
+			float newNonBail = store.getNonBail() + order.getTotalFee();
+			store.setNonBail(newNonBail);
 			return storeService.updateById(store);
 		}
 		return true;
@@ -165,7 +147,6 @@ public class PaymentService {
 				bill.setOrder(order);
 				order.setStatus(bill.getOrderStatus());
 				orderService.update(order);
-				updateBail(order, false);
 			}
 			return bill;
 		} else {
