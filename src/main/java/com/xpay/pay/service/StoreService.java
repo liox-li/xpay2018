@@ -92,14 +92,35 @@ public class StoreService {
 		store.setBailPercentage(thisBaiPercentage);
 		store.setCsrTel(csrTel);
 		store.setProxyUrl(proxyUrl);
+		store.setNonBail(0f);
 		store.setQuota(INIT_FREE_QUOTA);
 		storeMapper.insert(store);
 		
 		StoreTransaction transaction = new StoreTransaction();
 		transaction.setAgentId(agentId);
-		transaction.setAmount(INIT_FREE_QUOTA);
+		transaction.setAmount(0f);
+		transaction.setQuota(INIT_FREE_QUOTA);
 		transaction.setOperation(TransactionType.INIT_FREE);
 		transaction.setStoreId(store.getId());
+		transaction.setBailPercentage(store.getBailPercentage());
+		storeTransactionMapper.insert(transaction);
+		
+		return store;
+	}
+	
+	public Store recharge(long agentId, long storeId, Float amount) {
+		Store store = storeMapper.findById(storeId);
+		int addQuota = (int)(amount *100 / (store.getBailPercentage()-1));
+		store.setQuota(store.getQuota()+addQuota);
+		storeMapper.updateById(store);
+		
+		StoreTransaction transaction = new StoreTransaction();
+		transaction.setAgentId(agentId);
+		transaction.setAmount(amount);
+		transaction.setQuota(Float.valueOf(addQuota));
+		transaction.setOperation(TransactionType.RECHARGE);
+		transaction.setStoreId(store.getId());
+		transaction.setBailPercentage(store.getBailPercentage());
 		storeTransactionMapper.insert(transaction);
 		
 		return store;
@@ -165,4 +186,5 @@ public class StoreService {
 		}
 		return list;
 	}
+
 }

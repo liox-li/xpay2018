@@ -26,6 +26,7 @@ import com.xpay.pay.rest.contract.BaseResponse;
 import com.xpay.pay.rest.contract.CreateAppRequest;
 import com.xpay.pay.rest.contract.CreateStoreRequest;
 import com.xpay.pay.rest.contract.LoginRequest;
+import com.xpay.pay.rest.contract.RechargeRequest;
 import com.xpay.pay.rest.contract.StoreResponse;
 import com.xpay.pay.rest.contract.UpdateStoreChannelRequest;
 import com.xpay.pay.service.AppService;
@@ -135,15 +136,7 @@ public class AgentRestService extends AdminRestService {
 		List<Store> stores = storeService.findByAgentId(id);
 		List<StoreResponse> storeResponses = new ArrayList<StoreResponse>();
 		for(Store store: stores) {
-			StoreResponse storeResponse = new StoreResponse();
-			storeResponse.setId(store.getId());
-			storeResponse.setCode(store.getCode());
-			storeResponse.setName(store.getName());
-			storeResponse.setChannels(store.getChannels());
-			storeResponse.setBailPercentage(store.getBailPercentage());
-			storeResponse.setAppId(store.getAppId());
-			storeResponse.setCsrTel(store.getCsrTel());
-			storeResponse.setProxyUrl(store.getProxyUrl());
+			StoreResponse storeResponse = toStoreResponse(store);
 			storeResponses.add(storeResponse);
 		}
 		BaseResponse<List<StoreResponse>> response = new BaseResponse<List<StoreResponse>>();
@@ -164,14 +157,20 @@ public class AgentRestService extends AdminRestService {
 		Assert.notNull(request.getAppId(), "AppId cant' be null");
 		
 		Store store = storeService.createStore(id, request.getName(), request.getBailPercentage(), request.getAppId(), request.getCsrTel(), request.getProxyUrl());
-		StoreResponse storeResponse = new StoreResponse();
-		storeResponse.setId(store.getId());
-		storeResponse.setCode(store.getCode());
-		storeResponse.setName(store.getName());
-		storeResponse.setBailPercentage(store.getBailPercentage());
-		storeResponse.setCsrTel(store.getCsrTel());
-		storeResponse.setAppId(store.getAppId());
-		storeResponse.setProxyUrl(store.getProxyUrl());
+		StoreResponse storeResponse = toStoreResponse(store);
+		BaseResponse<StoreResponse> response = new BaseResponse<StoreResponse>();
+		response.setData(storeResponse);
+		return response;
+	}
+	
+	@RequestMapping(value = "/{id}/stores/{storeId}/recharge", method = RequestMethod.POST)
+	public BaseResponse<StoreResponse> recharge(@PathVariable long id, 
+			@PathVariable long storeId,
+			@RequestBody(required = true) RechargeRequest request) {
+		Assert.isTrue(request!=null && request.getAmount()>=100f, "Recharge amount must be greater than 100");
+		
+		Store store = storeService.recharge(id, storeId, request.getAmount());
+		StoreResponse storeResponse = toStoreResponse(store);
 		BaseResponse<StoreResponse> response = new BaseResponse<StoreResponse>();
 		response.setData(storeResponse);
 		return response;
@@ -221,5 +220,19 @@ public class AgentRestService extends AdminRestService {
 	private void validateAgent(long agentId) {
 		Agent agent = this.getAgent();
 		Assert.isTrue(agentId == agent.getId(), ApplicationConstants.STATUS_UNAUTHORIZED, "401", "Unauthorized request");
+	}
+	
+	private StoreResponse toStoreResponse(Store store) {
+		StoreResponse storeResponse = new StoreResponse();
+		storeResponse.setId(store.getId());
+		storeResponse.setCode(store.getCode());
+		storeResponse.setName(store.getName());
+		storeResponse.setBailPercentage(store.getBailPercentage());
+		storeResponse.setCsrTel(store.getCsrTel());
+		storeResponse.setAppId(store.getAppId());
+		storeResponse.setProxyUrl(store.getProxyUrl());
+		storeResponse.setTodayTradeAmount(store.getNonBail());
+		storeResponse.setQuota(store.getQuota());
+		return storeResponse;
 	}
 }

@@ -196,6 +196,8 @@ CREATE TABLE IF NOT EXISTS bill_store_transaction (
 	operation varchar(16) NOT NULL,
 	agent_id BIGINT NOT NULL,
 	amount NUMERIC NOT NULL,
+	quota NUMERIC NOT NULL,
+	bail_percentage NUMERIC NOT NULL,
 	create_date TIMESTAMP WITH TIME ZONE NOT NULL default now()
 );	
 ALTER SEQUENCE bill_store_transaction_id RESTART 1000;

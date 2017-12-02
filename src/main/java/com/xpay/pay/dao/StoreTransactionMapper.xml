@@ -8,6 +8,8 @@
     <result column="operation" jdbcType="VARCHAR" property="operation" />
     <result column="agent_id" jdbcType="BIGINT" property="agentId" />
     <result column="amount" jdbcType="NUMERIC" property="amount" />
+    <result column="quota" jdbcType="NUMERIC" property="quota" />
+    <result column="bail_percentage" jdbcType="NUMERIC" property="bailPercentage" />
   </resultMap>
   
   <sql id="storeTransactionColumns">
@@ -15,7 +17,9 @@
     store_id,
     operation,
     agent_id,
-    amount
+    amount,
+    quota,
+    bail_percentage
   </sql>
   
   <select id="findByStoreIdAndTime" resultMap="StoreTransactionResultMap">
@@ -47,13 +51,15 @@
   <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.StoreTransaction">
     insert into bill_store_transaction
     <trim prefix="(" suffix=")" suffixOverrides=",">
-     store_id, operation, agent_id, amount 
+     store_id, operation, agent_id, amount, quota, bail_percentage
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
      	#{storeId,jdbcType=BIGINT},
      	#{operation,jdbcType=VARCHAR},
      	#{agentId,jdbcType=BIGINT},
-     	#{amount,jdbcType=NUMERIC}
+     	#{amount,jdbcType=NUMERIC},
+     	#{quota,jdbcType=NUMERIC},
+     	#{bailPercentage,jdbcType=NUMERIC}
     </trim>
   </insert>
 </mapper>

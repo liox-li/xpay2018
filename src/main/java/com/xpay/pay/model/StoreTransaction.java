@@ -6,6 +6,8 @@ public class StoreTransaction {
 	private TransactionType operation;
 	private Long agentId;
 	private Float amount;
+	private Float quota;
+	private Float bailPercentage;
 	
 	public Long getId() {
 		return id;
@@ -45,6 +47,22 @@ public class StoreTransaction {
 
 	public void setAmount(Float amount) {
 		this.amount = amount;
+	}
+
+	public Float getQuota() {
+		return quota;
+	}
+
+	public void setQuota(Float quota) {
+		this.quota = quota;
+	}
+
+	public Float getBailPercentage() {
+		return bailPercentage;
+	}
+
+	public void setBailPercentage(Float bailPercentage) {
+		this.bailPercentage = bailPercentage;
 	}
 
 	public static enum TransactionType {

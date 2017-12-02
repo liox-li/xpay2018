@@ -12,6 +12,8 @@ public class StoreResponse {
 	private long appId;
 	private String csrTel;
 	private String proxyUrl;
+	private Float todayTradeAmount;
+	private Float quota;
 	private List<StoreChannel> channels;
 	public long getId() {
 		return id;
@@ -54,6 +56,18 @@ public class StoreResponse {
 	}
 	public void setProxyUrl(String proxyUrl) {
 		this.proxyUrl = proxyUrl;
+	}
+	public Float getTodayTradeAmount() {
+		return todayTradeAmount;
+	}
+	public void setTodayTradeAmount(Float todayTradeAmount) {
+		this.todayTradeAmount = todayTradeAmount;
+	}
+	public Float getQuota() {
+		return quota;
+	}
+	public void setQuota(Float quota) {
+		this.quota = quota;
 	}
 	public List<StoreChannel> getChannels() {
 		return channels;
