@@ -49,7 +49,7 @@
     <trim prefix="values (" suffix=")" suffixOverrides=",">
      	#{extStoreId,jdbcType=VARCHAR},
      	#{extStoreName,jdbcType=VARCHAR},
-     	#{paymentGateway,jdbcType=VARCHAR}
+     	#{paymentGateway,jdbcType=VARCHAR},
      	#{agentId,jdbcType=BIGINT}
     </trim>
   </insert>

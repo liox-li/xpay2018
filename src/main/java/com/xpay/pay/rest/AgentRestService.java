@@ -29,6 +29,7 @@ import com.xpay.pay.rest.contract.LoginRequest;
 import com.xpay.pay.rest.contract.RechargeRequest;
 import com.xpay.pay.rest.contract.StoreResponse;
 import com.xpay.pay.rest.contract.UpdateStoreChannelRequest;
+import com.xpay.pay.rest.contract.UpdateStoreChannelResponse;
 import com.xpay.pay.service.AppService;
 import com.xpay.pay.service.OrderService;
 import com.xpay.pay.service.StoreService;
@@ -117,6 +118,19 @@ public class AgentRestService extends AdminRestService {
 		return response;
 	}
 	
+	@RequestMapping(value = "/{id}/channels", method = RequestMethod.PUT)
+	public BaseResponse<StoreChannel> createAgentChannel(@PathVariable long id,
+			@RequestBody(required = true)StoreChannel channel) {
+		validateAgent(id);
+		
+		channel.setAgentId(id);
+		storeService.createStoreChannel(channel);
+		BaseResponse<StoreChannel> response = new BaseResponse<StoreChannel>();
+		response.setData(channel);
+		
+		return response;
+	}
+	
 	@RequestMapping(value = "/{id}/channels/{channelId}", method = RequestMethod.DELETE)
 	public BaseResponse<Boolean> deleteAgentChannel(@PathVariable long id, @PathVariable long channelId) {
 		validateAgent(id);
@@ -167,6 +181,7 @@ public class AgentRestService extends AdminRestService {
 	public BaseResponse<StoreResponse> recharge(@PathVariable long id, 
 			@PathVariable long storeId,
 			@RequestBody(required = true) RechargeRequest request) {
+		validateAgent(id);
 		Assert.isTrue(request!=null && request.getAmount()>=100f, "Recharge amount must be greater than 100");
 		
 		Store store = storeService.recharge(id, storeId, request.getAmount());
@@ -177,14 +192,17 @@ public class AgentRestService extends AdminRestService {
 	}
 	
 	@RequestMapping(value = "/{id}/stores/{storeId}/channels", method = RequestMethod.PATCH)
-	public BaseResponse<UpdateStoreChannelRequest> updateStoreChannels(@PathVariable long id, 
+	public BaseResponse<UpdateStoreChannelResponse> updateStoreChannels(@PathVariable long id, 
 			@PathVariable long storeId,
 			@RequestBody(required = true) UpdateStoreChannelRequest request) {
 		validateAgent(id);
 		
-		storeService.updateStoreChannels(storeId, request.getChannelIds());
-		BaseResponse<UpdateStoreChannelRequest> response = new BaseResponse<UpdateStoreChannelRequest>();
-		response.setData(request);
+		storeService.updateStoreChannels(storeId, request.getChannels());
+		UpdateStoreChannelResponse updateStoreChannelResponse = new UpdateStoreChannelResponse();
+		updateStoreChannelResponse.setStoreId(storeId);
+		updateStoreChannelResponse.setChannels(request.getChannels());
+		BaseResponse<UpdateStoreChannelResponse> response = new BaseResponse<UpdateStoreChannelResponse>();
+		response.setData(updateStoreChannelResponse);
 		return response;
 	}
 	

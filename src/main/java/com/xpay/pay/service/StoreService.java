@@ -126,6 +126,10 @@ public class StoreService {
 		return store;
 	}
 	
+	public Boolean createStoreChannel(StoreChannel channel) {
+		return storeChannelMapper.insert(channel);
+	}
+	
 	public Boolean deleteStoreChannel(StoreChannel channel) {
 		channelCache.remove(channel.getId());
 		return storeChannelMapper.deleteById(channel.getId());
