@@ -123,7 +123,7 @@ public class AgentRestService extends AdminRestService {
 		agentService.updateAccount(dbAgent);
 		
 		BaseResponse<Agent> response = new BaseResponse<Agent>();
-		agent.setPassword(null);
+		dbAgent.setPassword(null);
 		response.setData(dbAgent);
 		return response;
 	}
