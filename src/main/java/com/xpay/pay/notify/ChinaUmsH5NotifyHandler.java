@@ -34,7 +34,7 @@ public class ChinaUmsH5NotifyHandler extends AbstractNotifyHandler {
 				}
 			}
 		} catch (Exception e) {
-			
+			logger.error("ChinaUmsH5NotifyHandler extractNotifyBody "+content, e);
 		}
 		return StringUtils.isBlank(billNo)?null:new NotifyBody(null, billNo, ChinaUmsProxy.toOrderStatus(status), totalFee, targetOrderNo);
 	}

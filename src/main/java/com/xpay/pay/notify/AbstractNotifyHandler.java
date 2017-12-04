@@ -91,7 +91,7 @@ public abstract class AbstractNotifyHandler implements INotifyHandler {
 			orderService.update(order);
 			
 			if(order.isRechargeOrder()) {
-				storeService.settleStoreTransaction(order.getOrderNo());
+				storeService.settleRechargeTransaction(order.getOrderNo());
 			}
 		}
 	}
