@@ -1,5 +1,6 @@
 package com.xpay.pay.service;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -22,6 +23,7 @@ import com.xpay.pay.model.StoreChannel;
 import com.xpay.pay.model.StoreLink;
 import com.xpay.pay.model.StoreTransaction;
 import com.xpay.pay.model.StoreTransaction.TransactionType;
+import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.util.IDGenerator;
 
 @Service
@@ -106,6 +108,8 @@ public class StoreService {
 		transaction.setOperation(TransactionType.INIT_FREE);
 		transaction.setStoreId(store.getId());
 		transaction.setBailPercentage(store.getBailPercentage());
+		transaction.setOrderNo(IDGenerator.buildShortOrderNo());
+		transaction.setStatus(OrderStatus.SUCCESS);
 		storeTransactionMapper.insert(transaction);
 		
 		return store;
@@ -135,11 +139,11 @@ public class StoreService {
 		return store;
 	}
 	
-	public Store recharge(long agentId, long storeId, Float amount) {
+	public StoreTransaction rechargeOrder(long agentId, long storeId, Float amount, String orderNo) {
 		Store store = storeMapper.findById(storeId);
 		int addQuota = (int)(amount *100 / (store.getBailPercentage()-1));
-		store.setQuota(store.getQuota()+addQuota);
-		storeMapper.updateById(store);
+//		store.setQuota(store.getQuota()+addQuota);
+//		storeMapper.updateById(store);
 		
 		StoreTransaction transaction = new StoreTransaction();
 		transaction.setAgentId(agentId);
@@ -148,9 +152,19 @@ public class StoreService {
 		transaction.setOperation(TransactionType.RECHARGE);
 		transaction.setStoreId(store.getId());
 		transaction.setBailPercentage(store.getBailPercentage());
+		transaction.setOrderNo(orderNo);
+		transaction.setStatus(OrderStatus.NOTPAY);
 		storeTransactionMapper.insert(transaction);
 		
-		return store;
+		return transaction;
+	}
+	
+	public List<StoreTransaction> findTransactions(long storeId, Date startTime, Date endTime) {
+		return storeTransactionMapper.findByStoreIdAndTime(storeId, startTime, endTime);
+	}
+	
+	public StoreTransaction findTransactionById(long transId) {
+		return storeTransactionMapper.findById(transId);
 	}
 	
 	public Store newQuota(long agentId, long storeId, int quota) {
@@ -165,6 +179,8 @@ public class StoreService {
 		transaction.setOperation(TransactionType.PROMOTE);
 		transaction.setStoreId(store.getId());
 		transaction.setBailPercentage(store.getBailPercentage());
+		transaction.setOrderNo(IDGenerator.buildShortOrderNo());
+		transaction.setStatus(OrderStatus.SUCCESS);
 		storeTransactionMapper.insert(transaction);
 		
 		return store;

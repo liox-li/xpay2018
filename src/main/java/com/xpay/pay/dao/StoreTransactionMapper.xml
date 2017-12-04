@@ -5,22 +5,35 @@
   <resultMap id="StoreTransactionResultMap" type="com.xpay.pay.model.StoreTransaction">
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="store_id" jdbcType="BIGINT" property="storeId" />
+    <result column="order_no" jdbcType="VARCHAR" property="orderNo" />
     <result column="operation" jdbcType="VARCHAR" property="operation" />
     <result column="agent_id" jdbcType="BIGINT" property="agentId" />
     <result column="amount" jdbcType="NUMERIC" property="amount" />
     <result column="quota" jdbcType="NUMERIC" property="quota" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
     <result column="bail_percentage" jdbcType="NUMERIC" property="bailPercentage" />
+    <result column="create_date" jdbcType="VARCHAR" property="createDate" />
   </resultMap>
   
   <sql id="storeTransactionColumns">
     id,
     store_id,
+    order_no,
     operation,
     agent_id,
     amount,
     quota,
-    bail_percentage
+    status,
+    bail_percentage,
+    create_date
   </sql>
+  
+  <select id="findByOrderNo" resultMap="StoreTransactionResultMap">
+    SELECT
+    <include refid="storeTransactionColumns" />
+    FROM bill_store_transaction
+    WHERE bill_store_transaction.order_no = #{orderNo}
+  </select>
   
   <select id="findByStoreIdAndTime" resultMap="StoreTransactionResultMap">
     SELECT
@@ -51,15 +64,33 @@
   <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.StoreTransaction">
     insert into bill_store_transaction
     <trim prefix="(" suffix=")" suffixOverrides=",">
-     store_id, operation, agent_id, amount, quota, bail_percentage
+     order_no, store_id, operation, agent_id, amount, quota, bail_percentage, status
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
+     	#{orderNo,jdbcType=VARCHAR},
      	#{storeId,jdbcType=BIGINT},
      	#{operation,jdbcType=VARCHAR},
      	#{agentId,jdbcType=BIGINT},
      	#{amount,jdbcType=NUMERIC},
      	#{quota,jdbcType=NUMERIC},
-     	#{bailPercentage,jdbcType=NUMERIC}
+     	#{bailPercentage,jdbcType=NUMERIC},
+     	#{status,jdbcType=VARCHAR}
     </trim>
   </insert>
+  
+   <update id="updateById" parameterType="com.xpay.pay.model.StoreTransaction">
+    update bill_store_transaction
+    <set>
+        status = #{status,jdbcType=VARCHAR},
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <update id="deleteById">
+    update bill_store_transacton
+    <set>
+      update_date = now()
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
 </mapper>
