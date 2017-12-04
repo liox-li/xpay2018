@@ -100,7 +100,13 @@ public class AgentRestService extends AdminRestService {
 		
 		Agent dbAgent = agentService.findByAccount(agent.getAccount());
 		Assert.isTrue(dbAgent == null, String.format("Account already exit - %s", agent.getAccount()));
-		agent.setAgentId(id);
+
+		if(agent.getAgentId()==null) {
+			agent.setAgentId(id);
+		}
+		if(agent.getRole() == null) {
+			agent.setRole(Role.STORE);
+		}
 		agentService.createAccount(agent);
 		
 		BaseResponse<Agent> response = new BaseResponse<Agent>();
@@ -183,7 +189,9 @@ public class AgentRestService extends AdminRestService {
 	public BaseResponse<StoreChannel> createAgentChannel(@PathVariable long id,
 			@RequestBody(required = true)StoreChannel channel) {
 		validateAgent(id);
-		
+		if(channel.getAgentId()==null) {
+			channel.setAgentId(id);
+		}
 		storeService.createStoreChannel(channel);
 		BaseResponse<StoreChannel> response = new BaseResponse<StoreChannel>();
 		response.setData(channel);
@@ -266,7 +274,7 @@ public class AgentRestService extends AdminRestService {
 		return response;
 	}
 	
-	private static final String subject = "充值";
+	private static final String subject = "纳优游戏充值";
 	private static final long BAIL_STORE_ID=1;
 	@RequestMapping(value = "/{id}/stores/{storeId}/recharge_order", method = RequestMethod.POST)
 	public BaseResponse<RechargeResponse> placeOrder(@PathVariable long id, 
@@ -281,7 +289,7 @@ public class AgentRestService extends AdminRestService {
 		App app = appService.findById(appId);
 		
 		
-		Order order = paymentService.createOrder(app, orderNo, store, request.getChannel(), null, "127.0.0.1", request.getAmount(), null, "", null, null, null, subject, null);
+		Order order = paymentService.createOrder(app, orderNo, store, request.getChannel(), null, "127.0.0.1", request.getAmount(), IDGenerator.formatTime(new Date(), IDGenerator.TimePattern14), "", null, null, null, subject, null);
 		Assert.notNull(order,"Create order failed");
 		Bill bill = null;
 		BaseResponse<RechargeResponse> response = new BaseResponse<RechargeResponse>();
@@ -293,6 +301,7 @@ public class AgentRestService extends AdminRestService {
 				RechargeResponse rechargeResponse = new RechargeResponse();
 				rechargeResponse.setTransactionId(transaction.getId());
 				rechargeResponse.setCodeUrl(bill.getCodeUrl());
+				response.setData(rechargeResponse);
 			}
 		} catch (GatewayException e) {
 			response.setStatus(ApplicationConstants.STATUS_BAD_GATEWAY);

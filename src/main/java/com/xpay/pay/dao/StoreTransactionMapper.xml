@@ -28,6 +28,13 @@
     create_date
   </sql>
   
+   <select id="findById" resultMap="StoreTransactionResultMap">
+    SELECT
+    <include refid="storeTransactionColumns" />
+    FROM bill_store_transaction
+    WHERE bill_store_transaction.id = #{id}
+  </select>
+  
   <select id="findByOrderNo" resultMap="StoreTransactionResultMap">
     SELECT
     <include refid="storeTransactionColumns" />
