@@ -266,11 +266,11 @@ public class AgentRestService extends AdminRestService {
 		validateAgent(id);
 		this.assertAdmin();
 		
-		Assert.isTrue(request!=null && request.getQuota()>=2000f, "Quota amount must be greater than 2000");
+		Assert.isTrue(request!=null && request.getAmount()>=10f, "Amount must be greater than 10");
 		if(request.getTransactionType() == null) {
 			request.setTransactionType(TransactionType.FREE);
 		}
- 		Store store = storeService.newQuota(id, storeId, request.getQuota(), request.getTransactionType());
+ 		Store store = storeService.newQuota(id, storeId, request.getAmount(), request.getTransactionType());
 		StoreResponse storeResponse = toStoreResponse(store);
 		BaseResponse<StoreResponse> response = new BaseResponse<StoreResponse>();
 		response.setData(storeResponse);

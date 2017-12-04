@@ -6,7 +6,6 @@ import com.xpay.pay.proxy.IPaymentProxy.PayChannel;
 public class RechargeRequest {
 	private Float amount;
 	private PayChannel channel;
-	private Integer quota;
 	private TransactionType transactionType;
 
 	public Float getAmount() {
@@ -23,14 +22,6 @@ public class RechargeRequest {
 
 	public void setAmount(Float amount) {
 		this.amount = amount;
-	}
-
-	public Integer getQuota() {
-		return quota;
-	}
-
-	public void setQuota(Integer quota) {
-		this.quota = quota;
 	}
 
 	public TransactionType getTransactionType() {

@@ -171,15 +171,16 @@ public class StoreService {
 		return storeTransactionMapper.findById(transId);
 	}
 	
-	public Store newQuota(long agentId, long storeId, int quota, TransactionType transactionType) {
+	public Store newQuota(long agentId, long storeId, Float amount, TransactionType transactionType) {
 		Store store = storeMapper.findById(storeId);
-		store.setQuota(store.getQuota()+quota);
+		int addQuota = (int)(amount *100 / (store.getBailPercentage()-1));
+		store.setQuota(store.getQuota()+addQuota);
 		storeMapper.updateById(store);
 		
 		StoreTransaction transaction = new StoreTransaction();
 		transaction.setAgentId(agentId);
-		transaction.setAmount(0f);
-		transaction.setQuota(Float.valueOf(quota));
+		transaction.setAmount(amount.floatValue());
+		transaction.setQuota(Float.valueOf(addQuota));
 		transaction.setOperation(transactionType);
 		transaction.setStoreId(store.getId());
 		transaction.setBailPercentage(store.getBailPercentage());
