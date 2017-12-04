@@ -85,7 +85,7 @@ public class AgentRestService extends AdminRestService {
 		validateAgent(id);
 		
 		Assert.notNull(agent, "Create account body can not be null");
-		Assert.isTrue(StringUtils.isNoneBlank(agent.getAccount(), agent.getPassword()), "Account name and password can not be null");
+		Assert.isTrue(StringUtils.isNoneBlank(agent.getAccount(), agent.getPassword(),agent.getName()), "Account name and password can not be null");
 		
 		Agent dbAgent = agentService.findByAccount(agent.getAccount());
 		Assert.isTrue(dbAgent == null, String.format("Account already exit - %s", agent.getAccount()));
@@ -116,6 +116,9 @@ public class AgentRestService extends AdminRestService {
 		}
 		if(agent.getRole()!=null) {
 			dbAgent.setRole(agent.getRole());
+		}
+		if(StringUtils.isNotBlank(agent.getName())) {
+			dbAgent.setName(agent.getName());
 		}
 		agentService.updateAccount(dbAgent);
 		
