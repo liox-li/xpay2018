@@ -95,7 +95,7 @@ public class PaymentService {
 	}
 	
 	public boolean updateTradeAmount(Order order) {
-		if(order != null) {
+		if(order != null && !order.isRechargeOrder()) {
 			Store store = order.getStore();
 			float newNonBail = store.getNonBail() + order.getTotalFee();
 			store.setNonBail(newNonBail);
@@ -135,6 +135,7 @@ public class PaymentService {
 		Order order = orderService.findActiveByOrderNo(orderNo);
 		Assert.isTrue(storeCode.equals(order.getStore().getCode()), "No such order found for the store");
 		Assert.isTrue(appId == order.getAppId(), "No such order found under the app");
+		Assert.isTrue(!order.isRechargeOrder(), "Recharge order can't be refunded");
 		
 		if(isCsr || (order.isRefundable()  && CommonUtils.isWithinHours(order.getOrderTime(), IDGenerator.TimePattern14, 24))) {
 			PaymentRequest paymentRequest = toQueryRequest(order);

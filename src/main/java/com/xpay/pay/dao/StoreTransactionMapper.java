@@ -12,6 +12,6 @@ public interface StoreTransactionMapper extends BaseMapper<StoreTransaction> {
 	
 	public List<StoreTransaction> findByAgentIdAndTime(@Param("agentId")long agentId,  @Param("startTime")Date startTime, @Param("endTime")Date endTime);
 	
-	public List<StoreTransaction> findByOrderNo(@Param("orderNo")String orderNo);
+	public StoreTransaction findByOrderNo(@Param("orderNo")String orderNo);
 
 }

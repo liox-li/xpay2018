@@ -191,6 +191,18 @@ public class StoreService {
 		return store;
 	}
 	
+	public void settleRechargeTransaction(String orderNo) {
+		StoreTransaction transaction = storeTransactionMapper.findByOrderNo(orderNo);
+		if(transaction.getStatus() != OrderStatus.SUCCESS) {
+			transaction.setStatus(OrderStatus.SUCCESS);
+			storeTransactionMapper.updateById(transaction);
+			
+			Store store = storeMapper.findById(transaction.getStoreId());
+			store.setQuota(store.getQuota()+transaction.getQuota());
+			storeMapper.updateById(store);
+		}
+	}
+	
 	public Boolean createStoreChannel(StoreChannel channel) {
 		return storeChannelMapper.insert(channel);
 	}
