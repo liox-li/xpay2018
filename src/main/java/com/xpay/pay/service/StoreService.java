@@ -153,6 +153,23 @@ public class StoreService {
 		return store;
 	}
 	
+	public Store newQuota(long agentId, long storeId, int quota) {
+		Store store = storeMapper.findById(storeId);
+		store.setQuota(store.getQuota()+quota);
+		storeMapper.updateById(store);
+		
+		StoreTransaction transaction = new StoreTransaction();
+		transaction.setAgentId(agentId);
+		transaction.setAmount(0f);
+		transaction.setQuota(Float.valueOf(quota));
+		transaction.setOperation(TransactionType.PROMOTE);
+		transaction.setStoreId(store.getId());
+		transaction.setBailPercentage(store.getBailPercentage());
+		storeTransactionMapper.insert(transaction);
+		
+		return store;
+	}
+	
 	public Boolean createStoreChannel(StoreChannel channel) {
 		return storeChannelMapper.insert(channel);
 	}

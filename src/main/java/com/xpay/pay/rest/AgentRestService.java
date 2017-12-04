@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.xpay.pay.ApplicationConstants;
 import com.xpay.pay.exception.Assert;
 import com.xpay.pay.model.Agent;
+import com.xpay.pay.model.Agent.Role;
 import com.xpay.pay.model.App;
 import com.xpay.pay.model.Order;
 import com.xpay.pay.model.Store;
@@ -47,8 +48,7 @@ public class AgentRestService extends AdminRestService {
 	
 	@RequestMapping(value = "/agents", method = RequestMethod.GET)
 	public BaseResponse<List<Agent>> findAll() {
-		Agent agent = this.getAgent();
-		Assert.isTrue(agent.getId() <= 10, 401, "401", "You are not allowed to access this API.");
+		this.assertAdmin();
 		
 		List<Agent> agents = agentService.findAll();
 		
@@ -83,6 +83,7 @@ public class AgentRestService extends AdminRestService {
 	public BaseResponse<Agent> createAccount(@PathVariable long id,
 			@RequestBody(required = false) Agent agent) {
 		validateAgent(id);
+		this.assertNotStore();
 		
 		Assert.notNull(agent, "Create account body can not be null");
 		Assert.isTrue(StringUtils.isNoneBlank(agent.getAccount(), agent.getPassword(),agent.getName()), "Account name and password can not be null");
@@ -109,7 +110,7 @@ public class AgentRestService extends AdminRestService {
 		
 		Agent dbAgent = agentService.findByAccount(agent.getAccount());
 		Assert.isTrue(dbAgent != null, String.format("Account not found - %s", agent.getAccount()));
-		Assert.isTrue(id<=10 || id == dbAgent.getAgentId() || id==dbAgent.getId(), 401, "401", "Unauthorized request");
+		this.assertGeneral(id, dbAgent);
 		
 		if(StringUtils.isNotBlank(agent.getPassword())) {
 			dbAgent.setPassword(agent.getPassword());
@@ -145,6 +146,7 @@ public class AgentRestService extends AdminRestService {
 	public BaseResponse<App> createAgentApp(@PathVariable long id, 
 			@RequestBody(required = true) CreateAppRequest request) {
 		validateAgent(id);
+		this.assertNotStore();
 		Assert.notNull(request, "Create app request body can't be null");
 		Assert.notNull(request.getName(), "App name can't be null");
 		
@@ -214,7 +216,7 @@ public class AgentRestService extends AdminRestService {
 	public BaseResponse<StoreResponse> createAgentStore(@PathVariable long id, 
 			@RequestBody(required = true) CreateStoreRequest request) {
 		validateAgent(id);
-		
+		this.assertNotStore();
 		Assert.notNull(request, "Create store request body can't be null");
 		Assert.notNull(request.getName(), "Store name can't be null");
 		Assert.notNull(request.getAppId(), "AppId cant' be null");
@@ -226,13 +228,29 @@ public class AgentRestService extends AdminRestService {
 		return response;
 	}
 	
-	@RequestMapping(value = "/{id}/stores", method = RequestMethod.PATCH)
+	@RequestMapping(value = "/{id}/stores/{storeId}", method = RequestMethod.PATCH)
 	public BaseResponse<StoreResponse> updateAgentStore(@PathVariable long id, 
 			@PathVariable long storeId, 
 			@RequestBody(required = true) CreateStoreRequest request) {
 		validateAgent(id);
 		
 		Store store = storeService.updateStore(storeId, request.getName(), request.getBailPercentage(), request.getAppId(), request.getCsrTel(), request.getProxyUrl(), request.getDailyLimit());
+		StoreResponse storeResponse = toStoreResponse(store);
+		BaseResponse<StoreResponse> response = new BaseResponse<StoreResponse>();
+		response.setData(storeResponse);
+		return response;
+	}
+	
+	@RequestMapping(value = "/{id}/stores/{storeId}/quota", method = RequestMethod.POST)
+	public BaseResponse<StoreResponse> newQuota(@PathVariable long id, 
+			@PathVariable long storeId,
+			@RequestBody(required = true) RechargeRequest request) {
+		validateAgent(id);
+		this.assertAdmin();
+		
+		Assert.isTrue(request!=null && request.getQuota()>=2000f, "Quota amount must be greater than 2000");
+		
+		Store store = storeService.newQuota(id, storeId, request.getQuota());
 		StoreResponse storeResponse = toStoreResponse(store);
 		BaseResponse<StoreResponse> response = new BaseResponse<StoreResponse>();
 		response.setData(storeResponse);
@@ -300,6 +318,22 @@ public class AgentRestService extends AdminRestService {
 	private void validateAgent(long agentId) {
 		Agent agent = this.getAgent();
 		Assert.isTrue(agentId == agent.getId(), ApplicationConstants.STATUS_UNAUTHORIZED, "401", "Unauthorized request");
+	}
+	
+	private void assertAdmin() {
+		Assert.isTrue(this.getAgent().getId()<=10, ApplicationConstants.STATUS_UNAUTHORIZED, "401", "Unauthorized request");
+	}
+	
+	private void assertNotStore() {
+		Assert.isTrue(this.getAgent().getRole()!=Role.STORE, ApplicationConstants.STATUS_UNAUTHORIZED, "401", "Unauthorized request");
+	}
+	
+	private void assertNotAgent() {
+		Assert.isTrue(this.getAgent().getRole()!=Role.AGENT, ApplicationConstants.STATUS_UNAUTHORIZED, "401", "Unauthorized request");
+	}
+	
+	private void assertGeneral(Long agentId, Agent agent) {
+		Assert.isTrue(agentId<=10 || agentId == agent.getAgentId() || agentId==agent.getId(), ApplicationConstants.STATUS_UNAUTHORIZED, "401", "Unauthorized request");
 	}
 	
 	private StoreResponse toStoreResponse(Store store) {
