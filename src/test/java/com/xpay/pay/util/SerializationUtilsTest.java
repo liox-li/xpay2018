@@ -11,7 +11,7 @@ public class SerializationUtilsTest {
 		order.setAppId(1);
 		order.setAttach("attach");
 		order.setCodeUrl("code url");
-		order.setTotalFee("0.01");
+		order.setTotalFee(0.01f);
 		
 		byte[] byteArray = SerializationUtils.toByteArray(order);
 		

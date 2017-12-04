@@ -163,8 +163,8 @@ public class UPayProxy implements IPaymentProxy {
 		upayRequest.setTerminal_sn(appKeys[1]);
 		upayRequest.setPayway(toPayway(request.getPayChannel()));
 		upayRequest.setSubject(request.getSubject());
-		if(StringUtils.isNotBlank(request.getTotalFee())) {
-			upayRequest.setTotal_amount(String.valueOf((int)(request.getTotalFeeAsFloat()*100)));
+		if(request.getTotalFee()!=null) {
+			upayRequest.setTotal_amount(String.valueOf((int)(request.getTotalFee()*100)));
 		}
 		upayRequest.setOperator(operator);
 		upayRequest.setNotify_url(request.getNotifyUrl());

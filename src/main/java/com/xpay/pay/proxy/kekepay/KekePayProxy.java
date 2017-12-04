@@ -156,7 +156,7 @@ public class KekePayProxy implements IPaymentProxy {
     KekePayRequest kekePayRequest = new KekePayRequest();
     kekePayRequest.setNotifyUrl(request.getNotifyUrl());
     kekePayRequest.setOrderIp(request.getServerIp());
-    kekePayRequest.setOrderPrice(request.getTotalFee());
+    kekePayRequest.setOrderPrice(String.valueOf(request.getTotalFee()));
     kekePayRequest.setOrderTime(simpleDateFormat.format(new Date()));
     kekePayRequest.setOutTradeNo(request.getOrderNo());
     kekePayRequest.setPayBankAccountNo("123456789");

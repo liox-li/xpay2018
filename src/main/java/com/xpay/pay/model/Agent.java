@@ -2,7 +2,7 @@ package com.xpay.pay.model;
 
 
 public class Agent {
-	private long id;
+	private Long id;
 	private String account;
 	private String password;
 	private String name;
@@ -10,11 +10,13 @@ public class Agent {
 	private String csrWechat;
 	private String proxyUrl;
 	private String token;
+	private Role role;
+	private Long agentId;
 	
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 	public String getAccount() {
@@ -59,4 +61,20 @@ public class Agent {
 	public void setToken(String token) {
 		this.token = token;
 	}
+	public Role getRole() {
+		return role;
+	}
+	public void setRole(Role role) {
+		this.role = role;
+	}
+	public Long getAgentId() {
+		return agentId;
+	}
+	public void setAgentId(Long agentId) {
+		this.agentId = agentId;
+	}
+	public static enum Role {
+		ADMIN, STORE, AGENT;
+	}
+	
 }

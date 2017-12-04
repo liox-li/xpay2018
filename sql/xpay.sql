@@ -96,6 +96,7 @@ CREATE TABLE IF NOT EXISTS bill_order (
 ALTER SEQUENCE bill_order_id_seq RESTART 1000;
 CREATE INDEX idx_order_no ON bill_order(order_no); 
 CREATE INDEX idx_ext_order_no ON bill_order(ext_order_no); 
+CREATE INDEX idx_seller_order_no ON bill_order(seller_order_no); 
 CREATE INDEX idx_order_store_id ON bill_order(store_id, update_date); 
 ALTER TABLE bill_order ADD COLUMN target_order_no varchar(64);
 CREATE INDEX idx_target_order_no ON bill_order(target_order_no); 
@@ -179,10 +180,32 @@ ALTER SEQUENCE bill_agent_id_seq RESTART 10;
 CREATE INDEX idx_bill_agent_account ON bill_agent(account); 
 CREATE INDEX idx_bill_agent_token ON bill_agent(token); 
 
+ALTER TABLE bill_agent ADD COLUMN agent_id BIGINT;
+ALTER TABLE bill_agent ADD COLUMN role VARCHAR(16);
+ALTER TABLE bill_agent ADD COLUMN is_new BOOLEAN default true;
+ALTER TABLE bill_store ADD COLUMN quota NUMERIC default 2000;
+
 ALTER TABLE bill_store ADD COLUMN agent_id BIGINT;
 ALTER TABLE bill_store_channel ADD COLUMN agent_id BIGINT;
 ALTER TABLE bill_app ADD COLUMN agent_id BIGINT;
 CREATE INDEX idx_bill_app_agent ON bill_app(agent_id); 
+
+
+CREATE TABLE IF NOT EXISTS bill_store_transaction (
+	id BIGSERIAL PRIMARY KEY,
+	store_id BIGINT NOT NULL,
+	operation varchar(16) NOT NULL,
+	agent_id BIGINT NOT NULL,
+	amount NUMERIC NOT NULL,
+	quota NUMERIC NOT NULL,
+	bail_percentage NUMERIC NOT NULL,
+	create_date TIMESTAMP WITH TIME ZONE NOT NULL default now()
+);	
+ALTER SEQUENCE bill_store_transaction_id_seq RESTART 1000;
+CREATE INDEX bill_store_transaction_store_id ON bill_store_transaction(store_id);
+CREATE INDEX bill_store_transaction_agent_id ON bill_store_transaction(agent_id);
+
+alter table bill_store alter COLUMN bail_percentage type NUMERIC;
 
 ALTER table bill_app OWNER TO xpay;
 ALTER table bill_store OWNER TO xpay;

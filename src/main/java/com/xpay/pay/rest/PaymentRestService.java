@@ -87,7 +87,7 @@ public class PaymentRestService extends AuthRestService {
 		Assert.isTrue(fee>=0.01f && fee<=3000, String.format("Invalid total fee: %s, sellerOrderNo: %s",totalFee, StringUtils.trimToEmpty(sellerOrderNo)));
 		String orderDate = validateOrderTime(orderTime);
 		Store store = storeService.findByCode(storeId);
-		validateDailyLimit(store);
+		validateQuota(store);
 		
 		validateStoreLink(store, returnUrl);
 		
@@ -100,7 +100,7 @@ public class PaymentRestService extends AuthRestService {
 		Order order = null;
 		Bill bill = null;
 		do {
-			order = paymentService.createOrder(app, orderNo, store, channel, deviceId, ip, totalFee, orderDate, sellerOrderNo, attach, notifyUrl, returnUrl, subject, storeChannel);
+			order = paymentService.createOrder(app, orderNo, store, channel, deviceId, ip, fee, orderDate, sellerOrderNo, attach, notifyUrl, returnUrl, subject, storeChannel);
 			Assert.notNull(order,"Create order failed");
 			
 			try {
@@ -138,8 +138,9 @@ public class PaymentRestService extends AuthRestService {
 	}
 
 
-	private void validateDailyLimit(Store store) {
+	private void validateQuota(Store store) {
 		Assert.notNull(store, "No store found");
+		Assert.isTrue(store.getNonBail()<store.getQuota(), "No enough quota remained");
 		Assert.isTrue(-1 == store.getDailyLimit() || store.getNonBail() < store.getDailyLimit(), "Exceed transaction limit");
 		
 	}

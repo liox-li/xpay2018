@@ -2,7 +2,6 @@ package com.xpay.pay.service;
 
 import static com.xpay.pay.proxy.IPaymentProxy.NO_RESPONSE;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,25 +33,16 @@ public class PaymentService {
 	@Autowired
 	private StoreService storeService;
 
-	private static final long DEFAULT_BAIL_ID = 10L;
-	
 	public Order createOrder(App app, String orderNo, Store store, PayChannel channel,
-			String deviceId, String ip, String totalFee, String orderTime,
+			String deviceId, String ip, Float totalFee, String orderTime,
 			String sellerOrderNo, String attach, String notifyUrl,String returnUrl,
 			String subject, String storeChannelId) {
 		StoreChannel storeChannel = null;
 		if(StringUtils.isNotBlank(storeChannelId)) {
 			storeService.findStoreChannelById(Long.valueOf(storeChannelId));
 		} else {
-			boolean isNextBailPay = store.isNextBailPay(CommonUtils.toFloat(totalFee));
-			if(isNextBailPay) {
-				if(CollectionUtils.isEmpty(store.getBailChannels())) {
-					storeChannel = orderService.findUnusedChannelByAgent(DEFAULT_BAIL_ID, orderNo);
-				} else {
-					storeChannel = orderService.findUnusedChannel(store.getBailChannels(), orderNo);
-				}
-			}
-			storeChannel = storeChannel==null? orderService.findUnusedChannelByStore(store, orderNo):storeChannel;
+			storeChannel = orderService.findUnusedChannelByStore(store, orderNo);
+			storeChannel = storeChannel == null? orderService.findUnusedChannelByAgent(store.getAgentId(), orderNo): storeChannel;
 		}
 		Assert.notNull(storeChannel, String.format("No avaiable store channel, please try later, sellerOrderNo: %s", StringUtils.trimToEmpty(sellerOrderNo)));
 		
@@ -104,19 +94,11 @@ public class PaymentService {
 		return orderService.update(order);
 	}
 	
-	public boolean updateBail(Order order, boolean isAdd) {
+	public boolean updateTradeAmount(Order order) {
 		if(order != null) {
-			boolean isBail = order.getStoreChannelId()<100;
 			Store store = order.getStore();
-			if(isBail) {
-				float newBail = isAdd? store.getBail() + order.getTotalFeeAsFloat()
-						:store.getBail() - order.getTotalFeeAsFloat();
-				store.setBail(newBail);
-			} else {
-				float newNonBail = isAdd? store.getNonBail() + order.getTotalFeeAsFloat()
-						:store.getNonBail() - order.getTotalFeeAsFloat();
-				store.setNonBail(newNonBail);
-			}
+			float newNonBail = store.getNonBail() + order.getTotalFee();
+			store.setNonBail(newNonBail);
 			return storeService.updateById(store);
 		}
 		return true;
@@ -165,7 +147,6 @@ public class PaymentService {
 				bill.setOrder(order);
 				order.setStatus(bill.getOrderStatus());
 				orderService.update(order);
-				updateBail(order, false);
 			}
 			return bill;
 		} else {
@@ -260,6 +241,7 @@ public class PaymentService {
 		return PaymentGateway.CHINAUMS.equals(gateway) ||
 				PaymentGateway.CHINAUMSV2.equals(gateway) ||
 				PaymentGateway.CHINAUMSH5.equals(gateway) ||
+				PaymentGateway.CHINAUMSV3.equals(gateway) ||
 				PaymentGateway.CHINAUMSWAP.equals(gateway);
 	}
 	
@@ -268,6 +250,7 @@ public class PaymentService {
 				PaymentGateway.CHINAUMSV2.equals(gateway) ||
 				PaymentGateway.CHINAUMSH5.equals(gateway) ||
 				PaymentGateway.CHINAUMSWAP.equals(gateway) ||
+				PaymentGateway.CHINAUMSV3.equals(gateway) ||
 				PaymentGateway.UPAY.equals(gateway) ||
 				PaymentGateway.KEKEPAY.equals(gateway);
 	}

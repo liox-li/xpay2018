@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xpay.pay.dao.StoreTransactionMapper">
+
+  <resultMap id="StoreTransactionResultMap" type="com.xpay.pay.model.StoreTransaction">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="store_id" jdbcType="BIGINT" property="storeId" />
+    <result column="operation" jdbcType="VARCHAR" property="operation" />
+    <result column="agent_id" jdbcType="BIGINT" property="agentId" />
+    <result column="amount" jdbcType="NUMERIC" property="amount" />
+    <result column="quota" jdbcType="NUMERIC" property="quota" />
+    <result column="bail_percentage" jdbcType="NUMERIC" property="bailPercentage" />
+  </resultMap>
+  
+  <sql id="storeTransactionColumns">
+    id,
+    store_id,
+    operation,
+    agent_id,
+    amount,
+    quota,
+    bail_percentage
+  </sql>
+  
+  <select id="findByStoreIdAndTime" resultMap="StoreTransactionResultMap">
+    SELECT
+    <include refid="storeTransactionColumns" />
+    FROM bill_store_transaction
+    WHERE bill_store_transaction.store_id = #{storeId}
+    <if test="startTime != null">
+     AND create_date &gt;= #{startTime} 
+    </if>
+    <if test="endTime != null">
+     AND create_date &lt; #{endTime}
+    </if>
+  </select>
+  
+  <select id="findByAgentIdAndTime" resultMap="StoreTransactionResultMap">
+    SELECT
+    <include refid="storeTransactionColumns" />
+    FROM bill_store_transaction
+    WHERE bill_store_transaction.agent_id = #{agentId}
+    <if test="startTime != null">
+     AND create_date &gt;= #{startTime} 
+    </if>
+    <if test="endTime != null">
+     AND create_date &lt; #{endTime}
+     </if>
+  </select>
+  
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.StoreTransaction">
+    insert into bill_store_transaction
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+     store_id, operation, agent_id, amount, quota, bail_percentage
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+     	#{storeId,jdbcType=BIGINT},
+     	#{operation,jdbcType=VARCHAR},
+     	#{agentId,jdbcType=BIGINT},
+     	#{amount,jdbcType=NUMERIC},
+     	#{quota,jdbcType=NUMERIC},
+     	#{bailPercentage,jdbcType=NUMERIC}
+    </trim>
+  </insert>
+</mapper>

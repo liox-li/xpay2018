@@ -8,7 +8,7 @@ public class PaymentRequest {
 	private String extStoreId;
 	private String deviceId;
 	private PayChannel payChannel;
-	private String totalFee;
+	private Float totalFee;
 	private String attach;
 	private String orderNo;
 	private String gatewayOrderNo;
@@ -38,14 +38,14 @@ public class PaymentRequest {
 	public void setPayChannel(PayChannel payChannel) {
 		this.payChannel = payChannel;
 	}
-	public String getTotalFee() {
+	public Float getTotalFee() {
 		return totalFee;
 	}
 
 	public float getTotalFeeAsFloat() {
 		return Float.valueOf(totalFee);
 	}
-	public void setTotalFee(String totalFee) {
+	public void setTotalFee(Float totalFee) {
 		this.totalFee = totalFee;
 	}
 	public String getAttach() {

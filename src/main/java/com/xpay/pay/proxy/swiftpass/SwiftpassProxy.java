@@ -219,8 +219,8 @@ public class SwiftpassProxy implements IPaymentProxy {
 		request.setDevice_info(paymentRequest.getDeviceId());
 		request.setBody(paymentRequest.getSubject());
 		request.setAttach(paymentRequest.getAttach());
-		if(StringUtils.isNotBlank(paymentRequest.getTotalFee())) {
-			request.setTotal_fee(String.valueOf((int) (paymentRequest.getTotalFeeAsFloat() * 100)));
+		if(paymentRequest.getTotalFee()!=null) {
+			request.setTotal_fee(String.valueOf((int) (paymentRequest.getTotalFee() * 100)));
 		}
 		request.setMch_create_ip(paymentRequest.getServerIp());
 		request.setNotify_url(paymentRequest.getNotifyUrl());

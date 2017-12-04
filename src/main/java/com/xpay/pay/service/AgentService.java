@@ -15,6 +15,16 @@ public class AgentService {
 	@Autowired
 	protected AgentMapper agentMapper;
 	
+
+	public boolean createAccount(Agent agent) {
+		return agentMapper.insert(agent);
+	}
+	
+
+	public boolean updateAccount(Agent agent) {
+		return agentMapper.updateById(agent);
+	}
+	
 	public Agent findByAccount(String account) {
 		Agent agent = agentMapper.findByAccount(account);
 		return agent;
@@ -59,4 +69,6 @@ public class AgentService {
 		return IDGenerator.buildKey(10) + System.currentTimeMillis()
 				+ IDGenerator.buildKey(9);
 	}
+
+
 }

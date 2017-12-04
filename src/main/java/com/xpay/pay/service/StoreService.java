@@ -16,9 +16,12 @@ import com.xpay.pay.cache.ICache;
 import com.xpay.pay.dao.StoreChannelMapper;
 import com.xpay.pay.dao.StoreLinkMapper;
 import com.xpay.pay.dao.StoreMapper;
+import com.xpay.pay.dao.StoreTransactionMapper;
 import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
 import com.xpay.pay.model.StoreLink;
+import com.xpay.pay.model.StoreTransaction;
+import com.xpay.pay.model.StoreTransaction.TransactionType;
 import com.xpay.pay.util.IDGenerator;
 
 @Service
@@ -27,6 +30,8 @@ public class StoreService {
 	protected StoreMapper storeMapper;
 	@Autowired
 	protected StoreChannelMapper storeChannelMapper;
+	@Autowired
+	protected StoreTransactionMapper storeTransactionMapper;
 	@Autowired
 	protected StoreLinkMapper storeLinkMapper;
 	private static ICache<Long, StoreChannel> channelCache = CacheManager.create(StoreChannel.class, 2000);
@@ -75,8 +80,10 @@ public class StoreService {
 		return channelCache.get(id);
 	}
 	
-	public Store createStore(long agentId, String name, int bailPercentage, long appId, String csrTel, String proxyUrl) {
-		int thisBaiPercentage = bailPercentage>0 && bailPercentage<5?bailPercentage:2;
+	private static final Float INIT_FREE_QUOTA = 2000f;
+	private static final Long DEFAULT_DAILY_LIMIT = 50000L;
+	public Store createStore(long agentId, String name, Float bailPercentage, long appId, String csrTel, String proxyUrl, Long dailyLimit) {
+		Float thisBaiPercentage = bailPercentage>0 && bailPercentage<5?bailPercentage:2;
 		Store store = new Store();
 		store.setBar(100f);
 		store.setAgentId(agentId);
@@ -86,8 +93,85 @@ public class StoreService {
 		store.setBailPercentage(thisBaiPercentage);
 		store.setCsrTel(csrTel);
 		store.setProxyUrl(proxyUrl);
+		store.setNonBail(0f);
+		store.setQuota(INIT_FREE_QUOTA);
+		long thisDailyLimit = dailyLimit == null ?DEFAULT_DAILY_LIMIT:dailyLimit;
+		store.setDailyLimit(thisDailyLimit);
 		storeMapper.insert(store);
+		
+		StoreTransaction transaction = new StoreTransaction();
+		transaction.setAgentId(agentId);
+		transaction.setAmount(0f);
+		transaction.setQuota(INIT_FREE_QUOTA);
+		transaction.setOperation(TransactionType.INIT_FREE);
+		transaction.setStoreId(store.getId());
+		transaction.setBailPercentage(store.getBailPercentage());
+		storeTransactionMapper.insert(transaction);
+		
 		return store;
+	}
+	
+	public Store updateStore(Long storeId, String name, Float bailPercentage, Long appId, String csrTel, String proxyUrl, Long dailyLimit) {
+		Store store = storeMapper.findById(storeId);
+		if(StringUtils.isNotBlank(name)) {
+			store.setName(name);
+		}
+		if(bailPercentage!=null) {
+			store.setBailPercentage(bailPercentage);
+		}
+		if(appId!=null) {
+			store.setAppId(appId);
+		}
+		if(StringUtils.isNotBlank(csrTel)) {
+			store.setCsrTel(csrTel);
+		}
+		if(StringUtils.isNotBlank(proxyUrl)) {
+			store.setProxyUrl(proxyUrl);
+		}
+		if(dailyLimit!=null) {
+			store.setDailyLimit(dailyLimit);
+		}
+		storeMapper.updateById(store);
+		return store;
+	}
+	
+	public Store recharge(long agentId, long storeId, Float amount) {
+		Store store = storeMapper.findById(storeId);
+		int addQuota = (int)(amount *100 / (store.getBailPercentage()-1));
+		store.setQuota(store.getQuota()+addQuota);
+		storeMapper.updateById(store);
+		
+		StoreTransaction transaction = new StoreTransaction();
+		transaction.setAgentId(agentId);
+		transaction.setAmount(amount);
+		transaction.setQuota(Float.valueOf(addQuota));
+		transaction.setOperation(TransactionType.RECHARGE);
+		transaction.setStoreId(store.getId());
+		transaction.setBailPercentage(store.getBailPercentage());
+		storeTransactionMapper.insert(transaction);
+		
+		return store;
+	}
+	
+	public Store newQuota(long agentId, long storeId, int quota) {
+		Store store = storeMapper.findById(storeId);
+		store.setQuota(store.getQuota()+quota);
+		storeMapper.updateById(store);
+		
+		StoreTransaction transaction = new StoreTransaction();
+		transaction.setAgentId(agentId);
+		transaction.setAmount(0f);
+		transaction.setQuota(Float.valueOf(quota));
+		transaction.setOperation(TransactionType.PROMOTE);
+		transaction.setStoreId(store.getId());
+		transaction.setBailPercentage(store.getBailPercentage());
+		storeTransactionMapper.insert(transaction);
+		
+		return store;
+	}
+	
+	public Boolean createStoreChannel(StoreChannel channel) {
+		return storeChannelMapper.insert(channel);
 	}
 	
 	public Boolean deleteStoreChannel(StoreChannel channel) {
@@ -150,4 +234,5 @@ public class StoreService {
 		}
 		return list;
 	}
+
 }

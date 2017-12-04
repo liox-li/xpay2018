@@ -17,6 +17,11 @@ public class ChinaUmsV3Request {
 	private String notifyUrl;
 	private String returnUrl;
 	private String tradeType;
+	
+	private String sceneType;
+	private String merAppName;
+	private String merAppId;
+	
 	private String sign;
 	public String getMsgSrc() {
 		return msgSrc;
@@ -101,6 +106,26 @@ public class ChinaUmsV3Request {
 	}
 	public void setTradeType(String tradeType) {
 		this.tradeType = tradeType;
+	}
+	
+	
+	public String getSceneType() {
+		return sceneType;
+	}
+	public void setSceneType(String sceneType) {
+		this.sceneType = sceneType;
+	}
+	public String getMerAppName() {
+		return merAppName;
+	}
+	public void setMerAppName(String merAppName) {
+		this.merAppName = merAppName;
+	}
+	public String getMerAppId() {
+		return merAppId;
+	}
+	public void setMerAppId(String merAppId) {
+		this.merAppId = merAppId;
 	}
 	public String getSign() {
 		return sign;

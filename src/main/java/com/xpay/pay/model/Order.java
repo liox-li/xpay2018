@@ -12,7 +12,7 @@ public class Order {
 	private long storeId;
 	private StoreChannel storeChannel;
 	private long storeChannelId;
-	private String totalFee;
+	private Float totalFee;
 	private String orderTime;
 	private String sellerOrderNo;
 	private String extOrderNo;
@@ -73,14 +73,10 @@ public class Order {
 	public void setStoreChannelId(long storeChannelId) {
 		this.storeChannelId = storeChannelId;
 	}
-	public String getTotalFee() {
+	public Float getTotalFee() {
 		return totalFee;
 	}
-	
-	public float getTotalFeeAsFloat() {
-		return Float.valueOf(totalFee);
-	}
-	public void setTotalFee(String totalFee) {
+	public void setTotalFee(Float totalFee) {
 		this.totalFee = totalFee;
 	}
 	public String getOrderTime() {

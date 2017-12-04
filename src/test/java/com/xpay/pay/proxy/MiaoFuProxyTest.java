@@ -18,7 +18,7 @@ public class MiaoFuProxyTest extends BaseSpringJunitTest {
 		request.setExtStoreId("T2017032319251974486873");
 		request.setDeviceId("1213");
 		request.setPayChannel(PayChannel.WECHAT);
-		request.setTotalFee("0.01");
+		request.setTotalFee(0.01f);
 		request.setOrderNo("X110101201703311115387831502");
 		request.setSubject("电子商品");
 		request.setAttach("atach");

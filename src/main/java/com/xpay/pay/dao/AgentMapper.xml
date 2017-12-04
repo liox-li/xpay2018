@@ -11,6 +11,8 @@
     <result column="csr_wechat" jdbcType="VARCHAR" property="csrWechat" />
     <result column="proxy_url" jdbcType="VARCHAR" property="proxyUrl" />
     <result column="token" jdbcType="VARCHAR" property="token" />
+    <result column="role" jdbcType="VARCHAR" property="role" />
+    <result column="agent_id" jdbcType="BIGINT" property="agentId" />
   </resultMap>
   
   <sql id="agentColumns">
@@ -21,7 +23,9 @@
     csr_tel,
     csr_wechat,
     proxy_url,
-    token
+    token,
+    role,
+    agent_id
   </sql>
 
   <select id="findById" resultMap="AgentResultMap">
@@ -55,7 +59,7 @@
   <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.Agent">
     insert into bill_agent
     <trim prefix="(" suffix=")" suffixOverrides=",">
-     account, agent_password, name, csr_tel, csr_wechat, proxy_url
+     account, agent_password, name, csr_tel, csr_wechat, proxy_url, role, agent_id
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
      	#{account,jdbcType=VARCHAR},
@@ -64,6 +68,8 @@
      	#{csrTel,jdbcType=VARCHAR},
      	#{csrWechat,jdbcType=VARCHAR},
      	#{proxyUrl,jdbcType=VARCHAR},
+     	#{role,jdbcType=VARCHAR},
+     	#{agentId,jdbcType=BIGINT}
     </trim>
   </insert>
   
@@ -75,6 +81,12 @@
       </if>
       <if test="token != null">
         token = #{token,jdbcType=VARCHAR},
+      </if>
+      <if test="role != null">
+        role = #{role,jdbcType=VARCHAR},
+      </if>
+      <if test="agentId != null">
+        agent_id = #{agentId,jdbcType=BIGINT},
       </if>
       update_date = now()
     </set>

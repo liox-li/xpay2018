@@ -8,7 +8,7 @@
     <result column="app_id" jdbcType="BIGINT" property="appId" />
     <result column="store_id" jdbcType="BIGINT" property="storeId" />
     <result column="store_channel" jdbcType="BIGINT" property="storeChannelId" />
-    <result column="total_fee" jdbcType="VARCHAR" property="totalFee" />
+    <result column="total_fee" jdbcType="FLOAT" property="totalFee" />
     <result column="order_time" jdbcType="VARCHAR" property="orderTime" />
     <result column="pay_channel" jdbcType="INTEGER" property="payChannel" />
     <result column="seller_order_no" jdbcType="VARCHAR" property="sellerOrderNo" />
@@ -158,7 +158,7 @@
          #{storeChannelId,jdbcType=BIGINT},
       </if>
       <if test="totalFee != null">
-        #{totalFee,jdbcType=VARCHAR},
+        #{totalFee,jdbcType=FLOAT},
       </if>
       <if test="orderTime != null">
         #{orderTime,jdbcType=VARCHAR},

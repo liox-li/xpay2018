@@ -63,7 +63,7 @@ public class MiaoFuProxy implements IPaymentProxy {
 //		return url;
 
 		String url = jsUrl.replace("%storeId%", request.getExtStoreId())
-			.replace("%amount%", request.getTotalFee())
+			.replace("%amount%", String.valueOf(request.getTotalFee()))
 			.replace("%subject%", CommonUtils.urlEncode(request.getSubject()))
 			.replace("%redirectUrl%", request.getNotifyUrl());
 		logger.info("unified order GET: " + url);
@@ -156,8 +156,8 @@ public class MiaoFuProxy implements IPaymentProxy {
 			keyPairs.add(new KeyValuePair("pay_channel", request
 					.getPayChannel().getId()));
 		}
-		if (StringUtils.isNotBlank(request.getTotalFee())) {
-			keyPairs.add(new KeyValuePair("amount", request.getTotalFee()));
+		if (request.getTotalFee()!=null) {
+			keyPairs.add(new KeyValuePair("amount", String.valueOf(request.getTotalFee())));
 		}
 		if (StringUtils.isNotBlank(request.getAttach())) {
 			keyPairs.add(new KeyValuePair("raw_data", request.getAttach()));

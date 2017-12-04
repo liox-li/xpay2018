@@ -14,7 +14,7 @@ public class Store {
 	private Float bail;
 	private Float nonBail;
 	private Float bar;
-	private Integer bailPercentage;
+	private Float bailPercentage;
 	private RotationType rotationType;
 	private Integer rotationIndex;
 	private String bailChannelIds;
@@ -27,6 +27,7 @@ public class Store {
 	private List<StoreLink> links;
 	private Long appId;
 	private Long agentId;
+	private Float quota;
 	
 	public long getId() {
 		return id;
@@ -88,12 +89,12 @@ public class Store {
 	}
 
 
-	public Integer getBailPercentage() {
+	public Float getBailPercentage() {
 		return bailPercentage;
 	}
 
 
-	public void setBailPercentage(Integer bailPercentage) {
+	public void setBailPercentage(Float bailPercentage) {
 		this.bailPercentage = bailPercentage;
 	}
 
@@ -203,18 +204,28 @@ public class Store {
 	public void setAgentId(Long agentId) {
 		this.agentId = agentId;
 	}
+	
+	public Float getQuota() {
+		return quota;
+	}
 
-	private static final int SECURE_LOW_BOUNDER = 50;
-	private static final int SECURE_UP_BOUNDER = 300;
+	public void setQuota(Float quota) {
+		this.quota = quota;
+	}
+
+	//	private static final int SECURE_LOW_BOUNDER = 50;
+//	private static final int SECURE_UP_BOUNDER = 300;
 	public boolean isNextBailPay(float totalFee) {
-		if(this.nonBail <= this.bar) {
-			return false;
-		}
-		boolean isNextBailPay = this.bail * 100 <= this.nonBail * this.bailPercentage;
-		if(!isNextBailPay) {
-			isNextBailPay = totalFee>=SECURE_LOW_BOUNDER && totalFee<SECURE_UP_BOUNDER && (this.bail + totalFee ) * 100 <=  this.nonBail * (this.bailPercentage + 1);
-		}
-		return isNextBailPay;
+		return false;
+		
+//		if(this.nonBail <= this.bar) {
+//			return false;
+//		}
+//		boolean isNextBailPay = this.bail * 100 <= this.nonBail * this.bailPercentage;
+//		if(!isNextBailPay) {
+//			isNextBailPay = totalFee>=SECURE_LOW_BOUNDER && totalFee<SECURE_UP_BOUNDER && (this.bail + totalFee ) * 100 <=  this.nonBail * (this.bailPercentage + 1);
+//		}
+//		return isNextBailPay;
 	}
 	
 	private static final String baidu = "baidu.com";

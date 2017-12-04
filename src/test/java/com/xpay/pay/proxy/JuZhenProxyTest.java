@@ -18,7 +18,7 @@ public class JuZhenProxyTest extends BaseSpringJunitTest {
 		request.setExtStoreId("999002100009696");
 		request.setDeviceId("1213");
 		request.setPayChannel(PayChannel.WECHAT);
-		request.setTotalFee("0.01");
+		request.setTotalFee(0.01f);
 		request.setOrderNo("37042410033549959961");
 		request.setSubject("测试商品");
 		request.setNotifyUrl("http://106.14.47.193/xpay/juzhen");

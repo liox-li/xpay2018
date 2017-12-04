@@ -33,7 +33,7 @@ public class ChinaUmsV2ProxyTest extends BaseSpringJunitTest {
 		request.setExtStoreId("898319848160268");
 		request.setDeviceId("1213");
 		request.setPayChannel(PayChannel.WECHAT);
-		request.setTotalFee("0.01");
+		request.setTotalFee(0.01f);
 		request.setOrderNo("3116201708081218354995996111");
 		request.setReturnUrl("http://www.baidu.com");
 		request.setNotifyUrl("http://106.14.47.193/xpay/notify/chinaumsv2");
@@ -59,7 +59,7 @@ public class ChinaUmsV2ProxyTest extends BaseSpringJunitTest {
 		request.setExtStoreId("898340149000005");
 		request.setDeviceId("1213");
 		request.setPayChannel(PayChannel.WECHAT);
-		request.setTotalFee("0.01");
+		request.setTotalFee(0.01f);
 		request.setOrderNo("3194201708020912525902559623");
 		request.setSubject("No Subject");
 		request.setAttach("atach");
@@ -74,7 +74,7 @@ public class ChinaUmsV2ProxyTest extends BaseSpringJunitTest {
 		request.setExtStoreId("898340149000005");
 		request.setDeviceId("1213");
 		request.setPayChannel(PayChannel.WECHAT);
-		request.setTotalFee("0.01");
+		request.setTotalFee(0.01f);
 		request.setOrderNo("3194201708020921163077813588");
 		request.setSubject("No Subject");
 		request.setAttach("atach");

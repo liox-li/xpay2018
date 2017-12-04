@@ -18,7 +18,7 @@ public class KeFuProxyTest extends BaseSpringJunitTest {
 		request.setExtStoreId("MS0000001694830");
 		request.setDeviceId("1213");
 		request.setPayChannel(PayChannel.ALIPAY);
-		request.setTotalFee("0.01");
+		request.setTotalFee(0.01f);
 		request.setOrderNo("3116201707311003354995996111");
 		request.setSubject("测试商品");
 		request.setAttach("atach");

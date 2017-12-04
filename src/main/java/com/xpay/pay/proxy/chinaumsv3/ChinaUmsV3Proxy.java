@@ -34,7 +34,7 @@ import com.xpay.pay.util.JsonUtils;
 @Component
 public class ChinaUmsV3Proxy implements IPaymentProxy {
 	protected final Logger logger = LogManager.getLogger("AccessLog");
-	private static final AppConfig config = AppConfig.ChinaUmsV3Config;
+	private static final AppConfig config = AppConfig.ChinaUmsAliPayConfig;
 	private static final String baseEndpoint = config.getProperty("provider.endpoint");
 	private static final String appId = config.getProperty("provider.app.id");
 	private static final String appSecret = config.getProperty("provider.app.secret");
@@ -128,6 +128,9 @@ public class ChinaUmsV3Proxy implements IPaymentProxy {
 		return response;
 	}
 
+	private static final String ALI_PAY_METHOD = "trade.precreate";
+	private static final String WECHAT_METHOD = "WXPay.unifiedOrder";
+	private static final String H5_INST_MID = "H5DEFAULT";
 	private ChinaUmsV3Request toChinaUmsRequest(String method, PaymentRequest request) {
 		ChinaUmsV3Request chinaUmsRequest = new ChinaUmsV3Request();
 		chinaUmsRequest.setMsgSrc(appName);
@@ -142,12 +145,21 @@ public class ChinaUmsV3Proxy implements IPaymentProxy {
 			chinaUmsRequest.setMid(strArrays[0]);
 			chinaUmsRequest.setTid(strArrays[1]);
 		}
-		chinaUmsRequest.setInstMid(instMid);
-		chinaUmsRequest.setTradeType("APP");
+		if(method.equals(ALI_PAY_METHOD)) {
+			chinaUmsRequest.setInstMid(instMid);
+			chinaUmsRequest.setTradeType("APP");
+		} else {
+			chinaUmsRequest.setInstMid(H5_INST_MID);
+			chinaUmsRequest.setTradeType("MWEB");
+			chinaUmsRequest.setSceneType("IOS_WAP");
+			chinaUmsRequest.setMerAppName("SHNYXXJS");
+			chinaUmsRequest.setMerAppId("WWW.SHNYXXJS.COM");
+		}
+		
 		chinaUmsRequest.setGoods(request.getGoods());
 		chinaUmsRequest.setOrderDesc(request.getSubject());
-		if(StringUtils.isNotBlank(request.getTotalFee())) {
-			chinaUmsRequest.setTotalAmount(String.valueOf((int)(request.getTotalFeeAsFloat()*100)));
+		if(request.getTotalFee()!=null) {
+			chinaUmsRequest.setTotalAmount(String.valueOf((int)(request.getTotalFee()*100)));
 		}
 		chinaUmsRequest.setNotifyUrl(request.getNotifyUrl());
 		chinaUmsRequest.setReturnUrl(request.getReturnUrl());
@@ -199,6 +211,15 @@ public class ChinaUmsV3Proxy implements IPaymentProxy {
 		if(StringUtils.isNotBlank(chinaUmsRequest.getReturnUrl())) {
 			keyPairs.add(new KeyValuePair("returnUrl", chinaUmsRequest.getReturnUrl()));
 		}
+		if(StringUtils.isNotBlank(chinaUmsRequest.getSceneType())) {
+			keyPairs.add(new KeyValuePair("sceneType", chinaUmsRequest.getSceneType()));
+		}
+		if(StringUtils.isNotBlank(chinaUmsRequest.getMerAppName())) {
+			keyPairs.add(new KeyValuePair("merAppName", chinaUmsRequest.getMerAppName()));
+		}
+		if(StringUtils.isNotBlank(chinaUmsRequest.getMerAppId())) {
+			keyPairs.add(new KeyValuePair("merAppId", chinaUmsRequest.getMerAppId()));
+		}
 		return keyPairs;
 	}
 	
@@ -220,7 +241,7 @@ public class ChinaUmsV3Proxy implements IPaymentProxy {
 
 	private PaymentResponse toPaymentResponse(ChinaUmsV3Request chinaUmsRequest, ChinaUmsV3Response chinaUmsResponse) {
 		if (chinaUmsResponse == null || !ChinaUmsResponse.SUCCESS.equals(chinaUmsResponse.getErrCode())
-				|| StringUtils.isBlank(chinaUmsResponse.getH5PayUrl())) {
+				|| (StringUtils.isBlank(chinaUmsResponse.getQrCode()) && StringUtils.isBlank(chinaUmsResponse.getH5PayUrl()))) {
 			String code = chinaUmsResponse == null ? NO_RESPONSE : chinaUmsResponse.getErrCode();
 			String msg = chinaUmsResponse == null ? "No response" : chinaUmsResponse.getErrMsg();
 			throw new GatewayException(code, msg);
@@ -228,7 +249,7 @@ public class ChinaUmsV3Proxy implements IPaymentProxy {
 		PaymentResponse response = new PaymentResponse();
 		response.setCode(PaymentResponse.SUCCESS);
 		Bill bill = new Bill();
-		bill.setCodeUrl(chinaUmsResponse.getH5PayUrl());
+		bill.setCodeUrl(chinaUmsResponse.getQrCode());
 		bill.setOrderNo(chinaUmsRequest.getMerOrderId());
 		bill.setOrderStatus(OrderStatus.NOTPAY);
 		response.setBill(bill);
@@ -249,8 +270,6 @@ public class ChinaUmsV3Proxy implements IPaymentProxy {
 		}
 	}
 	
-	private static final String ALI_PAY_METHOD = "trade.precreate";
-	private static final String WECHAT_METHOD = "wx.unifiedOrder";
 	private String toMethod(PayChannel payChannel) {
 		if(PayChannel.ALIPAY.equals(payChannel)) {
 			return ALI_PAY_METHOD;
