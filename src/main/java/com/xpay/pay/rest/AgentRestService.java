@@ -329,7 +329,7 @@ public class AgentRestService extends AdminRestService {
 	}
 	
 	@RequestMapping(value = "/{id}/transactions", method = RequestMethod.GET)
-	public BaseResponse<List<StoreTransaction>> listTransaction(@PathVariable long id, 
+	public BaseResponse<List<StoreTransaction>> listTransactions(@PathVariable long id, 
 			@RequestParam(required = false) Long storeId,
 			@RequestParam(required = false) String startDate,
 			@RequestParam(required = false) String endDate) {
@@ -340,7 +340,12 @@ public class AgentRestService extends AdminRestService {
 		Date endTime = TimeUtils.parseTime(endDate, TimeUtils.TimePatternDate);
 		endTime = endTime == null?new Date(): TimeUtils.endOfDay(endTime);
 
-		List<StoreTransaction> transactions = storeService.findTransactions(storeId, startTime, endTime);
+		List<StoreTransaction> transactions = new ArrayList<StoreTransaction>();
+		if(storeId!=null) {
+			transactions = storeService.findTransactionsByStoreId(storeId, startTime, endTime);
+		} else {
+			transactions = storeService.findTransactionsByAgentId(id, startTime, endTime);
+		}
 		BaseResponse<List<StoreTransaction>> response = new BaseResponse<List<StoreTransaction>>();
 		response.setData(transactions);
 		return response;

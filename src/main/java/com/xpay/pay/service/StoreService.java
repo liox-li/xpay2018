@@ -159,8 +159,12 @@ public class StoreService {
 		return transaction;
 	}
 	
-	public List<StoreTransaction> findTransactions(long storeId, Date startTime, Date endTime) {
+	public List<StoreTransaction> findTransactionsByStoreId(long storeId, Date startTime, Date endTime) {
 		return storeTransactionMapper.findByStoreIdAndTime(storeId, startTime, endTime);
+	}
+	
+	public List<StoreTransaction> findTransactionsByAgentId(long agentId, Date startTime, Date endTime) {
+		return storeTransactionMapper.findByAgentIdAndTime(agentId, startTime, endTime);
 	}
 	
 	public StoreTransaction findTransactionById(long transId) {
