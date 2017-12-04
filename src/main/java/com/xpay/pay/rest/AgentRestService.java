@@ -424,6 +424,7 @@ public class AgentRestService extends AdminRestService {
 		storeResponse.setDailyLimit(store.getDailyLimit());
 		storeResponse.setTodayTradeAmount(store.getNonBail());
 		storeResponse.setQuota(store.getQuota());
+		storeResponse.setChannels(store.getChannels());
 		return storeResponse;
 	}
 }
