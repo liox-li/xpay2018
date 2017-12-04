@@ -111,11 +111,8 @@ public class StoreService {
 		return store;
 	}
 	
-	public Store updateStore(Long agentId, Long storeId, String name, Float bailPercentage, Long appId, String csrTel, String proxyUrl, Long dailyLimit) {
+	public Store updateStore(Long storeId, String name, Float bailPercentage, Long appId, String csrTel, String proxyUrl, Long dailyLimit) {
 		Store store = storeMapper.findById(storeId);
-		if(agentId!=null) {
-			store.setAgentId(agentId);
-		}
 		if(StringUtils.isNotBlank(name)) {
 			store.setName(name);
 		}

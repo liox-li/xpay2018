@@ -30,7 +30,6 @@ import com.xpay.pay.rest.contract.RechargeRequest;
 import com.xpay.pay.rest.contract.StoreResponse;
 import com.xpay.pay.rest.contract.UpdateStoreChannelRequest;
 import com.xpay.pay.rest.contract.UpdateStoreChannelResponse;
-import com.xpay.pay.rest.contract.UpdateStoreRequest;
 import com.xpay.pay.service.AppService;
 import com.xpay.pay.service.OrderService;
 import com.xpay.pay.service.StoreService;
@@ -73,6 +72,52 @@ public class AgentRestService extends AdminRestService {
 		Assert.isTrue(request.getPassword().equals(agent.getPassword()), "Invalid password");
 		
 		agentService.refreshToken(agent);
+		
+		BaseResponse<Agent> response = new BaseResponse<Agent>();
+		agent.setPassword(null);
+		response.setData(agent);
+		return response;
+	}
+	
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+	public BaseResponse<Agent> createAccount(@PathVariable long id,
+			@RequestBody(required = false) Agent agent) {
+		validateAgent(id);
+		
+		Assert.notNull(agent, "Create account body can not be null");
+		Assert.isTrue(StringUtils.isNoneBlank(agent.getAccount(), agent.getPassword()), "Account name and password can not be null");
+		
+		Agent dbAgent = agentService.findByAccount(agent.getAccount());
+		Assert.isTrue(dbAgent == null, String.format("Account already exit - %s", agent.getAccount()));
+		agent.setAgentId(id);
+		agentService.createAccount(agent);
+		
+		BaseResponse<Agent> response = new BaseResponse<Agent>();
+		agent.setPassword(null);
+		response.setData(agent);
+		return response;
+	}
+	
+	@RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
+	public BaseResponse<Agent> updateAccount(@PathVariable long id,
+			@RequestBody(required = false) Agent agent) {
+		validateAgent(id);
+		
+		Assert.notNull(agent, "Update account body can not be null");
+		Assert.isTrue(StringUtils.isNotBlank(agent.getAccount()), "Account name to be updated can not be null");
+		Assert.isTrue((StringUtils.isNotBlank(agent.getPassword()) || agent.getRole()!=null), "Either password or role to be updated can't be null");
+		
+		Agent dbAgent = agentService.findByAccount(agent.getAccount());
+		Assert.isTrue(dbAgent != null, String.format("Account not found - %s", agent.getAccount()));
+		Assert.isTrue(id<=10 || id == dbAgent.getAgentId(), 401, "401", "Unauthorized request");
+		
+		if(StringUtils.isNotBlank(agent.getPassword())) {
+			dbAgent.setPassword(agent.getPassword());
+		}
+		if(agent.getRole()!=null) {
+			dbAgent.setRole(agent.getRole());
+		}
+		agentService.updateAccount(dbAgent);
 		
 		BaseResponse<Agent> response = new BaseResponse<Agent>();
 		agent.setPassword(null);
@@ -180,10 +225,11 @@ public class AgentRestService extends AdminRestService {
 	
 	@RequestMapping(value = "/{id}/stores", method = RequestMethod.PATCH)
 	public BaseResponse<StoreResponse> updateAgentStore(@PathVariable long id, 
-			@RequestBody(required = true) UpdateStoreRequest request) {
+			@PathVariable long storeId, 
+			@RequestBody(required = true) CreateStoreRequest request) {
 		validateAgent(id);
 		
-		Store store = storeService.updateStore(request.getAgentId(), request.getStoreId(), request.getName(), request.getBailPercentage(), request.getAppId(), request.getCsrTel(), request.getProxyUrl(), request.getDailyLimit());
+		Store store = storeService.updateStore(storeId, request.getName(), request.getBailPercentage(), request.getAppId(), request.getCsrTel(), request.getProxyUrl(), request.getDailyLimit());
 		StoreResponse storeResponse = toStoreResponse(store);
 		BaseResponse<StoreResponse> response = new BaseResponse<StoreResponse>();
 		response.setData(storeResponse);
