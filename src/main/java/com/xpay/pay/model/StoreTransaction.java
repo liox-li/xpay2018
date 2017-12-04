@@ -97,6 +97,6 @@ public class StoreTransaction {
 	}
 
 	public static enum TransactionType {
-		INIT_FREE, RECHARGE, CONSUME, PROMOTE; 
+		INIT_FREE, RECHARGE, CONSUME, FREE, OFFLINE; 
 	}
 }

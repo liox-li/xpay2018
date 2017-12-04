@@ -27,6 +27,7 @@ import com.xpay.pay.model.Order;
 import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
 import com.xpay.pay.model.StoreTransaction;
+import com.xpay.pay.model.StoreTransaction.TransactionType;
 import com.xpay.pay.rest.contract.BaseResponse;
 import com.xpay.pay.rest.contract.CreateAppRequest;
 import com.xpay.pay.rest.contract.CreateStoreRequest;
@@ -258,7 +259,7 @@ public class AgentRestService extends AdminRestService {
 		return response;
 	}
 	
-	@RequestMapping(value = "/{id}/stores/{storeId}/free_quota", method = RequestMethod.POST)
+	@RequestMapping(value = "/{id}/stores/{storeId}/quota", method = RequestMethod.POST)
 	public BaseResponse<StoreResponse> newQuota(@PathVariable long id, 
 			@PathVariable long storeId,
 			@RequestBody(required = true) RechargeRequest request) {
@@ -266,8 +267,10 @@ public class AgentRestService extends AdminRestService {
 		this.assertAdmin();
 		
 		Assert.isTrue(request!=null && request.getQuota()>=2000f, "Quota amount must be greater than 2000");
-		
-		Store store = storeService.newQuota(id, storeId, request.getQuota());
+		if(request.getTransactionType() == null) {
+			request.setTransactionType(TransactionType.FREE);
+		}
+ 		Store store = storeService.newQuota(id, storeId, request.getQuota(), request.getTransactionType());
 		StoreResponse storeResponse = toStoreResponse(store);
 		BaseResponse<StoreResponse> response = new BaseResponse<StoreResponse>();
 		response.setData(storeResponse);
