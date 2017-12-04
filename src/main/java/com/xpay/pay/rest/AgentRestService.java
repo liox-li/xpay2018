@@ -109,7 +109,7 @@ public class AgentRestService extends AdminRestService {
 		
 		Agent dbAgent = agentService.findByAccount(agent.getAccount());
 		Assert.isTrue(dbAgent != null, String.format("Account not found - %s", agent.getAccount()));
-		Assert.isTrue(id<=10 || id == dbAgent.getAgentId(), 401, "401", "Unauthorized request");
+		Assert.isTrue(id<=10 || id == dbAgent.getAgentId() || id==dbAgent.getId(), 401, "401", "Unauthorized request");
 		
 		if(StringUtils.isNotBlank(agent.getPassword())) {
 			dbAgent.setPassword(agent.getPassword());
@@ -124,7 +124,7 @@ public class AgentRestService extends AdminRestService {
 		
 		BaseResponse<Agent> response = new BaseResponse<Agent>();
 		agent.setPassword(null);
-		response.setData(agent);
+		response.setData(dbAgent);
 		return response;
 	}
 	
