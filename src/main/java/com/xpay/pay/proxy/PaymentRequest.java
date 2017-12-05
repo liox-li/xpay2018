@@ -1,5 +1,6 @@
 package com.xpay.pay.proxy;
 
+import com.xpay.pay.model.StoreChannel.ChannelProps;
 import com.xpay.pay.proxy.IPaymentProxy.PayChannel;
 import com.xpay.pay.proxy.IPaymentProxy.TradeNoType;
 
@@ -19,6 +20,7 @@ public class PaymentRequest {
 	private String subject;
 	private String orderTime;
 	private GoodsBean[] goods;
+	private ChannelProps channelProps;
 	
 	public String getExtStoreId() {
 		return extStoreId;
@@ -107,6 +109,12 @@ public class PaymentRequest {
 	}
 	public void setGoods(GoodsBean[] goods) {
 		this.goods = goods;
+	}
+	public ChannelProps getChannelProps() {
+		return channelProps;
+	}
+	public void setChannelProps(ChannelProps channelProps) {
+		this.channelProps = channelProps;
 	}
 
 	public static class GoodsBean {

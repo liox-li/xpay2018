@@ -3,6 +3,9 @@ package com.xpay.pay.model;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.xpay.pay.util.JsonUtils;
 import com.xpay.pay.util.TimeUtils;
 
 public class StoreChannel {
@@ -12,6 +15,8 @@ public class StoreChannel {
 	private AtomicLong lastUseTime = new AtomicLong(0);
 	private String extStoreName;
 	private Long agentId;
+	private String props;
+	private ChannelProps channelProps;
 	private Date updateDate;
 	
 	public long getId() {
@@ -60,6 +65,30 @@ public class StoreChannel {
 
 	public void setAgentId(Long agentId) {
 		this.agentId = agentId;
+	}
+
+	public String getProps() {
+		return props;
+	}
+
+	public void setProps(String props) {
+		this.props = props;
+		if(StringUtils.isNotBlank(props)) {
+			if(this.paymentGateway == PaymentGateway.CHINAUMSH5) {
+				this.channelProps = JsonUtils.fromJson(props, ChinaUmsProps.class);
+			}
+		}
+ 	}
+	
+	public ChannelProps getChannelProps() {
+		return this.channelProps;
+	}
+	
+	public void setChannelProps(ChannelProps channelProps) {
+		this.channelProps = channelProps;
+		if(channelProps!=null) {
+			this.props = JsonUtils.toJson(channelProps);
+		}
 	}
 
 	public Date getUpdateDate() {
@@ -117,5 +146,40 @@ public class StoreChannel {
 			return this.refund;
 		}
 		
+	}
+	
+	public static interface ChannelProps {
+		
+	}
+	
+	public static class ChinaUmsProps implements ChannelProps {
+		private String tid;
+		private String msgSrcId;
+		private String msgSrc;
+		private String signKey;
+		public String getTid() {
+			return tid;
+		}
+		public void setTid(String tid) {
+			this.tid = tid;
+		}
+		public String getMsgSrcId() {
+			return msgSrcId;
+		}
+		public void setMsgSrcId(String msgSrcId) {
+			this.msgSrcId = msgSrcId;
+		}
+		public String getMsgSrc() {
+			return msgSrc;
+		}
+		public void setMsgSrc(String msgSrc) {
+			this.msgSrc = msgSrc;
+		}
+		public String getSignKey() {
+			return signKey;
+		}
+		public void setSignKey(String signKey) {
+			this.signKey = signKey;
+		}
 	}
 }

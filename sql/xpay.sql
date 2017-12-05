@@ -211,6 +211,8 @@ CREATE INDEX bill_store_transaction_order_no ON bill_store_transaction(order_no)
 alter table bill_store alter COLUMN bail_percentage type NUMERIC;
 alter table bill_store_channel alter column bill_type set default 'T1';
 
+ALTER table bill_store_channel add COLUMN props VARCHAR(1024);
+
 ALTER table bill_app OWNER TO xpay;
 ALTER table bill_store OWNER TO xpay;
 ALTER table bill_store_channel OWNER TO xpay;
