@@ -30,6 +30,7 @@ import com.xpay.pay.model.StoreTransaction;
 import com.xpay.pay.model.StoreTransaction.TransactionType;
 import com.xpay.pay.rest.contract.BaseResponse;
 import com.xpay.pay.rest.contract.CreateAppRequest;
+import com.xpay.pay.rest.contract.CreateStoreChannelRequest;
 import com.xpay.pay.rest.contract.CreateStoreRequest;
 import com.xpay.pay.rest.contract.LoginRequest;
 import com.xpay.pay.rest.contract.RechargeRequest;
@@ -190,13 +191,23 @@ public class AgentRestService extends AdminRestService {
 	
 	@RequestMapping(value = "/{id}/channels", method = RequestMethod.PUT)
 	public BaseResponse<StoreChannel> createAgentChannel(@PathVariable long id,
-			@RequestBody(required = true)StoreChannel channel) {
+			@RequestBody(required = true)CreateStoreChannelRequest request) {
 		validateAgent(id);
 		this.assertAdmin();
 		
-		if(channel.getAgentId()==null) {
-			channel.setAgentId(id);
+		Assert.isTrue(StringUtils.isNoneBlank(request.getExtStoreId(), request.getExtStoreName()), "ExtStoreId and name can't be null");
+		Assert.notNull(request.getPaymentGateway(), "Payment gateway is must");
+		
+		if(request.getAgentId()==null) {
+			request.setAgentId(id);
 		}
+		StoreChannel channel = new StoreChannel();
+		channel.setAgentId(request.getAgentId());
+		channel.setExtStoreId(request.getExtStoreId());
+		channel.setExtStoreName(request.getExtStoreName());
+		channel.setChannelProps(request.getChinaUmsProps());
+		channel.setPaymentGateway(request.getPaymentGateway());
+	
 		storeService.createStoreChannel(channel);
 		BaseResponse<StoreChannel> response = new BaseResponse<StoreChannel>();
 		response.setData(channel);
