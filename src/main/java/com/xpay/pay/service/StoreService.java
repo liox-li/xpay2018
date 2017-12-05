@@ -228,8 +228,7 @@ public class StoreService {
 	}
 	
 	public void updateStoreChannels(long storeId, long[] channelIds) {
-		Store store = new Store();
-		store.setId(storeId);
+		Store store = this.findById(storeId);
 		String channels = StringUtils.join(channelIds, ',');
 		store.setChannelIds(channels);
 		storeMapper.updateById(store);
