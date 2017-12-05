@@ -94,7 +94,7 @@ public class AgentRestService extends AdminRestService {
 	public BaseResponse<Agent> createAccount(@PathVariable long id,
 			@RequestBody(required = false) Agent agent) {
 		validateAgent(id);
-		this.assertNotStore();
+		this.assertAdmin();
 		
 		Assert.notNull(agent, "Create account body can not be null");
 		Assert.isTrue(StringUtils.isNoneBlank(agent.getAccount(), agent.getPassword(),agent.getName()), "Account name and password can not be null");
@@ -120,6 +120,7 @@ public class AgentRestService extends AdminRestService {
 	public BaseResponse<Agent> updateAccount(@PathVariable long id,
 			@RequestBody(required = false) Agent agent) {
 		validateAgent(id);
+		this.assertAdmin();
 		
 		Assert.notNull(agent, "Update account body can not be null");
 		Assert.isTrue(StringUtils.isNotBlank(agent.getAccount()), "Account name to be updated can not be null");
@@ -163,7 +164,8 @@ public class AgentRestService extends AdminRestService {
 	public BaseResponse<App> createAgentApp(@PathVariable long id, 
 			@RequestBody(required = true) CreateAppRequest request) {
 		validateAgent(id);
-		this.assertNotStore();
+		this.assertAdmin();
+		
 		Assert.notNull(request, "Create app request body can't be null");
 		Assert.notNull(request.getName(), "App name can't be null");
 		
@@ -190,6 +192,8 @@ public class AgentRestService extends AdminRestService {
 	public BaseResponse<StoreChannel> createAgentChannel(@PathVariable long id,
 			@RequestBody(required = true)StoreChannel channel) {
 		validateAgent(id);
+		this.assertAdmin();
+		
 		if(channel.getAgentId()==null) {
 			channel.setAgentId(id);
 		}
@@ -203,6 +207,7 @@ public class AgentRestService extends AdminRestService {
 	@RequestMapping(value = "/{id}/channels/{channelId}", method = RequestMethod.DELETE)
 	public BaseResponse<Boolean> deleteAgentChannel(@PathVariable long id, @PathVariable long channelId) {
 		validateAgent(id);
+		this.assertAdmin();
 		
 		StoreChannel channel = storeService.findStoreChannelById(channelId);
 		Assert.notNull(channel, String.format("Channel not found, channelId: %s, agentId: %s", channelId, id));
@@ -234,7 +239,8 @@ public class AgentRestService extends AdminRestService {
 	public BaseResponse<StoreResponse> createAgentStore(@PathVariable long id, 
 			@RequestBody(required = true) CreateStoreRequest request) {
 		validateAgent(id);
-		this.assertNotStore();
+		this.assertAdmin();
+		
 		Assert.notNull(request, "Create store request body can't be null");
 		Assert.notNull(request.getName(), "Store name can't be null");
 		Assert.notNull(request.getAppId(), "AppId cant' be null");
@@ -251,6 +257,7 @@ public class AgentRestService extends AdminRestService {
 			@PathVariable long storeId, 
 			@RequestBody(required = true) CreateStoreRequest request) {
 		validateAgent(id);
+		this.assertAdmin();
 		
 		Store store = storeService.updateStore(storeId, request.getName(), request.getBailPercentage(), request.getAppId(), request.getCsrTel(), request.getProxyUrl(), request.getDailyLimit());
 		StoreResponse storeResponse = toStoreResponse(store);
@@ -359,6 +366,7 @@ public class AgentRestService extends AdminRestService {
 			@PathVariable long storeId,
 			@RequestBody(required = true) UpdateStoreChannelRequest request) {
 		validateAgent(id);
+		this.assertAdmin();
 		
 		storeService.updateStoreChannels(storeId, request.getChannels());
 		UpdateStoreChannelResponse updateStoreChannelResponse = new UpdateStoreChannelResponse();
@@ -405,10 +413,6 @@ public class AgentRestService extends AdminRestService {
 	
 	private void assertAdmin() {
 		Assert.isTrue(this.getAgent().getId()<=10, ApplicationConstants.STATUS_UNAUTHORIZED, "401", "Unauthorized request");
-	}
-	
-	private void assertNotStore() {
-		Assert.isTrue(this.getAgent().getRole()!=Role.STORE, ApplicationConstants.STATUS_UNAUTHORIZED, "401", "Unauthorized request");
 	}
 	
 	private void assertGeneral(Long agentId, Agent agent) {
