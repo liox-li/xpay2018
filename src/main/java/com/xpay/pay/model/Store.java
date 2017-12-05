@@ -19,7 +19,7 @@ public class Store {
 	private Integer rotationIndex;
 	private String bailChannelIds;
 	private List<StoreChannel> bailChannels;
-	private long dailyLimit;
+	private Long dailyLimit;
 	private String channelIds;
 	private String csrTel;
 	private String proxyUrl;
