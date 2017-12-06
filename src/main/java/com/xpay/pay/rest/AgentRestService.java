@@ -170,7 +170,12 @@ public class AgentRestService extends AdminRestService {
 		Assert.notNull(request, "Create app request body can't be null");
 		Assert.notNull(request.getName(), "App name can't be null");
 		
-		App app = appService.createApp(id, request.getName());
+		Long agentId = id;
+		if(request.getAgentId()!=null) {
+			agentId = request.getAgentId();
+		}
+		
+		App app = appService.createApp(agentId, request.getName());
 		BaseResponse<App> response = new BaseResponse<App>();
 		response.setData(app);
 		
@@ -198,11 +203,12 @@ public class AgentRestService extends AdminRestService {
 		Assert.isTrue(StringUtils.isNoneBlank(request.getExtStoreId(), request.getExtStoreName()), "ExtStoreId and name can't be null");
 		Assert.notNull(request.getPaymentGateway(), "Payment gateway is must");
 		
+		Long agentId = id;
 		if(request.getAgentId()==null) {
-			request.setAgentId(id);
+			agentId = request.getAgentId();
 		}
 		StoreChannel channel = new StoreChannel();
-		channel.setAgentId(request.getAgentId());
+		channel.setAgentId(agentId);
 		channel.setExtStoreId(request.getExtStoreId());
 		channel.setExtStoreName(request.getExtStoreName());
 		channel.setChannelProps(request.getChinaUmsProps());
@@ -256,7 +262,12 @@ public class AgentRestService extends AdminRestService {
 		Assert.notNull(request.getName(), "Store name can't be null");
 		Assert.notNull(request.getAppId(), "AppId cant' be null");
 		
-		Store store = storeService.createStore(id, request.getName(), request.getBailPercentage(), request.getAppId(), request.getCsrTel(), request.getProxyUrl(), request.getDailyLimit());
+		Long agentId = request.getAgentId();
+		if(agentId == null) {
+			agentId = id;
+		}
+		
+		Store store = storeService.createStore(agentId, request.getName(), request.getBailPercentage(), request.getAppId(), request.getCsrTel(), request.getProxyUrl(), request.getDailyLimit());
 		StoreResponse storeResponse = toStoreResponse(store);
 		BaseResponse<StoreResponse> response = new BaseResponse<StoreResponse>();
 		response.setData(storeResponse);
@@ -270,7 +281,7 @@ public class AgentRestService extends AdminRestService {
 		validateAgent(id);
 		this.assertAdmin();
 		
-		Store store = storeService.updateStore(storeId, request.getName(), request.getBailPercentage(), request.getAppId(), request.getCsrTel(), request.getProxyUrl(), request.getDailyLimit());
+		Store store = storeService.updateStore(storeId, request.getAgentId(), request.getName(), request.getBailPercentage(), request.getAppId(), request.getCsrTel(), request.getProxyUrl(), request.getDailyLimit());
 		StoreResponse storeResponse = toStoreResponse(store);
 		BaseResponse<StoreResponse> response = new BaseResponse<StoreResponse>();
 		response.setData(storeResponse);

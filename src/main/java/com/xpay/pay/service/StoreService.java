@@ -115,7 +115,7 @@ public class StoreService {
 		return store;
 	}
 	
-	public Store updateStore(Long storeId, String name, Float bailPercentage, Long appId, String csrTel, String proxyUrl, Long dailyLimit) {
+	public Store updateStore(Long storeId, Long agentId, String name, Float bailPercentage, Long appId, String csrTel, String proxyUrl, Long dailyLimit) {
 		Store store = storeMapper.findById(storeId);
 		if(StringUtils.isNotBlank(name)) {
 			store.setName(name);
@@ -134,6 +134,9 @@ public class StoreService {
 		}
 		if(dailyLimit!=null) {
 			store.setDailyLimit(dailyLimit);
+		}
+		if(agentId !=null) {
+			store.setAgentId(agentId);
 		}
 		storeMapper.updateById(store);
 		return store;
