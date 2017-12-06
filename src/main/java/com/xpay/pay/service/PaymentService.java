@@ -104,7 +104,7 @@ public class PaymentService {
 		return true;
 	}
 	
-	public Bill query(int appId, String orderNo, String storeCode, boolean isCsr) {
+	public Bill query(Long appId, String orderNo, String storeCode, boolean isCsr) {
 		Order order = orderService.findActiveByOrderNo(orderNo);
 		Assert.isTrue(storeCode.equals(order.getStore().getCode()), "No such order found for the store");
 		Assert.isTrue(appId == order.getAppId(), "No such order found under the app");
@@ -131,7 +131,7 @@ public class PaymentService {
 		return toBill(order);
 	}
 	
-	public Bill refund(int appId, String orderNo, String storeCode, boolean isCsr) {
+	public Bill refund(Long appId, String orderNo, String storeCode, boolean isCsr) {
 		Order order = orderService.findActiveByOrderNo(orderNo);
 		Assert.isTrue(storeCode.equals(order.getStore().getCode()), "No such order found for the store");
 		Assert.isTrue(appId == order.getAppId(), "No such order found under the app");

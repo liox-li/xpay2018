@@ -18,6 +18,8 @@ import com.xpay.pay.dao.StoreChannelMapper;
 import com.xpay.pay.dao.StoreLinkMapper;
 import com.xpay.pay.dao.StoreMapper;
 import com.xpay.pay.dao.StoreTransactionMapper;
+import com.xpay.pay.model.Agent;
+import com.xpay.pay.model.Agent.Role;
 import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
 import com.xpay.pay.model.StoreLink;
@@ -61,8 +63,18 @@ public class StoreService {
 		return store;
 	}
 	
-	public List<Store> findByAgentId(long agentId) {
-		List<Store> stores = storeMapper.findByAgentId(agentId);
+	public List<Store> findByAgent(Agent agent) {
+		List<Store> stores = null;
+		if(agent.getRole() == Role.ADMIN) {
+			stores = storeMapper.findAll();
+		} else if(agent.getRole() == Role.ADMIN) {
+			stores = storeMapper.findByAgentId(agent.getId());
+		} else {
+			Store store = storeMapper.findById(agent.getStoreId());
+			stores = Lists.newArrayList();
+			stores.add(store);
+		}
+		
 		List<Store> result = Lists.newArrayList();
 		for(Store store : stores) {
 			result.add(this.findById(store.getId()));

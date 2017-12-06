@@ -181,6 +181,7 @@ CREATE INDEX idx_bill_agent_account ON bill_agent(account);
 CREATE INDEX idx_bill_agent_token ON bill_agent(token); 
 
 ALTER TABLE bill_agent ADD COLUMN agent_id BIGINT;
+ALTER TABLE bill_agent ADD COLUMN store_id BIGINT;
 ALTER TABLE bill_agent ADD COLUMN role VARCHAR(16);
 ALTER TABLE bill_agent ADD COLUMN is_new BOOLEAN default true;
 ALTER TABLE bill_store ADD COLUMN quota NUMERIC default 2000;

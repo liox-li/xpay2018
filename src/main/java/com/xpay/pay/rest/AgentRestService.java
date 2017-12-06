@@ -42,7 +42,6 @@ import com.xpay.pay.service.AppService;
 import com.xpay.pay.service.OrderService;
 import com.xpay.pay.service.PaymentService;
 import com.xpay.pay.service.StoreService;
-import com.xpay.pay.util.CommonUtils;
 import com.xpay.pay.util.IDGenerator;
 import com.xpay.pay.util.TimeUtils;
 
@@ -99,6 +98,15 @@ public class AgentRestService extends AdminRestService {
 		
 		Assert.notNull(agent, "Create account body can not be null");
 		Assert.isTrue(StringUtils.isNoneBlank(agent.getAccount(), agent.getPassword(),agent.getName()), "Account name and password can not be null");
+		if(agent.getRole() == null) {
+			agent.setRole(Role.STORE);
+		}
+		
+		Assert.isTrue(agent.getRole() == Role.STORE || agent.getRole() == Role.AGENT, "Agent or Store role are supported");
+		
+		if(agent.getRole() == Role.STORE) {
+			Assert.notNull(agent.getStoreId(), "Store is must for a store admin");
+		}
 		
 		Agent dbAgent = agentService.findByAccount(agent.getAccount());
 		Assert.isTrue(dbAgent == null, String.format("Account already exit - %s", agent.getAccount()));
@@ -106,9 +114,7 @@ public class AgentRestService extends AdminRestService {
 		if(agent.getAgentId()==null) {
 			agent.setAgentId(id);
 		}
-		if(agent.getRole() == null) {
-			agent.setRole(Role.STORE);
-		}
+		
 		agentService.createAccount(agent);
 		
 		BaseResponse<Agent> response = new BaseResponse<Agent>();
@@ -238,7 +244,7 @@ public class AgentRestService extends AdminRestService {
 	public BaseResponse<List<StoreResponse>> getAgentStores(@PathVariable long id) {
 		validateAgent(id);
 		
-		List<Store> stores = storeService.findByAgentId(id);
+		List<Store> stores = storeService.findByAgent(this.getAgent());
 		List<StoreResponse> storeResponses = new ArrayList<StoreResponse>();
 		for(Store store: stores) {
 			StoreResponse storeResponse = toStoreResponse(store);
@@ -249,6 +255,19 @@ public class AgentRestService extends AdminRestService {
 		if(CollectionUtils.isNotEmpty(storeResponses)) {
 			response.setCount(storeResponses.size());
 		}
+		return response;
+	}
+	
+	@RequestMapping(value = "/{id}/stores/{storeId}", method = RequestMethod.GET)
+	public BaseResponse<StoreResponse> getAgentStores(@PathVariable long id, @PathVariable long storeId) {
+		validateAgent(id);
+		
+		Store store = storeService.findById(storeId);
+		StoreResponse storeResponse = toStoreResponse(store);
+		storeResponse.setApp(appService.findById(store.getAppId()));
+		BaseResponse<StoreResponse> response = new BaseResponse<StoreResponse>();
+		response.setData(storeResponse);
+		
 		return response;
 	}
 	
@@ -316,8 +335,8 @@ public class AgentRestService extends AdminRestService {
 		Assert.isTrue(request!=null && request.getAmount()>=100f, "Recharge amount must be greater than 100");
 		
 		Store store = storeService.findById(BAIL_STORE_ID);
-		int appId = CommonUtils.toInt(store.getAppId());
-		String orderNo = IDGenerator.buildRechargeOrderNo(appId, storeId);
+		Long appId = store.getAppId();
+		String orderNo = IDGenerator.buildRechargeOrderNo(appId.intValue(), storeId);
 		App app = appService.findById(appId);
 		
 		
@@ -419,7 +438,7 @@ public class AgentRestService extends AdminRestService {
 		
 		List<Order> orders = null;
 		if(StringUtils.isBlank(storeId)) {
-			orders = orderService.findByAgentIdAndTime(id, startTime, endTime);
+			orders = orderService.findByAgentAndTime(this.getAgent(), startTime, endTime);
 		} else {
 			orders = orderService.findByStoreIdAndTime(storeId, startTime, endTime);
 		}

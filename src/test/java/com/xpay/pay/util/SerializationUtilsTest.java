@@ -8,7 +8,7 @@ public class SerializationUtilsTest {
 	@Test
 	public void testToOjbect() {
 		Order order = new Order();
-		order.setAppId(1);
+		order.setAppId(1L);
 		order.setAttach("attach");
 		order.setCodeUrl("code url");
 		order.setTotalFee(0.01f);

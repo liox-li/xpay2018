@@ -12,6 +12,7 @@
     <result column="proxy_url" jdbcType="VARCHAR" property="proxyUrl" />
     <result column="token" jdbcType="VARCHAR" property="token" />
     <result column="role" jdbcType="VARCHAR" property="role" />
+    <result column="store_id" jdbcType="BIGINT" property="storeId" />
     <result column="agent_id" jdbcType="BIGINT" property="agentId" />
   </resultMap>
   
@@ -25,6 +26,7 @@
     proxy_url,
     token,
     role,
+    store_id,
     agent_id
   </sql>
 
@@ -59,7 +61,7 @@
   <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.Agent">
     insert into bill_agent
     <trim prefix="(" suffix=")" suffixOverrides=",">
-     account, agent_password, name, csr_tel, csr_wechat, proxy_url, role, agent_id
+     account, agent_password, name, csr_tel, csr_wechat, proxy_url, role, store_id, agent_id
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
      	#{account,jdbcType=VARCHAR},
@@ -69,6 +71,7 @@
      	#{csrWechat,jdbcType=VARCHAR},
      	#{proxyUrl,jdbcType=VARCHAR},
      	#{role,jdbcType=VARCHAR},
+     	#{storeId,jdbcType=BIGINT},
      	#{agentId,jdbcType=BIGINT}
     </trim>
   </insert>
@@ -84,6 +87,9 @@
       </if>
       <if test="role != null">
         role = #{role,jdbcType=VARCHAR},
+      </if>
+       <if test="storeId != null">
+        store_id = #{storeId,jdbcType=BIGINT},
       </if>
       <if test="agentId != null">
         agent_id = #{agentId,jdbcType=BIGINT},

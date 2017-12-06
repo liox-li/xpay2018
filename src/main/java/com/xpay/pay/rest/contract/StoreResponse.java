@@ -2,6 +2,7 @@ package com.xpay.pay.rest.contract;
 
 import java.util.List;
 
+import com.xpay.pay.model.App;
 import com.xpay.pay.model.StoreChannel;
 
 public class StoreResponse {
@@ -16,6 +17,7 @@ public class StoreResponse {
 	private Long dailyLimit;
 	private Float quota;
 	private Long agentId;
+	private App app;
 	private List<StoreChannel> channels;
 	public long getId() {
 		return id;
@@ -83,6 +85,12 @@ public class StoreResponse {
 	}
 	public void setAgentId(Long agentId) {
 		this.agentId = agentId;
+	}
+	public App getApp() {
+		return app;
+	}
+	public void setApp(App app) {
+		this.app = app;
 	}
 	public List<StoreChannel> getChannels() {
 		return channels;
