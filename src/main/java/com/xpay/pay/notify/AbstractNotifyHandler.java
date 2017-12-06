@@ -90,14 +90,14 @@ public abstract class AbstractNotifyHandler implements INotifyHandler {
 			order.setTargetOrderNo(body.getTargetOrderNo());
 			orderService.update(order);
 			
-			if(order.isRechargeOrder()) {
+			if(order.isRechargeOrder() && OrderStatus.SUCCESS.equals(order.getStatus())) {
 				storeService.settleRechargeTransaction(order.getOrderNo());
 			}
 		}
 	}
 	
 	private void updateTradeAmount(Order order) {
-		if(order!=null && OrderStatus.SUCCESS.equals(order.getStatus())) {
+		if(order!=null && !order.isRechargeOrder() && OrderStatus.SUCCESS.equals(order.getStatus())) {
 			paymentService.updateTradeAmount(order);
 		}
 	}

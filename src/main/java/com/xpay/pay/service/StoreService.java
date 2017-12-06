@@ -194,7 +194,7 @@ public class StoreService {
 	
 	public void settleRechargeTransaction(String orderNo) {
 		StoreTransaction transaction = storeTransactionMapper.findByOrderNo(orderNo);
-		if(transaction.getStatus() != OrderStatus.SUCCESS) {
+		if(transaction != null && transaction.getStatus() != OrderStatus.SUCCESS) {
 			transaction.setStatus(OrderStatus.SUCCESS);
 			storeTransactionMapper.updateById(transaction);
 			

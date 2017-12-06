@@ -95,7 +95,7 @@ public class PaymentService {
 	}
 	
 	public boolean updateTradeAmount(Order order) {
-		if(order != null && !order.isRechargeOrder()) {
+		if(order != null) {
 			Store store = order.getStore();
 			float newNonBail = store.getNonBail() + order.getTotalFee();
 			store.setNonBail(newNonBail);
