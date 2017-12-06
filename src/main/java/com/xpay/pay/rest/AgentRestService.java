@@ -378,7 +378,11 @@ public class AgentRestService extends AdminRestService {
 		} else {
 			transactions = storeService.findTransactionsByAgentId(id, startTime, endTime);
 		}
+		
 		BaseResponse<List<StoreTransaction>> response = new BaseResponse<List<StoreTransaction>>();
+		if(CollectionUtils.isNotEmpty(transactions)) {
+			response.setCount(transactions.size());
+		}
 		response.setData(transactions);
 		return response;
 	}
