@@ -204,7 +204,7 @@ public class AgentRestService extends AdminRestService {
 		Assert.notNull(request.getPaymentGateway(), "Payment gateway is must");
 		
 		Long agentId = id;
-		if(request.getAgentId()==null) {
+		if(request.getAgentId()!=null) {
 			agentId = request.getAgentId();
 		}
 		StoreChannel channel = new StoreChannel();
@@ -430,7 +430,7 @@ public class AgentRestService extends AdminRestService {
 	
 	private void validateAgent(long agentId) {
 		Agent agent = this.getAgent();
-		Assert.isTrue(agentId == agent.getId(), ApplicationConstants.STATUS_UNAUTHORIZED, "401", "Unauthorized request");
+		Assert.isTrue(agent.getId()<=10 || agentId == agent.getId(), ApplicationConstants.STATUS_UNAUTHORIZED, "401", "Unauthorized request");
 	}
 	
 	private void assertAdmin() {
@@ -453,6 +453,7 @@ public class AgentRestService extends AdminRestService {
 		storeResponse.setDailyLimit(store.getDailyLimit());
 		storeResponse.setTodayTradeAmount(store.getNonBail());
 		storeResponse.setQuota(store.getQuota());
+		storeResponse.setAgentId(store.getAgentId());
 		storeResponse.setChannels(store.getChannels());
 		return storeResponse;
 	}

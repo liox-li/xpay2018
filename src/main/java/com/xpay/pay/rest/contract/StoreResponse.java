@@ -15,6 +15,7 @@ public class StoreResponse {
 	private Float todayTradeAmount;
 	private Long dailyLimit;
 	private Float quota;
+	private Long agentId;
 	private List<StoreChannel> channels;
 	public long getId() {
 		return id;
@@ -75,6 +76,13 @@ public class StoreResponse {
 	}
 	public void setQuota(Float quota) {
 		this.quota = quota;
+	}
+	
+	public Long getAgentId() {
+		return agentId;
+	}
+	public void setAgentId(Long agentId) {
+		this.agentId = agentId;
 	}
 	public List<StoreChannel> getChannels() {
 		return channels;
