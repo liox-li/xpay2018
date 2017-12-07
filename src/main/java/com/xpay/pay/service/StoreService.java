@@ -67,7 +67,7 @@ public class StoreService {
 		List<Store> stores = null;
 		if(agent.getRole() == Role.ADMIN) {
 			stores = storeMapper.findAll();
-		} else if(agent.getRole() == Role.ADMIN) {
+		} else if(agent.getRole() == Role.AGENT) {
 			stores = storeMapper.findByAgentId(agent.getId());
 		} else {
 			Store store = storeMapper.findById(agent.getStoreId());

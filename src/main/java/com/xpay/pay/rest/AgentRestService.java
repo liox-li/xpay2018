@@ -244,6 +244,7 @@ public class AgentRestService extends AdminRestService {
 	public BaseResponse<List<StoreResponse>> getAgentStores(@PathVariable long id) {
 		validateAgent(id);
 		
+		this.getAgent().setId(id);
 		List<Store> stores = storeService.findByAgent(this.getAgent());
 		List<StoreResponse> storeResponses = new ArrayList<StoreResponse>();
 		for(Store store: stores) {
