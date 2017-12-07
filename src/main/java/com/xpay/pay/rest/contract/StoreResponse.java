@@ -10,7 +10,7 @@ public class StoreResponse {
 	private String code;
 	private String name;
 	private Float bailPercentage;
-	private long appId;
+	private Long appId;
 	private String csrTel;
 	private String proxyUrl;
 	private Float todayTradeAmount;
@@ -43,10 +43,10 @@ public class StoreResponse {
 	public void setBailPercentage(Float bailPercentage) {
 		this.bailPercentage = bailPercentage;
 	}
-	public long getAppId() {
+	public Long getAppId() {
 		return appId;
 	}
-	public void setAppId(long appId) {
+	public void setAppId(Long appId) {
 		this.appId = appId;
 	}
 	public String getCsrTel() {
