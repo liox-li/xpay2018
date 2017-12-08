@@ -1,5 +1,7 @@
 package com.xpay.pay.proxy.qftx.mp;
 
+import com.xpay.pay.cache.CacheManager;
+import com.xpay.pay.cache.ICache;
 import com.xpay.pay.exception.GatewayException;
 import com.xpay.pay.model.Bill;
 import com.xpay.pay.proxy.IPaymentProxy;
@@ -32,6 +34,9 @@ public class QftxMpProxy implements IPaymentProxy {
   private static final String baseEndpoint = config.getProperty("provider.endpoint");
   private static final String pathMpPay = config.getProperty("provider.mp.pay");
   private static final String pathQuery = config.getProperty("provider.query");
+  private static final String pathAuth = config.getProperty("provider.auth");
+  private static final ICache<String, String> tokenCache = CacheManager
+      .create(QftxMpProxy.class, 100);
   protected final Logger logger = LogManager.getLogger(QftxMpProxy.class);
 
   @Override
@@ -42,15 +47,31 @@ public class QftxMpProxy implements IPaymentProxy {
     mpRequest.setSign(sign);
     List<KeyValuePair> keyPairs = this.getKeyPairs(mpRequest);
     String xmlBody = XmlUtils.toXml(keyPairs);
-    String url = baseEndpoint + pathMpPay;
-    String result = HttpClient.doPost(url, xmlBody, DEFAULT_TIMEOUT);
     PaymentResponse paymentResponse = null;
     try {
+      String url = baseEndpoint + pathMpPay;
+      String token = getToken(appKeys[0], appKeys[1]);
+      String result = HttpClient.doPost(url+"?token="+token, xmlBody, DEFAULT_TIMEOUT);
       paymentResponse = toPaymentResponse(request, result);
     } catch (Exception e) {
       logger.error("ToPaymentResponse error", e);
     }
     return paymentResponse;
+  }
+
+  private String getToken(String appId, String secretid) throws Exception {
+    String key = appId + ":" + secretid;
+    String token = tokenCache.get(key);
+    if (token == null) {
+      String result = HttpClient
+          .doGet(baseEndpoint + pathAuth + "?appid=" + appId + "&secretid=" + secretid,
+              DEFAULT_TIMEOUT);
+      Map<String, String> params = XmlUtils.fromXml(result.getBytes(), "utf-8");
+      String expiredSeconds = params.get("token_expir_second");
+      token = params.get("token");
+      tokenCache.put(key, token, Long.valueOf(expiredSeconds));
+    }
+    return token;
   }
 
   private String[] getAppKeys(String extStoreNo) {
@@ -166,10 +187,11 @@ public class QftxMpProxy implements IPaymentProxy {
     List<KeyValuePair> keyPairs = this.getKeyPairs(mpRequest);
     String xmlBody = XmlUtils.toXml(keyPairs);
 
-    String url = baseEndpoint + pathQuery;
-    String result = HttpClient.doPost(url, xmlBody, DEFAULT_TIMEOUT);
     PaymentResponse paymentResponse = null;
     try {
+      String url = baseEndpoint + pathQuery;
+      String token = getToken(appKeys[0], appKeys[1]);
+      String result = HttpClient.doPost(url+"?token="+token, xmlBody, DEFAULT_TIMEOUT);
       paymentResponse = toPaymentResponse(result, appKeys[1]);
     } catch (Exception e) {
       logger.error("ToPaymentResponse error", e);
