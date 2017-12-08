@@ -43,7 +43,7 @@ public class AppConfig {
 
 	public static final AppConfig UPayConfig = new AppConfig(load("upay.config"));
 
-	public static final AppConfig QftxConfig = new AppConfig(load("qftx.config"));
+	public static final AppConfig QftxMpConfig = new AppConfig(load("qftxmp.config"));
 
 	public AppConfig(Properties properties) {
 		this.properties = properties;

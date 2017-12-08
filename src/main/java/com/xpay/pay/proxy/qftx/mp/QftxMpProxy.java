@@ -28,7 +28,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Component
 public class QftxMpProxy implements IPaymentProxy {
 
-  private static final AppConfig config = AppConfig.BaiFuConfig;
+  private static final AppConfig config = AppConfig.QftxMpConfig;
   private static final String baseEndpoint = config.getProperty("provider.endpoint");
   private static final String pathMpPay = config.getProperty("provider.mp.pay");
   private static final String pathQuery = config.getProperty("provider.query");
