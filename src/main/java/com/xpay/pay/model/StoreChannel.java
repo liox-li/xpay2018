@@ -123,8 +123,9 @@ public class StoreChannel {
 		BAIFU("trade.weixin.gzpay", "query", "unified.trade.refund"), 
 		JUZHEN("070201", "070101", ""), 
 		KEFU("msBank_WeChatPay", "msBank_ScanPayQuery", ""), 
-		KEKEPAY("pay","query","");
-		
+		KEKEPAY("pay","query",""),
+		QFTXMP("pay", "query", "");
+
 		String unifiedOrder;
 		String query;
 		String refund;
