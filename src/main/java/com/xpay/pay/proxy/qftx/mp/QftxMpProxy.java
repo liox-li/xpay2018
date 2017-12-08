@@ -32,7 +32,7 @@ public class QftxMpProxy implements IPaymentProxy {
   private static final String baseEndpoint = config.getProperty("provider.endpoint");
   private static final String pathMpPay = config.getProperty("provider.mp.pay");
   private static final String pathQuery = config.getProperty("provider.query");
-  protected final Logger logger = LogManager.getLogger("AccessLog");
+  protected final Logger logger = LogManager.getLogger(QftxMpProxy.class);
 
   @Override
   public PaymentResponse unifiedOrder(PaymentRequest request) {
