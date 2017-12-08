@@ -73,7 +73,7 @@
   <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.Store">
     insert into bill_store
     <trim prefix="(" suffix=")" suffixOverrides=",">
-     code, name, 
+     code, name, daily_limit,
      <if test="bar != null">
         bar,
       </if>
@@ -108,6 +108,7 @@
     <trim prefix="values (" suffix=")" suffixOverrides=",">
      	#{code,jdbcType=VARCHAR},
      	#{name,jdbcType=VARCHAR},
+     	#{dailyLimit,jdbcType=NUMERIC},
      	<if test="bar != null">
         	#{bar,jdbcType=NUMERIC},
         </if>

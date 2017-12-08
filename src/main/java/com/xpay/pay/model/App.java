@@ -3,7 +3,7 @@ package com.xpay.pay.model;
 import java.util.Date;
 
 public class App {
-	private int id;
+	private Long id;
 	private String key;
 	private String secret;
 	private String name;
@@ -11,10 +11,10 @@ public class App {
 	private Date updateDate;
 	private Long agentId;
 	
-	public int getId() {
+	public Long getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 	public String getKey() {

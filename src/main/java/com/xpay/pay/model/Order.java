@@ -2,13 +2,15 @@ package com.xpay.pay.model;
 
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.xpay.pay.proxy.IPaymentProxy.PayChannel;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 
 public class Order {
 	private long id;
 	private String orderNo;
-	private int appId;
+	private Long appId;
 	private long storeId;
 	private StoreChannel storeChannel;
 	private long storeChannelId;
@@ -46,10 +48,10 @@ public class Order {
 	public void setOrderNo(String orderNo) {
 		this.orderNo = orderNo;
 	}
-	public int getAppId() {
+	public Long getAppId() {
 		return appId;
 	}
-	public void setAppId(int appId) {
+	public void setAppId(Long appId) {
 		this.appId = appId;
 	}
 	public long getStoreId() {
@@ -216,5 +218,9 @@ public class Order {
 	
 	public boolean isRefundable() {
 		return OrderStatus.SUCCESS.equals(this.status) || OrderStatus.USERPAYING.equals(this.status);
+	}
+	
+	public boolean isRechargeOrder() {
+		return StringUtils.isNotBlank(this.orderNo) && this.orderNo.startsWith("S");
 	}
 }

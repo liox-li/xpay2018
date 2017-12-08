@@ -16,10 +16,21 @@ public class IDGenerator {
 	public static final String TimePatternDate = "yyyy-MM-dd";
 	public static final String TimePatternTime = "yyyy-MM-dd HH:mm:ss";
 	private static final char X = 'X';
+	private static final char S = 'S';
 
 	public static String buildOrderNo(int appId, long storeId) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(X);
+		sb.append(StringUtils.leftPad(String.valueOf(appId), 3, "0"));
+		sb.append(StringUtils.leftPad(String.valueOf(storeId), 4, "0"));
+		sb.append(formatNow(TimePattern17));
+		sb.append(randomNum(3));
+		return sb.toString();
+	}
+	
+	public static String buildRechargeOrderNo(int appId, long storeId) {
+		StringBuffer sb = new StringBuffer();
+		sb.append(S);
 		sb.append(StringUtils.leftPad(String.valueOf(appId), 3, "0"));
 		sb.append(StringUtils.leftPad(String.valueOf(storeId), 4, "0"));
 		sb.append(formatNow(TimePattern17));

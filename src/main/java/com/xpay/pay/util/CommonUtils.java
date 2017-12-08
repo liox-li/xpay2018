@@ -80,6 +80,13 @@ public class CommonUtils {
 		}
 	}
 	
+	public static int toInt(Long val) {
+		if(val == null || val > Integer.MAX_VALUE || val<Integer.MIN_VALUE) {
+			return 0;
+		}
+		return val.intValue();
+	}
+	
 	public static <E> boolean in(Collection<E> coll, E e) {
 		if(CollectionUtils.isEmpty(coll)) {
 			return false;

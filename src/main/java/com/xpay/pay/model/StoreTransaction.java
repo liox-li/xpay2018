@@ -1,13 +1,20 @@
 package com.xpay.pay.model;
 
+import java.util.Date;
+
+import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
+
 public class StoreTransaction {
 	private Long id;
 	private Long storeId;
+	private String orderNo;
 	private TransactionType operation;
 	private Long agentId;
 	private Float amount;
 	private Float quota;
 	private Float bailPercentage;
+	private OrderStatus status;
+	private Date createDate;
 	
 	public Long getId() {
 		return id;
@@ -23,6 +30,14 @@ public class StoreTransaction {
 
 	public void setStoreId(Long storeId) {
 		this.storeId = storeId;
+	}
+
+	public String getOrderNo() {
+		return orderNo;
+	}
+
+	public void setOrderNo(String orderNo) {
+		this.orderNo = orderNo;
 	}
 
 	public TransactionType getOperation() {
@@ -65,7 +80,23 @@ public class StoreTransaction {
 		this.bailPercentage = bailPercentage;
 	}
 
+	public OrderStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(OrderStatus status) {
+		this.status = status;
+	}
+
+	public Date getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
+
 	public static enum TransactionType {
-		INIT_FREE, RECHARGE, CONSUME, PROMOTE; 
+		INIT_FREE, RECHARGE, CONSUME, FREE, OFFLINE; 
 	}
 }

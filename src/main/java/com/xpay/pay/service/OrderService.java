@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.xpay.pay.dao.OrderMapper;
 import com.xpay.pay.exception.Assert;
+import com.xpay.pay.model.Agent;
 import com.xpay.pay.model.Order;
 import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
@@ -103,11 +104,11 @@ public class OrderService {
 		return orderMapper.findByStoreIdAndTime(store.getId(), startTime, thisEndTime);
 	}
 	
-	public List<Order> findByAgentIdAndTime(Long agentId, Date startTime, Date endTime) {
+	public List<Order> findByAgentAndTime(Agent agent, Date startTime, Date endTime) {
 		Assert.notNull(startTime, "Start time cant't be null");
 		
-		List<Store> stores = storeService.findByAgentId(agentId);
-		Assert.notEmpty(stores, String.format("No store found under agent - %s", agentId));
+		List<Store> stores = storeService.findByAgent(agent);
+		Assert.notEmpty(stores, String.format("No store found under agent - %s", agent.getId()));
 		
 		List<Order> result = new ArrayList<Order>();
 		for(Store store: stores) {

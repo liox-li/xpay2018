@@ -2,6 +2,7 @@ package com.xpay.pay.rest.contract;
 
 import java.util.List;
 
+import com.xpay.pay.model.App;
 import com.xpay.pay.model.StoreChannel;
 
 public class StoreResponse {
@@ -9,12 +10,14 @@ public class StoreResponse {
 	private String code;
 	private String name;
 	private Float bailPercentage;
-	private long appId;
+	private Long appId;
 	private String csrTel;
 	private String proxyUrl;
 	private Float todayTradeAmount;
 	private Long dailyLimit;
 	private Float quota;
+	private Long agentId;
+	private App app;
 	private List<StoreChannel> channels;
 	public long getId() {
 		return id;
@@ -40,10 +43,10 @@ public class StoreResponse {
 	public void setBailPercentage(Float bailPercentage) {
 		this.bailPercentage = bailPercentage;
 	}
-	public long getAppId() {
+	public Long getAppId() {
 		return appId;
 	}
-	public void setAppId(long appId) {
+	public void setAppId(Long appId) {
 		this.appId = appId;
 	}
 	public String getCsrTel() {
@@ -75,6 +78,19 @@ public class StoreResponse {
 	}
 	public void setQuota(Float quota) {
 		this.quota = quota;
+	}
+	
+	public Long getAgentId() {
+		return agentId;
+	}
+	public void setAgentId(Long agentId) {
+		this.agentId = agentId;
+	}
+	public App getApp() {
+		return app;
+	}
+	public void setApp(App app) {
+		this.app = app;
 	}
 	public List<StoreChannel> getChannels() {
 		return channels;

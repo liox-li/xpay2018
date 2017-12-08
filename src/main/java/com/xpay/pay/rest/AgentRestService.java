@@ -16,24 +16,34 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.xpay.pay.ApplicationConstants;
+import com.xpay.pay.exception.ApplicationException;
 import com.xpay.pay.exception.Assert;
+import com.xpay.pay.exception.GatewayException;
 import com.xpay.pay.model.Agent;
 import com.xpay.pay.model.Agent.Role;
 import com.xpay.pay.model.App;
+import com.xpay.pay.model.Bill;
 import com.xpay.pay.model.Order;
 import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
+import com.xpay.pay.model.StoreTransaction;
+import com.xpay.pay.model.StoreTransaction.TransactionType;
 import com.xpay.pay.rest.contract.BaseResponse;
 import com.xpay.pay.rest.contract.CreateAppRequest;
+import com.xpay.pay.rest.contract.CreateStoreChannelRequest;
 import com.xpay.pay.rest.contract.CreateStoreRequest;
 import com.xpay.pay.rest.contract.LoginRequest;
 import com.xpay.pay.rest.contract.RechargeRequest;
+import com.xpay.pay.rest.contract.RechargeResponse;
 import com.xpay.pay.rest.contract.StoreResponse;
 import com.xpay.pay.rest.contract.UpdateStoreChannelRequest;
 import com.xpay.pay.rest.contract.UpdateStoreChannelResponse;
+import com.xpay.pay.service.AgentService;
 import com.xpay.pay.service.AppService;
 import com.xpay.pay.service.OrderService;
+import com.xpay.pay.service.PaymentService;
 import com.xpay.pay.service.StoreService;
+import com.xpay.pay.util.IDGenerator;
 import com.xpay.pay.util.TimeUtils;
 
 @CrossOrigin(maxAge = 3600)
@@ -45,6 +55,10 @@ public class AgentRestService extends AdminRestService {
 	private StoreService storeService;
 	@Autowired
 	private OrderService orderService;
+	@Autowired
+	private PaymentService paymentService;
+	@Autowired
+	private AgentService agentService;
 	
 	@RequestMapping(value = "/agents", method = RequestMethod.GET)
 	public BaseResponse<List<Agent>> findAll() {
@@ -82,15 +96,27 @@ public class AgentRestService extends AdminRestService {
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	public BaseResponse<Agent> createAccount(@PathVariable long id,
 			@RequestBody(required = false) Agent agent) {
-		validateAgent(id);
-		this.assertNotStore();
+		this.assertAdmin();
 		
 		Assert.notNull(agent, "Create account body can not be null");
 		Assert.isTrue(StringUtils.isNoneBlank(agent.getAccount(), agent.getPassword(),agent.getName()), "Account name and password can not be null");
+		if(agent.getRole() == null) {
+			agent.setRole(Role.STORE);
+		}
+		
+		Assert.isTrue(agent.getRole() == Role.STORE || agent.getRole() == Role.AGENT, "Agent or Store role are supported");
+		
+		if(agent.getRole() == Role.STORE) {
+			Assert.notNull(agent.getStoreId(), "Store is must for a store admin");
+		}
 		
 		Agent dbAgent = agentService.findByAccount(agent.getAccount());
 		Assert.isTrue(dbAgent == null, String.format("Account already exit - %s", agent.getAccount()));
-		agent.setAgentId(id);
+
+		if(agent.getAgentId()==null) {
+			agent.setAgentId(id);
+		}
+		
 		agentService.createAccount(agent);
 		
 		BaseResponse<Agent> response = new BaseResponse<Agent>();
@@ -102,7 +128,7 @@ public class AgentRestService extends AdminRestService {
 	@RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
 	public BaseResponse<Agent> updateAccount(@PathVariable long id,
 			@RequestBody(required = false) Agent agent) {
-		validateAgent(id);
+		this.assertAdmin();
 		
 		Assert.notNull(agent, "Update account body can not be null");
 		Assert.isTrue(StringUtils.isNotBlank(agent.getAccount()), "Account name to be updated can not be null");
@@ -145,12 +171,17 @@ public class AgentRestService extends AdminRestService {
 	@RequestMapping(value = "/{id}/apps", method = RequestMethod.PUT)
 	public BaseResponse<App> createAgentApp(@PathVariable long id, 
 			@RequestBody(required = true) CreateAppRequest request) {
-		validateAgent(id);
-		this.assertNotStore();
+		this.assertAdmin();
+		
 		Assert.notNull(request, "Create app request body can't be null");
 		Assert.notNull(request.getName(), "App name can't be null");
 		
-		App app = appService.createApp(id, request.getName());
+		Long agentId = id;
+		if(request.getAgentId()!=null) {
+			agentId = request.getAgentId();
+		}
+		
+		App app = appService.createApp(agentId, request.getName());
 		BaseResponse<App> response = new BaseResponse<App>();
 		response.setData(app);
 		
@@ -171,10 +202,23 @@ public class AgentRestService extends AdminRestService {
 	
 	@RequestMapping(value = "/{id}/channels", method = RequestMethod.PUT)
 	public BaseResponse<StoreChannel> createAgentChannel(@PathVariable long id,
-			@RequestBody(required = true)StoreChannel channel) {
-		validateAgent(id);
+			@RequestBody(required = true)CreateStoreChannelRequest request) {
+		this.assertAdmin();
 		
-		channel.setAgentId(id);
+		Assert.isTrue(StringUtils.isNoneBlank(request.getExtStoreId(), request.getExtStoreName()), "ExtStoreId and name can't be null");
+		Assert.notNull(request.getPaymentGateway(), "Payment gateway is must");
+		
+		Long agentId = id;
+		if(request.getAgentId()!=null) {
+			agentId = request.getAgentId();
+		}
+		StoreChannel channel = new StoreChannel();
+		channel.setAgentId(agentId);
+		channel.setExtStoreId(request.getExtStoreId());
+		channel.setExtStoreName(request.getExtStoreName());
+		channel.setChannelProps(request.getChinaUmsProps());
+		channel.setPaymentGateway(request.getPaymentGateway());
+	
 		storeService.createStoreChannel(channel);
 		BaseResponse<StoreChannel> response = new BaseResponse<StoreChannel>();
 		response.setData(channel);
@@ -184,7 +228,7 @@ public class AgentRestService extends AdminRestService {
 	
 	@RequestMapping(value = "/{id}/channels/{channelId}", method = RequestMethod.DELETE)
 	public BaseResponse<Boolean> deleteAgentChannel(@PathVariable long id, @PathVariable long channelId) {
-		validateAgent(id);
+		this.assertAdmin();
 		
 		StoreChannel channel = storeService.findStoreChannelById(channelId);
 		Assert.notNull(channel, String.format("Channel not found, channelId: %s, agentId: %s", channelId, id));
@@ -198,7 +242,10 @@ public class AgentRestService extends AdminRestService {
 	public BaseResponse<List<StoreResponse>> getAgentStores(@PathVariable long id) {
 		validateAgent(id);
 		
-		List<Store> stores = storeService.findByAgentId(id);
+		Agent agent = agentService.findById(id);
+		Assert.notNull(agent, String.format("Agent not found, %s", id));
+		
+		List<Store> stores = storeService.findByAgent(agent);
 		List<StoreResponse> storeResponses = new ArrayList<StoreResponse>();
 		for(Store store: stores) {
 			StoreResponse storeResponse = toStoreResponse(store);
@@ -212,16 +259,34 @@ public class AgentRestService extends AdminRestService {
 		return response;
 	}
 	
+	@RequestMapping(value = "/{id}/stores/{storeId}", method = RequestMethod.GET)
+	public BaseResponse<StoreResponse> getAgentStores(@PathVariable long id, @PathVariable long storeId) {
+		validateAgent(id);
+		
+		Store store = storeService.findById(storeId);
+		StoreResponse storeResponse = toStoreResponse(store);
+		storeResponse.setApp(appService.findById(store.getAppId()));
+		BaseResponse<StoreResponse> response = new BaseResponse<StoreResponse>();
+		response.setData(storeResponse);
+		
+		return response;
+	}
+	
 	@RequestMapping(value = "/{id}/stores", method = RequestMethod.PUT)
 	public BaseResponse<StoreResponse> createAgentStore(@PathVariable long id, 
 			@RequestBody(required = true) CreateStoreRequest request) {
-		validateAgent(id);
-		this.assertNotStore();
+		this.assertAdmin();
+		
 		Assert.notNull(request, "Create store request body can't be null");
 		Assert.notNull(request.getName(), "Store name can't be null");
 		Assert.notNull(request.getAppId(), "AppId cant' be null");
 		
-		Store store = storeService.createStore(id, request.getName(), request.getBailPercentage(), request.getAppId(), request.getCsrTel(), request.getProxyUrl(), request.getDailyLimit());
+		Long agentId = request.getAgentId();
+		if(agentId == null) {
+			agentId = id;
+		}
+		
+		Store store = storeService.createStore(agentId, request.getName(), request.getBailPercentage(), request.getAppId(), request.getCsrTel(), request.getProxyUrl(), request.getDailyLimit());
 		StoreResponse storeResponse = toStoreResponse(store);
 		BaseResponse<StoreResponse> response = new BaseResponse<StoreResponse>();
 		response.setData(storeResponse);
@@ -232,9 +297,9 @@ public class AgentRestService extends AdminRestService {
 	public BaseResponse<StoreResponse> updateAgentStore(@PathVariable long id, 
 			@PathVariable long storeId, 
 			@RequestBody(required = true) CreateStoreRequest request) {
-		validateAgent(id);
+		this.assertAdmin();
 		
-		Store store = storeService.updateStore(storeId, request.getName(), request.getBailPercentage(), request.getAppId(), request.getCsrTel(), request.getProxyUrl(), request.getDailyLimit());
+		Store store = storeService.updateStore(storeId, request.getAgentId(), request.getName(), request.getBailPercentage(), request.getAppId(), request.getCsrTel(), request.getProxyUrl(), request.getDailyLimit());
 		StoreResponse storeResponse = toStoreResponse(store);
 		BaseResponse<StoreResponse> response = new BaseResponse<StoreResponse>();
 		response.setData(storeResponse);
@@ -245,29 +310,97 @@ public class AgentRestService extends AdminRestService {
 	public BaseResponse<StoreResponse> newQuota(@PathVariable long id, 
 			@PathVariable long storeId,
 			@RequestBody(required = true) RechargeRequest request) {
-		validateAgent(id);
 		this.assertAdmin();
 		
-		Assert.isTrue(request!=null && request.getQuota()>=2000f, "Quota amount must be greater than 2000");
-		
-		Store store = storeService.newQuota(id, storeId, request.getQuota());
+		Assert.isTrue(request!=null && request.getAmount()>=10f, "Amount must be greater than 10");
+		if(request.getTransactionType() == null) {
+			request.setTransactionType(TransactionType.FREE);
+		}
+ 		Store store = storeService.newQuota(id, storeId, request.getAmount(), request.getTransactionType());
 		StoreResponse storeResponse = toStoreResponse(store);
 		BaseResponse<StoreResponse> response = new BaseResponse<StoreResponse>();
 		response.setData(storeResponse);
 		return response;
 	}
 	
-	@RequestMapping(value = "/{id}/stores/{storeId}/recharge", method = RequestMethod.POST)
-	public BaseResponse<StoreResponse> recharge(@PathVariable long id, 
+	private static final String subject = "纳优游戏充值";
+	private static final long BAIL_STORE_ID=1;
+	@RequestMapping(value = "/{id}/stores/{storeId}/recharge_order", method = RequestMethod.POST)
+	public BaseResponse<RechargeResponse> placeOrder(@PathVariable long id, 
 			@PathVariable long storeId,
 			@RequestBody(required = true) RechargeRequest request) {
 		validateAgent(id);
 		Assert.isTrue(request!=null && request.getAmount()>=100f, "Recharge amount must be greater than 100");
 		
-		Store store = storeService.recharge(id, storeId, request.getAmount());
-		StoreResponse storeResponse = toStoreResponse(store);
-		BaseResponse<StoreResponse> response = new BaseResponse<StoreResponse>();
-		response.setData(storeResponse);
+		Store store = storeService.findById(BAIL_STORE_ID);
+		Long appId = store.getAppId();
+		String orderNo = IDGenerator.buildRechargeOrderNo(appId.intValue(), storeId);
+		App app = appService.findById(appId);
+		
+		
+		Order order = paymentService.createOrder(app, orderNo, store, request.getChannel(), null, "127.0.0.1", request.getAmount(), IDGenerator.formatTime(new Date(), IDGenerator.TimePattern14), "", null, null, null, subject, null);
+		Assert.notNull(order,"Create order failed");
+		Bill bill = null;
+		BaseResponse<RechargeResponse> response = new BaseResponse<RechargeResponse>();
+		try {
+			bill = paymentService.unifiedOrder(order);
+			if(bill!=null) {
+				StoreTransaction transaction = storeService.rechargeOrder(id, storeId, request.getAmount(),orderNo);
+				
+				RechargeResponse rechargeResponse = new RechargeResponse();
+				rechargeResponse.setTransactionId(transaction.getId());
+				rechargeResponse.setCodeUrl(bill.getCodeUrl());
+				response.setData(rechargeResponse);
+			}
+		} catch (GatewayException e) {
+			response.setStatus(ApplicationConstants.STATUS_BAD_GATEWAY);
+			response.setCode(e.getCode());
+			response.setMessage(e.getMessage());
+		} catch (ApplicationException e) {
+			response.setStatus(ApplicationConstants.STATUS_INTERNAL_SERVER_ERROR);
+			response.setCode(e.getCode());
+			response.setMessage(e.getMessage());
+		} finally {
+			paymentService.updateBill(order, bill);
+		}
+		return response;
+	}
+	
+	@RequestMapping(value = "/{id}/transactions/{transactionId}", method = RequestMethod.GET)
+	public BaseResponse<StoreTransaction> listTransaction(@PathVariable long id, 
+			@PathVariable  Long transactionId) {
+		validateAgent(id);
+		
+		StoreTransaction transactions = storeService.findTransactionById(transactionId);
+		BaseResponse<StoreTransaction> response = new BaseResponse<StoreTransaction>();
+		response.setData(transactions);
+		return response;
+	}
+	
+	@RequestMapping(value = "/{id}/transactions", method = RequestMethod.GET)
+	public BaseResponse<List<StoreTransaction>> listTransactions(@PathVariable long id, 
+			@RequestParam(required = false) Long storeId,
+			@RequestParam(required = false) String startDate,
+			@RequestParam(required = false) String endDate) {
+		validateAgent(id);
+		
+		Date startTime = TimeUtils.parseTime(startDate, TimeUtils.TimePatternDate);
+		startTime = startTime == null?TimeUtils.beginOfDay(new Date()): startTime;
+		Date endTime = TimeUtils.parseTime(endDate, TimeUtils.TimePatternDate);
+		endTime = endTime == null?new Date(): TimeUtils.endOfDay(endTime);
+
+		List<StoreTransaction> transactions = new ArrayList<StoreTransaction>();
+		if(storeId!=null) {
+			transactions = storeService.findTransactionsByStoreId(storeId, startTime, endTime);
+		} else {
+			transactions = storeService.findTransactionsByAgentId(id, startTime, endTime);
+		}
+		
+		BaseResponse<List<StoreTransaction>> response = new BaseResponse<List<StoreTransaction>>();
+		if(CollectionUtils.isNotEmpty(transactions)) {
+			response.setCount(transactions.size());
+		}
+		response.setData(transactions);
 		return response;
 	}
 	
@@ -275,7 +408,7 @@ public class AgentRestService extends AdminRestService {
 	public BaseResponse<UpdateStoreChannelResponse> updateStoreChannels(@PathVariable long id, 
 			@PathVariable long storeId,
 			@RequestBody(required = true) UpdateStoreChannelRequest request) {
-		validateAgent(id);
+		this.assertAdmin();
 		
 		storeService.updateStoreChannels(storeId, request.getChannels());
 		UpdateStoreChannelResponse updateStoreChannelResponse = new UpdateStoreChannelResponse();
@@ -302,7 +435,10 @@ public class AgentRestService extends AdminRestService {
 		
 		List<Order> orders = null;
 		if(StringUtils.isBlank(storeId)) {
-			orders = orderService.findByAgentIdAndTime(id, startTime, endTime);
+			Agent agent = agentService.findById(id);
+			Assert.notNull(agent, String.format("Agent not found, %s", id));
+
+			orders = orderService.findByAgentAndTime(agent, startTime, endTime);
 		} else {
 			orders = orderService.findByStoreIdAndTime(storeId, startTime, endTime);
 		}
@@ -317,19 +453,11 @@ public class AgentRestService extends AdminRestService {
 	
 	private void validateAgent(long agentId) {
 		Agent agent = this.getAgent();
-		Assert.isTrue(agentId == agent.getId(), ApplicationConstants.STATUS_UNAUTHORIZED, "401", "Unauthorized request");
+		Assert.isTrue(agent.getId()<=10 || agentId == agent.getId(), ApplicationConstants.STATUS_UNAUTHORIZED, "401", "Unauthorized request");
 	}
 	
 	private void assertAdmin() {
 		Assert.isTrue(this.getAgent().getId()<=10, ApplicationConstants.STATUS_UNAUTHORIZED, "401", "Unauthorized request");
-	}
-	
-	private void assertNotStore() {
-		Assert.isTrue(this.getAgent().getRole()!=Role.STORE, ApplicationConstants.STATUS_UNAUTHORIZED, "401", "Unauthorized request");
-	}
-	
-	private void assertNotAgent() {
-		Assert.isTrue(this.getAgent().getRole()!=Role.AGENT, ApplicationConstants.STATUS_UNAUTHORIZED, "401", "Unauthorized request");
 	}
 	
 	private void assertGeneral(Long agentId, Agent agent) {
@@ -348,6 +476,8 @@ public class AgentRestService extends AdminRestService {
 		storeResponse.setDailyLimit(store.getDailyLimit());
 		storeResponse.setTodayTradeAmount(store.getNonBail());
 		storeResponse.setQuota(store.getQuota());
+		storeResponse.setAgentId(store.getAgentId());
+		storeResponse.setChannels(store.getChannels());
 		return storeResponse;
 	}
 }

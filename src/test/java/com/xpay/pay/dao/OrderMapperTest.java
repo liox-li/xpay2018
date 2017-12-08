@@ -20,7 +20,7 @@ public class OrderMapperTest extends BaseSpringJunitTest {
 	public void testInsert() {
 		Order order = new Order();
 		order.setOrderNo("123");
-		order.setAppId(10);
+		order.setAppId(10L);
 		order.setStoreId(100);
 		order.setStoreChannelId(100);
 		order.setTotalFee(0.01f);

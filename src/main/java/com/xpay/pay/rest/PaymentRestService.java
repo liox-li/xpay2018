@@ -95,7 +95,7 @@ public class PaymentRestService extends AuthRestService {
 		
 
 		App app = getApp();
-		String orderNo = IDGenerator.buildOrderNo(app.getId(), store.getId());
+		String orderNo = IDGenerator.buildOrderNo(app.getId().intValue(), store.getId());
 		BaseResponse<OrderResponse> response = new BaseResponse<OrderResponse>();
 		Order order = null;
 		Bill bill = null;

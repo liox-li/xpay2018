@@ -104,7 +104,7 @@ public class PaymentService {
 		return true;
 	}
 	
-	public Bill query(int appId, String orderNo, String storeCode, boolean isCsr) {
+	public Bill query(Long appId, String orderNo, String storeCode, boolean isCsr) {
 		Order order = orderService.findActiveByOrderNo(orderNo);
 		Assert.isTrue(storeCode.equals(order.getStore().getCode()), "No such order found for the store");
 		Assert.isTrue(appId == order.getAppId(), "No such order found under the app");
@@ -131,10 +131,11 @@ public class PaymentService {
 		return toBill(order);
 	}
 	
-	public Bill refund(int appId, String orderNo, String storeCode, boolean isCsr) {
+	public Bill refund(Long appId, String orderNo, String storeCode, boolean isCsr) {
 		Order order = orderService.findActiveByOrderNo(orderNo);
 		Assert.isTrue(storeCode.equals(order.getStore().getCode()), "No such order found for the store");
 		Assert.isTrue(appId == order.getAppId(), "No such order found under the app");
+		Assert.isTrue(!order.isRechargeOrder(), "Recharge order can't be refunded");
 		
 		if(isCsr || (order.isRefundable()  && CommonUtils.isWithinHours(order.getOrderTime(), IDGenerator.TimePattern14, 24))) {
 			PaymentRequest paymentRequest = toQueryRequest(order);
@@ -159,6 +160,7 @@ public class PaymentService {
 	public PaymentRequest toPaymentRequest(Order order) {
 		PaymentRequest request = new PaymentRequest();
 		request.setExtStoreId(order.getStoreChannel().getExtStoreId());
+		request.setChannelProps(order.getStoreChannel().getChannelProps());
 		String deviceId = order.getDeviceId();
 		deviceId = StringUtils.isBlank(deviceId)?order.getIp():deviceId;
 		request.setDeviceId(deviceId);
@@ -207,8 +209,10 @@ public class PaymentService {
 			request.setGatewayOrderNo(order.getExtOrderNo());
 		}
 		request.setExtStoreId(order.getStoreChannel().getExtStoreId());
+		request.setChannelProps(order.getStoreChannel().getChannelProps());
 		request.setPayChannel(order.getPayChannel());
 		request.setOrderNo(order.getOrderNo());
+		
 		return request;
 	}
 

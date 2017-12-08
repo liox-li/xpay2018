@@ -7,6 +7,7 @@ public class CreateStoreRequest {
 	private String csrTel;
 	private String proxyUrl;
 	private Long dailyLimit;
+	private Long agentId;
 	
 	public String getName() {
 		return name;
@@ -44,4 +45,11 @@ public class CreateStoreRequest {
 	public void setDailyLimit(Long dailyLimit) {
 		this.dailyLimit = dailyLimit;
 	}
+	public Long getAgentId() {
+		return agentId;
+	}
+	public void setAgentId(Long agentId) {
+		this.agentId = agentId;
+	}
+	
 }

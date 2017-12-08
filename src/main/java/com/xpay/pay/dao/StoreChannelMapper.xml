@@ -8,6 +8,7 @@
     <result column="ext_store_name" jdbcType="VARCHAR" property="extStoreName" />
     <result column="payment_gateway" jdbcType="VARCHAR" property="paymentGateway" />
     <result column="agent_id" jdbcType="BIGINT" property="agentId" />
+    <result column="props" jdbcType="VARCHAR" property="props" />
     <result column="update_date" jdbcType="VARCHAR" property="updateDate" />
   </resultMap>
   
@@ -17,6 +18,7 @@
     ext_store_name,
     payment_gateway,
     agent_id,
+    props,
     update_date
   </sql>
 
@@ -44,17 +46,23 @@
   <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.StoreChannel">
     insert into bill_store_channel
     <trim prefix="(" suffix=")" suffixOverrides=",">
-     ext_store_id, ext_store_name, payment_gateway, agent_id
+     ext_store_id, ext_store_name, payment_gateway, agent_id,
+     <if test="props != null">
+     	props,
+     </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
      	#{extStoreId,jdbcType=VARCHAR},
      	#{extStoreName,jdbcType=VARCHAR},
      	#{paymentGateway,jdbcType=VARCHAR},
-     	#{agentId,jdbcType=BIGINT}
+     	#{agentId,jdbcType=BIGINT},
+     	<if test="props != null">
+     		#{props,jdbcType=VARCHAR},
+     	</if>
     </trim>
   </insert>
   
-   <update id="updateById" parameterType="com.xpay.pay.model.StoreChannel">
+  <update id="updateById" parameterType="com.xpay.pay.model.StoreChannel">
     update bill_store_channel
      <set>
       <if test="extStoreId != null">
@@ -62,6 +70,9 @@
       </if>
       <if test="paymentGateway != null">
        payment_gateway =  #{paymentGateway,jdbcType=VARCHAR},
+      </if>
+       <if test="props != null">
+       props =  #{props,jdbcType=VARCHAR},
       </if>
       update_date = now()
     </set>

@@ -20,6 +20,8 @@ import org.springframework.web.client.RestTemplate;
 
 import com.xpay.pay.exception.GatewayException;
 import com.xpay.pay.model.Bill;
+import com.xpay.pay.model.StoreChannel.ChannelProps;
+import com.xpay.pay.model.StoreChannel.ChinaUmsProps;
 import com.xpay.pay.proxy.IPaymentProxy;
 import com.xpay.pay.proxy.PaymentRequest;
 import com.xpay.pay.proxy.PaymentResponse;
@@ -38,10 +40,10 @@ public class ChinaUmsH5Proxy implements IPaymentProxy {
 	private static final AppConfig config = AppConfig.ChinaUmsH5Config;
 	private static final String baseEndpoint = config.getProperty("provider.endpoint");
 	private static final String jsPayEndpoint = config.getProperty("provider.jspay.endpoint");
-	private static final String appId = config.getProperty("provider.app.id");
-	private static final String appSecret = config.getProperty("provider.app.secret");
-	private static final String appName = config.getProperty("provider.app.name");
-	private static final String tId = config.getProperty("provider.tid");
+	private static final String msgSrcId = config.getProperty("provider.app.id");
+	private static final String signKey = config.getProperty("provider.app.secret");
+	private static final String msgSrc = config.getProperty("provider.app.name");
+	private static final String tid = config.getProperty("provider.tid");
 	private static final String instMid = config.getProperty("provider.inst.mid");
 
 	@Autowired
@@ -55,7 +57,7 @@ public class ChinaUmsH5Proxy implements IPaymentProxy {
 		Bill bill = new Bill();
 		bill.setCodeUrl(url);
 		bill.setOrderStatus(OrderStatus.NOTPAY);
-		bill.setGatewayOrderNo(IDGenerator.buildQrCode(appId));
+		bill.setGatewayOrderNo(IDGenerator.buildQrCode(this.getMsgSrcId(request.getChannelProps())));
 		response.setBill(bill);
 		return response;
 	}
@@ -63,7 +65,7 @@ public class ChinaUmsH5Proxy implements IPaymentProxy {
 	public String getJsUrl(PaymentRequest request) {
 		ChinaUmsH5Request chinaUmsH5Request = this.toChinaUmsH5Request(CHINAUMSH5.UnifiedOrder(), request);
 		List<KeyValuePair> keyPairs = this.getKeyPairs(chinaUmsH5Request);
-		String sign = CryptoUtils.signQueryParams(keyPairs, null, appSecret);
+		String sign = CryptoUtils.signQueryParams(keyPairs, null, this.getSignKey(request.getChannelProps()));
 		String queryParams = CommonUtils.buildQueryParams(keyPairs, "sign", sign, "orderDesc");
 		String jsUrl = jsPayEndpoint + queryParams;
 		logger.info("Redirect to: " + jsUrl);
@@ -79,7 +81,7 @@ public class ChinaUmsH5Proxy implements IPaymentProxy {
 			ChinaUmsH5Request chinaUmsH5Request = this.toChinaUmsH5Request(CHINAUMSH5.Query(),request);
 			
 			List<KeyValuePair> keyPairs = this.getKeyPairs(chinaUmsH5Request);
-			String sign = CryptoUtils.signQueryParams(keyPairs, null, appSecret);
+			String sign = CryptoUtils.signQueryParams(keyPairs, null, this.getSignKey(request.getChannelProps()));
 			chinaUmsH5Request.setSign(sign);
 			logger.info("query POST: " + url+", body "+JsonUtils.toJson(chinaUmsH5Request));
 			HttpHeaders headers = new HttpHeaders();
@@ -105,7 +107,7 @@ public class ChinaUmsH5Proxy implements IPaymentProxy {
 			ChinaUmsH5Request chinaUmsH5Request = this.toChinaUmsH5Request(CHINAUMSH5.Refund(),request);
 			chinaUmsH5Request.setRefundAmount(chinaUmsH5Request.getTotalAmount());
 			List<KeyValuePair> keyPairs = this.getKeyPairs(chinaUmsH5Request);
-			String sign = CryptoUtils.signQueryParams(keyPairs, null, appSecret);
+			String sign = CryptoUtils.signQueryParams(keyPairs, null, this.getSignKey(request.getChannelProps()));
 			chinaUmsH5Request.setSign(sign);
 			logger.info("refund POST: " + url+", body "+JsonUtils.toJson(chinaUmsH5Request));
 			
@@ -174,14 +176,14 @@ public class ChinaUmsH5Proxy implements IPaymentProxy {
 	
 	private ChinaUmsH5Request toChinaUmsH5Request(String method, PaymentRequest request) {
 		ChinaUmsH5Request chinaUmsH5Request = new ChinaUmsH5Request();
-		chinaUmsH5Request.setMsgSrc(appName);
+		chinaUmsH5Request.setMsgSrc(this.getMsgSrc(request.getChannelProps()));
 		chinaUmsH5Request.setMsgType(method);
 		chinaUmsH5Request.setRequestTimestamp(IDGenerator.formatTime());
 		chinaUmsH5Request.setMerOrderId(request.getGatewayOrderNo());
 		String[] strArrays = request.getExtStoreId().split(",");
 		if(strArrays.length==1) {
 			chinaUmsH5Request.setMid(request.getExtStoreId());
-			chinaUmsH5Request.setTid(tId);
+			chinaUmsH5Request.setTid(this.getTid(request.getChannelProps()));
 		} else {
 			chinaUmsH5Request.setMid(strArrays[0]);
 			chinaUmsH5Request.setTid(strArrays[1]);
@@ -213,6 +215,38 @@ public class ChinaUmsH5Proxy implements IPaymentProxy {
 		bill.setOrderStatus(toOrderStatus(chinaUmsResponse.getStatus()));
 		response.setBill(bill);
 		return response;
+	}
+	
+	private String getMsgSrcId(ChannelProps props) {
+		ChinaUmsProps chinaUmsProps = (ChinaUmsProps)props;
+		if(props!=null) {
+			return chinaUmsProps.getMsgSrcId();
+		}
+		return msgSrcId;
+	}
+	
+	private String getMsgSrc(ChannelProps props) {
+		ChinaUmsProps chinaUmsProps = (ChinaUmsProps)props;
+		if(props!=null) {
+			return chinaUmsProps.getMsgSrc();
+		}
+		return msgSrc;
+	}
+	
+	private String getTid(ChannelProps props) {
+		ChinaUmsProps chinaUmsProps = (ChinaUmsProps)props;
+		if(props!=null) {
+			return chinaUmsProps.getTid();
+		}
+		return tid;
+	}
+
+	private String getSignKey(ChannelProps props) {
+		ChinaUmsProps chinaUmsProps = (ChinaUmsProps)props;
+		if(props!=null) {
+			return chinaUmsProps.getSignKey();
+		}
+		return signKey;
 	}
 	
 	public static OrderStatus toOrderStatus(String billStatus) {
