@@ -29,8 +29,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class QftxMpProxy implements IPaymentProxy {
 
   private static final AppConfig config = AppConfig.BaiFuConfig;
-  public static final String appId = config.getProperty("provider.app.id");
-  public static final String appSecret = config.getProperty("provider.app.secret");
   private static final String baseEndpoint = config.getProperty("provider.endpoint");
   private static final String pathMpPay = config.getProperty("provider.mp.pay");
   private static final String pathQuery = config.getProperty("provider.query");
@@ -38,8 +36,9 @@ public class QftxMpProxy implements IPaymentProxy {
 
   @Override
   public PaymentResponse unifiedOrder(PaymentRequest request) {
-    MpRequest mpRequest = this.toMpRequest(request);
-    String sign = signature(mpRequest, appSecret);
+    String[] appKeys = getAppKeys(request.getExtStoreId());
+    MpRequest mpRequest = this.toMpRequest(request, appKeys[0]);
+    String sign = signature(mpRequest, appKeys[1]);
     mpRequest.setSign(sign);
     List<KeyValuePair> keyPairs = this.getKeyPairs(mpRequest);
     String xmlBody = XmlUtils.toXml(keyPairs);
@@ -54,9 +53,14 @@ public class QftxMpProxy implements IPaymentProxy {
     return paymentResponse;
   }
 
+  private String[] getAppKeys(String extStoreNo) {
+    return extStoreNo.split(",");
+  }
+
   private PaymentResponse toPaymentResponse(PaymentRequest request, String result)
       throws Exception {
     logger.info("response:" + result);
+    String[] appKeys = getAppKeys(request.getExtStoreId());
     Map<String, String> params = XmlUtils.fromXml(result.getBytes(), "utf-8");
     if (!PaymentResponse.SUCCESS.equals(params.get("status"))) {
       String code = params.get("status");
@@ -64,7 +68,7 @@ public class QftxMpProxy implements IPaymentProxy {
       msg = StringUtils.isBlank(msg) ? params.get("message") : msg;
       throw new GatewayException(code, msg);
     }
-    boolean checkSign = CryptoUtils.checkSignature(params, appSecret, "sign", "key");
+    boolean checkSign = CryptoUtils.checkSignature(params, appKeys[1], "sign", "key");
 
     if (!checkSign || !PaymentResponse.SUCCESS.equals(params.get("result_code"))) {
       String code = params.get("result_code");
@@ -82,7 +86,7 @@ public class QftxMpProxy implements IPaymentProxy {
     return response;
   }
 
-  private MpRequest toMpRequest(PaymentRequest paymentRequest) {
+  private MpRequest toMpRequest(PaymentRequest paymentRequest, String appId) {
     MpRequest mpRequest = new MpRequest();
     mpRequest.setMch_id(appId);
     mpRequest.setOut_trade_no(paymentRequest.getOrderNo());
@@ -155,8 +159,9 @@ public class QftxMpProxy implements IPaymentProxy {
 
   @Override
   public PaymentResponse query(PaymentRequest request) {
-    MpRequest mpRequest = this.toMpRequest(request);
-    String sign = signature(mpRequest, appSecret);
+    String[] appKeys = getAppKeys(request.getExtStoreId());
+    MpRequest mpRequest = this.toMpRequest(request, appKeys[0]);
+    String sign = signature(mpRequest, appKeys[1]);
     mpRequest.setSign(sign);
     List<KeyValuePair> keyPairs = this.getKeyPairs(mpRequest);
     String xmlBody = XmlUtils.toXml(keyPairs);
@@ -165,14 +170,14 @@ public class QftxMpProxy implements IPaymentProxy {
     String result = HttpClient.doPost(url, xmlBody, DEFAULT_TIMEOUT);
     PaymentResponse paymentResponse = null;
     try {
-      paymentResponse = toPaymentResponse(result);
+      paymentResponse = toPaymentResponse(result, appKeys[1]);
     } catch (Exception e) {
       logger.error("ToPaymentResponse error", e);
     }
     return paymentResponse;
   }
 
-  private PaymentResponse toPaymentResponse(String result) throws Exception {
+  private PaymentResponse toPaymentResponse(String result, String appSecret) throws Exception {
     Map<String, String> params = XmlUtils.fromXml(result.getBytes(), "utf-8");
     if (!PaymentResponse.SUCCESS.equals(params.get("status"))) {
       String code = params.get("status");

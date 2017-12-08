@@ -29,10 +29,6 @@ public class QftxNotifyHandler extends AbstractNotifyHandler {
           .equals(params.get("result_code"))) {
         return null;
       }
-      boolean checkSign = CryptoUtils.checkSignature(params, QftxMpProxy.appSecret, "sign", "key");
-      if (!checkSign) {
-        return null;
-      }
     } catch (Exception e) {
       logger.error(e.getMessage(), e);
       return null;
@@ -42,8 +38,7 @@ public class QftxNotifyHandler extends AbstractNotifyHandler {
     OrderStatus status =
         "0".equals(params.get("pay_result")) ? OrderStatus.SUCCESS : OrderStatus.PAYERROR;
     String totalFee = params.get("total_fee");
-    NotifyBody notifyBody = new NotifyBody(billNo, extOrderNo, status, totalFee, null);
-    return notifyBody;
+    return new NotifyBody(billNo, extOrderNo, status, totalFee, null);
   }
 
   @Override
