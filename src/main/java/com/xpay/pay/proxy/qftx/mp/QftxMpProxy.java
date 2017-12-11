@@ -51,7 +51,7 @@ public class QftxMpProxy implements IPaymentProxy {
     try {
       String url = baseEndpoint + pathMpPay;
       String token = getToken(appKeys[0], appKeys[1]);
-      String result = HttpClient.doPost(url+"?token="+token, xmlBody, DEFAULT_TIMEOUT);
+      String result = HttpClient.doPost(url + "?token=" + token, xmlBody, DEFAULT_TIMEOUT);
       paymentResponse = toPaymentResponse(request, result);
     } catch (Exception e) {
       logger.error("ToPaymentResponse error", e);
@@ -97,11 +97,15 @@ public class QftxMpProxy implements IPaymentProxy {
       msg = StringUtils.isBlank(msg) ? params.get("message") : msg;
       throw new GatewayException(code, msg);
     }
+    String redirectUrl = params.get("redirect_url");
     PaymentResponse response = new PaymentResponse();
     response.setCode(PaymentResponse.SUCCESS);
     Bill bill = new Bill();
-    bill.setCodeUrl(params.get("redirect_url"));
+    bill.setCodeUrl(redirectUrl);
     bill.setOrderNo(request.getOrderNo());
+    if (redirectUrl != null) {
+      bill.setGatewayOrderNo(redirectUrl.substring(redirectUrl.lastIndexOf("/") + 1));
+    }
     bill.setOrderStatus(OrderStatus.NOTPAY);
     response.setBill(bill);
     return response;
@@ -191,7 +195,7 @@ public class QftxMpProxy implements IPaymentProxy {
     try {
       String url = baseEndpoint + pathQuery;
       String token = getToken(appKeys[0], appKeys[1]);
-      String result = HttpClient.doPost(url+"?token="+token, xmlBody, DEFAULT_TIMEOUT);
+      String result = HttpClient.doPost(url + "?token=" + token, xmlBody, DEFAULT_TIMEOUT);
       paymentResponse = toPaymentResponse(result, appKeys[1]);
     } catch (Exception e) {
       logger.error("ToPaymentResponse error", e);

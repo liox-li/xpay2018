@@ -34,11 +34,10 @@ public class QftxNotifyHandler extends AbstractNotifyHandler {
       return null;
     }
     String billNo = params.get("out_trade_no");
-    String extOrderNo = params.get("transaction_id");
     OrderStatus status =
         "0".equals(params.get("pay_result")) ? OrderStatus.SUCCESS : OrderStatus.PAYERROR;
     String totalFee = params.get("total_fee");
-    return new NotifyBody(billNo, extOrderNo, status, totalFee, null);
+    return new NotifyBody(billNo, null, status, totalFee, null);
   }
 
   @Override
