@@ -4,9 +4,9 @@
 <mapping>
 
   <class name="com.xpay.pay.proxy.ips.gatewayreq.Ips">
-    <map-to xml="ips"/>
+    <map-to xml="Ips"/>
     <field name="gateWayReq" type="com.xpay.pay.proxy.ips.gatewayreq.GateWayReq">
-      <bind-xml name="gateWayReq" node="element"/>
+      <bind-xml name="GateWayReq" node="element"/>
     </field>
   </class>
 
