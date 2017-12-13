@@ -74,8 +74,8 @@ public class IpsProxy implements IPaymentProxy {
       String scanPayRequest = os.toString();
       logger.info("ips order request: " + scanPayRequest);
       String result = scanService.scanPay(scanPayRequest);
-      StreamSource streamSource = new StreamSource(new ByteArrayInputStream(result.getBytes()));
       logger.info("ips order response: " + result);
+      StreamSource streamSource = new StreamSource(new ByteArrayInputStream(result.getBytes()));
       com.xpay.pay.proxy.ips.gatewayrsp.Ips respIps = (com.xpay.pay.proxy.ips.gatewayrsp.Ips) unmarshaller
           .unmarshal(streamSource);
       if (!SUCCESS.equals(respIps.getGateWayRsp().getHead().getRspCode())) {
