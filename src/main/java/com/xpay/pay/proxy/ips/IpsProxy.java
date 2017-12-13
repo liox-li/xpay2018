@@ -55,7 +55,6 @@ public class IpsProxy implements IPaymentProxy {
   @Autowired
   private OrderQueryService orderQueryService;
 
-  @Autowired
   private RefundService refundService;
 
   @Override
