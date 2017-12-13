@@ -84,7 +84,7 @@
 
   <class name="com.xpay.pay.proxy.ips.gatewayrsp.Ips">
     <map-to xml="Ips"/>
-    <field name="gateWayReq" type="com.xpay.pay.proxy.ips.gatewayrsp.GateWayRsp">
+    <field name="gateWayRsp" type="com.xpay.pay.proxy.ips.gatewayrsp.GateWayRsp">
       <bind-xml name="GateWayRsp" node="element"/>
     </field>
   </class>
