@@ -21,7 +21,7 @@
 
   <bean id="refundService" class="org.springframework.remoting.jaxws.JaxWsPortProxyFactoryBean">
     <property name="serviceInterface" value="cn.com.ips.payat.webservice.refund.RefundService"/>
-    <property name="wsdlDocumentUrl" value="hhttps://newpay.ips.com.cn/psfp-entry/services/refund?wsdl"/>
+    <property name="wsdlDocumentUrl" value="https://newpay.ips.com.cn/psfp-entry/services/refund?wsdl"/>
     <property name="namespaceUri" value="http://payat.ips.com.cn/WebService/Refund"/>
     <property name="serviceName" value="WSRefund"/>
     <property name="portName" value="WSRefundSoap"/>
