@@ -1,6 +1,7 @@
 package com.xpay.pay.proxy.ips;
 
 import cn.com.ips.payat.webservice.orderquery.OrderQueryService;
+import cn.com.ips.payat.webservice.refund.RefundService;
 import cn.com.ips.payat.webservice.scan.ScanService;
 import com.xpay.pay.exception.GatewayException;
 import com.xpay.pay.model.Bill;
@@ -14,7 +15,9 @@ import com.xpay.pay.proxy.ips.gatewayreq.Body;
 import com.xpay.pay.proxy.ips.gatewayreq.GateWayReq;
 import com.xpay.pay.proxy.ips.gatewayreq.Ips;
 import com.xpay.pay.proxy.ips.query.merbillno.req.OrderQueryReq;
+import com.xpay.pay.proxy.ips.refund.req.RefundReq;
 import com.xpay.pay.util.CryptoUtils;
+import com.xpay.pay.util.IDGenerator;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -51,6 +54,9 @@ public class IpsProxy implements IPaymentProxy {
 
   @Autowired
   private OrderQueryService orderQueryService;
+
+  @Autowired
+  private RefundService refundService;
 
   @Override
   public PaymentResponse unifiedOrder(PaymentRequest request) {
@@ -110,8 +116,7 @@ public class IpsProxy implements IPaymentProxy {
 
   private Ips toIps(PaymentRequest request, String merCode, String account, String md5Signature)
       throws IOException {
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-    String date = simpleDateFormat.format(new Date());
+    String date = request.getOrderTime();
     Ips ips = new Ips();
     GateWayReq gateWayReq = new GateWayReq();
     Body body = new Body();
@@ -206,7 +211,7 @@ public class IpsProxy implements IPaymentProxy {
       Bill bill = new Bill();
       bill.setOrderNo(respIps.getOrderQueryRsp().getBody().getMerBillNo());
       bill.setGatewayOrderNo(respIps.getOrderQueryRsp().getBody().getIpsBillNo());
-      OrderStatus orderStatus = toTradeStatus(respIps.getOrderQueryRsp().getBody().getStatus());
+      OrderStatus orderStatus = toOrderStatus(respIps.getOrderQueryRsp().getBody().getStatus());
       bill.setOrderStatus(orderStatus);
       response.setBill(bill);
       return response;
@@ -216,7 +221,7 @@ public class IpsProxy implements IPaymentProxy {
     return null;
   }
 
-  private OrderStatus toTradeStatus(String status) {
+  private OrderStatus toOrderStatus(String status) {
     if (StringUtils.isEmpty(status)) {
       return OrderStatus.NOTPAY;
     }
@@ -234,6 +239,66 @@ public class IpsProxy implements IPaymentProxy {
 
   @Override
   public PaymentResponse refund(PaymentRequest request) {
-    return null;
+    long l = System.currentTimeMillis();
+    String[] accountParam = request.getExtStoreId().split(",");
+    try {
+      //merCode, account, signature md5
+      String merCode = accountParam[0];
+      String account = accountParam[1];
+      String md5Signature = accountParam[2];
+      String date = request.getOrderTime();
+      com.xpay.pay.proxy.ips.refund.req.Ips ips = new com.xpay.pay.proxy.ips.refund.req.Ips();
+      RefundReq refundReq = new RefundReq();
+      com.xpay.pay.proxy.ips.refund.req.Body body = new com.xpay.pay.proxy.ips.refund.req.Body();
+      body.setMerBillNo(IDGenerator.buildKey(30));
+      body.setOrgMerBillNo(request.getOrderNo());
+      body.setOrgMerTime(date.substring(0, 8));
+      NumberFormat numberFormat = new DecimalFormat("#.##");
+      numberFormat.setGroupingUsed(false);
+      numberFormat.setMaximumFractionDigits(2);
+      numberFormat.setRoundingMode(RoundingMode.DOWN);
+      body.setBillAmount(numberFormat.format(request.getTotalFee()));
+      body.setRefundAmount(numberFormat.format(request.getTotalFee()));
+      refundReq.setBody(body);
+      ByteArrayOutputStream os = new ByteArrayOutputStream();
+      marshaller.marshal(body, new StreamResult(os));
+      String signature = CryptoUtils.md5(os.toString() + merCode + md5Signature);
+      ReqHead head = new ReqHead();
+      head.setMerCode(merCode);
+      head.setAccount(account);
+      head.setReqDate(date);
+      head.setSignature(signature);
+      refundReq.setHead(head);
+      ips.setRefundReq(refundReq);
+      marshaller.marshal(ips, new StreamResult(os));
+      String req = os.toString();
+      logger.info("ips refund request: " + req);
+      String rsp = refundService.refund(req);
+      logger.info("ips refund response: " + rsp);
+      StreamSource streamSource = new StreamSource(new ByteArrayInputStream(rsp.getBytes()));
+      com.xpay.pay.proxy.ips.refund.rsp.Ips respIps = (com.xpay.pay.proxy.ips.refund.rsp.Ips) unmarshaller
+          .unmarshal(streamSource);
+      if (!SUCCESS.equals(respIps.getRefundRsp().getHead().getRspCode())) {
+        throw new GatewayException(respIps.getRefundRsp().getHead().getRspCode(),
+            respIps.getRefundRsp().getHead().getRspMsg());
+      }
+      PaymentResponse response = new PaymentResponse();
+      response.setCode(PaymentResponse.SUCCESS);
+      Bill bill = new Bill();
+      bill.setOrderNo(request.getOrderNo());
+      bill.setGatewayOrderNo(request.getGatewayOrderNo());
+      OrderStatus orderStatus = OrderStatus.SUCCESS;
+      switch (respIps.getRefundRsp().getBody().getStatus()) {
+        case "Y":
+          orderStatus = OrderStatus.REFUND;
+          break;
+      }
+      bill.setOrderStatus(orderStatus);
+      response.setBill(bill);
+      return response;
+    } catch (IOException e) {
+      logger.info("refund failed, took " + (System.currentTimeMillis() - l) + "ms", e);
+      throw new RuntimeException(e);
+    }
   }
 }

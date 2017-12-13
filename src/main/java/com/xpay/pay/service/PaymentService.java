@@ -207,6 +207,8 @@ public class PaymentService {
 			request.setGatewayOrderNo(order.getExtOrderNo());
 		} else if(PaymentGateway.MIAOFU.equals(gateway)) {
 			request.setGatewayOrderNo(order.getExtOrderNo());
+		} else if(PaymentGateway.IPS.equals(gateway)) {
+			request.setOrderTime(order.getOrderTime());
 		}
 		request.setExtStoreId(order.getStoreChannel().getExtStoreId());
 		request.setChannelProps(order.getStoreChannel().getChannelProps());
