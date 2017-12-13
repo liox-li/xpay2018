@@ -166,7 +166,6 @@ public class IpsProxy implements IPaymentProxy {
       String merCode = accountParam[0];
       String account = accountParam[1];
       String md5Signature = accountParam[2];
-      PaymentResponse paymentResponse = null;
       SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
       String date = simpleDateFormat.format(new Date());
       com.xpay.pay.proxy.ips.query.merbillno.req.Ips ips = new com.xpay.pay.proxy.ips.query.merbillno.req.Ips();
