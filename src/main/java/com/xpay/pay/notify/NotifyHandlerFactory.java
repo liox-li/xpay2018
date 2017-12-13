@@ -24,6 +24,8 @@ public class NotifyHandlerFactory {
 	UPayNotifyHandler uPayHandler;
 	@Autowired
 	QftxNotifyHandler qftxNotifyHandler;
+	@Autowired
+	IpsNotifyHandler ipsNotifyHandler;
 
 	public INotifyHandler getNotifyHandler(String uri) {
 		if (uri.contains(PaymentGateway.CHINAUMSH5.name().toLowerCase()) || uri.contains(PaymentGateway.CHINAUMSWAP.name().toLowerCase())
@@ -43,6 +45,8 @@ public class NotifyHandlerFactory {
 			return miaoFuHandler;
 		} else if (uri.contains(PaymentGateway.QFTXMP.name().toLowerCase())) {
 			return qftxNotifyHandler;
+		} else if (uri.contains(PaymentGateway.IPS.name().toLowerCase())) {
+			return ipsNotifyHandler;
 		} else {
 			return null;
 		}

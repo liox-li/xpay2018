@@ -1,16 +1,16 @@
-package com.xpay.pay.proxy.ips.gatewayrsp;
+package com.xpay.pay.proxy.ips.notify;
 
 import com.xpay.pay.proxy.ips.common.RspHead;
 
 /**
- * Created by sunjian on Date: 2017/12/13 上午10:10
+ * Created by sunjian on Date: 2017/12/13 下午1:39
  * Description:
  */
 public class GateWayRsp {
 
-  private RspHead head;
+  RspHead head;
 
-  private Body body;
+  Body body;
 
   public RspHead getHead() {
     return head;

@@ -4,7 +4,7 @@ package com.xpay.pay.proxy.ips.common;
  * Created by sunjian on Date: 2017/12/12 下午11:01
  * Description:
  */
-public class Head {
+public class ReqHead {
 
   private String version = "v1.0.1";
   private String merCode;

@@ -12,7 +12,7 @@
 
   <class name="com.xpay.pay.proxy.ips.gatewayreq.GateWayReq">
     <map-to xml="GateWayReq"/>
-    <field name="head" type="com.xpay.pay.proxy.ips.common.Head">
+    <field name="head" type="com.xpay.pay.proxy.ips.common.ReqHead">
       <bind-xml name="head" node="element"/>
     </field>
     <field name="body" type="com.xpay.pay.proxy.ips.gatewayreq.Body">
@@ -20,7 +20,7 @@
     </field>
   </class>
 
-  <class name="com.xpay.pay.proxy.ips.common.Head">
+  <class name="com.xpay.pay.proxy.ips.common.ReqHead">
     <map-to xml="head"/>
     <field name="version" type="string">
       <bind-xml name="Version" node="element"/>
@@ -91,7 +91,7 @@
 
   <class name="com.xpay.pay.proxy.ips.gatewayrsp.GateWayRsp">
     <map-to xml="GateWayRsp"/>
-    <field name="head" type="com.xpay.pay.proxy.ips.gatewayrsp.Head">
+    <field name="head" type="com.xpay.pay.proxy.ips.common.RspHead">
       <bind-xml name="head" node="element"/>
     </field>
     <field name="body" type="com.xpay.pay.proxy.ips.gatewayrsp.Body">
@@ -99,7 +99,7 @@
     </field>
   </class>
 
-  <class name="com.xpay.pay.proxy.ips.gatewayrsp.Head">
+  <class name="com.xpay.pay.proxy.ips.common.RspHead">
     <map-to xml="head"/>
     <field name="referenceID" type="string">
       <bind-xml name="ReferenceID" node="element"/>
@@ -122,9 +122,71 @@
   </class>
 
   <class name="com.xpay.pay.proxy.ips.gatewayrsp.Body">
-    <map-to xml="qrCode"/>
+    <map-to xml="body"/>
     <field name="qrCode" type="string">
       <bind-xml name="QrCode" node="element"/>
+    </field>
+  </class>
+
+
+
+  <class name="com.xpay.pay.proxy.ips.notify.Ips">
+    <map-to xml="Ips"/>
+    <field name="gateWayRsp" type="com.xpay.pay.proxy.ips.notify.GateWayRsp">
+      <bind-xml name="GateWayRsp" node="element"/>
+    </field>
+  </class>
+
+  <class name="com.xpay.pay.proxy.ips.notify.GateWayRsp">
+    <map-to xml="GateWayRsp"/>
+    <field name="head" type="com.xpay.pay.proxy.ips.common.RspHead">
+      <bind-xml name="head" node="element"/>
+    </field>
+    <field name="body" type="com.xpay.pay.proxy.ips.notify.Body">
+      <bind-xml name="body" node="element"/>
+    </field>
+  </class>
+
+  <class name="com.xpay.pay.proxy.ips.notify.Body">
+    <map-to xml="body"/>
+    <field name="merBillNo" type="string">
+      <bind-xml name="MerBillNo" node="element"/>
+    </field>
+    <field name="currencyType" type="string">
+      <bind-xml name="CurrencyType" node="element"/>
+    </field>
+    <field name="amount" type="string">
+      <bind-xml name="Amount" node="element"/>
+    </field>
+    <field name="date" type="string">
+      <bind-xml name="Date" node="element"/>
+    </field>
+    <field name="status" type="string">
+      <bind-xml name="Status" node="element"/>
+    </field>
+    <field name="msg" type="string">
+      <bind-xml name="Msg" node="element"/>
+    </field>
+    <field name="attach" type="string">
+      <bind-xml name="Attach" node="element"/>
+    </field>
+    <field name="ipsBillNo" type="string">
+      <bind-xml name="IpsBillNo" node="element"/>
+    </field>
+    <field name="ipsTradeNo" type="string">
+      <bind-xml name="IpsTradeNo" node="element"/>
+    </field>
+    <field name="retEncodeType" type="string">
+      <bind-xml name="RetEncodeType" node="element"/>
+    </field>
+    <field name="bankBillNo" type="string">
+      <bind-xml name="BankBillNo" node="element"/>
+    </field>
+    <field name="resultType" type="string">
+      <bind-xml name="ResultType" node="element"/>
+    </field>
+    <field name="ipsBillTime" type="string">
+      <bind-xml name="IpsBillTime" node="element"/>
     </field>
   </class>
 </mapping>

@@ -1,13 +1,14 @@
 package com.xpay.pay.proxy.ips;
 
 import cn.com.ips.payat.webservice.scan.ScanService;
+import com.xpay.pay.exception.GatewayException;
 import com.xpay.pay.model.Bill;
 import com.xpay.pay.model.StoreChannel.IpsProps;
 import com.xpay.pay.proxy.IPaymentProxy;
 import com.xpay.pay.proxy.PaymentRequest;
 import com.xpay.pay.proxy.PaymentResponse;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
-import com.xpay.pay.proxy.ips.common.Head;
+import com.xpay.pay.proxy.ips.common.ReqHead;
 import com.xpay.pay.proxy.ips.gatewayreq.Body;
 import com.xpay.pay.proxy.ips.gatewayreq.GateWayReq;
 import com.xpay.pay.proxy.ips.gatewayreq.Ips;
@@ -36,8 +37,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class IpsProxy implements IPaymentProxy {
 
+  private static final String SUCCESS = "000000";
   protected final Logger logger = LogManager.getLogger(IpsProxy.class);
-
   @Autowired
   Marshaller marshaller;
   Unmarshaller unmarshaller;
@@ -64,19 +65,11 @@ public class IpsProxy implements IPaymentProxy {
       logger.info("ips order response: " + result);
       com.xpay.pay.proxy.ips.gatewayrsp.Ips respIps = (com.xpay.pay.proxy.ips.gatewayrsp.Ips) unmarshaller
           .unmarshal(streamSource);
-      int startIndex = result.indexOf("<body>");
-      int endIndex = result.indexOf("</body>");
-      String signature;
-      if (startIndex > -1 && endIndex > -1) {
-        signature = CryptoUtils
-            .md5(result.substring(startIndex, endIndex + 7) + merCode + md5Signature);
-      } else {
-        signature = CryptoUtils.md5(merCode + md5Signature);
+      if (!SUCCESS.equals(respIps.getGateWayRsp().getHead().getRspCode())) {
+        throw new GatewayException(respIps.getGateWayRsp().getHead().getRspCode(),
+            respIps.getGateWayRsp().getHead().getRspMsg());
       }
-      if (signature == null || !signature
-          .equals(respIps.getGateWayRsp().getHead().getSignature())) {
-        throw new RuntimeException("bad request signature not matches: " + signature);
-      }
+      signatureValidWithThrow(merCode, md5Signature, result, respIps);
       PaymentResponse response = new PaymentResponse();
       response.setCode(PaymentResponse.SUCCESS);
       Bill bill = new Bill();
@@ -90,6 +83,23 @@ public class IpsProxy implements IPaymentProxy {
     }
 
     return null;
+  }
+
+  private void signatureValidWithThrow(String merCode, String md5Signature, String result,
+      com.xpay.pay.proxy.ips.gatewayrsp.Ips respIps) {
+    int startIndex = result.indexOf("<body>");
+    int endIndex = result.indexOf("</body>");
+    String signature;
+    if (startIndex > -1 && endIndex > -1) {
+      signature = CryptoUtils
+          .md5(result.substring(startIndex, endIndex + 7) + merCode + md5Signature);
+    } else {
+      signature = CryptoUtils.md5(merCode + md5Signature);
+    }
+    if (signature == null || !signature
+        .equals(respIps.getGateWayRsp().getHead().getSignature())) {
+      throw new RuntimeException("bad request signature not matches: " + signature);
+    }
   }
 
   private Ips toIps(PaymentRequest request, String merCode, String account, String md5Signature)
@@ -132,7 +142,7 @@ public class IpsProxy implements IPaymentProxy {
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     marshaller.marshal(body, new StreamResult(os));
     String signature = CryptoUtils.md5(os.toString() + merCode + md5Signature);
-    Head head = new Head();
+    ReqHead head = new ReqHead();
     head.setMerCode(merCode);
     head.setAccount(account);
     head.setReqDate(date);

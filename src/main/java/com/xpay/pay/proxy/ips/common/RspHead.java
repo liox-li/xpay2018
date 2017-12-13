@@ -1,10 +1,10 @@
-package com.xpay.pay.proxy.ips.gatewayrsp;
+package com.xpay.pay.proxy.ips.common;
 
 /**
  * Created by sunjian on Date: 2017/12/13 上午10:10
  * Description:
  */
-public class Head {
+public class RspHead {
 
   private String referenceID;
   private String rspCode;
