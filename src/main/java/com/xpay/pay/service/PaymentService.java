@@ -179,6 +179,8 @@ public class PaymentService {
 		} else if(PaymentGateway.MIAOFU.equals(gateway)) {
 			String notifyUrl = request.getNotifyUrl() + "/"+request.getOrderNo();
 			request.setNotifyUrl(notifyUrl);
+		} else if(PaymentGateway.IPS.equals(gateway)){
+			request.setOrderTime(order.getOrderTime());
 		}
 //		else if(PaymentGateway.RUBIPAY.equals(order.getStoreChannel().getPaymentGateway())) {
 //			request.setServerIp(LOCAL_ID);
