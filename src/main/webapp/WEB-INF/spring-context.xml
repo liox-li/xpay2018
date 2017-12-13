@@ -52,12 +52,6 @@
 	</bean>
 	<import resource="spring-restful.xml" />
 	<import resource="spring-dao.xml" />
+	<import resource="spring-proxy-ips.xml" />
 
-	<bean id="scanService" class="org.springframework.remoting.jaxws.JaxWsPortProxyFactoryBean">
-		<property name="serviceInterface" value="cn.com.ips.payat.webservice.scan.ScanService"/>
-		<property name="wsdlDocumentUrl" value="https://thumbpay.e-years.com/psfp-webscan/services/scan?wsdl"/>
-		<property name="namespaceUri" value="http://payat.ips.com.cn/WebService/Scan"/>
-		<property name="serviceName" value="WSScan"/>
-		<property name="portName" value="WSScanSoap"/>
-	</bean>
 </beans>
