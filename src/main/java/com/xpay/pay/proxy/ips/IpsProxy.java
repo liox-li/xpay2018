@@ -47,6 +47,7 @@ public class IpsProxy implements IPaymentProxy {
   protected final Logger logger = LogManager.getLogger(IpsProxy.class);
   @Autowired
   Marshaller marshaller;
+  @Autowired
   Unmarshaller unmarshaller;
 
   @Autowired
