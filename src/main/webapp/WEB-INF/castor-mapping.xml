@@ -200,7 +200,7 @@
 
   <class name="com.xpay.pay.proxy.ips.query.merbillno.req.OrderQueryReq">
     <map-to xml="OrderQueryReq"/>
-    <field name="head" type="com.xpay.pay.proxy.ips.common.RspHead">
+    <field name="head" type="com.xpay.pay.proxy.ips.common.ReqHead">
       <bind-xml name="head" node="element"/>
     </field>
     <field name="body" type="com.xpay.pay.proxy.ips.query.merbillno.req.Body">
@@ -278,7 +278,7 @@
 
   <class name="com.xpay.pay.proxy.ips.refund.req.RefundReq">
     <map-to xml="RefundReq"/>
-    <field name="head" type="com.xpay.pay.proxy.ips.common.RspHead">
+    <field name="head" type="com.xpay.pay.proxy.ips.common.ReqHead">
       <bind-xml name="head" node="element"/>
     </field>
     <field name="body" type="com.xpay.pay.proxy.ips.refund.req.Body">
