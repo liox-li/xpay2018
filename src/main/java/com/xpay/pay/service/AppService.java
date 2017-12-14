@@ -7,6 +7,8 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,8 @@ import com.xpay.pay.util.IDGenerator;
 
 @Service
 public class AppService {
+
+	protected final Logger logger = LogManager.getLogger(AppService.class);
 	private static ICache<String, App> cache = CacheManager.create(App.class, 100);
 	@Autowired
 	protected AppMapper mapper;
@@ -96,6 +100,7 @@ public class AppService {
 		if (cache.size() == 0) {
 			List<App> apps = mapper.findAll();
 			for (App app : apps) {
+				logger.info("load app: " + app.getKey());
 				cache.put(app.getKey(), app);
 			}
 		}

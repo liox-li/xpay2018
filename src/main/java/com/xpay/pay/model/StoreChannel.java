@@ -76,6 +76,8 @@ public class StoreChannel {
 		if(StringUtils.isNotBlank(props)) {
 			if(this.paymentGateway == PaymentGateway.CHINAUMSH5) {
 				this.channelProps = JsonUtils.fromJson(props, ChinaUmsProps.class);
+			} else if(this.paymentGateway == PaymentGateway.IPS) {
+				this.channelProps = JsonUtils.fromJson(props, IpsProps.class);
 			}
 		}
  	}
@@ -123,8 +125,10 @@ public class StoreChannel {
 		BAIFU("trade.weixin.gzpay", "query", "unified.trade.refund"), 
 		JUZHEN("070201", "070101", ""), 
 		KEFU("msBank_WeChatPay", "msBank_ScanPayQuery", ""), 
-		KEKEPAY("pay","query","");
-		
+		KEKEPAY("pay","query",""),
+		QFTXMP("pay", "query", ""),
+		IPS("pay","query", "refund");
+
 		String unifiedOrder;
 		String query;
 		String refund;
@@ -180,6 +184,27 @@ public class StoreChannel {
 		}
 		public void setSignKey(String signKey) {
 			this.signKey = signKey;
+		}
+	}
+
+	public static class IpsProps implements ChannelProps {
+		private String merType;
+		private String subMerCode;
+
+		public String getMerType() {
+			return merType;
+		}
+
+		public void setMerType(String merType) {
+			this.merType = merType;
+		}
+
+		public String getSubMerCode() {
+			return subMerCode;
+		}
+
+		public void setSubMerCode(String subMerCode) {
+			this.subMerCode = subMerCode;
 		}
 	}
 }

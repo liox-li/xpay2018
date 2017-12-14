@@ -45,7 +45,7 @@ public class PaymentService {
 			storeChannel = storeChannel == null? orderService.findUnusedChannelByAgent(store.getAgentId(), orderNo): storeChannel;
 		}
 		Assert.notNull(storeChannel, String.format("No avaiable store channel, please try later, sellerOrderNo: %s", StringUtils.trimToEmpty(sellerOrderNo)));
-		
+
 		Order order = new Order();
 		order.setApp(app);
 		order.setOrderNo(orderNo);
@@ -63,9 +63,9 @@ public class PaymentService {
 		order.setReturnUrl(returnUrl);
 		order.setSubject(subject);
 		orderService.insert(order);
-		
+
 		return order;
-	} 
+	}
 
 	public Bill unifiedOrder(Order order) {
 		PaymentRequest request = this.toPaymentRequest(order);
@@ -79,7 +79,7 @@ public class PaymentService {
 		bill.setOrder(order);
 		return bill;
 	}
-	
+
 	public boolean updateBill(Order order, Bill bill) {
 		if(bill == null) {
 			order.setStatus(OrderStatus.PAYERROR);
@@ -93,7 +93,7 @@ public class PaymentService {
 		}
 		return orderService.update(order);
 	}
-	
+
 	public boolean updateTradeAmount(Order order) {
 		if(order != null) {
 			Store store = order.getStore();
@@ -103,7 +103,7 @@ public class PaymentService {
 		}
 		return true;
 	}
-	
+
 	public Bill query(Long appId, String orderNo, String storeCode, boolean isCsr) {
 		Order order = orderService.findActiveByOrderNo(orderNo);
 		Assert.isTrue(storeCode.equals(order.getStore().getCode()), "No such order found for the store");
@@ -125,24 +125,24 @@ public class PaymentService {
 				}
 				return bill;
 			} catch(Exception e) {
-				
+
 			}
-		} 
+		}
 		return toBill(order);
 	}
-	
+
 	public Bill refund(Long appId, String orderNo, String storeCode, boolean isCsr) {
 		Order order = orderService.findActiveByOrderNo(orderNo);
 		Assert.isTrue(storeCode.equals(order.getStore().getCode()), "No such order found for the store");
 		Assert.isTrue(appId == order.getAppId(), "No such order found under the app");
 		Assert.isTrue(!order.isRechargeOrder(), "Recharge order can't be refunded");
-		
+
 		if(isCsr || (order.isRefundable()  && CommonUtils.isWithinHours(order.getOrderTime(), IDGenerator.TimePattern14, 24))) {
 			PaymentRequest paymentRequest = toQueryRequest(order);
 			paymentRequest.setTotalFee(order.getTotalFee());
 			IPaymentProxy paymentProxy = paymentProxyFactory.getPaymentProxy(order.getStoreChannel().getPaymentGateway());
 			PaymentResponse response = paymentProxy.refund(paymentRequest);
-			
+
 			Bill bill = response.getBill();
 			if(bill !=null && OrderStatus.REFUND.equals(bill.getOrderStatus()) || OrderStatus.REVOKED.equals(bill.getOrderStatus())) {
 				bill.setOrder(order);
@@ -169,16 +169,18 @@ public class PaymentService {
 		request.setAttach(order.getAttach());
 		request.setOrderNo(order.getOrderNo());
 		request.setNotifyUrl(DEFAULT_NOTIFY_URL+order.getStoreChannel().getPaymentGateway().toString().toLowerCase());
-		
+
 		PaymentGateway gateway = order.getStoreChannel().getPaymentGateway();
 		if(isDirectReturnChannel(gateway) ) {
 			request.setReturnUrl(order.getReturnUrl());
 		}
-		if(PaymentGateway.JUZHEN.equals(gateway) || PaymentGateway.KEKEPAY.equals(gateway)) {
+		if(PaymentGateway.JUZHEN.equals(gateway) || PaymentGateway.KEKEPAY.equals(gateway) || PaymentGateway.QFTXMP.equals(gateway)) {
 			request.setServerIp(LOCAL_ID);
 		} else if(PaymentGateway.MIAOFU.equals(gateway)) {
 			String notifyUrl = request.getNotifyUrl() + "/"+request.getOrderNo();
 			request.setNotifyUrl(notifyUrl);
+		} else if(PaymentGateway.IPS.equals(gateway)){
+			request.setOrderTime(order.getOrderTime());
 		}
 //		else if(PaymentGateway.RUBIPAY.equals(order.getStoreChannel().getPaymentGateway())) {
 //			request.setServerIp(LOCAL_ID);
@@ -188,8 +190,8 @@ public class PaymentService {
 //			request.setServerIp(LOCAL_ID);
 //			request.setNotifyUrl(DEFAULT_NOTIFY_URL+order.getStoreChannel().getPaymentGateway().toString().toLowerCase());
 //		}
-//		
-		
+//
+
 		if (StringUtils.isNotBlank(order.getSubject())) {
 			request.setSubject(order.getSubject());
 		} else {
@@ -198,7 +200,7 @@ public class PaymentService {
 		request.setSubject(this.customizeCsrTel(request.getSubject(), order));
 		return request;
 	}
-	
+
 	private PaymentRequest toQueryRequest(Order order) {
 		PaymentRequest request = new PaymentRequest();
 		PaymentGateway gateway = order.getStoreChannel().getPaymentGateway();
@@ -207,12 +209,14 @@ public class PaymentService {
 			request.setGatewayOrderNo(order.getExtOrderNo());
 		} else if(PaymentGateway.MIAOFU.equals(gateway)) {
 			request.setGatewayOrderNo(order.getExtOrderNo());
+		} else if(PaymentGateway.IPS.equals(gateway)) {
+			request.setOrderTime(order.getOrderTime());
 		}
 		request.setExtStoreId(order.getStoreChannel().getExtStoreId());
 		request.setChannelProps(order.getStoreChannel().getChannelProps());
 		request.setPayChannel(order.getPayChannel());
 		request.setOrderNo(order.getOrderNo());
-		
+
 		return request;
 	}
 
@@ -228,7 +232,7 @@ public class PaymentService {
 		bill.setOrder(order);
 		return bill;
 	}
-	
+
 	private static final String DEFAULT_SUBJECT = "游戏";
 	private static final String DEFAULT_SUBJECT_CHINAUMS = "投诉热线:95534";
 	private String customizeCsrTel(String subject, Order order) {
@@ -240,7 +244,7 @@ public class PaymentService {
 		}
 		return subject;
 	}
-	
+
 	private boolean isChinaUmsChannel(PaymentGateway gateway) {
 		return PaymentGateway.CHINAUMS.equals(gateway) ||
 				PaymentGateway.CHINAUMSV2.equals(gateway) ||
@@ -248,7 +252,7 @@ public class PaymentService {
 				PaymentGateway.CHINAUMSV3.equals(gateway) ||
 				PaymentGateway.CHINAUMSWAP.equals(gateway);
 	}
-	
+
 	private boolean isDirectReturnChannel(PaymentGateway gateway) {
 		return PaymentGateway.CHINAUMS.equals(gateway) ||
 				PaymentGateway.CHINAUMSV2.equals(gateway) ||
@@ -258,5 +262,5 @@ public class PaymentService {
 				PaymentGateway.UPAY.equals(gateway) ||
 				PaymentGateway.KEKEPAY.equals(gateway);
 	}
-	
+
 }

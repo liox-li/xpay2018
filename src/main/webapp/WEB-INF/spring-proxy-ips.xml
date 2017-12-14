@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+  <bean id="scanService" class="org.springframework.remoting.jaxws.JaxWsPortProxyFactoryBean">
+    <property name="serviceInterface" value="cn.com.ips.payat.webservice.scan.ScanService"/>
+    <property name="wsdlDocumentUrl" value="https://thumbpay.e-years.com/psfp-webscan/services/scan?wsdl"/>
+    <property name="namespaceUri" value="http://payat.ips.com.cn/WebService/Scan"/>
+    <property name="serviceName" value="WSScan"/>
+    <property name="portName" value="WSScanSoap"/>
+  </bean>
+
+  <bean id="orderQueryService" class="org.springframework.remoting.jaxws.JaxWsPortProxyFactoryBean">
+    <property name="serviceInterface" value="cn.com.ips.payat.webservice.orderquery.OrderQueryService"/>
+    <property name="wsdlDocumentUrl" value="https://newpay.ips.com.cn/psfp-entry/services/order?wsdl"/>
+    <property name="namespaceUri" value="http://payat.ips.com.cn/WebService/OrderQuery"/>
+    <property name="serviceName" value="WSOrderQuery"/>
+    <property name="portName" value="WSOrderQuerySoap"/>
+  </bean>
+
+  <bean id="refundService" class="org.springframework.remoting.jaxws.JaxWsPortProxyFactoryBean">
+    <property name="serviceInterface" value="cn.com.ips.payat.webservice.refund.RefundService"/>
+    <property name="wsdlDocumentUrl" value="https://newpay.ips.com.cn/psfp-entry/services/refund?wsdl"/>
+    <property name="namespaceUri" value="http://payat.ips.com.cn/WebService/Refund"/>
+    <property name="serviceName" value="WSRefund"/>
+    <property name="portName" value="WSRefundSoap"/>
+  </bean>
+</beans>
