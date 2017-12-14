@@ -78,6 +78,8 @@ public class StoreChannel {
 				this.channelProps = JsonUtils.fromJson(props, ChinaUmsProps.class);
 			} else if(this.paymentGateway == PaymentGateway.IPS) {
 				this.channelProps = JsonUtils.fromJson(props, IpsProps.class);
+			} else if(this.paymentGateway == PaymentGateway.SUPay) {
+				this.channelProps = JsonUtils.fromJson(props, SUPayProps.class);
 			}
 		}
  	}
@@ -127,6 +129,7 @@ public class StoreChannel {
 		KEFU("msBank_WeChatPay", "msBank_ScanPayQuery", ""), 
 		KEKEPAY("pay","query",""),
 		QFTXMP("pay", "query", ""),
+		SUPay("pay", "", ""),
 		IPS("pay","query", "refund");
 
 		String unifiedOrder;
@@ -205,6 +208,35 @@ public class StoreChannel {
 
 		public void setSubMerCode(String subMerCode) {
 			this.subMerCode = subMerCode;
+		}
+	}
+
+	public static class SUPayProps implements ChannelProps {
+		private String itemId;
+		private String payType;
+		private String serverCode;
+		public String getItemId() {
+			return itemId;
+		}
+
+		public void setItemId(String itemId) {
+			this.itemId = itemId;
+		}
+
+		public String getPayType() {
+			return payType;
+		}
+
+		public void setPayType(String payType) {
+			this.payType = payType;
+		}
+
+		public String getServerCode() {
+			return serverCode;
+		}
+
+		public void setServerCode(String serverCode) {
+			this.serverCode = serverCode;
 		}
 	}
 }
