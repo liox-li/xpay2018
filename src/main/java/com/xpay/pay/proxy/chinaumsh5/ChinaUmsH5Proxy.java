@@ -63,7 +63,7 @@ public class ChinaUmsH5Proxy implements IPaymentProxy {
 	}
 
 	public String getJsUrl(PaymentRequest request) {
-		ChinaUmsH5Request chinaUmsH5Request = this.toChinaUmsH5Request(CHINAUMSH5.UnifiedOrder(), request);
+		ChinaUmsH5Request chinaUmsH5Request = this.toChinaUmsH5Request(this.toMsgType(request.getPayChannel()), request);
 		List<KeyValuePair> keyPairs = this.getKeyPairs(chinaUmsH5Request);
 		String sign = CryptoUtils.signQueryParams(keyPairs, null, this.getSignKey(request.getChannelProps()));
 		String queryParams = CommonUtils.buildQueryParams(keyPairs, "sign", sign, "orderDesc");
@@ -170,6 +170,9 @@ public class ChinaUmsH5Proxy implements IPaymentProxy {
 		if(StringUtils.isNotBlank(paymentRequest.getReturnUrl())) {
 			keyPairs.add(new KeyValuePair("returnUrl", paymentRequest.getReturnUrl()));
 		}
+		if(StringUtils.isNotBlank(paymentRequest.getSubOpenId())) {
+			keyPairs.add(new KeyValuePair("subOpenId", paymentRequest.getSubOpenId()));
+		}
 		return keyPairs;
 	}
 	
@@ -196,6 +199,7 @@ public class ChinaUmsH5Proxy implements IPaymentProxy {
 		}
 		chinaUmsH5Request.setNotifyUrl(request.getNotifyUrl());
 		chinaUmsH5Request.setReturnUrl(request.getReturnUrl());
+		chinaUmsH5Request.setSubOpenId(request.getUserOpenId());
 		return chinaUmsH5Request;
 	}
 	
@@ -247,6 +251,16 @@ public class ChinaUmsH5Proxy implements IPaymentProxy {
 			return chinaUmsProps.getSignKey();
 		}
 		return signKey;
+	}
+	
+	private static final String WECHAT = "WXPay.jsPay";
+	private static final String ALIPAY = "trade.jsPay";
+	private String toMsgType(PayChannel channel) {
+		if(PayChannel.ALIPAY.equals(channel)) {
+			return ALIPAY;
+		} else  {
+			return WECHAT;
+		} 
 	}
 	
 	public static OrderStatus toOrderStatus(String billStatus) {

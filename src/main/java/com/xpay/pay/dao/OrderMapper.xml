@@ -23,7 +23,8 @@
     <result column="pay_info" jdbcType="VARCHAR" property="payInfo" />
     <result column="status" jdbcType="VARCHAR" property="status" />  
     <result column="subject" jdbcType="VARCHAR" property="subject" />    
-    <result column="return_url" jdbcType="VARCHAR" property="returnUrl" />    
+    <result column="return_url" jdbcType="VARCHAR" property="returnUrl" /> 
+    <result column="uid" jdbcType="VARCHAR" property="uid" />     
     <result column="create_date" jdbcType="VARCHAR" property="createDate" />         
   </resultMap>
   
@@ -49,6 +50,7 @@
     status,
     subject,
     return_url,
+    uid,
     create_date
   </sql>
 
@@ -143,6 +145,9 @@
       <if test="returnUrl != null">
         return_url,
       </if>  
+      <if test="uid != null">
+        uid,
+      </if>  
    </trim>
    <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="orderNo != null">
@@ -205,6 +210,9 @@
       <if test="returnUrl != null">
         #{returnUrl,jdbcType=VARCHAR},
       </if>   
+      <if test="uid != null">
+        #{uid,jdbcType=VARCHAR},
+      </if>  
     </trim>
   </insert> 
      

@@ -33,7 +33,7 @@ public class PaymentService {
 	@Autowired
 	private StoreService storeService;
 
-	public Order createOrder(App app, String orderNo, Store store, PayChannel channel,
+	public Order createOrder(App app, String uid, String orderNo, Store store, PayChannel channel,
 			String deviceId, String ip, Float totalFee, String orderTime,
 			String sellerOrderNo, String attach, String notifyUrl,String returnUrl,
 			String subject, String storeChannelId) {
@@ -49,6 +49,7 @@ public class PaymentService {
 		Order order = new Order();
 		order.setApp(app);
 		order.setOrderNo(orderNo);
+		order.setUid(uid);
 		order.setStore(store);
 		order.setStoreId(store.getId());
 		order.setStoreChannel(storeChannel);
@@ -168,6 +169,7 @@ public class PaymentService {
 		request.setTotalFee(order.getTotalFee());
 		request.setAttach(order.getAttach());
 		request.setOrderNo(order.getOrderNo());
+		request.setUserOpenId(order.getUid());
 		request.setNotifyUrl(DEFAULT_NOTIFY_URL+order.getStoreChannel().getPaymentGateway().toString().toLowerCase());
 
 		PaymentGateway gateway = order.getStoreChannel().getPaymentGateway();

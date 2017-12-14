@@ -16,6 +16,7 @@ public class ChinaUmsH5Request {
 	private String refundAmount;
 	private String notifyUrl;
 	private String returnUrl;
+	private String subOpenId;
 	private String sign;
 	
 	public String getMsgSrc() {
@@ -121,6 +122,14 @@ public class ChinaUmsH5Request {
 
 	public void setReturnUrl(String returnUrl) {
 		this.returnUrl = returnUrl;
+	}
+
+	public String getSubOpenId() {
+		return subOpenId;
+	}
+
+	public void setSubOpenId(String subOpenId) {
+		this.subOpenId = subOpenId;
 	}
 
 	public String getSign() {

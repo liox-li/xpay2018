@@ -338,7 +338,7 @@ public class AgentRestService extends AdminRestService {
 		App app = appService.findById(appId);
 		
 		
-		Order order = paymentService.createOrder(app, orderNo, store, request.getChannel(), null, "127.0.0.1", request.getAmount(), IDGenerator.formatTime(new Date(), IDGenerator.TimePattern14), "", null, null, null, subject, null);
+		Order order = paymentService.createOrder(app, null, orderNo, store, request.getChannel(), null, "127.0.0.1", request.getAmount(), IDGenerator.formatTime(new Date(), IDGenerator.TimePattern14), "", null, null, null, subject, null);
 		Assert.notNull(order,"Create order failed");
 		Bill bill = null;
 		BaseResponse<RechargeResponse> response = new BaseResponse<RechargeResponse>();

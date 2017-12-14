@@ -10,6 +10,7 @@ import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 public class Order {
 	private long id;
 	private String orderNo;
+	private String uid;
 	private Long appId;
 	private long storeId;
 	private StoreChannel storeChannel;
@@ -47,6 +48,12 @@ public class Order {
 	}
 	public void setOrderNo(String orderNo) {
 		this.orderNo = orderNo;
+	}
+	public String getUid() {
+		return uid;
+	}
+	public void setUid(String uid) {
+		this.uid = uid;
 	}
 	public Long getAppId() {
 		return appId;

@@ -1,15 +1,15 @@
 branch=refs/heads/master
-buildTimestamp=2017-12-12 14:54:28 +0000
-buildVersion=813
-commitId=b6290f1afc8f61b5009a6da08e12d01d58a43570
+buildTimestamp=2017-12-14 08:24:19 +0000
+buildVersion=818
+commitId=3b403ec837d5d3332a753fad4b77766303912736
 
-hostname=sunjiandeMacBook-Pro.local
+hostname=lenovo-PC
 isSnapshot=true
-javaVersion=1.8.0_45
+javaVersion=1.8.0_151
 majorVersion=0
 minorVersion=1
-osName=Mac OS X
-osVersion=10.13.2
+osName=Windows 7
+osVersion=6.1
 project=XPAY
-username=sunjian
-version=0.1.813
+username=lenovo
+version=0.1.818
