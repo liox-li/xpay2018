@@ -29,7 +29,6 @@ import com.xpay.pay.proxy.IPaymentProxy.PayChannel;
 import com.xpay.pay.rest.contract.BaseResponse;
 import com.xpay.pay.rest.contract.OrderResponse;
 import com.xpay.pay.service.AppService;
-import com.xpay.pay.service.OrderService;
 import com.xpay.pay.service.PaymentService;
 import com.xpay.pay.service.RiskCheckService;
 import com.xpay.pay.service.StoreService;
@@ -44,13 +43,11 @@ public class PaymentRestService extends AuthRestService {
 	@Autowired
 	private StoreService storeService;
 	@Autowired
-	private OrderService orderService;
-	@Autowired
 	private AppService appService;
 	@Autowired
 	private RiskCheckService riskCheckService;
 	
-	@RequestMapping(value = "/unifiedorder ", method = RequestMethod.POST)
+	@RequestMapping(value = "/unifiedorder", method = RequestMethod.POST)
 	public BaseResponse<OrderResponse> unifiedOrder(
 			@RequestParam(required = false) String storeId,   //Store.code
 			@RequestParam(required = false) String payChannel, // ALIPAY("1"), WECHAT("2")
