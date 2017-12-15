@@ -8,6 +8,8 @@ import com.xpay.pay.service.OrderService;
 import com.xpay.pay.service.PaymentService;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +24,8 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/h5pay")
 public class HtmlViewController {
 
+  private static final Logger logger = LogManager.getLogger(HtmlViewController.class);
+
   @Autowired
   private OrderService orderService;
 
@@ -33,6 +37,7 @@ public class HtmlViewController {
 
   @RequestMapping("/{orderNo}")
   public ModelAndView pay(@PathVariable("orderNo") String orderNo) {
+    logger.info("h5pay :" + orderNo);
     Order order = orderService.findActiveByOrderNo(orderNo);
     if (order == null) {
       return new ModelAndView("error");
