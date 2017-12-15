@@ -118,9 +118,9 @@ public class IpsScanProxy extends AbstractIpsProxy {
     gateWayReq.setBody(body);
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     marshaller.marshal(body, new StreamResult(os));
-    logger.info("signature body: "+os.toString());
     String bodyStr = os.toString();
     bodyStr = bodyStr.substring(bodyStr.indexOf("<body>"));
+    logger.info("signature body: "+bodyStr);
     String signature = CryptoUtils.md5( bodyStr+ merCode + md5Signature);
     ReqHead head = new ReqHead();
     head.setMerCode(merCode);
