@@ -28,7 +28,7 @@
   </bean>
 
   <bean id="castorMarshaller" class="org.springframework.oxm.castor.CastorMarshaller" >
-    <property name="mappingLocation">
+    <property name="mappingLocations">
       <array>
         <value>/WEB-INF/castor/ips-notify.xml</value>
         <value>/WEB-INF/castor/ips-query-merbillno-req.xml</value>
