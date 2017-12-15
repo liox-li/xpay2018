@@ -6,39 +6,39 @@
 
   <class name="com.xpay.pay.proxy.ips.refund.rsp.Ips">
     <map-to xml="Ips"/>
-    <field name="refundRsp" nillable="true" required="true" type="com.xpay.pay.proxy.ips.refund.rsp.RefundRsp">
+    <field name="refundRsp" nillable="true" required="false" type="com.xpay.pay.proxy.ips.refund.rsp.RefundRsp">
       <bind-xml name="RefundRsp" node="element"/>
     </field>
   </class>
 
   <class name="com.xpay.pay.proxy.ips.refund.rsp.RefundRsp">
     <map-to xml="RefundRsp"/>
-    <field name="head" nillable="true" required="true" type="com.xpay.pay.proxy.ips.common.RspHead">
+    <field name="head" nillable="true" required="false" type="com.xpay.pay.proxy.ips.common.RspHead">
       <bind-xml name="head" node="element"/>
     </field>
-    <field name="body" nillable="true" required="true" type="com.xpay.pay.proxy.ips.refund.rsp.Body">
+    <field name="body" nillable="true" required="false" type="com.xpay.pay.proxy.ips.refund.rsp.Body">
       <bind-xml name="body" node="element"/>
     </field>
   </class>
 
   <class name="com.xpay.pay.proxy.ips.refund.rsp.Body">
     <map-to xml="body"/>
-    <field name="canRefundAmount" nillable="true" required="true" type="string">
+    <field name="canRefundAmount" nillable="true" required="false" type="string">
       <bind-xml name="CanRefundAmount" node="element"/>
     </field>
-    <field name="realRefundAmount" nillable="true" required="true" type="string">
+    <field name="realRefundAmount" nillable="true" required="false" type="string">
       <bind-xml name="RealRefundAmount" node="element"/>
     </field>
-    <field name="ipsBillNo" nillable="true" required="true" type="string">
+    <field name="ipsBillNo" nillable="true" required="false" type="string">
       <bind-xml name="IpsBillNo" node="element"/>
     </field>
-    <field name="refundTradeNo" nillable="true" required="true" type="string">
+    <field name="refundTradeNo" nillable="true" required="false" type="string">
       <bind-xml name="RefundTradeNo" node="element"/>
     </field>
-    <field name="ipsTradeTime" nillable="true" required="true" type="string">
+    <field name="ipsTradeTime" nillable="true" required="false" type="string">
       <bind-xml name="IpsTradeTime" node="element"/>
     </field>
-    <field name="status" nillable="true" required="true" type="string">
+    <field name="status" nillable="true" required="false" type="string">
       <bind-xml name="Status" node="element"/>
     </field>
   </class>
