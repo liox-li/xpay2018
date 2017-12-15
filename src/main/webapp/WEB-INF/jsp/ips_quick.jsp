@@ -8,9 +8,9 @@
   <input name="pGateWayReq" type="hidden" value="${pGateWayReq}" />
 </form>
 <script>
-window.onload= function(){
-   document.getElementById('form').submit();
-}
+//window.onload= function(){
+//   document.getElementById('form').submit();
+//}
 </script>
 </body>
 </html>

@@ -45,6 +45,8 @@
         <value>/WEB-INF/castor/ips-scan-rsp.xml</value>
       </array>
     </property>
+    <property name="suppressNamespaces" value="true" />
+    <property name="suppressXsiType" value="true" />
   </bean>
 
   <bean id="notifyUnmarshaller" class="org.springframework.oxm.castor.CastorMarshaller">
