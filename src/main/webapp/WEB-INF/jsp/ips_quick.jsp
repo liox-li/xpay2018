@@ -5,7 +5,7 @@
 <title>跳转中...</title>
 <body>
 <form action=" https://mobilegw.ips.com.cn/psfp-mgw/paymenth5.do " method="post">
-  <input name="pGateWayReq" type="hidden" value="${requestScope.pGateWayReq}" />
+  <input name="pGateWayReq" type="hidden" value="<%=pGateWayReq%>" />
 </form>
 </body>
 </html>
