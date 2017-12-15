@@ -106,10 +106,8 @@ public class IpsScanProxy extends AbstractIpsProxy {
     }
     body.setDate(date.substring(0, 8));
     body.setCurrencyType("156");
-    NumberFormat numberFormat = new DecimalFormat("#.##");
+    DecimalFormat numberFormat = new DecimalFormat("#.##");
     numberFormat.setGroupingUsed(false);
-    numberFormat.setMaximumFractionDigits(2);
-    numberFormat.setRoundingMode(RoundingMode.DOWN);
     body.setAmount(numberFormat.format(request.getTotalFee()));
     body.setLang("GB");
     body.setAttach(request.getAttach());
