@@ -8,7 +8,9 @@ public class ReqHead {
 
   private String version;
   private String merCode;
+  private String merName;
   private String account;
+  private String msgId;
   private String reqDate;
   private String signature;
 
@@ -28,12 +30,28 @@ public class ReqHead {
     this.merCode = merCode;
   }
 
+  public String getMerName() {
+    return merName;
+  }
+
+  public void setMerName(String merName) {
+    this.merName = merName;
+  }
+
   public String getAccount() {
     return account;
   }
 
   public void setAccount(String account) {
     this.account = account;
+  }
+
+  public String getMsgId() {
+    return msgId;
+  }
+
+  public void setMsgId(String msgId) {
+    this.msgId = msgId;
   }
 
   public String getReqDate() {

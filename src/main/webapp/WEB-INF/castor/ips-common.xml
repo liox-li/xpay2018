@@ -12,8 +12,14 @@
     <field name="merCode" nillable="true" required="true" type="string">
       <bind-xml name="MerCode" node="element"/>
     </field>
+    <field name="merName" nillable="true" required="true" type="string">
+      <bind-xml name="MerName" node="element"/>
+    </field>
     <field name="account" nillable="true" required="true" type="string">
       <bind-xml name="Account" node="element"/>
+    </field>
+    <field name="msgId" nillable="true" required="true" type="string">
+      <bind-xml name="MsgId" node="element"/>
     </field>
     <field name="reqDate" nillable="true" required="true" type="string">
       <bind-xml name="ReqDate" node="element"/>
