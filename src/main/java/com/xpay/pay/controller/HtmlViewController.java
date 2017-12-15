@@ -40,7 +40,7 @@ public class HtmlViewController {
     logger.info("h5pay :" + orderNo);
     Order order = orderService.findActiveByOrderNo(orderNo);
     if (order == null) {
-      return new ModelAndView("error");
+      return new ModelAndView("h5_error");
     }
     if (PaymentGateway.IPSQUICK.equals(order.getStoreChannel().getPaymentGateway())) {
       PaymentRequest paymentRequest = paymentService.toPaymentRequest(order);
@@ -50,6 +50,6 @@ public class HtmlViewController {
       return new ModelAndView("ips_quick", model);
     }
 
-    return new ModelAndView("error");
+    return new ModelAndView("h5_error");
   }
 }
