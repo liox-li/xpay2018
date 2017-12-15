@@ -6,7 +6,8 @@ import com.xpay.pay.proxy.chinaumsh5.ChinaUmsH5Proxy;
 import com.xpay.pay.proxy.chinaumsv2.ChinaUmsV2Proxy;
 import com.xpay.pay.proxy.chinaumsv3.ChinaUmsV3Proxy;
 import com.xpay.pay.proxy.chinaumswap.ChinaUmsWapProxy;
-import com.xpay.pay.proxy.ips.IpsProxy;
+import com.xpay.pay.proxy.ips.quick.IpsQuickProxy;
+import com.xpay.pay.proxy.ips.scan.IpsScanProxy;
 import com.xpay.pay.proxy.juzhen.JuZhenProxy;
 import com.xpay.pay.proxy.kefu.KeFuProxy;
 import com.xpay.pay.proxy.kekepay.KekePayProxy;
@@ -44,7 +45,9 @@ public class PaymentProxyFactory {
   @Autowired
   private QftxMpProxy qftxMpProxy;
   @Autowired
-  private IpsProxy ipsProxy;
+  private IpsScanProxy ipsScanProxy;
+  @Autowired
+  private IpsQuickProxy ipsQuickProxy;
 
   public IPaymentProxy getPaymentProxy(PaymentGateway channel) {
     switch (channel) {
@@ -70,8 +73,10 @@ public class PaymentProxyFactory {
         return kekePayProxy;
       case QFTXMP:
         return qftxMpProxy;
-      case IPS:
-        return ipsProxy;
+      case IPSSCAN:
+        return ipsScanProxy;
+      case IPSQUICK:
+        return ipsQuickProxy;
       default:
         return chinaUmsV2Proxy;
     }

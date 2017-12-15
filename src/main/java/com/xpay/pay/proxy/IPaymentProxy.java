@@ -10,9 +10,9 @@ public interface IPaymentProxy {
 
 	public static final String PAYED = "POST";
 	public static final String TOPAY = "TOPAY";
-	public static final String DEFAULT_JSAPI_URL = AppConfig.XPayConfig
-		      .getProperty("jsapi.endpoint");
-		 
+	public static final String DEFAULT_JSAPI_URL = AppConfig.XPayConfig.getProperty("jsapi.endpoint");
+	public static final String DEFAULT_H5API_URL = AppConfig.XPayConfig.getProperty("h5api.endpoint");
+
 	public PaymentResponse unifiedOrder(PaymentRequest request);
 	
 	public PaymentResponse query(PaymentRequest request);

@@ -6,19 +6,10 @@ package com.xpay.pay.proxy.ips.common;
  */
 public class ReqHead {
 
-  private String version = "v1.0.1";
   private String merCode;
   private String account;
   private String reqDate;
   private String signature;
-
-  public String getVersion() {
-    return version;
-  }
-
-  public void setVersion(String version) {
-    this.version = version;
-  }
 
   public String getMerCode() {
     return merCode;

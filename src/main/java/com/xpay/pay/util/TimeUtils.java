@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 public class TimeUtils {
 	public static final String TimePatternDate = "yyyy-MM-dd";
 	public static final String TimePatternTime = "yyyy-MM-dd HH:mm:ss";
+	public static final String TimeShortPatternTime = "yyyyMMddHHmmss";
 	
 	public static String formatTime(Date date, String pattern) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);

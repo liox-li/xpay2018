@@ -76,7 +76,7 @@ public class StoreChannel {
 		if(StringUtils.isNotBlank(props)) {
 			if(this.paymentGateway == PaymentGateway.CHINAUMSH5) {
 				this.channelProps = JsonUtils.fromJson(props, ChinaUmsProps.class);
-			} else if(this.paymentGateway == PaymentGateway.IPS) {
+			} else if(this.paymentGateway == PaymentGateway.IPSSCAN) {
 				this.channelProps = JsonUtils.fromJson(props, IpsProps.class);
 			} else if(this.paymentGateway == PaymentGateway.SUPay) {
 				this.channelProps = JsonUtils.fromJson(props, SUPayProps.class);
@@ -130,7 +130,8 @@ public class StoreChannel {
 		KEKEPAY("pay","query",""),
 		QFTXMP("pay", "query", ""),
 		SUPay("pay", "", ""),
-		IPS("pay","query", "refund");
+		IPSSCAN("pay","query", "refund"),
+		IPSQUICK("pay","query", "refund");
 
 		String unifiedOrder;
 		String query;

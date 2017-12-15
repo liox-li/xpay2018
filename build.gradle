@@ -135,6 +135,7 @@ dependencies {
 	compile 'dom4j:dom4j:1.6.1'
 	compile 'com.esotericsoftware:kryo:3.0.3'
 	compile 'org.codehaus.castor:castor-xml:1.4.1'
+	compile 'javax.servlet:jstl:1.2'
 	providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-all:1.9.5'
