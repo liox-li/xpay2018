@@ -43,36 +43,19 @@
   </bean>
 
   <bean id="notifyUnmarshaller" class="org.springframework.oxm.castor.CastorMarshaller" >
-    <property name="mappingLocation">
-      <array>
-        <value>/WEB-INF/castor/ips-notify.xml</value>
-      </array>
-    </property>
+    <property name="mappingLocation" value="/WEB-INF/castor/ips-notify.xml" />
   </bean>
 
   <bean id="queryUnmarshaller" class="org.springframework.oxm.castor.CastorMarshaller" >
-    <property name="mappingLocation">
-      <array>
-        <value>/WEB-INF/castor/ips-query-merbillno-rsp.xml</value>
-      </array>
-    </property>
+    <property name="mappingLocation" value="/WEB-INF/castor/ips-query-merbillno-rsp.xml" />
   </bean>
 
   <bean id="scanUnmarshaller" class="org.springframework.oxm.castor.CastorMarshaller" >
-    <property name="mappingLocation">
-      <array>
-        <value>/WEB-INF/castor/ips-scan-rsp.xml</value>
-      </array>
-    </property>
+    <property name="mappingLocation" value="/WEB-INF/castor/ips-scan-rsp.xml" />
   </bean>
 
   <bean id="refundUnmarshaller" class="org.springframework.oxm.castor.CastorMarshaller" >
-    <property name="mappingLocation">
-      <array>
-        <value>/WEB-INF/castor/ips-refund-rsp.xml</value>
-      </array>
-    </property>
+    <property name="mappingLocation" value="/WEB-INF/castor/ips-refund-rsp.xml" />
   </bean>
-
 
 </beans>
