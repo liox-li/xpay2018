@@ -1,43 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapping PUBLIC "-//EXOLAB/Castor Mapping DTD Version 1.0//EN" "http://castor.org/mapping.dtd">
+<!DOCTYPE mapping PUBLIC "-//EXOLAB/Castor Mapping DTD Version 1.0//EN"
+  "http://castor.org/mapping.dtd">
 
 <mapping>
 
   <class name="com.xpay.pay.proxy.ips.refund.rsp.Ips">
     <map-to xml="Ips"/>
-    <field name="refundRsp" type="com.xpay.pay.proxy.ips.refund.rsp.RefundRsp">
+    <field name="refundRsp" required="true" type="com.xpay.pay.proxy.ips.refund.rsp.RefundRsp">
       <bind-xml name="RefundRsp" node="element"/>
     </field>
   </class>
 
   <class name="com.xpay.pay.proxy.ips.refund.rsp.RefundRsp">
     <map-to xml="RefundRsp"/>
-    <field name="head" type="com.xpay.pay.proxy.ips.common.RspHead">
+    <field name="head" required="true" type="com.xpay.pay.proxy.ips.common.RspHead">
       <bind-xml name="head" node="element"/>
     </field>
-    <field name="body" type="com.xpay.pay.proxy.ips.refund.rsp.Body">
+    <field name="body" required="true" type="com.xpay.pay.proxy.ips.refund.rsp.Body">
       <bind-xml name="body" node="element"/>
     </field>
   </class>
 
   <class name="com.xpay.pay.proxy.ips.refund.rsp.Body">
     <map-to xml="body"/>
-    <field name="canRefundAmount" type="string">
+    <field name="canRefundAmount" required="true" type="string">
       <bind-xml name="CanRefundAmount" node="element"/>
     </field>
-    <field name="realRefundAmount" type="string">
+    <field name="realRefundAmount" required="true" type="string">
       <bind-xml name="RealRefundAmount" node="element"/>
     </field>
-    <field name="ipsBillNo" type="string">
+    <field name="ipsBillNo" required="true" type="string">
       <bind-xml name="IpsBillNo" node="element"/>
     </field>
-    <field name="refundTradeNo" type="string">
+    <field name="refundTradeNo" required="true" type="string">
       <bind-xml name="RefundTradeNo" node="element"/>
     </field>
-    <field name="ipsTradeTime" type="string">
+    <field name="ipsTradeTime" required="true" type="string">
       <bind-xml name="IpsTradeTime" node="element"/>
     </field>
-    <field name="status" type="string">
+    <field name="status" required="true" type="string">
       <bind-xml name="Status" node="element"/>
     </field>
   </class>

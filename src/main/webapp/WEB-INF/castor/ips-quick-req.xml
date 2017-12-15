@@ -1,88 +1,89 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapping PUBLIC "-//EXOLAB/Castor Mapping DTD Version 1.0//EN" "http://castor.org/mapping.dtd">
+<!DOCTYPE mapping PUBLIC "-//EXOLAB/Castor Mapping DTD Version 1.0//EN"
+  "http://castor.org/mapping.dtd">
 
 <mapping>
 
   <class name="com.xpay.pay.proxy.ips.quick.req.Ips">
     <map-to xml="Ips"/>
-    <field name="gateWayReq" type="com.xpay.pay.proxy.ips.quick.req.GateWayReq">
+    <field name="gateWayReq" required="true" type="com.xpay.pay.proxy.ips.quick.req.GateWayReq">
       <bind-xml name="GateWayReq" node="element"/>
     </field>
   </class>
 
   <class name="com.xpay.pay.proxy.ips.quick.req.GateWayReq">
     <map-to xml="GateWayReq"/>
-    <field name="head" type="com.xpay.pay.proxy.ips.common.ReqHead">
+    <field name="head" required="true" type="com.xpay.pay.proxy.ips.common.ReqHead">
       <bind-xml name="head" node="element"/>
     </field>
-    <field name="body" type="com.xpay.pay.proxy.ips.quick.req.Body">
+    <field name="body" required="true" type="com.xpay.pay.proxy.ips.quick.req.Body">
       <bind-xml name="body" node="element"/>
     </field>
   </class>
 
   <class name="com.xpay.pay.proxy.ips.quick.req.Body">
     <map-to xml="body"/>
-    <field name="merBillNo" type="string">
+    <field name="merBillNo" required="true" type="string">
       <bind-xml name="MerBillNo" node="element"/>
     </field>
-    <field name="amount" type="string">
+    <field name="amount" required="true" type="string">
       <bind-xml name="Amount" node="element"/>
     </field>
-    <field name="date" type="string">
+    <field name="date" required="true" type="string">
       <bind-xml name="Date" node="element"/>
     </field>
-    <field name="currencyType" type="string">
+    <field name="currencyType" required="true" type="string">
       <bind-xml name="CurrencyType" node="element"/>
     </field>
-    <field name="gatewayType" type="string">
+    <field name="gatewayType" required="true" type="string">
       <bind-xml name="GatewayType" node="element"/>
     </field>
-    <field name="lang" type="string">
+    <field name="lang" required="true" type="string">
       <bind-xml name="Lang" node="element"/>
     </field>
-    <field name="merchanturl" type="string">
+    <field name="merchanturl" required="true" type="string">
       <bind-xml name="Merchanturl" node="element"/>
     </field>
-    <field name="failUrl" type="string">
+    <field name="failUrl" required="true" type="string">
       <bind-xml name="FailUrl" node="element"/>
     </field>
-    <field name="attach" type="string">
+    <field name="attach" required="true" type="string">
       <bind-xml name="Attach" node="element"/>
     </field>
-    <field name="orderEncodeType" type="string">
+    <field name="orderEncodeType" required="true" type="string">
       <bind-xml name="OrderEncodeType" node="element"/>
     </field>
-    <field name="retEncodeType" type="string">
+    <field name="retEncodeType" required="true" type="string">
       <bind-xml name="RetEncodeType" node="element"/>
     </field>
-    <field name="retType" type="string">
+    <field name="retType" required="true" type="string">
       <bind-xml name="RetType" node="element"/>
     </field>
-    <field name="serverUrl" type="string">
+    <field name="serverUrl" required="true" type="string">
       <bind-xml name="ServerUrl" node="element"/>
     </field>
-    <field name="billEXP" type="string">
+    <field name="billEXP" required="true" type="string">
       <bind-xml name="BillEXP" node="element"/>
     </field>
-    <field name="goodsName" type="string">
+    <field name="goodsName" required="true" type="string">
       <bind-xml name="GoodsName" node="element"/>
     </field>
-    <field name="isCredit" type="string">
+    <field name="isCredit" required="true" type="string">
       <bind-xml name="IsCredit" node="element"/>
     </field>
-    <field name="bankCode" type="string">
+    <field name="bankCode" required="true" type="string">
       <bind-xml name="BankCode" node="element"/>
     </field>
-    <field name="productType" type="string">
+    <field name="productType" required="true" type="string">
       <bind-xml name="ProductType" node="element"/>
     </field>
-    <field name="userRealName" type="string">
+    <field name="userRealName" required="true" type="string">
       <bind-xml name="UserRealName" node="element"/>
     </field>
-    <field name="userId" type="string">
+    <field name="userId" required="true" type="string">
       <bind-xml name="UserId" node="element"/>
     </field>
-    <field name="cardInfo" type="string">
+    <field name="cardInfo" required="true" type="string">
       <bind-xml name="CardInfo" node="element"/>
     </field>
   </class>

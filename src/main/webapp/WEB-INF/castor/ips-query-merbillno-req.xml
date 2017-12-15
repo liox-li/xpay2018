@@ -1,34 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapping PUBLIC "-//EXOLAB/Castor Mapping DTD Version 1.0//EN" "http://castor.org/mapping.dtd">
+<!DOCTYPE mapping PUBLIC "-//EXOLAB/Castor Mapping DTD Version 1.0//EN"
+  "http://castor.org/mapping.dtd">
 
 <mapping>
 
   <class name="com.xpay.pay.proxy.ips.query.merbillno.req.Ips">
     <map-to xml="Ips"/>
-    <field name="orderQueryReq" type="com.xpay.pay.proxy.ips.query.merbillno.req.OrderQueryReq">
+    <field name="orderQueryReq" required="true"
+      type="com.xpay.pay.proxy.ips.query.merbillno.req.OrderQueryReq">
       <bind-xml name="OrderQueryReq" node="element"/>
     </field>
   </class>
 
   <class name="com.xpay.pay.proxy.ips.query.merbillno.req.OrderQueryReq">
     <map-to xml="OrderQueryReq"/>
-    <field name="head" type="com.xpay.pay.proxy.ips.common.ReqHead">
+    <field name="head" required="true" type="com.xpay.pay.proxy.ips.common.ReqHead">
       <bind-xml name="head" node="element"/>
     </field>
-    <field name="body" type="com.xpay.pay.proxy.ips.query.merbillno.req.Body">
+    <field name="body" required="true" type="com.xpay.pay.proxy.ips.query.merbillno.req.Body">
       <bind-xml name="body" node="element"/>
     </field>
   </class>
 
   <class name="com.xpay.pay.proxy.ips.query.merbillno.req.Body">
     <map-to xml="body"/>
-    <field name="merBillNo" type="string">
+    <field name="merBillNo" required="true" type="string">
       <bind-xml name="MerBillNo" node="element"/>
     </field>
-    <field name="date" type="string">
+    <field name="date" required="true" type="string">
       <bind-xml name="Date" node="element"/>
     </field>
-    <field name="amount" type="string">
+    <field name="amount" required="true" type="string">
       <bind-xml name="Amount" node="element"/>
     </field>
   </class>
