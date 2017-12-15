@@ -27,7 +27,7 @@
     <property name="portName" value="WSRefundSoap"/>
   </bean>
 
-  <bean id="castorMarshaller" class="org.springframework.oxm.castor.CastorMarshaller" >
+  <bean id="ipsMarshaller" class="org.springframework.oxm.castor.CastorMarshaller" >
     <property name="mappingLocations">
       <array>
         <value>/WEB-INF/castor/ips-notify.xml</value>
