@@ -20,7 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
  * Created by sunjian on Date: 2017/12/15 下午2:12
  * Description:
  */
-@RequestMapping("/h5pay")
+@RequestMapping("/pay")
 public class HtmlViewController {
 
   private static final Logger logger = LogManager.getLogger(HtmlViewController.class);

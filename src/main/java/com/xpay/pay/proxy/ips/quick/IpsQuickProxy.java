@@ -35,7 +35,7 @@ public class IpsQuickProxy extends AbstractIpsProxy {
       throw new GatewayException(ApplicationConstants.CODE_COMMON,
           "Total fee must be more than 0.");
     }
-    String url = DEFAULT_H5API_URL + "/" + request.getOrderNo();
+    String url = DEFAULT_H5API_URL + request.getOrderNo();
     PaymentResponse response = new PaymentResponse();
     response.setCode(PaymentResponse.SUCCESS);
     Bill bill = new Bill();

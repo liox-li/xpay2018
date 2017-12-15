@@ -82,6 +82,11 @@
 
 	<servlet-mapping>
 		<servlet-name>pay</servlet-name>
+		<url-pattern>/h5/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>pay</servlet-name>
 		<url-pattern>/admin/*</url-pattern>
 	</servlet-mapping>
 	
