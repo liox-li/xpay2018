@@ -120,7 +120,7 @@ public class IpsScanProxy extends AbstractIpsProxy {
     marshaller.marshal(body, new StreamResult(os));
     String bodyStr = os.toString();
     bodyStr = bodyStr.substring(bodyStr.indexOf("<body>"));
-    logger.info("signature body: "+bodyStr);
+    logger.info("signature body: "+bodyStr+ merCode + md5Signature);
     String signature = CryptoUtils.md5( bodyStr+ merCode + md5Signature);
     ReqHead head = new ReqHead();
     head.setMerCode(merCode);
