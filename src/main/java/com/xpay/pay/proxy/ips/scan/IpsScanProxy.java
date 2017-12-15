@@ -73,7 +73,7 @@ public class IpsScanProxy extends AbstractIpsProxy {
       bill.setOrderStatus(OrderStatus.NOTPAY);
       response.setBill(bill);
       return response;
-    } catch (IOException e) {
+    } catch (Exception e) {
       logger.error(e.getMessage(), e);
     }
 
