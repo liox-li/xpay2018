@@ -23,8 +23,6 @@
 	<mvc:default-servlet-handler />
 	<mvc:annotation-driven />
 
-	<bean id="HtmlViewController" class="com.xpay.pay.controller.HtmlViewController"/>
-
 	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
 		<property name="prefix" value="/WEB-INF/jsp/"/>
