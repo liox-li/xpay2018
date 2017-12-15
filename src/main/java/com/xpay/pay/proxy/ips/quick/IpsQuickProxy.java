@@ -93,7 +93,9 @@ public class IpsQuickProxy extends AbstractIpsProxy {
     gateWayReq.setBody(body);
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     marshaller.marshal(body, new StreamResult(os));
-    String signature = CryptoUtils.md5(os.toString() + merCode + md5Signature);
+    String bodyStr = os.toString();
+    bodyStr = bodyStr.substring(bodyStr.indexOf("<body>"));
+    String signature = CryptoUtils.md5(bodyStr + merCode + md5Signature);
     ReqHead head = new ReqHead();
     head.setMerCode(merCode);
     head.setAccount(account);
