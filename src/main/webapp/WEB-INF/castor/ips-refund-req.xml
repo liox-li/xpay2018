@@ -3,8 +3,6 @@
 
 <mapping>
 
-  <include href="ips-common.xml"/>
-
   <class name="com.xpay.pay.proxy.ips.refund.req.Ips">
     <map-to xml="Ips"/>
     <field name="refundReq" type="com.xpay.pay.proxy.ips.refund.req.RefundReq">

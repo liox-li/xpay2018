@@ -3,8 +3,6 @@
 
 <mapping>
 
-  <include href="ips-common.xml"/>
-
   <class name="com.xpay.pay.proxy.ips.query.merbillno.rsp.Ips">
     <map-to xml="Ips"/>
     <field name="orderQueryRsp" type="com.xpay.pay.proxy.ips.query.merbillno.rsp.OrderQueryRsp">

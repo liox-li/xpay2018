@@ -3,8 +3,6 @@
 
 <mapping>
 
-  <include href="ips-common.xml"/>
-
   <class name="com.xpay.pay.proxy.ips.quick.req.Ips">
     <map-to xml="Ips"/>
     <field name="gateWayReq" type="com.xpay.pay.proxy.ips.quick.req.GateWayReq">

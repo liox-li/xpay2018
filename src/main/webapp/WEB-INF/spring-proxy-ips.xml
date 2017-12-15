@@ -5,15 +5,18 @@
 
   <bean id="scanService" class="org.springframework.remoting.jaxws.JaxWsPortProxyFactoryBean">
     <property name="serviceInterface" value="cn.com.ips.payat.webservice.scan.ScanService"/>
-    <property name="wsdlDocumentUrl" value="https://thumbpay.e-years.com/psfp-webscan/services/scan?wsdl"/>
+    <property name="wsdlDocumentUrl"
+      value="https://thumbpay.e-years.com/psfp-webscan/services/scan?wsdl"/>
     <property name="namespaceUri" value="http://payat.ips.com.cn/WebService/Scan"/>
     <property name="serviceName" value="WSScan"/>
     <property name="portName" value="WSScanSoap"/>
   </bean>
 
   <bean id="orderQueryService" class="org.springframework.remoting.jaxws.JaxWsPortProxyFactoryBean">
-    <property name="serviceInterface" value="cn.com.ips.payat.webservice.orderquery.OrderQueryService"/>
-    <property name="wsdlDocumentUrl" value="https://newpay.ips.com.cn/psfp-entry/services/order?wsdl"/>
+    <property name="serviceInterface"
+      value="cn.com.ips.payat.webservice.orderquery.OrderQueryService"/>
+    <property name="wsdlDocumentUrl"
+      value="https://newpay.ips.com.cn/psfp-entry/services/order?wsdl"/>
     <property name="namespaceUri" value="http://payat.ips.com.cn/WebService/OrderQuery"/>
     <property name="serviceName" value="WSOrderQuery"/>
     <property name="portName" value="WSOrderQuerySoap"/>
@@ -21,15 +24,17 @@
 
   <bean id="refundService" class="org.springframework.remoting.jaxws.JaxWsPortProxyFactoryBean">
     <property name="serviceInterface" value="cn.com.ips.payat.webservice.refund.RefundService"/>
-    <property name="wsdlDocumentUrl" value="https://newpay.ips.com.cn/psfp-entry/services/refund?wsdl"/>
+    <property name="wsdlDocumentUrl"
+      value="https://newpay.ips.com.cn/psfp-entry/services/refund?wsdl"/>
     <property name="namespaceUri" value="http://payat.ips.com.cn/WebService/Refund"/>
     <property name="serviceName" value="WSRefund"/>
     <property name="portName" value="WSRefundSoap"/>
   </bean>
 
-  <bean id="ipsMarshaller" class="org.springframework.oxm.castor.CastorMarshaller" >
+  <bean id="ipsMarshaller" class="org.springframework.oxm.castor.CastorMarshaller">
     <property name="mappingLocations">
       <array>
+        <value>/WEB-INF/castor/ips-common.xml</value>
         <value>/WEB-INF/castor/ips-notify.xml</value>
         <value>/WEB-INF/castor/ips-query-merbillno-req.xml</value>
         <value>/WEB-INF/castor/ips-query-merbillno-rsp.xml</value>
@@ -42,20 +47,40 @@
     </property>
   </bean>
 
-  <bean id="notifyUnmarshaller" class="org.springframework.oxm.castor.CastorMarshaller" >
-    <property name="mappingLocation" value="/WEB-INF/castor/ips-notify.xml" />
+  <bean id="notifyUnmarshaller" class="org.springframework.oxm.castor.CastorMarshaller">
+    <property name="mappingLocations">
+      <array>
+        <value>/WEB-INF/castor/ips-common.xml</value>
+        <value>/WEB-INF/castor/ips-notify.xml</value>
+      </array>
+    </property>
   </bean>
 
-  <bean id="queryUnmarshaller" class="org.springframework.oxm.castor.CastorMarshaller" >
-    <property name="mappingLocation" value="/WEB-INF/castor/ips-query-merbillno-rsp.xml" />
+  <bean id="queryUnmarshaller" class="org.springframework.oxm.castor.CastorMarshaller">
+    <property name="mappingLocations">
+      <array>
+        <value>/WEB-INF/castor/ips-common.xml</value>
+        <value>/WEB-INF/castor/ips-query-merbillno-rsp.xml</value>
+      </array>
+    </property>
   </bean>
 
-  <bean id="scanUnmarshaller" class="org.springframework.oxm.castor.CastorMarshaller" >
-    <property name="mappingLocation" value="/WEB-INF/castor/ips-scan-rsp.xml" />
+  <bean id="scanUnmarshaller" class="org.springframework.oxm.castor.CastorMarshaller">
+    <property name="mappingLocations">
+      <array>
+        <value>/WEB-INF/castor/ips-common.xml</value>
+        <value>/WEB-INF/castor/ips-scan-rsp.xml</value>
+      </array>
+    </property>
   </bean>
 
-  <bean id="refundUnmarshaller" class="org.springframework.oxm.castor.CastorMarshaller" >
-    <property name="mappingLocation" value="/WEB-INF/castor/ips-refund-rsp.xml" />
+  <bean id="refundUnmarshaller" class="org.springframework.oxm.castor.CastorMarshaller">
+    <property name="mappingLocations">
+      <array>
+        <value>/WEB-INF/castor/ips-common.xml</value>
+        <value>/WEB-INF/castor/ips-refund-rsp.xml</value>
+      </array>
+    </property>
   </bean>
 
 </beans>
