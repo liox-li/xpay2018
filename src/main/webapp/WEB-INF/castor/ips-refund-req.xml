@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapping PUBLIC "-//EXOLAB/Castor Mapping DTD Version 1.0//EN" "http://castor.org/mapping.dtd">
+
+<mapping>
+
+  <include href="ips-common.xml"/>
+
+  <class name="com.xpay.pay.proxy.ips.refund.req.Ips">
+    <map-to xml="Ips"/>
+    <field name="refundReq" type="com.xpay.pay.proxy.ips.refund.req.RefundReq">
+      <bind-xml name="RefundReq" node="element"/>
+    </field>
+  </class>
+
+  <class name="com.xpay.pay.proxy.ips.refund.req.RefundReq">
+    <map-to xml="RefundReq"/>
+    <field name="head" type="com.xpay.pay.proxy.ips.common.ReqHead">
+      <bind-xml name="head" node="element"/>
+    </field>
+    <field name="body" type="com.xpay.pay.proxy.ips.refund.req.Body">
+      <bind-xml name="body" node="element"/>
+    </field>
+  </class>
+
+  <class name="com.xpay.pay.proxy.ips.refund.req.Body">
+    <map-to xml="body"/>
+    <field name="orgMerTime" type="string">
+      <bind-xml name="OrgMerTime" node="element"/>
+    </field>
+    <field name="orgMerBillNo" type="string">
+      <bind-xml name="OrgMerBillNo" node="element"/>
+    </field>
+    <field name="billAmount" type="string">
+      <bind-xml name="BillAmount" node="element"/>
+    </field>
+    <field name="refundAmount" type="string">
+      <bind-xml name="RefundAmount" node="element"/>
+    </field>
+    <field name="refundMemo" type="string">
+      <bind-xml name="RefundMemo" node="element"/>
+    </field>
+    <field name="merBillNo" type="string">
+      <bind-xml name="MerBillNo" node="element"/>
+    </field>
+  </class>
+</mapping>

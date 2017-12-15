@@ -22,6 +22,8 @@ import java.text.NumberFormat;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.oxm.Unmarshaller;
 import org.springframework.stereotype.Component;
 
 /**
@@ -33,6 +35,10 @@ public class IpsScanProxy extends AbstractIpsProxy {
 
   @Autowired
   private ScanService scanService;
+
+  @Qualifier("scanUnmarshaller")
+  @Autowired
+  protected Unmarshaller unmarshaller;
 
   @Override
   public PaymentResponse unifiedOrder(PaymentRequest request) {

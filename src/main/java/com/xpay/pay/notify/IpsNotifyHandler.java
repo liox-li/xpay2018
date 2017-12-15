@@ -6,6 +6,7 @@ import java.io.ByteArrayInputStream;
 import java.net.URLDecoder;
 import javax.xml.transform.stream.StreamSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.oxm.Unmarshaller;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class IpsNotifyHandler extends AbstractNotifyHandler {
 
+  @Qualifier("notifyUnmarshaller")
   @Autowired
   Unmarshaller unmarshaller;
 

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapping PUBLIC "-//EXOLAB/Castor Mapping DTD Version 1.0//EN" "http://castor.org/mapping.dtd">
+
+<mapping>
+
+  <include href="ips-common.xml"/>
+
+  <class name="com.xpay.pay.proxy.ips.refund.rsp.Ips">
+    <map-to xml="Ips"/>
+    <field name="refundRsp" type="com.xpay.pay.proxy.ips.refund.rsp.RefundRsp">
+      <bind-xml name="RefundRsp" node="element"/>
+    </field>
+  </class>
+
+  <class name="com.xpay.pay.proxy.ips.refund.rsp.RefundRsp">
+    <map-to xml="RefundRsp"/>
+    <field name="head" type="com.xpay.pay.proxy.ips.common.RspHead">
+      <bind-xml name="head" node="element"/>
+    </field>
+    <field name="body" type="com.xpay.pay.proxy.ips.refund.rsp.Body">
+      <bind-xml name="body" node="element"/>
+    </field>
+  </class>
+
+  <class name="com.xpay.pay.proxy.ips.refund.rsp.Body">
+    <map-to xml="body"/>
+    <field name="canRefundAmount" type="string">
+      <bind-xml name="CanRefundAmount" node="element"/>
+    </field>
+    <field name="realRefundAmount" type="string">
+      <bind-xml name="RealRefundAmount" node="element"/>
+    </field>
+    <field name="ipsBillNo" type="string">
+      <bind-xml name="IpsBillNo" node="element"/>
+    </field>
+    <field name="refundTradeNo" type="string">
+      <bind-xml name="RefundTradeNo" node="element"/>
+    </field>
+    <field name="ipsTradeTime" type="string">
+      <bind-xml name="IpsTradeTime" node="element"/>
+    </field>
+    <field name="status" type="string">
+      <bind-xml name="Status" node="element"/>
+    </field>
+  </class>
+</mapping>

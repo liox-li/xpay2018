@@ -26,6 +26,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.Unmarshaller;
 import org.springframework.util.StringUtils;
@@ -46,8 +47,14 @@ public abstract class AbstractIpsProxy implements IPaymentProxy{
 
   @Autowired
   protected Marshaller marshaller;
+
+  @Qualifier("queryUnmarshaller")
   @Autowired
-  protected Unmarshaller unmarshaller;
+  protected Unmarshaller queryUnmarshaller;
+
+  @Qualifier("refundUnmarshaller")
+  @Autowired
+  protected Unmarshaller refundUnmarshaller;
 
   @Override
   public PaymentResponse query(PaymentRequest request) {
@@ -86,7 +93,7 @@ public abstract class AbstractIpsProxy implements IPaymentProxy{
       String rsp = orderQueryService.getOrderByMerBillNo(req);
       logger.info("ips query response: " + rsp);
       StreamSource streamSource = new StreamSource(new ByteArrayInputStream(rsp.getBytes()));
-      com.xpay.pay.proxy.ips.query.merbillno.rsp.Ips respIps = (com.xpay.pay.proxy.ips.query.merbillno.rsp.Ips) unmarshaller
+      com.xpay.pay.proxy.ips.query.merbillno.rsp.Ips respIps = (com.xpay.pay.proxy.ips.query.merbillno.rsp.Ips) queryUnmarshaller
           .unmarshal(streamSource);
       if (!SUCCESS.equals(respIps.getOrderQueryRsp().getHead().getRspCode())) {
         throw new GatewayException(respIps.getOrderQueryRsp().getHead().getRspCode(),
@@ -162,7 +169,7 @@ public abstract class AbstractIpsProxy implements IPaymentProxy{
       String rsp = refundService.refund(req);
       logger.info("ips refund response: " + rsp);
       StreamSource streamSource = new StreamSource(new ByteArrayInputStream(rsp.getBytes()));
-      com.xpay.pay.proxy.ips.refund.rsp.Ips respIps = (com.xpay.pay.proxy.ips.refund.rsp.Ips) unmarshaller
+      com.xpay.pay.proxy.ips.refund.rsp.Ips respIps = (com.xpay.pay.proxy.ips.refund.rsp.Ips) refundUnmarshaller
           .unmarshal(streamSource);
       if (!SUCCESS.equals(respIps.getRefundRsp().getHead().getRspCode())) {
         throw new GatewayException(respIps.getRefundRsp().getHead().getRspCode(),

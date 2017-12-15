@@ -47,9 +47,7 @@
 
 	<!-- Enable scanning of spring @Configuration classes -->
 	<context:annotation-config />
-	<bean id="castorMarshaller" class="org.springframework.oxm.castor.CastorMarshaller" >
-		<property name="mappingLocation" value="/WEB-INF/castor-mapping.xml" />
-	</bean>
+
 	<import resource="spring-restful.xml" />
 	<import resource="spring-dao.xml" />
 	<import resource="spring-proxy-ips.xml" />

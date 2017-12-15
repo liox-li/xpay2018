@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapping PUBLIC "-//EXOLAB/Castor Mapping DTD Version 1.0//EN" "http://castor.org/mapping.dtd">
+
+<mapping>
+
+  <include href="ips-common.xml"/>
+
+  <class name="com.xpay.pay.proxy.ips.scan.gatewayrsp.Ips">
+    <map-to xml="Ips"/>
+    <field name="gateWayRsp" type="com.xpay.pay.proxy.ips.scan.gatewayrsp.GateWayRsp">
+      <bind-xml name="GateWayRsp" node="element"/>
+    </field>
+  </class>
+
+  <class name="com.xpay.pay.proxy.ips.scan.gatewayrsp.GateWayRsp">
+    <map-to xml="GateWayRsp"/>
+    <field name="head" type="com.xpay.pay.proxy.ips.common.RspHead">
+      <bind-xml name="head" node="element"/>
+    </field>
+    <field name="body" type="com.xpay.pay.proxy.ips.scan.gatewayrsp.Body">
+      <bind-xml name="body" node="element"/>
+    </field>
+  </class>
+
+  <class name="com.xpay.pay.proxy.ips.scan.gatewayrsp.Body">
+    <map-to xml="body"/>
+    <field name="qrCode" type="string">
+      <bind-xml name="QrCode" node="element"/>
+    </field>
+  </class>
+
+</mapping>
