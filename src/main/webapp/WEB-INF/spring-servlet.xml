@@ -21,6 +21,7 @@
 
 	<!-- Serve static content -->
 	<mvc:default-servlet-handler />
+	<mvc:annotation-driven />
 
 	<bean id="HtmlViewController" class="com.xpay.pay.controller.HtmlViewController"/>
 
