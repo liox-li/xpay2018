@@ -191,7 +191,7 @@ public class ChinaUmsH5Proxy implements IPaymentProxy {
 			chinaUmsH5Request.setMid(strArrays[0]);
 			chinaUmsH5Request.setTid(strArrays[1]);
 		}
-		chinaUmsH5Request.setInstMid(instMid);
+		chinaUmsH5Request.setInstMid(this.getInstMid(request.getChannelProps()));
 		chinaUmsH5Request.setGoods(request.getGoods());
 		chinaUmsH5Request.setOrderDesc(request.getSubject());
 		if(request.getTotalFee()!=null) {
@@ -222,35 +222,43 @@ public class ChinaUmsH5Proxy implements IPaymentProxy {
 	}
 	
 	private String getMsgSrcId(ChannelProps props) {
-		ChinaUmsProps chinaUmsProps = (ChinaUmsProps)props;
 		if(props!=null) {
-			return chinaUmsProps.getMsgSrcId();
+			ChinaUmsProps chinaUmsProps = (ChinaUmsProps)props;
+			return StringUtils.isNotBlank(chinaUmsProps.getMsgSrcId())?chinaUmsProps.getMsgSrcId():msgSrcId;
 		}
 		return msgSrcId;
 	}
 	
 	private String getMsgSrc(ChannelProps props) {
-		ChinaUmsProps chinaUmsProps = (ChinaUmsProps)props;
 		if(props!=null) {
-			return chinaUmsProps.getMsgSrc();
+			ChinaUmsProps chinaUmsProps = (ChinaUmsProps)props;
+			return StringUtils.isNotBlank(chinaUmsProps.getMsgSrc())?chinaUmsProps.getMsgSrc():msgSrc;
 		}
 		return msgSrc;
 	}
 	
 	private String getTid(ChannelProps props) {
-		ChinaUmsProps chinaUmsProps = (ChinaUmsProps)props;
 		if(props!=null) {
-			return chinaUmsProps.getTid();
+			ChinaUmsProps chinaUmsProps = (ChinaUmsProps)props;
+			return StringUtils.isNotBlank(chinaUmsProps.getTid())?chinaUmsProps.getTid():tid;
 		}
 		return tid;
 	}
 
 	private String getSignKey(ChannelProps props) {
-		ChinaUmsProps chinaUmsProps = (ChinaUmsProps)props;
 		if(props!=null) {
-			return chinaUmsProps.getSignKey();
+			ChinaUmsProps chinaUmsProps = (ChinaUmsProps)props;
+			return StringUtils.isNotBlank(chinaUmsProps.getSignKey())?chinaUmsProps.getSignKey():signKey;
 		}
 		return signKey;
+	}
+	
+	private String getInstMid(ChannelProps props) {
+		if(props!=null) {
+			ChinaUmsProps chinaUmsProps = (ChinaUmsProps)props;
+			return StringUtils.isNotBlank(chinaUmsProps.getInstMid())?chinaUmsProps.getInstMid():instMid;
+		}
+		return instMid;
 	}
 	
 	private static final String WECHAT = "WXPay.jsPay";

@@ -161,6 +161,7 @@ public class StoreChannel {
 		private String msgSrcId;
 		private String msgSrc;
 		private String signKey;
+		private String instMid;
 		public String getTid() {
 			return tid;
 		}
@@ -184,6 +185,12 @@ public class StoreChannel {
 		}
 		public void setSignKey(String signKey) {
 			this.signKey = signKey;
+		}
+		public String getInstMid() {
+			return instMid;
+		}
+		public void setInstMid(String instMid) {
+			this.instMid = instMid;
 		}
 	}
 
