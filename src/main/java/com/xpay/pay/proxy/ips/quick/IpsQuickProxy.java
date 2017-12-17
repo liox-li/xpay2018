@@ -77,8 +77,6 @@ public class IpsQuickProxy extends AbstractIpsProxy {
     body.setCurrencyType("156");
     NumberFormat numberFormat = new DecimalFormat("#.##");
     numberFormat.setGroupingUsed(false);
-    numberFormat.setMaximumFractionDigits(2);
-    numberFormat.setRoundingMode(RoundingMode.DOWN);
     body.setAmount(numberFormat.format(request.getTotalFee()));
     body.setLang("GB");
     body.setMerchanturl(request.getReturnUrl()+"?success");
