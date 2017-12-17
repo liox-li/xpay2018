@@ -213,6 +213,7 @@ public class PaymentService {
 		} else if(PaymentGateway.IPSQUICK.equals(gateway)
 				||PaymentGateway.IPSSCAN.equals(gateway)) {
 			request.setOrderTime(order.getOrderTime());
+			request.setTotalFee(order.getTotalFee());
 		}
 		request.setExtStoreId(order.getStoreChannel().getExtStoreId());
 		request.setChannelProps(order.getStoreChannel().getChannelProps());

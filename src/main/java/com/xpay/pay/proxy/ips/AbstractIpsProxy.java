@@ -74,8 +74,6 @@ public abstract class AbstractIpsProxy implements IPaymentProxy{
       body.setDate(date.substring(0, 8));
       NumberFormat numberFormat = new DecimalFormat("#.##");
       numberFormat.setGroupingUsed(false);
-      numberFormat.setMaximumFractionDigits(2);
-      numberFormat.setRoundingMode(RoundingMode.DOWN);
       body.setAmount(numberFormat.format(request.getTotalFee()));
       orderQueryReq.setBody(body);
       ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -151,8 +149,6 @@ public abstract class AbstractIpsProxy implements IPaymentProxy{
       body.setOrgMerTime(date.substring(0, 8));
       NumberFormat numberFormat = new DecimalFormat("#.##");
       numberFormat.setGroupingUsed(false);
-      numberFormat.setMaximumFractionDigits(2);
-      numberFormat.setRoundingMode(RoundingMode.DOWN);
       body.setBillAmount(numberFormat.format(request.getTotalFee()));
       body.setRefundAmount(numberFormat.format(request.getTotalFee()));
       refundReq.setBody(body);
