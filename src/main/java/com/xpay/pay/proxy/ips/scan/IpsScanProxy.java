@@ -16,9 +16,7 @@ import com.xpay.pay.util.CryptoUtils;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,12 +31,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class IpsScanProxy extends AbstractIpsProxy {
 
-  @Autowired
-  private ScanService scanService;
-
   @Qualifier("scanUnmarshaller")
   @Autowired
   protected Unmarshaller unmarshaller;
+  @Autowired
+  private ScanService scanService;
 
   @Override
   public PaymentResponse unifiedOrder(PaymentRequest request) {
@@ -59,6 +56,7 @@ public class IpsScanProxy extends AbstractIpsProxy {
       StreamSource streamSource = new StreamSource(new ByteArrayInputStream(result.getBytes()));
       com.xpay.pay.proxy.ips.scan.gatewayrsp.Ips respIps = (com.xpay.pay.proxy.ips.scan.gatewayrsp.Ips) unmarshaller
           .unmarshal(streamSource);
+      logger.info("ips response code:" + respIps.getGateWayRsp().getHead().getRspCode());
       if (!SUCCESS.equals(respIps.getGateWayRsp().getHead().getRspCode())) {
         throw new GatewayException(respIps.getGateWayRsp().getHead().getRspCode(),
             respIps.getGateWayRsp().getHead().getRspMsg());
@@ -77,9 +75,9 @@ public class IpsScanProxy extends AbstractIpsProxy {
       throw e;
     } catch (Exception e) {
       logger.error(e.getMessage(), e);
+      throw new GatewayException("999999", e.getMessage());
     }
 
-    return null;
   }
 
   private Ips toIps(PaymentRequest request, String merCode, String account, String md5Signature)
@@ -120,8 +118,8 @@ public class IpsScanProxy extends AbstractIpsProxy {
     marshaller.marshal(body, new StreamResult(os));
     String bodyStr = os.toString();
     bodyStr = bodyStr.substring(bodyStr.indexOf("<body>"));
-    logger.info("signature body: "+bodyStr+ merCode + md5Signature);
-    String signature = CryptoUtils.md5( bodyStr+ merCode + md5Signature);
+    logger.info("signature body: " + bodyStr + merCode + md5Signature);
+    String signature = CryptoUtils.md5(bodyStr + merCode + md5Signature);
     ReqHead head = new ReqHead();
     head.setMerCode(merCode);
     head.setAccount(account);
