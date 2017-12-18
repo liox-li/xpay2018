@@ -6,17 +6,17 @@ package com.xpay.pay.proxy.ips.refund.req;
  */
 public class Body {
 
-  private String orgMerTime;
+  private String orgMerTime = "";
 
-  private String orgMerBillNo;
+  private String orgMerBillNo = "";
 
-  private String billAmount;
+  private String billAmount = "";
 
-  private String refundAmount;
+  private String refundAmount = "";
 
-  private String refundMemo;
+  private String refundMemo = "";
 
-  private String merBillNo;
+  private String merBillNo = "";
 
   public String getOrgMerTime() {
     return orgMerTime;

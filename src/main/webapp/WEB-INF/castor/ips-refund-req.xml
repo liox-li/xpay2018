@@ -23,11 +23,14 @@
 
   <class name="com.xpay.pay.proxy.ips.refund.req.Body">
     <map-to xml="body"/>
-    <field name="orgMerTime" nillable="true" required="true" type="string">
-      <bind-xml name="OrgMerTime" node="element"/>
+    <field name="merBillNo" nillable="true" required="true" type="string">
+      <bind-xml name="MerBillNo" node="element"/>
     </field>
     <field name="orgMerBillNo" nillable="true" required="true" type="string">
       <bind-xml name="OrgMerBillNo" node="element"/>
+    </field>
+    <field name="orgMerTime" nillable="true" required="true" type="string">
+      <bind-xml name="OrgMerTime" node="element"/>
     </field>
     <field name="billAmount" nillable="true" required="true" type="string">
       <bind-xml name="BillAmount" node="element"/>
@@ -37,9 +40,6 @@
     </field>
     <field name="refundMemo" nillable="true" required="true" type="string">
       <bind-xml name="RefundMemo" node="element"/>
-    </field>
-    <field name="merBillNo" nillable="true" required="true" type="string">
-      <bind-xml name="MerBillNo" node="element"/>
     </field>
   </class>
 </mapping>
