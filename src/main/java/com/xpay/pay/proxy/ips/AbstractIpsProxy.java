@@ -109,6 +109,7 @@ public abstract class AbstractIpsProxy implements IPaymentProxy{
     tradeQueryReq.setHead(head);
     tradeQueryReq.setBody(body);
     com.xpay.pay.proxy.ips.query.ips.req.Ips ips = new com.xpay.pay.proxy.ips.query.ips.req.Ips();
+    ips.setTradeQueryReq(tradeQueryReq);
     marshaller.marshal(ips, new StreamResult(os));
     String req = os.toString();
     req = req.substring(req.indexOf("<Ips>"));
