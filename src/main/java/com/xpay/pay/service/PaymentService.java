@@ -221,7 +221,7 @@ public class PaymentService {
 			request.setGatewayOrderNo(order.getExtOrderNo());
 		} else if(PaymentGateway.IPSQUICK.equals(gateway)
 				||PaymentGateway.IPSSCAN.equals(gateway)) {
-			if(OrderStatus.REFUNDING.equals(order.getStatus()) || OrderStatus.REFUND.equals(order.getStatus())){
+			if(OrderStatus.REFUNDING.equals(order.getStatus()) || OrderStatus.REFUND.equals(order.getStatus()) || OrderStatus.REFUNDERROR.equals(order.getStatus())){
         request.setRefundTime(order.getRefundTime());
         request.setRefundOrderNo(order.getRefundOrderNo());
         request.setRefundGatewayOrderNo(order.getRefundExtOrderNo());
