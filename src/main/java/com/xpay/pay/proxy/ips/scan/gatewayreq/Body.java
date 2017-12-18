@@ -6,19 +6,19 @@ package com.xpay.pay.proxy.ips.scan.gatewayreq;
  */
 public class Body {
 
-  private String merBillNo;
-  private String gatewayType;
-  private String merType;
-  private String subMerCode;
-  private String date;
-  private String currencyType;
-  private String amount;
-  private String lang;
-  private String attach;
-  private String retEncodeType;
-  private String serverUrl;
-  private String billEXP;
-  private String goodsName;
+  private String merBillNo = "";
+  private String gatewayType = "";
+  private String merType = "";
+  private String subMerCode = "";
+  private String date = "";
+  private String currencyType = "";
+  private String amount = "";
+  private String lang = "";
+  private String attach = "";
+  private String retEncodeType = "";
+  private String serverUrl = "";
+  private String billEXP = "";
+  private String goodsName = "";
 
   public String getMerBillNo() {
     return merBillNo;
