@@ -134,6 +134,7 @@ public class PaymentRequest {
 
 	public void setRefundTime(String refundTime) {
 		this.refundTime = refundTime;
+	}
 
 	public String getUserOpenId() {
 		return userOpenId;

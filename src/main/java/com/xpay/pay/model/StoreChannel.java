@@ -220,9 +220,11 @@ public class StoreChannel {
 	}
 
   public static class SUPayProps implements ChannelProps {
+
 		private String itemId;
 		private String payType;
 		private String serverCode;
+
 		public String getItemId() {
 			return itemId;
 		}
@@ -246,7 +248,8 @@ public class StoreChannel {
 		public void setServerCode(String serverCode) {
 			this.serverCode = serverCode;
 		}
-	
+	}
+
 	public enum ChannelType {
 		WECHAT, ALIPAY, BANK, H5
 	}
