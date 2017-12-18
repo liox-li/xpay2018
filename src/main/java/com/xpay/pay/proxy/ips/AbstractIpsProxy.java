@@ -192,6 +192,7 @@ public abstract class AbstractIpsProxy implements IPaymentProxy{
       OrderStatus orderStatus = OrderStatus.SUCCESS;
       switch (respIps.getRefundRsp().getBody().getStatus()) {
         case "Y":
+        case "P":
           orderStatus = OrderStatus.REFUND;
           break;
       }
