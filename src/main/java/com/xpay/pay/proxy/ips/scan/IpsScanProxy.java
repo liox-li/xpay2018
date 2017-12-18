@@ -142,6 +142,6 @@ public class IpsScanProxy extends AbstractIpsProxy {
 
   @Override
   protected String getVersion() {
-    return "v1.0.1";
+    return "v1.0.0";
   }
 }
