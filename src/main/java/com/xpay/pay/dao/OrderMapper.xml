@@ -11,6 +11,7 @@
     <result column="store_channel" jdbcType="BIGINT" property="storeChannelId" />
     <result column="total_fee" jdbcType="FLOAT" property="totalFee" />
     <result column="order_time" jdbcType="VARCHAR" property="orderTime" />
+    <result column="refund_time" jdbcType="VARCHAR" property="refundTime" />
     <result column="pay_channel" jdbcType="INTEGER" property="payChannel" />
     <result column="seller_order_no" jdbcType="VARCHAR" property="sellerOrderNo" />
     <result column="ext_order_no" jdbcType="VARCHAR" property="extOrderNo" />
@@ -38,6 +39,7 @@
     store_channel,
     total_fee,
     order_time,
+    refund_time,
     pay_channel,
     seller_order_no,
     ext_order_no,
@@ -108,6 +110,9 @@
       <if test="orderTime != null">
         order_time,
       </if>
+      <if test="refundTime != null">
+        refund_time,
+      </if>
       <if test="payChannel != null">
         pay_channel,
       </if>
@@ -176,6 +181,9 @@
       <if test="orderTime != null">
         #{orderTime,jdbcType=VARCHAR},
       </if>
+      <if test="refundTime != null">
+        #{refundTime,jdbcType=VARCHAR},
+      </if>
       <if test="payChannel != null">
         #{payChannel,jdbcType=VARCHAR},
       </if>
@@ -232,6 +240,9 @@
       </if>
       <if test="extOrderNo != null">
         ext_order_no = #{extOrderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="refundTime != null">
+        refund_time = #{refundTime,jdbcType=VARCHAR},
       </if>
       <if test="refundExtOrderNo != null">
         refund_ext_order_no = #{refundExtOrderNo,jdbcType=VARCHAR},
