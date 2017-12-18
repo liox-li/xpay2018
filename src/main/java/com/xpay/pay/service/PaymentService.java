@@ -220,11 +220,10 @@ public class PaymentService {
 		} else if(PaymentGateway.IPSQUICK.equals(gateway)
 				||PaymentGateway.IPSSCAN.equals(gateway)) {
 			if(OrderStatus.REFUNDING.equals(order.getStatus()) || OrderStatus.REFUND.equals(order.getStatus())){
-        request.setOrderTime(order.getRefundTime());
-        request.setOrderNo(order.getRefundOrderNo());
-			}else {
-				request.setOrderTime(order.getOrderTime());
+        request.setRefundTime(order.getRefundTime());
+        request.setRefundOrderNo(order.getRefundOrderNo());
 			}
+			request.setOrderTime(order.getOrderTime());
       request.setTotalFee(order.getTotalFee());
 		}
 

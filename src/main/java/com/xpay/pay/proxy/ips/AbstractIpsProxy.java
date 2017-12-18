@@ -73,8 +73,13 @@ public abstract class AbstractIpsProxy implements IPaymentProxy{
       OrderQueryReq orderQueryReq = new OrderQueryReq();
       com.xpay.pay.proxy.ips.query.merbillno.req.Body body = new com.xpay.pay.proxy.ips.query.merbillno.req.Body();
 
-      body.setMerBillNo(request.getOrderNo());
-      body.setDate(request.getOrderTime().substring(0, 8));
+      if(request.getRefundOrderNo() != null) {
+        body.setMerBillNo(request.getRefundOrderNo());
+        body.setDate(request.getRefundTime().substring(0, 8));
+      } else {
+        body.setMerBillNo(request.getOrderNo());
+        body.setDate(request.getOrderTime().substring(0, 8));
+      }
       NumberFormat numberFormat = new DecimalFormat("#.##");
       numberFormat.setGroupingUsed(false);
       body.setAmount(numberFormat.format(request.getTotalFee()));
@@ -109,9 +114,8 @@ public abstract class AbstractIpsProxy implements IPaymentProxy{
       PaymentResponse response = new PaymentResponse();
       response.setCode(PaymentResponse.SUCCESS);
       Bill bill = new Bill();
-      bill.setOrderNo(respIps.getOrderQueryRsp().getBody().getMerBillNo());
       bill.setGatewayOrderNo(respIps.getOrderQueryRsp().getBody().getIpsBillNo());
-      OrderStatus orderStatus = toOrderStatus(respIps.getOrderQueryRsp().getBody().getStatus());
+      OrderStatus orderStatus = toOrderStatus(respIps.getOrderQueryRsp().getBody().getStatus(), request.getRefundOrderNo() != null);
       bill.setOrderStatus(orderStatus);
       response.setBill(bill);
       return response;
@@ -123,17 +127,17 @@ public abstract class AbstractIpsProxy implements IPaymentProxy{
     return null;
   }
 
-  private OrderStatus toOrderStatus(String status) {
+  private OrderStatus toOrderStatus(String status, boolean isRefundQuery) {
     if (StringUtils.isEmpty(status)) {
       return OrderStatus.NOTPAY;
     }
     switch (status) {
       case "Y":
-        return OrderStatus.SUCCESS;
+        return isRefundQuery ? OrderStatus.REFUND: OrderStatus.SUCCESS;
       case "N":
-        return OrderStatus.PAYERROR;
+        return isRefundQuery ? OrderStatus.REFUNDERROR: OrderStatus.PAYERROR;
       case "P":
-        return OrderStatus.USERPAYING;
+        return isRefundQuery? OrderStatus.REFUNDING : OrderStatus.USERPAYING;
       default:
         return OrderStatus.NOTPAY;
     }

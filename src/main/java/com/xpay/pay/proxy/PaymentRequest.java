@@ -12,6 +12,8 @@ public class PaymentRequest {
 	private Float totalFee;
 	private String attach;
 	private String orderNo;
+	private String refundOrderNo;
+	private String refundTime;
 	private String gatewayOrderNo;
 	private TradeNoType tradeNoType;
 	private String serverIp;
@@ -115,6 +117,22 @@ public class PaymentRequest {
 	}
 	public void setChannelProps(ChannelProps channelProps) {
 		this.channelProps = channelProps;
+	}
+
+	public String getRefundOrderNo() {
+		return refundOrderNo;
+	}
+
+	public void setRefundOrderNo(String refundOrderNo) {
+		this.refundOrderNo = refundOrderNo;
+	}
+
+	public String getRefundTime() {
+		return refundTime;
+	}
+
+	public void setRefundTime(String refundTime) {
+		this.refundTime = refundTime;
 	}
 
 	public static class GoodsBean {

@@ -34,7 +34,7 @@ public class PaymentResponse {
 	}
 
 	public enum OrderStatus {
-		SUCCESS(0), REFUND(1), REVOKED(2), USERPAYING(3), NOTPAY(4), CLOSED(5), REFUNDING(6), PAYERROR(-1);
+		SUCCESS(0), REFUND(1), REVOKED(2), USERPAYING(3), NOTPAY(4), CLOSED(5), REFUNDING(6), REFUNDERROR(7), PAYERROR(-1);
 		int value;
 		
 		OrderStatus(int value) {
