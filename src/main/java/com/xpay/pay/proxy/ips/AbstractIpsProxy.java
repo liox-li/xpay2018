@@ -71,7 +71,7 @@ public abstract class AbstractIpsProxy implements IPaymentProxy{
       OrderQueryReq orderQueryReq = new OrderQueryReq();
       com.xpay.pay.proxy.ips.query.merbillno.req.Body body = new com.xpay.pay.proxy.ips.query.merbillno.req.Body();
       body.setMerBillNo(request.getOrderNo());
-      body.setDate(date.substring(0, 8));
+      body.setDate(request.getOrderTime().substring(0, 8));
       NumberFormat numberFormat = new DecimalFormat("#.##");
       numberFormat.setGroupingUsed(false);
       body.setAmount(numberFormat.format(request.getTotalFee()));
