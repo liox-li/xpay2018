@@ -44,9 +44,6 @@ public abstract class AbstractIpsProxy implements IPaymentProxy{
   @Autowired
   private RefundService refundService;
 
-  @Autowired
-  private OrderService orderService;
-
   @Qualifier("ipsMarshaller")
   @Autowired
   protected Marshaller marshaller;
