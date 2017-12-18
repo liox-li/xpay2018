@@ -12,6 +12,7 @@ import com.xpay.pay.proxy.ips.quick.req.Body;
 import com.xpay.pay.proxy.ips.quick.req.GateWayReq;
 import com.xpay.pay.proxy.ips.quick.req.Ips;
 import com.xpay.pay.util.CryptoUtils;
+import com.xpay.pay.util.IDGenerator;
 import com.xpay.pay.util.TimeUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -95,6 +96,7 @@ public class IpsQuickProxy extends AbstractIpsProxy {
     bodyStr = bodyStr.substring(bodyStr.indexOf("<body>"));
     String signature = CryptoUtils.md5(bodyStr + merCode + md5Signature);
     ReqHead head = new ReqHead();
+    head.setMsgId(IDGenerator.buildTimeSeriesId());
     head.setMerCode(merCode);
     head.setAccount(account);
     head.setReqDate(date);

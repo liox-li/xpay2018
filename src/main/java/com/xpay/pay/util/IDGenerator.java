@@ -120,4 +120,11 @@ public class IDGenerator {
 		}
 		return sb.toString();
 	}
+
+	public static final String buildTimeSeriesId() {
+		StringBuffer sb = new StringBuffer();
+		sb.append(formatNow(TimePattern17));
+		sb.append(randomNum(7));
+		return sb.toString();
+	}
 }

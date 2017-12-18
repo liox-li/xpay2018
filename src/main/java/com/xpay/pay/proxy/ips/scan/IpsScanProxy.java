@@ -13,6 +13,7 @@ import com.xpay.pay.proxy.ips.scan.gatewayreq.Body;
 import com.xpay.pay.proxy.ips.scan.gatewayreq.GateWayReq;
 import com.xpay.pay.proxy.ips.scan.gatewayreq.Ips;
 import com.xpay.pay.util.CryptoUtils;
+import com.xpay.pay.util.IDGenerator;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -121,6 +122,7 @@ public class IpsScanProxy extends AbstractIpsProxy {
     logger.info("signature body: " + bodyStr + merCode + md5Signature);
     String signature = CryptoUtils.md5(bodyStr + merCode + md5Signature);
     ReqHead head = new ReqHead();
+    head.setMsgId(IDGenerator.buildTimeSeriesId());
     head.setMerCode(merCode);
     head.setAccount(account);
     head.setReqDate(date);
