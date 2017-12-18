@@ -189,6 +189,7 @@ public abstract class AbstractIpsProxy implements IPaymentProxy{
       Bill bill = new Bill();
       bill.setOrderNo(request.getOrderNo());
       bill.setGatewayOrderNo(request.getGatewayOrderNo());
+      bill.setTargetOrderNo(respIps.getRefundRsp().getBody().getRefundTradeNo());
       OrderStatus orderStatus = OrderStatus.SUCCESS;
       switch (respIps.getRefundRsp().getBody().getStatus()) {
         case "Y":
