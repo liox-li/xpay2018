@@ -208,6 +208,10 @@ public class PaymentService {
 	private PaymentRequest toQueryRequest(Order order) {
 		PaymentRequest request = new PaymentRequest();
 		PaymentGateway gateway = order.getStoreChannel().getPaymentGateway();
+		request.setExtStoreId(order.getStoreChannel().getExtStoreId());
+		request.setChannelProps(order.getStoreChannel().getChannelProps());
+		request.setPayChannel(order.getPayChannel());
+		request.setOrderNo(order.getOrderNo());
 		if(isChinaUmsChannel(gateway) || PaymentGateway.JUZHEN.equals(gateway) || PaymentGateway.KEFU.equals(gateway)) {
 			request.setOrderTime(order.getOrderTime());
 			request.setGatewayOrderNo(order.getExtOrderNo());
@@ -220,13 +224,10 @@ public class PaymentService {
         request.setOrderNo(order.getRefundOrderNo());
 			}else {
 				request.setOrderTime(order.getOrderTime());
-				request.setTotalFee(order.getTotalFee());
 			}
+      request.setTotalFee(order.getTotalFee());
 		}
-		request.setExtStoreId(order.getStoreChannel().getExtStoreId());
-		request.setChannelProps(order.getStoreChannel().getChannelProps());
-		request.setPayChannel(order.getPayChannel());
-		request.setOrderNo(order.getOrderNo());
+
 
 		return request;
 	}
