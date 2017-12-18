@@ -92,6 +92,7 @@ public abstract class AbstractIpsProxy implements IPaymentProxy{
       ips.setOrderQueryReq(orderQueryReq);
       marshaller.marshal(ips, new StreamResult(os));
       String req = os.toString();
+      req = req.substring(req.indexOf("<Ips>"));
       logger.info("ips query request: " + req);
       String rsp = orderQueryService.getOrderByMerBillNo(req);
       logger.info("ips query response: " + rsp);
