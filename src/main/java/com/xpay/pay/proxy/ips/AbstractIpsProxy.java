@@ -82,6 +82,7 @@ public abstract class AbstractIpsProxy implements IPaymentProxy{
       bodyStr = bodyStr.substring(bodyStr.indexOf("<body>"));
       String signature = CryptoUtils.md5(bodyStr + merCode + md5Signature);
       ReqHead head = new ReqHead();
+      head.setVersion(getVersion());
       head.setMsgId(IDGenerator.buildTimeSeriesId());
       head.setMerCode(merCode);
       head.setAccount(account);
@@ -159,6 +160,7 @@ public abstract class AbstractIpsProxy implements IPaymentProxy{
       bodyStr = bodyStr.substring(bodyStr.indexOf("<body>"));
       String signature = CryptoUtils.md5(bodyStr + merCode + md5Signature);
       ReqHead head = new ReqHead();
+      head.setVersion(getVersion());
       head.setMsgId(IDGenerator.buildTimeSeriesId());
       head.setMerCode(merCode);
       head.setAccount(account);
@@ -199,6 +201,8 @@ public abstract class AbstractIpsProxy implements IPaymentProxy{
   }
 
   protected abstract String getReqDate(PaymentRequest request);
+
+  protected abstract String getVersion();
 
 
   protected void signatureValidWithThrow(String merCode, String md5Signature, String result,

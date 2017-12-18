@@ -96,6 +96,7 @@ public class IpsQuickProxy extends AbstractIpsProxy {
     bodyStr = bodyStr.substring(bodyStr.indexOf("<body>"));
     String signature = CryptoUtils.md5(bodyStr + merCode + md5Signature);
     ReqHead head = new ReqHead();
+    head.setVersion(getVersion());
     head.setMsgId(IDGenerator.buildTimeSeriesId());
     head.setMerCode(merCode);
     head.setAccount(account);
@@ -109,5 +110,9 @@ public class IpsQuickProxy extends AbstractIpsProxy {
   @Override
   protected String getReqDate(PaymentRequest request) {
     return TimeUtils.formatTime(new Date(), TimeUtils.TimeShortPatternTime);
+  }
+
+  protected String getVersion(){
+    return "v1.0.0";
   }
 }

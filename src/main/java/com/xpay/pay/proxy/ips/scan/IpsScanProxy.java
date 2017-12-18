@@ -122,6 +122,7 @@ public class IpsScanProxy extends AbstractIpsProxy {
     logger.info("signature body: " + bodyStr + merCode + md5Signature);
     String signature = CryptoUtils.md5(bodyStr + merCode + md5Signature);
     ReqHead head = new ReqHead();
+    head.setVersion(getVersion());
     head.setMsgId(IDGenerator.buildTimeSeriesId());
     head.setMerCode(merCode);
     head.setAccount(account);
@@ -136,5 +137,10 @@ public class IpsScanProxy extends AbstractIpsProxy {
   @Override
   protected String getReqDate(PaymentRequest request) {
     return request.getOrderTime();
+  }
+
+  @Override
+  protected String getVersion() {
+    return "v1.0.1";
   }
 }
