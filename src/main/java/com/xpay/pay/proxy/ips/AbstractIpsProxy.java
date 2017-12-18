@@ -11,12 +11,11 @@ import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.proxy.ips.common.ReqHead;
 import com.xpay.pay.proxy.ips.query.merbillno.req.OrderQueryReq;
 import com.xpay.pay.proxy.ips.refund.req.RefundReq;
+import com.xpay.pay.service.OrderService;
 import com.xpay.pay.util.CryptoUtils;
 import com.xpay.pay.util.IDGenerator;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -44,6 +43,9 @@ public abstract class AbstractIpsProxy implements IPaymentProxy{
 
   @Autowired
   private RefundService refundService;
+
+  @Autowired
+  private OrderService orderService;
 
   @Qualifier("ipsMarshaller")
   @Autowired
@@ -141,6 +143,9 @@ public abstract class AbstractIpsProxy implements IPaymentProxy{
     long l = System.currentTimeMillis();
     String[] accountParam = request.getExtStoreId().split(",");
     try {
+
+      String refundOrderNo = IDGenerator.buildRefundOrderNo();
+
       //merCode, account, signature md5
       String merCode = accountParam[0];
       String account = accountParam[1];
@@ -149,7 +154,7 @@ public abstract class AbstractIpsProxy implements IPaymentProxy{
       com.xpay.pay.proxy.ips.refund.req.Ips ips = new com.xpay.pay.proxy.ips.refund.req.Ips();
       RefundReq refundReq = new RefundReq();
       com.xpay.pay.proxy.ips.refund.req.Body body = new com.xpay.pay.proxy.ips.refund.req.Body();
-      body.setMerBillNo(IDGenerator.buildKey(30));
+      body.setMerBillNo(refundOrderNo);
       body.setOrgMerBillNo(request.getOrderNo());
       body.setOrgMerTime(date.substring(0, 8));
       NumberFormat numberFormat = new DecimalFormat("#.##");
@@ -187,14 +192,15 @@ public abstract class AbstractIpsProxy implements IPaymentProxy{
       PaymentResponse response = new PaymentResponse();
       response.setCode(PaymentResponse.SUCCESS);
       Bill bill = new Bill();
-      bill.setOrderNo(request.getOrderNo());
-      bill.setGatewayOrderNo(request.getGatewayOrderNo());
-      bill.setTargetOrderNo(respIps.getRefundRsp().getBody().getRefundTradeNo());
+      bill.setRefundOrderNo(refundOrderNo);
+      bill.setGatewayRefundOrderNo(respIps.getRefundRsp().getBody().getRefundTradeNo());
       OrderStatus orderStatus = OrderStatus.SUCCESS;
       switch (respIps.getRefundRsp().getBody().getStatus()) {
         case "Y":
-        case "P":
           orderStatus = OrderStatus.REFUND;
+          break;
+        case "P":
+          orderStatus = OrderStatus.REFUNDING;
           break;
       }
       bill.setOrderStatus(orderStatus);

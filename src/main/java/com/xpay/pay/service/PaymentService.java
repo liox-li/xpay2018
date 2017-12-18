@@ -144,8 +144,10 @@ public class PaymentService {
 			PaymentResponse response = paymentProxy.refund(paymentRequest);
 
 			Bill bill = response.getBill();
-			if(bill !=null && OrderStatus.REFUND.equals(bill.getOrderStatus()) || OrderStatus.REVOKED.equals(bill.getOrderStatus())) {
+			if(bill !=null && (OrderStatus.REFUND.equals(bill.getOrderStatus()) || OrderStatus.REFUNDING.equals(bill.getOrderStatus())) || OrderStatus.REVOKED.equals(bill.getOrderStatus())) {
 				bill.setOrder(order);
+				order.setRefundOrderNo(bill.getRefundOrderNo());
+				order.setRefundExtOrderNo(bill.getGatewayRefundOrderNo());
 				order.setStatus(bill.getOrderStatus());
 				orderService.update(order);
 			}

@@ -10,6 +10,7 @@ import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 public class Order {
 	private long id;
 	private String orderNo;
+	private String refundOrderNo;
 	private Long appId;
 	private long storeId;
 	private StoreChannel storeChannel;
@@ -18,6 +19,7 @@ public class Order {
 	private String orderTime;
 	private String sellerOrderNo;
 	private String extOrderNo;
+	private String refundExtOrderNo;
 	private String targetOrderNo;
 	private PayChannel payChannel;
 	private String attach;
@@ -222,5 +224,21 @@ public class Order {
 	
 	public boolean isRechargeOrder() {
 		return StringUtils.isNotBlank(this.orderNo) && this.orderNo.startsWith("S");
+	}
+
+	public String getRefundOrderNo() {
+		return refundOrderNo;
+	}
+
+	public void setRefundOrderNo(String refundOrderNo) {
+		this.refundOrderNo = refundOrderNo;
+	}
+
+	public String getRefundExtOrderNo() {
+		return refundExtOrderNo;
+	}
+
+	public void setRefundExtOrderNo(String refundExtOrderNo) {
+		this.refundExtOrderNo = refundExtOrderNo;
 	}
 }

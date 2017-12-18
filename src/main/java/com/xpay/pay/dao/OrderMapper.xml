@@ -5,6 +5,7 @@
   <resultMap id="OrderResultMap" type="com.xpay.pay.model.Order">
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="order_no" jdbcType="VARCHAR" property="orderNo" />
+    <result column="refund_order_no" jdbcType="VARCHAR" property="refundOrderNo" />
     <result column="app_id" jdbcType="BIGINT" property="appId" />
     <result column="store_id" jdbcType="BIGINT" property="storeId" />
     <result column="store_channel" jdbcType="BIGINT" property="storeChannelId" />
@@ -13,6 +14,7 @@
     <result column="pay_channel" jdbcType="INTEGER" property="payChannel" />
     <result column="seller_order_no" jdbcType="VARCHAR" property="sellerOrderNo" />
     <result column="ext_order_no" jdbcType="VARCHAR" property="extOrderNo" />
+    <result column="refund_ext_order_no" jdbcType="VARCHAR" property="refundExtOrderNo" />
     <result column="attach" jdbcType="VARCHAR" property="attach" />
     <result column="device_id" jdbcType="VARCHAR" property="deviceId" />
     <result column="ip" jdbcType="VARCHAR" property="ip" />
@@ -30,6 +32,7 @@
   <sql id="orderColumns">
     id,
     order_no,
+    refund_order_no,
     app_id,
     store_id,
     store_channel,
@@ -38,6 +41,7 @@
     pay_channel,
     seller_order_no,
     ext_order_no,
+    refund_ext_order_no,
     attach,
     device_id,
     ip,
@@ -86,6 +90,9 @@
       <if test="orderNo != null">
         order_no,
       </if>
+      <if test="refundOrderNo != null">
+       refund_order_no,
+      </if>
       <if test="appId != null">
         app_id,
       </if>
@@ -109,6 +116,9 @@
       </if>
       <if test="extOrderNo != null">
         ext_order_no,
+      </if>
+      <if test="refundExtOrderNo != null">
+        refund_ext_order_no,
       </if>
       <if test="attach != null">
         attach,
@@ -148,6 +158,9 @@
       <if test="orderNo != null">
         #{orderNo,jdbcType=VARCHAR},
       </if>
+      <if test="refundOrderNo != null">
+        #{refundOrderNo,jdbcType=VARCHAR},
+      </if>
       <if test="appId != null">
       	#{appId,jdbcType=BIGINT},
       </if>
@@ -171,6 +184,9 @@
       </if>
       <if test="extOrderNo != null">
         #{extOrderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="refundExtOrderNo != null">
+        #{refundExtOrderNo,jdbcType=VARCHAR},
       </if>
       <if test="attach != null">
         #{attach,jdbcType=VARCHAR},
@@ -211,8 +227,14 @@
   <update id="updateById" parameterType="com.xpay.pay.model.Order">
     update bill_order
     <set>
+      <if test="refundOrderNo != null">
+        refund_order_no = #{refundOrderNo,jdbcType=VARCHAR},
+      </if>
       <if test="extOrderNo != null">
         ext_order_no = #{extOrderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="refundExtOrderNo != null">
+        refund_ext_order_no = #{refundExtOrderNo,jdbcType=VARCHAR},
       </if>
       <if test="codeUrl != null">
         code_url = #{codeUrl,jdbcType=VARCHAR},
