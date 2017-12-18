@@ -51,6 +51,7 @@ public class IpsScanProxy extends AbstractIpsProxy {
       os = new ByteArrayOutputStream();
       marshaller.marshal(ips, new StreamResult(os));
       String scanPayRequest = os.toString();
+      scanPayRequest = scanPayRequest.substring(scanPayRequest.indexOf("<Ips>"));
       logger.info("ips order request: " + scanPayRequest);
       String result = scanService.scanPay(scanPayRequest);
       logger.info("ips order response: " + result);
