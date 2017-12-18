@@ -15,6 +15,8 @@ public class Body {
   private String ipsBillTime;
   private String attach;
   private String status;
+  private String refundAmount;
+  private String refuseAmout;
 
   public String getMerBillNo() {
     return merBillNo;
@@ -86,5 +88,21 @@ public class Body {
 
   public void setStatus(String status) {
     this.status = status;
+  }
+
+  public String getRefundAmount() {
+    return refundAmount;
+  }
+
+  public void setRefundAmount(String refundAmount) {
+    this.refundAmount = refundAmount;
+  }
+
+  public String getRefuseAmout() {
+    return refuseAmout;
+  }
+
+  public void setRefuseAmout(String refuseAmout) {
+    this.refuseAmout = refuseAmout;
   }
 }
