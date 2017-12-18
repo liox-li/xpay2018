@@ -12,7 +12,7 @@
     </field>
   </class>
 
-  <class name="com.xpay.pay.proxy.ips.query.merbillno.rsp.OrderQueryRsp">
+  <class name="com.xpay.pay.proxy.ips.query.ips.rsp.TradeQueryRsp">
     <map-to xml="TradeQueryRsp"/>
     <field name="head" nillable="true" required="true" type="com.xpay.pay.proxy.ips.common.RspHead">
       <bind-xml name="head" node="element"/>
