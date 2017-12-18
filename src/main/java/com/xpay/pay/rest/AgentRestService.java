@@ -26,6 +26,8 @@ import com.xpay.pay.model.Bill;
 import com.xpay.pay.model.Order;
 import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
+import com.xpay.pay.model.StoreChannel.ChannelType;
+import com.xpay.pay.model.StoreChannel.PaymentGateway;
 import com.xpay.pay.model.StoreTransaction;
 import com.xpay.pay.model.StoreTransaction.TransactionType;
 import com.xpay.pay.rest.contract.BaseResponse;
@@ -478,6 +480,21 @@ public class AgentRestService extends AdminRestService {
 		storeResponse.setQuota(store.getQuota());
 		storeResponse.setAgentId(store.getAgentId());
 		storeResponse.setChannels(store.getChannels());
+		storeResponse.setChannelType(toChannelType(store.getChannels()));
 		return storeResponse;
+	}
+	
+	private ChannelType toChannelType(List<StoreChannel> channels) {
+		ChannelType type = ChannelType.WECHAT;
+		if(CollectionUtils.isNotEmpty(channels)) {
+			StoreChannel storeChannel = channels.get(0);
+			PaymentGateway paymentGateway = storeChannel.getPaymentGateway();
+			switch(paymentGateway) {
+			case KEKEPAY:
+			case IPS:
+				type = ChannelType.BANK;
+			}
+		}
+		return type;
 	}
 }

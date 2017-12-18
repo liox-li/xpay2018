@@ -214,4 +214,8 @@ public class StoreChannel {
 			this.subMerCode = subMerCode;
 		}
 	}
+	
+	public enum ChannelType {
+		WECHAT, ALIPAY, BANK, H5 
+	}
 }
