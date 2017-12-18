@@ -72,6 +72,7 @@ public abstract class AbstractIpsProxy implements IPaymentProxy{
       com.xpay.pay.proxy.ips.query.merbillno.req.Ips ips = new com.xpay.pay.proxy.ips.query.merbillno.req.Ips();
       OrderQueryReq orderQueryReq = new OrderQueryReq();
       com.xpay.pay.proxy.ips.query.merbillno.req.Body body = new com.xpay.pay.proxy.ips.query.merbillno.req.Body();
+
       body.setMerBillNo(request.getOrderNo());
       body.setDate(request.getOrderTime().substring(0, 8));
       NumberFormat numberFormat = new DecimalFormat("#.##");
@@ -145,7 +146,7 @@ public abstract class AbstractIpsProxy implements IPaymentProxy{
     try {
 
       String refundOrderNo = IDGenerator.buildRefundOrderNo();
-
+      String refundTime = IDGenerator.formatTime(new Date(), IDGenerator.TimePattern14);
       //merCode, account, signature md5
       String merCode = accountParam[0];
       String account = accountParam[1];
@@ -193,6 +194,7 @@ public abstract class AbstractIpsProxy implements IPaymentProxy{
       response.setCode(PaymentResponse.SUCCESS);
       Bill bill = new Bill();
       bill.setRefundOrderNo(refundOrderNo);
+      bill.setRefundTime(refundTime);
       bill.setGatewayRefundOrderNo(respIps.getRefundRsp().getBody().getRefundTradeNo());
       OrderStatus orderStatus = OrderStatus.SUCCESS;
       switch (respIps.getRefundRsp().getBody().getStatus()) {

@@ -148,6 +148,7 @@ public class PaymentService {
 				bill.setOrder(order);
 				order.setRefundOrderNo(bill.getRefundOrderNo());
 				order.setRefundExtOrderNo(bill.getGatewayRefundOrderNo());
+				order.setRefundTime(bill.getRefundTime());
 				order.setStatus(bill.getOrderStatus());
 				orderService.update(order);
 			}
@@ -214,8 +215,13 @@ public class PaymentService {
 			request.setGatewayOrderNo(order.getExtOrderNo());
 		} else if(PaymentGateway.IPSQUICK.equals(gateway)
 				||PaymentGateway.IPSSCAN.equals(gateway)) {
-			request.setOrderTime(order.getOrderTime());
-			request.setTotalFee(order.getTotalFee());
+			if(OrderStatus.REFUNDING.equals(order.getStatus()) || OrderStatus.REFUND.equals(order.getStatus())){
+        request.setOrderTime(order.getRefundTime());
+        request.setOrderNo(order.getRefundOrderNo());
+			}else {
+				request.setOrderTime(order.getOrderTime());
+				request.setTotalFee(order.getTotalFee());
+			}
 		}
 		request.setExtStoreId(order.getStoreChannel().getExtStoreId());
 		request.setChannelProps(order.getStoreChannel().getChannelProps());

@@ -17,6 +17,7 @@ public class Order {
 	private long storeChannelId;
 	private Float totalFee;
 	private String orderTime;
+	private String refundTime;
 	private String sellerOrderNo;
 	private String extOrderNo;
 	private String refundExtOrderNo;
@@ -240,5 +241,13 @@ public class Order {
 
 	public void setRefundExtOrderNo(String refundExtOrderNo) {
 		this.refundExtOrderNo = refundExtOrderNo;
+	}
+
+	public String getRefundTime() {
+		return refundTime;
+	}
+
+	public void setRefundTime(String refundTime) {
+		this.refundTime = refundTime;
 	}
 }
