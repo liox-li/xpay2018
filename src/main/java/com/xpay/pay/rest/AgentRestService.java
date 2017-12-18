@@ -490,8 +490,8 @@ public class AgentRestService extends AdminRestService {
 			StoreChannel storeChannel = channels.get(0);
 			PaymentGateway paymentGateway = storeChannel.getPaymentGateway();
 			switch(paymentGateway) {
-			case KEKEPAY:
-			case IPS:
+				case KEKEPAY:
+				case IPSQUICK:
 				type = ChannelType.BANK;
 			}
 		}
