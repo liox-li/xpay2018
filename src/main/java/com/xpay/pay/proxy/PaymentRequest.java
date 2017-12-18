@@ -15,6 +15,7 @@ public class PaymentRequest {
 	private String refundOrderNo;
 	private String refundTime;
 	private String gatewayOrderNo;
+	private String refundGatewayOrderNo;
 	private TradeNoType tradeNoType;
 	private String serverIp;
 	private String notifyUrl;
@@ -134,6 +135,14 @@ public class PaymentRequest {
 
 	public void setRefundTime(String refundTime) {
 		this.refundTime = refundTime;
+	}
+
+	public String getRefundGatewayOrderNo() {
+		return refundGatewayOrderNo;
+	}
+
+	public void setRefundGatewayOrderNo(String refundGatewayOrderNo) {
+		this.refundGatewayOrderNo = refundGatewayOrderNo;
 	}
 
 	public String getUserOpenId() {

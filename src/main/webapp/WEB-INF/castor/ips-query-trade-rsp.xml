@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapping PUBLIC "-//EXOLAB/Castor Mapping DTD Version 1.0//EN"
+  "http://castor.org/mapping.dtd">
+
+<mapping>
+
+  <class name="com.xpay.pay.proxy.ips.query.ips.rsp.Ips">
+    <map-to xml="Ips"/>
+    <field name="tradeQueryRsp" nillable="true" required="true"
+      type="com.xpay.pay.proxy.ips.query.ips.rsp.TradeQueryRsp">
+      <bind-xml name="TradeQueryRsp" node="element"/>
+    </field>
+  </class>
+
+  <class name="com.xpay.pay.proxy.ips.query.merbillno.rsp.OrderQueryRsp">
+    <map-to xml="OrderQueryReq"/>
+    <field name="head" nillable="true" required="true" type="com.xpay.pay.proxy.ips.common.RspHead">
+      <bind-xml name="head" node="element"/>
+    </field>
+    <field name="body" nillable="true" required="true" type="com.xpay.pay.proxy.ips.query.merbillno.rsp.Body">
+      <bind-xml name="body" node="element"/>
+    </field>
+  </class>
+
+  <class name="com.xpay.pay.proxy.ips.query.merbillno.rsp.Body">
+    <map-to xml="body"/>
+    <field name="merBillNo" nillable="true" required="true" type="string">
+      <bind-xml name="MerBillNo" node="element"/>
+    </field>
+    <field name="ipsBillNo" nillable="true" required="true" type="string">
+      <bind-xml name="IpsBillNo" node="element"/>
+    </field>
+    <field name="tradeType" nillable="true" required="true" type="string">
+      <bind-xml name="TradeType" node="element"/>
+    </field>
+    <field name="currency" nillable="true" required="true" type="string">
+      <bind-xml name="Currency" node="element"/>
+    </field>
+    <field name="amount" nillable="true" required="true" type="string">
+      <bind-xml name="Amount" node="element"/>
+    </field>
+    <field name="merBillDate" nillable="true" required="true" type="string">
+      <bind-xml name="MerBillDate" node="element"/>
+    </field>
+    <field name="ipsBillTime" nillable="true" required="true" type="string">
+      <bind-xml name="IpsBillTime" node="element"/>
+    </field>
+    <field name="attach" nillable="true" required="true" type="string">
+      <bind-xml name="Attach" node="element"/>
+    </field>
+    <field name="status" nillable="true" required="true" type="string">
+      <bind-xml name="Status" node="element"/>
+    </field>
+  </class>
+
+</mapping>

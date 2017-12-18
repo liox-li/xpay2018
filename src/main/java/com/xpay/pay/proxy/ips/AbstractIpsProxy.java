@@ -2,6 +2,7 @@ package com.xpay.pay.proxy.ips;
 
 import cn.com.ips.payat.webservice.orderquery.OrderQueryService;
 import cn.com.ips.payat.webservice.refund.RefundService;
+import cn.com.ips.payat.webservice.tradequery.TradeQueryService;
 import com.xpay.pay.exception.GatewayException;
 import com.xpay.pay.model.Bill;
 import com.xpay.pay.proxy.IPaymentProxy;
@@ -9,13 +10,14 @@ import com.xpay.pay.proxy.PaymentRequest;
 import com.xpay.pay.proxy.PaymentResponse;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.proxy.ips.common.ReqHead;
+import com.xpay.pay.proxy.ips.query.ips.req.TradeQueryReq;
 import com.xpay.pay.proxy.ips.query.merbillno.req.OrderQueryReq;
 import com.xpay.pay.proxy.ips.refund.req.RefundReq;
-import com.xpay.pay.service.OrderService;
 import com.xpay.pay.util.CryptoUtils;
 import com.xpay.pay.util.IDGenerator;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -44,6 +46,9 @@ public abstract class AbstractIpsProxy implements IPaymentProxy{
   @Autowired
   private RefundService refundService;
 
+  @Autowired
+  private TradeQueryService tradeQueryService;
+
   @Qualifier("ipsMarshaller")
   @Autowired
   protected Marshaller marshaller;
@@ -56,6 +61,10 @@ public abstract class AbstractIpsProxy implements IPaymentProxy{
   @Autowired
   protected Unmarshaller refundUnmarshaller;
 
+  @Qualifier("tradeQueryUnmarshaller")
+  @Autowired
+  protected Unmarshaller tradeQueryUnmarshaller;
+
   @Override
   public PaymentResponse query(PaymentRequest request) {
     String[] accountParam = request.getExtStoreId().split(",");
@@ -64,64 +73,113 @@ public abstract class AbstractIpsProxy implements IPaymentProxy{
       String merCode = accountParam[0];
       String account = accountParam[1];
       String md5Signature = accountParam[2];
-      SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-      String date = simpleDateFormat.format(new Date());
-      com.xpay.pay.proxy.ips.query.merbillno.req.Ips ips = new com.xpay.pay.proxy.ips.query.merbillno.req.Ips();
-      OrderQueryReq orderQueryReq = new OrderQueryReq();
-      com.xpay.pay.proxy.ips.query.merbillno.req.Body body = new com.xpay.pay.proxy.ips.query.merbillno.req.Body();
 
       if(request.getRefundOrderNo() != null) {
-        body.setMerBillNo(request.getRefundOrderNo());
-        body.setDate(request.getRefundTime().substring(0, 8));
+        return refundQuery(request,merCode,account,md5Signature);
       } else {
-        body.setMerBillNo(request.getOrderNo());
-        body.setDate(request.getOrderTime().substring(0, 8));
+        return orderQuery(request,merCode,account,md5Signature);
       }
-      NumberFormat numberFormat = new DecimalFormat("#.##");
-      numberFormat.setGroupingUsed(false);
-      body.setAmount(numberFormat.format(request.getTotalFee()));
-      orderQueryReq.setBody(body);
-      ByteArrayOutputStream os = new ByteArrayOutputStream();
-      marshaller.marshal(body, new StreamResult(os));
-      String bodyStr = os.toString();
-      bodyStr = bodyStr.substring(bodyStr.indexOf("<body>"));
-      String signature = CryptoUtils.md5(bodyStr + merCode + md5Signature);
-      ReqHead head = new ReqHead();
-      head.setVersion("v1.0.1");
-      head.setMsgId(IDGenerator.buildTimeSeriesId());
-      head.setMerCode(merCode);
-      head.setAccount(account);
-      head.setReqDate(date);
-      head.setSignature(signature);
-      orderQueryReq.setHead(head);
-      ips.setOrderQueryReq(orderQueryReq);
-      marshaller.marshal(ips, new StreamResult(os));
-      String req = os.toString();
-      req = req.substring(req.indexOf("<Ips>"));
-      logger.info("ips query request: " + req);
-      String rsp = orderQueryService.getOrderByMerBillNo(req);
-      logger.info("ips query response: " + rsp);
-      StreamSource streamSource = new StreamSource(new ByteArrayInputStream(rsp.getBytes()));
-      com.xpay.pay.proxy.ips.query.merbillno.rsp.Ips respIps = (com.xpay.pay.proxy.ips.query.merbillno.rsp.Ips) queryUnmarshaller
-          .unmarshal(streamSource);
-      if (!SUCCESS.equals(respIps.getOrderQueryRsp().getHead().getRspCode())) {
-        throw new GatewayException(respIps.getOrderQueryRsp().getHead().getRspCode(),
-            respIps.getOrderQueryRsp().getHead().getRspMsg());
-      }
-      PaymentResponse response = new PaymentResponse();
-      response.setCode(PaymentResponse.SUCCESS);
-      Bill bill = new Bill();
-      bill.setGatewayOrderNo(respIps.getOrderQueryRsp().getBody().getIpsBillNo());
-      OrderStatus orderStatus = toOrderStatus(respIps.getOrderQueryRsp().getBody().getStatus(), request.getRefundOrderNo() != null);
-      bill.setOrderStatus(orderStatus);
-      response.setBill(bill);
-      return response;
     } catch (GatewayException e) {
       throw e;
     } catch (Exception e) {
       logger.error("ToPaymentResponse error", e);
     }
     return null;
+  }
+
+  protected PaymentResponse refundQuery(PaymentRequest request, String merCode, String account,
+      String md5Signature) throws IOException {
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+    String date = simpleDateFormat.format(new Date());
+    com.xpay.pay.proxy.ips.query.ips.req.Body body = new com.xpay.pay.proxy.ips.query.ips.req.Body();
+    body.setIpsTradeNo(request.getRefundGatewayOrderNo());
+    ByteArrayOutputStream os = new ByteArrayOutputStream();
+    marshaller.marshal(body, new StreamResult(os));
+    String bodyStr = os.toString();
+    bodyStr = bodyStr.substring(bodyStr.indexOf("<body>"));
+    String signature = CryptoUtils.md5(bodyStr + merCode + md5Signature);
+    ReqHead head = new ReqHead();
+    head.setVersion("v1.0.1");
+    head.setMsgId(IDGenerator.buildTimeSeriesId());
+    head.setMerCode(merCode);
+    head.setAccount(account);
+    head.setReqDate(date);
+    head.setSignature(signature);
+    TradeQueryReq tradeQueryReq = new TradeQueryReq();
+    tradeQueryReq.setHead(head);
+    tradeQueryReq.setBody(body);
+    com.xpay.pay.proxy.ips.query.ips.req.Ips ips = new com.xpay.pay.proxy.ips.query.ips.req.Ips();
+    marshaller.marshal(ips, new StreamResult(os));
+    String req = os.toString();
+    req = req.substring(req.indexOf("<Ips>"));
+    logger.info("ips query request: " + req);
+    String rsp = tradeQueryService.getTradeByNo(req);
+    logger.info("ips query response: " + rsp);
+    StreamSource streamSource = new StreamSource(new ByteArrayInputStream(rsp.getBytes()));
+    com.xpay.pay.proxy.ips.query.ips.rsp.Ips respIps = (com.xpay.pay.proxy.ips.query.ips.rsp.Ips) tradeQueryUnmarshaller
+        .unmarshal(streamSource);
+    if (!SUCCESS.equals(respIps.getTradeQueryRsp().getHead().getRspCode())) {
+      throw new GatewayException(respIps.getTradeQueryRsp().getHead().getRspCode(),
+          respIps.getTradeQueryRsp().getHead().getRspMsg());
+    }
+    PaymentResponse response = new PaymentResponse();
+    response.setCode(PaymentResponse.SUCCESS);
+    Bill bill = new Bill();
+    bill.setGatewayOrderNo(respIps.getTradeQueryRsp().getBody().getIpsBillNo());
+    OrderStatus orderStatus = toOrderStatus(respIps.getTradeQueryRsp().getBody().getStatus(), false);
+    bill.setOrderStatus(orderStatus);
+    response.setBill(bill);
+    return response;
+  }
+
+  protected PaymentResponse orderQuery(PaymentRequest request, String merCode, String account, String md5Signature)
+      throws IOException {
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+    String date = simpleDateFormat.format(new Date());
+    com.xpay.pay.proxy.ips.query.merbillno.req.Ips ips = new com.xpay.pay.proxy.ips.query.merbillno.req.Ips();
+    OrderQueryReq orderQueryReq = new OrderQueryReq();
+    com.xpay.pay.proxy.ips.query.merbillno.req.Body body = new com.xpay.pay.proxy.ips.query.merbillno.req.Body();
+    body.setMerBillNo(request.getOrderNo());
+    body.setDate(request.getOrderTime().substring(0, 8));
+    NumberFormat numberFormat = new DecimalFormat("#.##");
+    numberFormat.setGroupingUsed(false);
+    body.setAmount(numberFormat.format(request.getTotalFee()));
+    orderQueryReq.setBody(body);
+    ByteArrayOutputStream os = new ByteArrayOutputStream();
+    marshaller.marshal(body, new StreamResult(os));
+    String bodyStr = os.toString();
+    bodyStr = bodyStr.substring(bodyStr.indexOf("<body>"));
+    String signature = CryptoUtils.md5(bodyStr + merCode + md5Signature);
+    ReqHead head = new ReqHead();
+    head.setVersion("v1.0.1");
+    head.setMsgId(IDGenerator.buildTimeSeriesId());
+    head.setMerCode(merCode);
+    head.setAccount(account);
+    head.setReqDate(date);
+    head.setSignature(signature);
+    orderQueryReq.setHead(head);
+    ips.setOrderQueryReq(orderQueryReq);
+    marshaller.marshal(ips, new StreamResult(os));
+    String req = os.toString();
+    req = req.substring(req.indexOf("<Ips>"));
+    logger.info("ips query request: " + req);
+    String rsp = orderQueryService.getOrderByMerBillNo(req);
+    logger.info("ips query response: " + rsp);
+    StreamSource streamSource = new StreamSource(new ByteArrayInputStream(rsp.getBytes()));
+    com.xpay.pay.proxy.ips.query.merbillno.rsp.Ips respIps = (com.xpay.pay.proxy.ips.query.merbillno.rsp.Ips) queryUnmarshaller
+        .unmarshal(streamSource);
+    if (!SUCCESS.equals(respIps.getOrderQueryRsp().getHead().getRspCode())) {
+      throw new GatewayException(respIps.getOrderQueryRsp().getHead().getRspCode(),
+          respIps.getOrderQueryRsp().getHead().getRspMsg());
+    }
+    PaymentResponse response = new PaymentResponse();
+    response.setCode(PaymentResponse.SUCCESS);
+    Bill bill = new Bill();
+    bill.setGatewayOrderNo(respIps.getOrderQueryRsp().getBody().getIpsBillNo());
+    OrderStatus orderStatus = toOrderStatus(respIps.getOrderQueryRsp().getBody().getStatus(), false);
+    bill.setOrderStatus(orderStatus);
+    response.setBill(bill);
+    return response;
   }
 
   private OrderStatus toOrderStatus(String status, boolean isRefundQuery) {

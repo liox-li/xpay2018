@@ -22,6 +22,15 @@
     <property name="portName" value="WSOrderQuerySoap"/>
   </bean>
 
+  <bean id="tradeQueryService" class="org.springframework.remoting.jaxws.JaxWsPortProxyFactoryBean">
+    <property name="serviceInterface" value="cn.com.ips.payat.webservice.tradequery.TradeQueryService"/>
+    <property name="wsdlDocumentUrl"
+      value="https://newpay.ips.com.cn/psfp-entry/services/trade?wsdl"/>
+    <property name="namespaceUri" value="http://payat.ips.com.cn/WebService/TradeQuery"/>
+    <property name="serviceName" value="WSTradeQuery"/>
+    <property name="portName" value="WSTradeQuerySoap"/>
+  </bean>
+
   <bean id="refundService" class="org.springframework.remoting.jaxws.JaxWsPortProxyFactoryBean">
     <property name="serviceInterface" value="cn.com.ips.payat.webservice.refund.RefundService"/>
     <property name="wsdlDocumentUrl"
@@ -43,6 +52,8 @@
         <value>/WEB-INF/castor/ips-refund-rsp.xml</value>
         <value>/WEB-INF/castor/ips-scan-req.xml</value>
         <value>/WEB-INF/castor/ips-scan-rsp.xml</value>
+        <value>/WEB-INF/castor/ips-query-trade-req.xml</value>
+        <value>/WEB-INF/castor/ips-query-trade-rsp.xml</value>
       </array>
     </property>
     <property name="suppressNamespaces" value="true" />
@@ -81,6 +92,15 @@
       <array>
         <value>/WEB-INF/castor/ips-common.xml</value>
         <value>/WEB-INF/castor/ips-refund-rsp.xml</value>
+      </array>
+    </property>
+  </bean>
+
+  <bean id="tradeQueryUnmarshaller" class="org.springframework.oxm.castor.CastorMarshaller">
+    <property name="mappingLocations">
+      <array>
+        <value>/WEB-INF/castor/ips-common.xml</value>
+        <value>/WEB-INF/castor/ips-query-trade-rsp.xml</value>
       </array>
     </property>
   </bean>

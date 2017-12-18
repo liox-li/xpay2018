@@ -224,6 +224,7 @@ public class PaymentService {
 			if(OrderStatus.REFUNDING.equals(order.getStatus()) || OrderStatus.REFUND.equals(order.getStatus())){
         request.setRefundTime(order.getRefundTime());
         request.setRefundOrderNo(order.getRefundOrderNo());
+        request.setRefundGatewayOrderNo(order.getRefundExtOrderNo());
 			}
 			request.setOrderTime(order.getOrderTime());
       request.setTotalFee(order.getTotalFee());
