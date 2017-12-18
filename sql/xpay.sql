@@ -213,6 +213,8 @@ alter table bill_store alter COLUMN bail_percentage type NUMERIC;
 alter table bill_store_channel alter column bill_type set default 'T1';
 
 ALTER table bill_store_channel add COLUMN props VARCHAR(1024);
+ALTER TABLE bill_order add COLUMN uid VARCHAR(32);
+
 
 ALTER table bill_app OWNER TO xpay;
 ALTER table bill_store OWNER TO xpay;

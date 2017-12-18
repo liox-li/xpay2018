@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.xpay.pay.model.App;
 import com.xpay.pay.model.StoreChannel;
+import com.xpay.pay.model.StoreChannel.ChannelType;
 
 public class StoreResponse {
 	private long id;
@@ -18,6 +19,7 @@ public class StoreResponse {
 	private Float quota;
 	private Long agentId;
 	private App app;
+	private ChannelType channelType;
 	private List<StoreChannel> channels;
 	public long getId() {
 		return id;
@@ -98,4 +100,13 @@ public class StoreResponse {
 	public void setChannels(List<StoreChannel> channels) {
 		this.channels = channels;
 	}
+	
+	public ChannelType getChannelType() {
+		return channelType;
+	}
+	public void setChannelType(ChannelType channelType) {
+		this.channelType = channelType;
+	}
+
+
 }

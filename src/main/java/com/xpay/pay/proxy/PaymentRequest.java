@@ -23,6 +23,7 @@ public class PaymentRequest {
 	private String orderTime;
 	private GoodsBean[] goods;
 	private ChannelProps channelProps;
+	private String userOpenId;
 	
 	public String getExtStoreId() {
 		return extStoreId;
@@ -133,6 +134,12 @@ public class PaymentRequest {
 
 	public void setRefundTime(String refundTime) {
 		this.refundTime = refundTime;
+
+	public String getUserOpenId() {
+		return userOpenId;
+	}
+	public void setUserOpenId(String userOpenId) {
+		this.userOpenId = userOpenId;
 	}
 
 	public static class GoodsBean {

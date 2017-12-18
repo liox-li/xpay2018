@@ -13,6 +13,7 @@ public class OrderRequest {
 	private String notifyUrl;
 	private String returnUrl;
 	private String subject;
+	private String uid;
 	public String getStoreId() {
 		return storeId;
 	}
@@ -78,6 +79,12 @@ public class OrderRequest {
 	}
 	public void setSubject(String subject) {
 		this.subject = subject;
+	}
+	public String getUid() {
+		return uid;
+	}
+	public void setUid(String uid) {
+		this.uid = uid;
 	}
 	
 }

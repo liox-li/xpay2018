@@ -165,6 +165,7 @@ public class StoreChannel {
 		private String msgSrcId;
 		private String msgSrc;
 		private String signKey;
+		private String instMid;
 		public String getTid() {
 			return tid;
 		}
@@ -189,6 +190,12 @@ public class StoreChannel {
 		public void setSignKey(String signKey) {
 			this.signKey = signKey;
 		}
+		public String getInstMid() {
+			return instMid;
+		}
+		public void setInstMid(String instMid) {
+			this.instMid = instMid;
+		}
 	}
 
 	public static class IpsProps implements ChannelProps {
@@ -212,7 +219,7 @@ public class StoreChannel {
 		}
 	}
 
-	public static class SUPayProps implements ChannelProps {
+  public static class SUPayProps implements ChannelProps {
 		private String itemId;
 		private String payType;
 		private String serverCode;
@@ -239,5 +246,8 @@ public class StoreChannel {
 		public void setServerCode(String serverCode) {
 			this.serverCode = serverCode;
 		}
+	
+	public enum ChannelType {
+		WECHAT, ALIPAY, BANK, H5
 	}
 }

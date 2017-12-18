@@ -26,6 +26,8 @@ import com.xpay.pay.model.Bill;
 import com.xpay.pay.model.Order;
 import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
+import com.xpay.pay.model.StoreChannel.ChannelType;
+import com.xpay.pay.model.StoreChannel.PaymentGateway;
 import com.xpay.pay.model.StoreTransaction;
 import com.xpay.pay.model.StoreTransaction.TransactionType;
 import com.xpay.pay.rest.contract.BaseResponse;
@@ -338,7 +340,7 @@ public class AgentRestService extends AdminRestService {
 		App app = appService.findById(appId);
 		
 		
-		Order order = paymentService.createOrder(app, orderNo, store, request.getChannel(), null, "127.0.0.1", request.getAmount(), IDGenerator.formatTime(new Date(), IDGenerator.TimePattern14), "", null, null, null, subject, null);
+		Order order = paymentService.createOrder(app, null, orderNo, store, request.getChannel(), null, "127.0.0.1", request.getAmount(), IDGenerator.formatTime(new Date(), IDGenerator.TimePattern14), "", null, null, null, subject, null);
 		Assert.notNull(order,"Create order failed");
 		Bill bill = null;
 		BaseResponse<RechargeResponse> response = new BaseResponse<RechargeResponse>();
@@ -478,6 +480,21 @@ public class AgentRestService extends AdminRestService {
 		storeResponse.setQuota(store.getQuota());
 		storeResponse.setAgentId(store.getAgentId());
 		storeResponse.setChannels(store.getChannels());
+		storeResponse.setChannelType(toChannelType(store.getChannels()));
 		return storeResponse;
+	}
+	
+	private ChannelType toChannelType(List<StoreChannel> channels) {
+		ChannelType type = ChannelType.WECHAT;
+		if(CollectionUtils.isNotEmpty(channels)) {
+			StoreChannel storeChannel = channels.get(0);
+			PaymentGateway paymentGateway = storeChannel.getPaymentGateway();
+			switch(paymentGateway) {
+			case KEKEPAY:
+			case IPS:
+				type = ChannelType.BANK;
+			}
+		}
+		return type;
 	}
 }
