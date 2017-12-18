@@ -112,6 +112,8 @@ public abstract class AbstractIpsProxy implements IPaymentProxy{
       bill.setOrderStatus(orderStatus);
       response.setBill(bill);
       return response;
+    } catch (GatewayException e) {
+      throw e;
     } catch (Exception e) {
       logger.error("ToPaymentResponse error", e);
     }
@@ -171,6 +173,7 @@ public abstract class AbstractIpsProxy implements IPaymentProxy{
       ips.setRefundReq(refundReq);
       marshaller.marshal(ips, new StreamResult(os));
       String req = os.toString();
+      req = req.substring(req.indexOf("<Ips>"));
       logger.info("ips refund request: " + req);
       String rsp = refundService.refund(req);
       logger.info("ips refund response: " + rsp);
@@ -195,7 +198,9 @@ public abstract class AbstractIpsProxy implements IPaymentProxy{
       bill.setOrderStatus(orderStatus);
       response.setBill(bill);
       return response;
-    } catch (IOException e) {
+    } catch (GatewayException e) {
+      throw e;
+    } catch (Exception e) {
       logger.info("refund failed, took " + (System.currentTimeMillis() - l) + "ms", e);
       throw new RuntimeException(e);
     }
