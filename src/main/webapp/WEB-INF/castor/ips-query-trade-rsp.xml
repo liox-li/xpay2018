@@ -42,8 +42,8 @@
     <field name="merBillDate" nillable="true" required="true" type="string">
       <bind-xml name="MerBillDate" node="element"/>
     </field>
-    <field name="ipsBillTime" nillable="true" required="true" type="string">
-      <bind-xml name="IpsBillTime" node="element"/>
+    <field name="ipsTradeTime" nillable="true" required="true" type="string">
+      <bind-xml name="IpsTradeTime" node="element"/>
     </field>
     <field name="attach" nillable="true" required="true" type="string">
       <bind-xml name="Attach" node="element"/>
