@@ -30,6 +30,9 @@
     <field name="ipsBillNo" nillable="true" required="true" type="string">
       <bind-xml name="IpsBillNo" node="element"/>
     </field>
+    <field name="ipsTradeNo" nillable="true" required="true" type="string">
+      <bind-xml name="IpsTradeNo" node="element"/>
+    </field>
     <field name="tradeType" nillable="true" required="true" type="string">
       <bind-xml name="TradeType" node="element"/>
     </field>
