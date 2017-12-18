@@ -219,7 +219,7 @@ public class Order {
 		this.createDate = createDate;
 	}
 	public boolean isRemoteQueralbe() {
-		return !OrderStatus.REFUND.equals(this.status) && !OrderStatus.REVOKED.equals(this.status);
+		return !OrderStatus.REFUND.equals(this.status) && !OrderStatus.REFUNDERROR.equals(this.status) && !OrderStatus.REVOKED.equals(this.status);
 	}
 	
 	public boolean isSettle() {
