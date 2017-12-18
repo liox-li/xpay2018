@@ -103,6 +103,8 @@ public class IpsScanProxy extends AbstractIpsProxy {
       IpsProps props = (IpsProps) request.getChannelProps();
       body.setMerType(props.getMerType());
       body.setSubMerCode(props.getSubMerCode());
+    } else{
+      body.setMerType("0");
     }
     body.setDate(date.substring(0, 8));
     body.setCurrencyType("156");
