@@ -6,11 +6,13 @@ package com.xpay.pay.proxy.ips.common;
  */
 public class ReqHead {
 
-  private String version = "v1.0.1";
-  private String merCode;
-  private String account;
-  private String reqDate;
-  private String signature;
+  private String version = "";
+  private String merCode = "";
+  private String merName = "";
+  private String account = "";
+  private String msgId = "";
+  private String reqDate = "";
+  private String signature = "";
 
   public String getVersion() {
     return version;
@@ -28,12 +30,28 @@ public class ReqHead {
     this.merCode = merCode;
   }
 
+  public String getMerName() {
+    return merName;
+  }
+
+  public void setMerName(String merName) {
+    this.merName = merName;
+  }
+
   public String getAccount() {
     return account;
   }
 
   public void setAccount(String account) {
     this.account = account;
+  }
+
+  public String getMsgId() {
+    return msgId;
+  }
+
+  public void setMsgId(String msgId) {
+    this.msgId = msgId;
   }
 
   public String getReqDate() {

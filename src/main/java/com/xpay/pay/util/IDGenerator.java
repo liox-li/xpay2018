@@ -17,6 +17,7 @@ public class IDGenerator {
 	public static final String TimePatternTime = "yyyy-MM-dd HH:mm:ss";
 	private static final char X = 'X';
 	private static final char S = 'S';
+	private static final char R = 'R';
 
 	public static String buildOrderNo(int appId, long storeId) {
 		StringBuffer sb = new StringBuffer();
@@ -53,6 +54,14 @@ public class IDGenerator {
 		sb.append(T);
 		sb.append(formatNow(TimePattern14));
 		sb.append(randomNum(3));
+		return sb.toString();
+	}
+
+	public static String buildRefundOrderNo() {
+		StringBuffer sb = new StringBuffer();
+		sb.append(R);
+		sb.append(formatNow(TimePattern17));
+		sb.append(randomNum(10));
 		return sb.toString();
 	}
 
@@ -118,6 +127,13 @@ public class IDGenerator {
 		for (int i = 0; i < len; i++) {
 			sb.append(random.nextInt(10));
 		}
+		return sb.toString();
+	}
+
+	public static final String buildTimeSeriesId() {
+		StringBuffer sb = new StringBuffer();
+		sb.append(formatNow(TimePattern17));
+		sb.append(randomNum(7));
 		return sb.toString();
 	}
 }

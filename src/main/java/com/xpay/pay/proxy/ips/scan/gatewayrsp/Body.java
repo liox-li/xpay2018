@@ -1,4 +1,4 @@
-package com.xpay.pay.proxy.ips.gatewayrsp;
+package com.xpay.pay.proxy.ips.scan.gatewayrsp;
 
 /**
  * Created by sunjian on Date: 2017/12/13 上午10:11

@@ -3,8 +3,10 @@ package com.xpay.pay.notify;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.proxy.ips.notify.Ips;
 import java.io.ByteArrayInputStream;
+import java.net.URLDecoder;
 import javax.xml.transform.stream.StreamSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.oxm.Unmarshaller;
 import org.springframework.stereotype.Service;
 
@@ -15,16 +17,33 @@ import org.springframework.stereotype.Service;
 @Service
 public class IpsNotifyHandler extends AbstractNotifyHandler {
 
+  @Qualifier("notifyUnmarshaller")
   @Autowired
   Unmarshaller unmarshaller;
 
   @Override
   protected NotifyBody extractNotifyBody(String url, String content) {
     logger.info("ips body: " + content);
+    String paymentResult = null;
+    try {
+      String decoded = URLDecoder.decode(content, "utf-8");
+      String[] params = decoded.split("&");
+      for (String param : params) {
+        String[] pair = param.split("=");
+        String key = pair[0];
+        if ("paymentResult".equals(key)) {
+          paymentResult = pair[1];
+          break;
+        }
+      }
+    } catch (Exception e) {
+      logger.error("IpsNotifyHandler extractNotifyBody " + content, e);
+      return null;
+    }
     Ips notify = null;
     try {
       notify = (Ips) unmarshaller
-          .unmarshal(new StreamSource(new ByteArrayInputStream(content.getBytes("utf-8"))));
+          .unmarshal(new StreamSource(new ByteArrayInputStream(paymentResult.getBytes("utf-8"))));
     } catch (Exception e) {
       logger.error(e.getMessage(), e);
       return null;

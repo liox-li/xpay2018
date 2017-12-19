@@ -223,3 +223,7 @@ ALTER table bill_order OWNER TO xpay;
 ALTER table bill_order_detail OWNER TO xpay;
 ALTER table bill_store_link OWNER TO xpay;
 
+
+ALTER TABLE bill_order ADD COLUMN refund_order_no varchar(32);
+ALTER TABLE bill_order ADD COLUMN refund_ext_order_no varchar(64);
+ALTER TABLE bill_order ADD COLUMN refund_time varchar(14);

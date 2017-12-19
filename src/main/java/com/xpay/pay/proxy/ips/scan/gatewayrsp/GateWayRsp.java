@@ -1,4 +1,4 @@
-package com.xpay.pay.proxy.ips.gatewayrsp;
+package com.xpay.pay.proxy.ips.scan.gatewayrsp;
 
 import com.xpay.pay.proxy.ips.common.RspHead;
 

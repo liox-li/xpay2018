@@ -10,6 +10,7 @@ import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 public class Order {
 	private long id;
 	private String orderNo;
+	private String refundOrderNo;
 	private String uid;
 	private Long appId;
 	private long storeId;
@@ -17,8 +18,10 @@ public class Order {
 	private long storeChannelId;
 	private Float totalFee;
 	private String orderTime;
+	private String refundTime;
 	private String sellerOrderNo;
 	private String extOrderNo;
+	private String refundExtOrderNo;
 	private String targetOrderNo;
 	private PayChannel payChannel;
 	private String attach;
@@ -216,7 +219,7 @@ public class Order {
 		this.createDate = createDate;
 	}
 	public boolean isRemoteQueralbe() {
-		return !OrderStatus.REFUND.equals(this.status) && !OrderStatus.REVOKED.equals(this.status);
+		return !OrderStatus.REFUND.equals(this.status) && !OrderStatus.REFUNDERROR.equals(this.status) && !OrderStatus.REVOKED.equals(this.status);
 	}
 	
 	public boolean isSettle() {
@@ -229,5 +232,29 @@ public class Order {
 	
 	public boolean isRechargeOrder() {
 		return StringUtils.isNotBlank(this.orderNo) && this.orderNo.startsWith("S");
+	}
+
+	public String getRefundOrderNo() {
+		return refundOrderNo;
+	}
+
+	public void setRefundOrderNo(String refundOrderNo) {
+		this.refundOrderNo = refundOrderNo;
+	}
+
+	public String getRefundExtOrderNo() {
+		return refundExtOrderNo;
+	}
+
+	public void setRefundExtOrderNo(String refundExtOrderNo) {
+		this.refundExtOrderNo = refundExtOrderNo;
+	}
+
+	public String getRefundTime() {
+		return refundTime;
+	}
+
+	public void setRefundTime(String refundTime) {
+		this.refundTime = refundTime;
 	}
 }

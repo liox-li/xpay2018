@@ -76,8 +76,10 @@ public class StoreChannel {
 		if(StringUtils.isNotBlank(props)) {
 			if(this.paymentGateway == PaymentGateway.CHINAUMSH5) {
 				this.channelProps = JsonUtils.fromJson(props, ChinaUmsProps.class);
-			} else if(this.paymentGateway == PaymentGateway.IPS) {
+			} else if(this.paymentGateway == PaymentGateway.IPSSCAN) {
 				this.channelProps = JsonUtils.fromJson(props, IpsProps.class);
+			} else if(this.paymentGateway == PaymentGateway.SUPay) {
+				this.channelProps = JsonUtils.fromJson(props, SUPayProps.class);
 			}
 		}
  	}
@@ -127,7 +129,9 @@ public class StoreChannel {
 		KEFU("msBank_WeChatPay", "msBank_ScanPayQuery", ""), 
 		KEKEPAY("pay","query",""),
 		QFTXMP("pay", "query", ""),
-		IPS("pay","query", "refund");
+		SUPay("pay", "", ""),
+		IPSSCAN("pay","query", "refund"),
+		IPSQUICK("pay","query", "refund");
 
 		String unifiedOrder;
 		String query;
@@ -214,8 +218,39 @@ public class StoreChannel {
 			this.subMerCode = subMerCode;
 		}
 	}
-	
+
+  public static class SUPayProps implements ChannelProps {
+
+		private String itemId;
+		private String payType;
+		private String serverCode;
+
+		public String getItemId() {
+			return itemId;
+		}
+
+		public void setItemId(String itemId) {
+			this.itemId = itemId;
+		}
+
+		public String getPayType() {
+			return payType;
+		}
+
+		public void setPayType(String payType) {
+			this.payType = payType;
+		}
+
+		public String getServerCode() {
+			return serverCode;
+		}
+
+		public void setServerCode(String serverCode) {
+			this.serverCode = serverCode;
+		}
+	}
+
 	public enum ChannelType {
-		WECHAT, ALIPAY, BANK, H5 
+		WECHAT, ALIPAY, BANK, H5
 	}
 }

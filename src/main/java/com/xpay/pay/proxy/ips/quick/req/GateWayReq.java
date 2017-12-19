@@ -1,9 +1,9 @@
-package com.xpay.pay.proxy.ips.gatewayreq;
+package com.xpay.pay.proxy.ips.quick.req;
 
 import com.xpay.pay.proxy.ips.common.ReqHead;
 
 /**
- * Created by sunjian on Date: 2017/12/12 下午11:04
+ * Created by sunjian on Date: 2017/12/15 上午10:50
  * Description:
  */
 public class GateWayReq {
