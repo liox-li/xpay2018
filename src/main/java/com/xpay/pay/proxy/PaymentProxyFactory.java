@@ -1,5 +1,8 @@
 package com.xpay.pay.proxy;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.xpay.pay.model.StoreChannel.PaymentGateway;
 import com.xpay.pay.proxy.chinaums.ChinaUmsProxy;
 import com.xpay.pay.proxy.chinaumsh5.ChinaUmsH5Proxy;
@@ -13,9 +16,8 @@ import com.xpay.pay.proxy.kefu.KeFuProxy;
 import com.xpay.pay.proxy.kekepay.KekePayProxy;
 import com.xpay.pay.proxy.miaofu.MiaoFuProxy;
 import com.xpay.pay.proxy.qftx.mp.QftxMpProxy;
+import com.xpay.pay.proxy.txf.TxfProxy;
 import com.xpay.pay.proxy.upay.UPayProxy;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class PaymentProxyFactory {
@@ -48,6 +50,8 @@ public class PaymentProxyFactory {
   private IpsScanProxy ipsScanProxy;
   @Autowired
   private IpsQuickProxy ipsQuickProxy;
+  @Autowired
+  private TxfProxy txfProxy;
 
   public IPaymentProxy getPaymentProxy(PaymentGateway channel) {
     switch (channel) {
@@ -77,8 +81,10 @@ public class PaymentProxyFactory {
         return ipsScanProxy;
       case IPSQUICK:
         return ipsQuickProxy;
+      case TXF:
+          return txfProxy;
       default:
-        return chinaUmsV2Proxy;
+        return chinaUmsH5Proxy;
     }
   }
 }

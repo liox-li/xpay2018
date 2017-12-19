@@ -1,5 +1,19 @@
 package com.xpay.pay.controller;
 
+import java.io.IOException;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+
 import com.xpay.pay.model.Order;
 import com.xpay.pay.model.StoreChannel.PaymentGateway;
 import com.xpay.pay.proxy.IPaymentProxy;
@@ -9,20 +23,10 @@ import com.xpay.pay.proxy.chinaumsh5.ChinaUmsH5Proxy;
 import com.xpay.pay.proxy.chinaumswap.ChinaUmsWapProxy;
 import com.xpay.pay.proxy.kekepay.KekePayProxy;
 import com.xpay.pay.proxy.miaofu.MiaoFuProxy;
+import com.xpay.pay.proxy.txf.TxfProxy;
 import com.xpay.pay.proxy.upay.UPayProxy;
 import com.xpay.pay.service.OrderService;
 import com.xpay.pay.service.PaymentService;
-import java.io.IOException;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 public class JsPayServlet extends HttpServlet {
 
@@ -42,6 +46,8 @@ public class JsPayServlet extends HttpServlet {
   protected UPayProxy upayProxy;
   @Autowired
   protected KekePayProxy kekePayProxy;
+  @Autowired
+  protected TxfProxy txfProxy;
 
   @Override
   public void init(ServletConfig config) throws ServletException {
@@ -116,8 +122,17 @@ public class JsPayServlet extends HttpServlet {
       } else if (uri.contains(IPaymentProxy.PAYED)) {
         response.sendRedirect(order.getReturnUrl());
       }
+    } else if (PaymentGateway.TXF.equals(order.getStoreChannel().getPaymentGateway())) {
+        PaymentRequest paymentRequest = paymentService.toPaymentRequest(order);
+        String cardType = request.getParameter("cardType");
+        String bankId = request.getParameter("bankId");
+        paymentRequest.setCardType(cardType);
+        paymentRequest.setBankId(bankId);
+        response.setCharacterEncoding("utf-8");
+        response.setHeader("Content-type", "text/html;charset=UTF-8");
+        response.sendRedirect(txfProxy.getJsUrl(paymentRequest));
     } else {
-      response.sendError(400, "无效订单");
+        response.sendError(400, "无效订单");
     }
   }
 }

@@ -17,6 +17,7 @@ import com.xpay.pay.model.Bill;
 import com.xpay.pay.proxy.IPaymentProxy;
 import com.xpay.pay.proxy.PaymentRequest;
 import com.xpay.pay.proxy.PaymentResponse;
+import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.util.AppConfig;
 import com.xpay.pay.util.CryptoUtils;
 import com.xpay.pay.util.JsonUtils;
@@ -36,6 +37,17 @@ public class TxfProxy implements IPaymentProxy {
 	
 	@Override
 	public PaymentResponse unifiedOrder(PaymentRequest request) {
+		String url = DEFAULT_JSAPI_URL + request.getOrderNo();
+		PaymentResponse response = new PaymentResponse();
+		response.setCode(PaymentResponse.SUCCESS);
+		Bill bill = new Bill();
+		bill.setCodeUrl(url);
+		bill.setOrderStatus(OrderStatus.NOTPAY);
+		response.setBill(bill);
+		return response;
+	}
+	
+	public String getJsUrl(PaymentRequest request) {
 		String url = baseEndpoint + orderUri;
 		long l = System.currentTimeMillis();
 		PaymentResponse response = null;
@@ -55,11 +67,12 @@ public class TxfProxy implements IPaymentProxy {
 			logger.info("unifiedOrder result: " + txfResponse.getRes() + " "+txfResponse.getMsg()  + ", took "
 					+ (System.currentTimeMillis() - l) + "ms");
 			response = toPaymentResponse(request, txfResponse);
+			return response.getBill().getCodeUrl();
 		} catch (RestClientException e) {
 			logger.info("unifiedOrder failed, took " + (System.currentTimeMillis() - l) + "ms", e);
 			throw e;
 		}
-		return response;
+		
 	}
 
 	private TxfRequest toTxfRequest(PaymentRequest request) {

@@ -131,8 +131,9 @@ public class StoreChannel {
 		QFTXMP("pay", "query", ""),
 		SUPay("pay", "", ""),
 		IPSSCAN("pay","query", "refund"),
-		IPSQUICK("pay","query", "refund");
-
+		IPSQUICK("pay","query", "refund"),
+		TXF("", "query", "refund");
+		
 		String unifiedOrder;
 		String query;
 		String refund;
