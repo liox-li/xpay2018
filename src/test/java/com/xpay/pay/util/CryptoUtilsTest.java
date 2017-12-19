@@ -53,11 +53,10 @@ public class CryptoUtilsTest {
 	@Test
 	public void testMd54() {
 		//POST: https://api.shouqianba.com/terminal/activate header: Authorization: sign,  {"app_id": "2017101300000369", "code": "39100900", "device_id": "127.0.0.3"}
-		String json = "{\"app_id\": \"2017101300000369\", \"code\": \"96498016\", \"device_id\": \"127.0.0.65\"}";
-		String key = "4fb216bfdd0fc1554107b981c0bfcf7b";
+		String json = "eyJhZ2VudE9yZ25vIjoiTlkxNTMyMTIxOCIsICJvcmRlck5vIjoiTzIwMTcxMjE5MDgzMjEyNSIsICJtb25leSI6ICIxIiwiY3VyVHlwZSI6ICIxIiwicmV0dXJuVXJsIjogImh0dHA6Ly93d3cuYmFpZHUuY29tIiwgIm5vdGlmeVVybCI6ICJodHRwOi8vd3d3LnptcGF5Lnh5ei94cGF5L25vdGlmeS90eGYvTzIwMTcxMjE5MDgzMjEyNSIsICJtZW1vIjogInRlc3QiLCAiY2FyZFR5cGUiOiAiMSIsICJiYW5rU2VnbWVudCI6ICI2NjY2IiwgInVzZXJUeXBlIjogIjEiLCAiY2hhbm5lbCI6ICIxIn0";
+		String key = "32AF95AF0DE4B040BD0976501C0D3D8B";
 		String body = json + key;
-		String sn = "91800209";
-		System.out.println(sn + " " +CryptoUtils.md5(body));
+		System.out.println(CryptoUtils.md5(body));
 	}
 	
 	@Test
@@ -171,5 +170,11 @@ public class CryptoUtilsTest {
 		String md5 = CryptoUtils.md5(params);
 		System.out.println("md5 upper: " + md5.toUpperCase());
 		return md5 == null ? null : md5.toUpperCase();
+	}
+	
+	@Test
+	public void testBase64Encode() {
+		String str = "{\"agentOrgno\":\"NY15321218\", \"orderNo\":\"O201712190832125\", \"money\": \"1\",\"curType\": \"1\",\"returnUrl\": \"http://www.baidu.com\", \"notifyUrl\": \"http://www.zmpay.xyz/xpay/notify/txf/O201712190832125\", \"memo\": \"test\", \"cardType\": \"1\", \"bankSegment\": \"6666\", \"userType\": \"1\", \"channel\": \"1\"}";
+		System.out.println(CryptoUtils.base64Encode(str));
 	}
 }

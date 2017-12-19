@@ -46,6 +46,8 @@ public class AppConfig {
 	public static final AppConfig QftxMpConfig = new AppConfig(load("qftxmp.config"));
 
 	public static final AppConfig SUPayConfig = new AppConfig(load("supay.config"));
+	
+	public static final AppConfig TxfConfig = new AppConfig(load("txf.config"));
 
 	public AppConfig(Properties properties) {
 		this.properties = properties;

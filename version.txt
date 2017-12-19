@@ -1,8 +1,7 @@
 branch=refs/heads/master
-buildTimestamp=2017-12-15 06:01:35 +0000
-buildVersion=817
-commitId=9f221037aa3da0f8cfef4d2ba49070c32ba0616d
-
+buildTimestamp=2017-12-19 00:23:44 +0000
+buildVersion=818
+commitId=
 hostname=lenovo-PC
 isSnapshot=true
 javaVersion=1.8.0_151
@@ -12,4 +11,4 @@ osName=Windows 7
 osVersion=6.1
 project=XPAY
 username=lenovo
-version=0.1.819
+version=0.1.818

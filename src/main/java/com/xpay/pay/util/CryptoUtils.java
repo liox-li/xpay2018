@@ -1,7 +1,10 @@
 package com.xpay.pay.util;
 
+import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Base64.Encoder;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -112,5 +115,17 @@ public class CryptoUtils {
 		}
 
 		return md5StrBuff.toString();
+	}
+	
+	public static String base64Encode(String str) {
+		if(str == null) {
+			return null;
+		}
+		Encoder encoder = Base64.getEncoder();
+		try {
+			return encoder.encodeToString(str.getBytes("UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			return null;
+		}
 	}
 }
