@@ -123,14 +123,19 @@ public class JsPayServlet extends HttpServlet {
         response.sendRedirect(order.getReturnUrl());
       }
     } else if (PaymentGateway.TXF.equals(order.getStoreChannel().getPaymentGateway())) {
-        PaymentRequest paymentRequest = paymentService.toPaymentRequest(order);
-        String cardType = request.getParameter("cardType");
-        String bankId = request.getParameter("bankId");
-        paymentRequest.setCardType(cardType);
-        paymentRequest.setBankId(bankId);
-        response.setCharacterEncoding("utf-8");
-        response.setHeader("Content-type", "text/html;charset=UTF-8");
-        response.sendRedirect(txfProxy.getJsUrl(paymentRequest));
+    	if (uri.contains(IPaymentProxy.TOPAY)) {
+    		request.getRequestDispatcher("/txf.jsp?orderNo="+orderNo+"&amount="+order.getTotalFee()).forward(request, response);
+    		return;
+    	} else {
+	        PaymentRequest paymentRequest = paymentService.toPaymentRequest(order);
+	        String cardType = request.getParameter("cardType");
+	        String bankId = request.getParameter("bankId");
+	        paymentRequest.setCardType(cardType);
+	        paymentRequest.setBankId(bankId);
+	        response.setCharacterEncoding("utf-8");
+	        response.setHeader("Content-type", "text/html;charset=UTF-8");
+	        response.sendRedirect(txfProxy.getJsUrl(paymentRequest));
+    	}
     } else {
         response.sendError(400, "无效订单");
     }

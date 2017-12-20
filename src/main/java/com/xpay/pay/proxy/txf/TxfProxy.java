@@ -37,7 +37,7 @@ public class TxfProxy implements IPaymentProxy {
 	
 	@Override
 	public PaymentResponse unifiedOrder(PaymentRequest request) {
-		String url = DEFAULT_JSAPI_URL + request.getOrderNo();
+		String url = DEFAULT_JSAPI_URL +TOPAY+"/"+ request.getOrderNo();
 		PaymentResponse response = new PaymentResponse();
 		response.setCode(PaymentResponse.SUCCESS);
 		Bill bill = new Bill();
@@ -64,7 +64,7 @@ public class TxfProxy implements IPaymentProxy {
 			headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 			HttpEntity<?> httpEntity = new HttpEntity<>(headers);
 			TxfResponse txfResponse = txfProxy.exchange(url, HttpMethod.POST, httpEntity, TxfResponse.class).getBody();
-			logger.info("unifiedOrder result: " + txfResponse.getRes() + " "+txfResponse.getMsg()  + ", took "
+			logger.info("unifiedOrder result: " + txfResponse.getRes() + " "+txfResponse.getMsg()  + txfResponse.getUrl() + ", took "
 					+ (System.currentTimeMillis() - l) + "ms");
 			response = toPaymentResponse(request, txfResponse);
 			return response.getBill().getCodeUrl();
@@ -118,6 +118,16 @@ public class TxfProxy implements IPaymentProxy {
 	public PaymentResponse refund(PaymentRequest request) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public static OrderStatus toOrderStatus(String status) {
+		if("0".equals(status)) {
+			return OrderStatus.NOTPAY;
+		} else if("1".equals(status)) {
+			return OrderStatus.SUCCESS;
+		} else {
+			return OrderStatus.PAYERROR;
+		}
 	}
 
 }
