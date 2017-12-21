@@ -286,4 +286,12 @@ public class Store {
 		}
 		return this.links.stream().map(x -> x.getLink()).filter(y -> y.indexOf(domainName)>=0).findAny().isPresent();
 	}
+
+
+	public Float getBaseBailPercentage() {
+		if(CollectionUtils.isEmpty(this.channels)) {
+			return 0f;
+		}
+		return this.channels.get(0).getPaymentGateway().getBaseBailPercentage();
+	}
 }

@@ -151,8 +151,8 @@ public class StoreService {
 	}
 	
 	public StoreTransaction rechargeOrder(long agentId, long storeId, Float amount, String orderNo) {
-		Store store = storeMapper.findById(storeId);
-		int addQuota = (int)(amount *100 / (store.getBailPercentage()-1));
+		Store store = this.findById(storeId);
+		int addQuota = (int)(amount *100 / (store.getBailPercentage()-store.getBaseBailPercentage()));
 //		store.setQuota(store.getQuota()+addQuota);
 //		storeMapper.updateById(store);
 		
