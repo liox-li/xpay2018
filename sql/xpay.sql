@@ -227,3 +227,9 @@ ALTER table bill_store_link OWNER TO xpay;
 ALTER TABLE bill_order ADD COLUMN refund_order_no varchar(32);
 ALTER TABLE bill_order ADD COLUMN refund_ext_order_no varchar(64);
 ALTER TABLE bill_order ADD COLUMN refund_time varchar(14);
+
+ALTER TABLE bill_store ADD COLUMN last_trans_sum NUMERIC default 0;
+ALTER TABLE bill_store ADD COLUMN last_recharge_amt NUMERIC default 0;
+ALTER TABLE bill_store ADD COLUMN channel_type varchar(32);
+ALTER TABLE bill_store ADD COLUMN admin_id BIGINT;
+ALTER TABLE bill_agent DROP COLUMN store_id;

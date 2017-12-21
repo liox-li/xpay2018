@@ -108,10 +108,6 @@ public class AgentRestService extends AdminRestService {
 		
 		Assert.isTrue(agent.getRole() == Role.STORE || agent.getRole() == Role.AGENT, "Agent or Store role are supported");
 		
-		if(agent.getRole() == Role.STORE) {
-			Assert.notNull(agent.getStoreId(), "Store is must for a store admin");
-		}
-		
 		Agent dbAgent = agentService.findByAccount(agent.getAccount());
 		Assert.isTrue(dbAgent == null, String.format("Account already exit - %s", agent.getAccount()));
 
@@ -473,14 +469,18 @@ public class AgentRestService extends AdminRestService {
 		storeResponse.setName(store.getName());
 		storeResponse.setBailPercentage(store.getBailPercentage());
 		storeResponse.setCsrTel(store.getCsrTel());
-		storeResponse.setAppId(store.getAppId());
+		storeResponse.setApp(appService.findById(store.getAppId()));
 		storeResponse.setProxyUrl(store.getProxyUrl());
 		storeResponse.setDailyLimit(store.getDailyLimit());
 		storeResponse.setTodayTradeAmount(store.getNonBail());
 		storeResponse.setQuota(store.getQuota());
-		storeResponse.setAgentId(store.getAgentId());
+		storeResponse.setAdmin(agentService.findById(store.getAdminId()));
+		storeResponse.setAgent(agentService.findById(store.getAgentId()));
 		storeResponse.setChannels(store.getChannels());
-		storeResponse.setChannelType(toChannelType(store.getChannels()));
+		storeResponse.setLastRechargeAmount(store.getLastRechargeAmt());
+		storeResponse.setLastTradeAmount(store.getLastTransSum());
+		ChannelType channelType = StringUtils.isBlank(store.getChannelType())?this.toChannelType(store.getChannels()):ChannelType.valueOf(store.getChannelType());
+		storeResponse.setChannelType(channelType);
 		return storeResponse;
 	}
 	

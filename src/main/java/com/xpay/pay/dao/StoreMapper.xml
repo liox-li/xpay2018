@@ -20,6 +20,10 @@
     <result column="app_id" jdbcType="BIGINT" property="appId" />
     <result column="agent_id" jdbcType="BIGINT" property="agentId" />
     <result column="quota" jdbcType="NUMERIC" property="quota" />
+    <result column="last_trans_sum" jdbcType="NUMERIC" property="lastTransSum" />
+    <result column="last_recharge_amt" jdbcType="NUMERIC" property="lastRechargeAmt" />
+    <result column="channel_type" jdbcType="VARCHAR" property="channelType" />
+    <result column="admin_id" jdbcType="VARCHAR" property="adminId" />
   </resultMap>
   
   <sql id="storeColumns">
@@ -39,7 +43,11 @@
     proxy_url,
     app_id,
     agent_id,
-    quota
+    quota,
+    last_trans_sum,
+    last_recharge_amt,
+    channel_type,
+    admin_id
   </sql>
 
   <select id="findById" resultMap="StoreResultMap">
@@ -61,6 +69,13 @@
     <include refid="storeColumns" />
     FROM bill_store
     WHERE bill_store.agent_id = #{agentId} AND deleted = false
+  </select>
+  
+  <select id="findByAdminId" resultMap="StoreResultMap">
+    SELECT
+    <include refid="storeColumns" />
+    FROM bill_store
+    WHERE bill_store.admin_id = #{adminId} AND deleted = false
   </select>
   
    <select id="findAll" resultMap="StoreResultMap">
@@ -101,9 +116,15 @@
       <if test="agentId != null">
         agent_id,
       </if>  
+      <if test="adminId != null">
+        admin_id,
+      </if> 
        <if test="quota != null">
         quota,
-      </if>      
+      </if> 
+       <if test="channelType != null">
+        channel_type,
+      </if>       
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
      	#{code,jdbcType=VARCHAR},
@@ -136,8 +157,14 @@
          <if test="agentId != null">
         	#{agentId,jdbcType=BIGINT},
         </if>
+        <if test="adminId != null">
+        	#{adminId,jdbcType=BIGINT},
+        </if>
          <if test="quota != null">
         	#{quota,jdbcType=NUMERIC},
+        </if>
+         <if test="channelType != null">
+        	#{channelType,jdbcType=NUMERIC},
         </if>
     </trim>
   </insert>
@@ -189,6 +216,12 @@
       </if> 
       <if test="quota != null">
         quota = #{quota,jdbcType=NUMERIC},
+      </if> 
+      <if test="channelType != null">
+        channel_type = #{channelType,jdbcType=VARCHAR},
+      </if> 
+      <if test="lastRechargeAmt != null">
+        last_recharge_amt = #{lastRechargeAmt,jdbcType=NUMERIC},
       </if> 
       update_date = now()
     </set>

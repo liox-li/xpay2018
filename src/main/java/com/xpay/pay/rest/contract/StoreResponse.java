@@ -2,6 +2,7 @@ package com.xpay.pay.rest.contract;
 
 import java.util.List;
 
+import com.xpay.pay.model.Agent;
 import com.xpay.pay.model.App;
 import com.xpay.pay.model.StoreChannel;
 import com.xpay.pay.model.StoreChannel.ChannelType;
@@ -11,16 +12,44 @@ public class StoreResponse {
 	private String code;
 	private String name;
 	private Float bailPercentage;
-	private Long appId;
 	private String csrTel;
 	private String proxyUrl;
 	private Float todayTradeAmount;
 	private Long dailyLimit;
 	private Float quota;
-	private Long agentId;
+	private Agent agent;
+	private Agent admin;
+	private Float lastTradeAmount;
+	private Float lastRechargeAmount;
 	private App app;
 	private ChannelType channelType;
 	private List<StoreChannel> channels;
+	
+	public Agent getAgent() {
+		return agent;
+	}
+	public void setAgent(Agent agent) {
+		this.agent = agent;
+	}
+	public Agent getAdmin() {
+		return admin;
+	}
+	public void setAdmin(Agent admin) {
+		this.admin = admin;
+	}
+
+	public Float getLastTradeAmount() {
+		return lastTradeAmount;
+	}
+	public void setLastTradeAmount(Float lastTradeAmount) {
+		this.lastTradeAmount = lastTradeAmount;
+	}
+	public Float getLastRechargeAmount() {
+		return lastRechargeAmount;
+	}
+	public void setLastRechargeAmount(Float lastRechargeAmount) {
+		this.lastRechargeAmount = lastRechargeAmount;
+	}
 	public long getId() {
 		return id;
 	}
@@ -44,12 +73,6 @@ public class StoreResponse {
 	}
 	public void setBailPercentage(Float bailPercentage) {
 		this.bailPercentage = bailPercentage;
-	}
-	public Long getAppId() {
-		return appId;
-	}
-	public void setAppId(Long appId) {
-		this.appId = appId;
 	}
 	public String getCsrTel() {
 		return csrTel;
@@ -82,12 +105,6 @@ public class StoreResponse {
 		this.quota = quota;
 	}
 	
-	public Long getAgentId() {
-		return agentId;
-	}
-	public void setAgentId(Long agentId) {
-		this.agentId = agentId;
-	}
 	public App getApp() {
 		return app;
 	}

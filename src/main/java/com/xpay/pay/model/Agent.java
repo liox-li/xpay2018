@@ -11,7 +11,6 @@ public class Agent {
 	private String proxyUrl;
 	private String token;
 	private Role role;
-	private Long storeId;
 	private Long agentId;
 	
 	public Long getId() {
@@ -67,12 +66,6 @@ public class Agent {
 	}
 	public void setRole(Role role) {
 		this.role = role;
-	}
-	public Long getStoreId() {
-		return storeId;
-	}
-	public void setStoreId(Long storeId) {
-		this.storeId = storeId;
 	}
 	public Long getAgentId() {
 		return agentId;

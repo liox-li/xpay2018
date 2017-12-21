@@ -11,4 +11,6 @@ public interface AgentMapper extends BaseMapper<Agent> {
 	public Agent findByAccount(String account);
 	
 	public Agent findByToken(String token);
+	
+	public List<Agent> findByAgentId(Long agentId);
 }

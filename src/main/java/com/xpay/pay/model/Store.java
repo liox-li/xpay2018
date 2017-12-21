@@ -28,6 +28,10 @@ public class Store {
 	private Long appId;
 	private Long agentId;
 	private Float quota;
+	private Float lastTransSum;
+	private Float lastRechargeAmt;
+	private String channelType;
+	private Long adminId;
 	
 	public long getId() {
 		return id;
@@ -123,11 +127,11 @@ public class Store {
 		this.bailChannels = bailChannels;
 	}
 
-	public long getDailyLimit() {
+	public Long getDailyLimit() {
 		return dailyLimit;
 	}
 
-	public void setDailyLimit(long dailyLimit) {
+	public void setDailyLimit(Long dailyLimit) {
 		this.dailyLimit = dailyLimit;
 	}
 
@@ -212,6 +216,45 @@ public class Store {
 	public void setQuota(Float quota) {
 		this.quota = quota;
 	}
+
+	public Float getLastTransSum() {
+		return lastTransSum;
+	}
+
+
+	public void setLastTransSum(Float lastTransSum) {
+		this.lastTransSum = lastTransSum;
+	}
+
+
+	public Float getLastRechargeAmt() {
+		return lastRechargeAmt;
+	}
+
+
+	public void setLastRechargeAmt(Float lastRechargeAmt) {
+		this.lastRechargeAmt = lastRechargeAmt;
+	}
+
+	public String getChannelType() {
+		return channelType;
+	}
+
+
+	public void setChannelType(String channelType) {
+		this.channelType = channelType;
+	}
+
+
+	public Long getAdminId() {
+		return adminId;
+	}
+
+
+	public void setAdminId(Long adminId) {
+		this.adminId = adminId;
+	}
+
 
 	//	private static final int SECURE_LOW_BOUNDER = 50;
 //	private static final int SECURE_UP_BOUNDER = 300;
