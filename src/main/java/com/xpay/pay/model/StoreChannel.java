@@ -117,11 +117,11 @@ public class StoreChannel {
 		MIAOFU("jspay", "query", "refund"), 
 		SWIFTPASS("unified.trade.pay", "unified.trade.query", "unified.trade.refund"), 
 		CHINAUMS("yuedan.getQRCode", "yuedan.query", "yuedan.refund"), 
-		CHINAUMSV2("bills.getQRCode", "bills.query", "bills.refund"), 
-		CHINAUMSV3("trade.precreate", "query", "refund"), 
+		CHINAUMSV2("bills.getQRCode", "bills.query", "bills.refund", 0.6f), 
+		CHINAUMSV3("trade.precreate", "query", "refund", 0.6f), 
 //		CHINAUMSH5("WXPay.jsPay", "query", "refund"),
-		CHINAUMSH5("WXPay.jsPay", "query", "refund"),
-		CHINAUMSWAP("WXPay.jsPay", "query", "refund"),
+		CHINAUMSH5("WXPay.jsPay", "query", "refund", 0.6f),
+		CHINAUMSWAP("WXPay.jsPay", "query", "refund", 0.6f),
 		UPAY("", "query", "refund"),
 		RUBIPAY("unified.trade.pay", "unified.trade.query", "unified.trade.refund"),
 		BAIFU("trade.weixin.gzpay", "query", "unified.trade.refund"), 
@@ -131,15 +131,26 @@ public class StoreChannel {
 		QFTXMP("pay", "query", ""),
 		SUPay("pay", "", ""),
 		IPSSCAN("pay","query", "refund"),
-		IPSQUICK("pay","query", "refund");
-
+		IPSQUICK("pay","query", "refund"),
+		TXF("", "query", "refund");
+		
 		String unifiedOrder;
 		String query;
 		String refund;
+		Float baseBailPercentage;
+		
 		PaymentGateway(String unifiedOrder, String query, String refund) {
 			this.unifiedOrder = unifiedOrder;
 			this.query = query;
 			this.refund = refund;
+			this.baseBailPercentage = 0f;
+		}
+		
+		PaymentGateway(String unifiedOrder, String query, String refund, Float baseBailPercentage) {
+			this.unifiedOrder = unifiedOrder;
+			this.query = query;
+			this.refund = refund;
+			this.baseBailPercentage = baseBailPercentage;
 		}
 		
 		public String UnifiedOrder() {
@@ -152,6 +163,10 @@ public class StoreChannel {
 		
 		public String Refund() {
 			return this.refund;
+		}
+		
+		public Float getBaseBailPercentage() {
+			return this.baseBailPercentage;
 		}
 		
 	}

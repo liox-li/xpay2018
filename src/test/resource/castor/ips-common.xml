@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapping PUBLIC "-//EXOLAB/Castor Mapping DTD Version 1.0//EN"
+  "http://castor.org/mapping.dtd">
+
+<mapping>
+
+  <class name="com.xpay.pay.proxy.ips.common.ReqHead">
+    <map-to xml="head"/>
+    <field name="version" nillable="true" required="true" type="string">
+      <bind-xml name="Version" node="element"/>
+    </field>
+    <field name="merCode" nillable="true" required="true" type="string">
+      <bind-xml name="MerCode" node="element"/>
+    </field>
+    <field name="merName" nillable="true" required="true" type="string">
+      <bind-xml name="MerName" node="element"/>
+    </field>
+    <field name="account" nillable="true" required="true" type="string">
+      <bind-xml name="Account" node="element"/>
+    </field>
+    <field name="msgId" nillable="true" required="true" type="string">
+      <bind-xml name="MsgId" node="element"/>
+    </field>
+    <field name="reqDate" nillable="true" required="true" type="string">
+      <bind-xml name="ReqDate" node="element"/>
+    </field>
+    <field name="signature" nillable="true" required="true" type="string">
+      <bind-xml name="Signature" node="element"/>
+    </field>
+  </class>
+
+  <class name="com.xpay.pay.proxy.ips.common.RspHead">
+    <map-to xml="head"/>
+    <field name="referenceID" nillable="true" required="true" type="string">
+      <bind-xml name="ReferenceID" node="element"/>
+    </field>
+    <field name="rspCode" nillable="true" required="true" type="string">
+      <bind-xml name="RspCode" node="element"/>
+    </field>
+    <field name="rspMsg" nillable="true" required="true" type="string">
+      <bind-xml name="RspMsg" node="element"/>
+    </field>
+    <field name="reqDate" nillable="true" required="true" type="string">
+      <bind-xml name="ReqDate" node="element"/>
+    </field>
+    <field name="rspDate" nillable="true" required="true" type="string">
+      <bind-xml name="RspDate" node="element"/>
+    </field>
+    <field name="signature" nillable="true" required="true" type="string">
+      <bind-xml name="Signature" node="element"/>
+    </field>
+  </class>
+
+</mapping>

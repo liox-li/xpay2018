@@ -70,9 +70,7 @@ public class StoreService {
 		} else if(agent.getRole() == Role.AGENT) {
 			stores = storeMapper.findByAgentId(agent.getId());
 		} else {
-			Store store = storeMapper.findById(agent.getStoreId());
-			stores = Lists.newArrayList();
-			stores.add(store);
+			stores = storeMapper.findByAdminId(agent.getId());
 		}
 		
 		List<Store> result = Lists.newArrayList();
@@ -153,8 +151,8 @@ public class StoreService {
 	}
 	
 	public StoreTransaction rechargeOrder(long agentId, long storeId, Float amount, String orderNo) {
-		Store store = storeMapper.findById(storeId);
-		int addQuota = (int)(amount *100 / (store.getBailPercentage()-1));
+		Store store = this.findById(storeId);
+		int addQuota = (int)(amount *100 / (store.getBailPercentage()-store.getBaseBailPercentage()));
 //		store.setQuota(store.getQuota()+addQuota);
 //		storeMapper.updateById(store);
 		
@@ -212,6 +210,7 @@ public class StoreService {
 			
 			Store store = storeMapper.findById(transaction.getStoreId());
 			store.setQuota(store.getQuota()+transaction.getQuota());
+			store.setLastRechargeAmt(transaction.getAmount());
 			storeMapper.updateById(store);
 		}
 	}

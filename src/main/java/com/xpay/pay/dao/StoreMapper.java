@@ -10,4 +10,6 @@ public interface StoreMapper extends BaseMapper<Store> {
 	public Store findByCode(String code);
 	
 	public List<Store> findByAgentId(long agentId);
+	
+	public List<Store> findByAdminId(long adminId);
 }

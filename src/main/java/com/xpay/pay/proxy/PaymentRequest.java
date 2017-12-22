@@ -25,6 +25,8 @@ public class PaymentRequest {
 	private GoodsBean[] goods;
 	private ChannelProps channelProps;
 	private String userOpenId;
+	private String bankId;
+	private String cardType;
 	
 	public String getExtStoreId() {
 		return extStoreId;
@@ -150,6 +152,19 @@ public class PaymentRequest {
 	}
 	public void setUserOpenId(String userOpenId) {
 		this.userOpenId = userOpenId;
+	}
+
+	public String getBankId() {
+		return bankId;
+	}
+	public void setBankId(String bankId) {
+		this.bankId = bankId;
+	}
+	public String getCardType() {
+		return cardType;
+	}
+	public void setCardType(String cardType) {
+		this.cardType = cardType;
 	}
 
 	public static class GoodsBean {

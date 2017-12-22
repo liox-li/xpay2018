@@ -275,7 +275,8 @@ public class PaymentService {
 				PaymentGateway.CHINAUMSV3.equals(gateway) ||
 				PaymentGateway.UPAY.equals(gateway) ||
 				PaymentGateway.IPSQUICK.equals(gateway) ||
-				PaymentGateway.KEKEPAY.equals(gateway);
+				PaymentGateway.KEKEPAY.equals(gateway) ||
+				PaymentGateway.TXF.equals(gateway);
 	}
 
 }
