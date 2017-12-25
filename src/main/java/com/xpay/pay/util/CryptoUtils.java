@@ -15,10 +15,8 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESedeKeySpec;
 import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.util.KeyValuePair;
-import org.springframework.security.crypto.codec.Base64;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.util.UriComponentsBuilder;
 
