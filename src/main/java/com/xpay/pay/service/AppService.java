@@ -100,7 +100,7 @@ public class AppService {
 		if (cache.size() == 0) {
 			List<App> apps = mapper.findAll();
 			for (App app : apps) {
-				logger.info("load app: " + app.getKey());
+//				logger.info("load app: " + app.getKey());
 				cache.put(app.getKey(), app);
 			}
 		}
