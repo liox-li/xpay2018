@@ -486,6 +486,19 @@ public class AgentRestService extends AdminRestService {
 		return response;
 	}
 	
+	@RequestMapping(value = "/{id}/orders/{orderNo}", method = RequestMethod.GET)
+	public BaseResponse<Order> findOrder(@PathVariable long id, 
+			@PathVariable String orderNo) {
+		validateAgent(id);
+		
+		Assert.notBlank(orderNo, "Order no can't be null");
+		Order order = orderService.findAnyByOrderNo(orderNo);
+		
+		BaseResponse<Order> response = new BaseResponse<Order>();
+		response.setData(order);
+		return response;
+	}
+	
 	private void validateAgent(long agentId) {
 		Agent agent = this.getAgent();
 		Assert.isTrue(agent.getId()<=10 || agentId == agent.getId(), ApplicationConstants.STATUS_UNAUTHORIZED, "401", "Unauthorized request");

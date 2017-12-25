@@ -10,6 +10,8 @@ import com.xpay.pay.model.Order;
 public interface OrderMapper extends BaseMapper<Order> {
 	List<Order> findByOrderNo(String orderNo);
 	
+	List<Order> findAnyByOrderNo(String orderNo);
+	
 	List<Order> findByExtOrderNo(String extOrderNo);
 	
 	List<Order> findByStoreIdAndTime(@Param("storeId")long storeId, @Param("startTime")Date startTime, @Param("endTime")Date endTime);
