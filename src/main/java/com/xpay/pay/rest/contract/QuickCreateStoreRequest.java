@@ -1,15 +1,19 @@
 package com.xpay.pay.rest.contract;
 
-public class CreateStoreRequest {
+import com.xpay.pay.model.StoreChannel.ChinaUmsProps;
+import com.xpay.pay.model.StoreChannel.PaymentGateway;
+
+public class QuickCreateStoreRequest {
 	private String name;
 	private Float bailPercentage;
-	private long appId;
 	private String csrTel;
 	private String proxyUrl;
 	private Long dailyLimit;
-	private Long adminId;
+	private String extStoreId;
+	private PaymentGateway paymentGateway;
+	private String extStoreName;
 	private Long agentId;
-	
+	private ChinaUmsProps chinaUmsProps;
 	public String getName() {
 		return name;
 	}
@@ -21,12 +25,6 @@ public class CreateStoreRequest {
 	}
 	public void setBailPercentage(Float bailPercentage) {
 		this.bailPercentage = bailPercentage;
-	}
-	public long getAppId() {
-		return appId;
-	}
-	public void setAppId(long appId) {
-		this.appId = appId;
 	}
 	public String getCsrTel() {
 		return csrTel;
@@ -46,12 +44,23 @@ public class CreateStoreRequest {
 	public void setDailyLimit(Long dailyLimit) {
 		this.dailyLimit = dailyLimit;
 	}
-	
-	public Long getAdminId() {
-		return adminId;
+	public String getExtStoreId() {
+		return extStoreId;
 	}
-	public void setAdminId(Long adminId) {
-		this.adminId = adminId;
+	public void setExtStoreId(String extStoreId) {
+		this.extStoreId = extStoreId;
+	}
+	public PaymentGateway getPaymentGateway() {
+		return paymentGateway;
+	}
+	public void setPaymentGateway(PaymentGateway paymentGateway) {
+		this.paymentGateway = paymentGateway;
+	}
+	public String getExtStoreName() {
+		return extStoreName;
+	}
+	public void setExtStoreName(String extStoreName) {
+		this.extStoreName = extStoreName;
 	}
 	public Long getAgentId() {
 		return agentId;
@@ -59,5 +68,12 @@ public class CreateStoreRequest {
 	public void setAgentId(Long agentId) {
 		this.agentId = agentId;
 	}
+	public ChinaUmsProps getChinaUmsProps() {
+		return chinaUmsProps;
+	}
+	public void setChinaUmsProps(ChinaUmsProps chinaUmsProps) {
+		this.chinaUmsProps = chinaUmsProps;
+	}
+	
 	
 }

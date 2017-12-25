@@ -94,10 +94,11 @@ public class StoreService {
 	
 	private static final Float INIT_FREE_QUOTA = 2000f;
 	private static final Long DEFAULT_DAILY_LIMIT = 50000L;
-	public Store createStore(long agentId, String name, Float bailPercentage, long appId, String csrTel, String proxyUrl, Long dailyLimit) {
+	public Store createStore(long agentId, long adminId, String name, Float bailPercentage, long appId, String csrTel, String proxyUrl, Long dailyLimit) {
 		Float thisBaiPercentage = bailPercentage>1 && bailPercentage<10?bailPercentage:2;
 		Store store = new Store();
 		store.setAgentId(agentId);
+		store.setAdminId(adminId);
 		store.setAppId(appId);
 		store.setCode(IDGenerator.buildStoreCode());
 		store.setName(name);
@@ -184,7 +185,7 @@ public class StoreService {
 	
 	public Store newQuota(long agentId, long storeId, Float amount, TransactionType transactionType) {
 		Store store = storeMapper.findById(storeId);
-		int addQuota = (int)(amount *100 / (store.getBailPercentage()-1));
+		int addQuota = (int)(amount *100 / (store.getBailPercentage()-store.getBaseBailPercentage()));
 		store.setQuota(store.getQuota()+addQuota);
 		storeMapper.updateById(store);
 		

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.xpay.pay.dao.AgentMapper;
 import com.xpay.pay.model.Agent;
+import com.xpay.pay.model.Agent.Role;
 import com.xpay.pay.util.IDGenerator;
 
 @Service
@@ -15,6 +16,16 @@ public class AgentService {
 	@Autowired
 	protected AgentMapper agentMapper;
 	
+	public Agent createAdmin(String name, String code, Long agentId) {
+		Agent agent = new Agent();
+		agent.setRole(Role.STORE);
+		agent.setName(name);
+		agent.setAgentId(agentId);
+		agent.setAccount(code);
+		agent.setPassword(IDGenerator.buildKey(6));
+		createAccount(agent);
+		return agent;
+	}
 
 	public boolean createAccount(Agent agent) {
 		return agentMapper.insert(agent);

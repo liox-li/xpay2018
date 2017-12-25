@@ -35,6 +35,7 @@ import com.xpay.pay.rest.contract.CreateAppRequest;
 import com.xpay.pay.rest.contract.CreateStoreChannelRequest;
 import com.xpay.pay.rest.contract.CreateStoreRequest;
 import com.xpay.pay.rest.contract.LoginRequest;
+import com.xpay.pay.rest.contract.QuickCreateStoreRequest;
 import com.xpay.pay.rest.contract.RechargeRequest;
 import com.xpay.pay.rest.contract.RechargeResponse;
 import com.xpay.pay.rest.contract.StoreResponse;
@@ -284,7 +285,43 @@ public class AgentRestService extends AdminRestService {
 			agentId = id;
 		}
 		
-		Store store = storeService.createStore(agentId, request.getName(), request.getBailPercentage(), request.getAppId(), request.getCsrTel(), request.getProxyUrl(), request.getDailyLimit());
+		Store store = storeService.createStore(agentId, request.getAdminId(),request.getName(), request.getBailPercentage(), request.getAppId(), request.getCsrTel(), request.getProxyUrl(), request.getDailyLimit());
+		StoreResponse storeResponse = toStoreResponse(store);
+		BaseResponse<StoreResponse> response = new BaseResponse<StoreResponse>();
+		response.setData(storeResponse);
+		return response;
+	}
+	
+	@RequestMapping(value = "/{id}/stores/quick", method = RequestMethod.PUT)
+	public BaseResponse<StoreResponse> createStore(@PathVariable long id, 
+			@RequestBody(required = true) QuickCreateStoreRequest request) {
+		this.assertAdmin();
+		
+		Assert.notNull(request, "Create store request body can't be null");
+		Assert.notNull(request.getName(), "Store name can't be null");
+		
+		Long agentId = request.getAgentId();
+		if(agentId == null) {
+			agentId = id;
+		}
+
+		String code = IDGenerator.buildStoreCode();
+		Agent admin = agentService.createAdmin(request.getName(), code, agentId);
+		App app = appService.createApp(id, request.getName());
+		Assert.notNull(app, "Can't create App");
+		
+		StoreChannel channel = new StoreChannel();
+		channel.setAgentId(agentId);
+		channel.setExtStoreId(request.getExtStoreId());
+		channel.setExtStoreName(request.getExtStoreName());
+		channel.setChannelProps(request.getChinaUmsProps());
+		channel.setPaymentGateway(request.getPaymentGateway());
+	
+		storeService.createStoreChannel(channel);
+		
+		Store store = storeService.createStore(agentId, admin.getId(), request.getName(), request.getBailPercentage(), app.getId(), request.getCsrTel(), request.getProxyUrl(), request.getDailyLimit());
+		
+		storeService.updateStoreChannels(store.getId(), new long[] {channel.getId()});
 		StoreResponse storeResponse = toStoreResponse(store);
 		BaseResponse<StoreResponse> response = new BaseResponse<StoreResponse>();
 		response.setData(storeResponse);
