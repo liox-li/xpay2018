@@ -10,8 +10,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.DESedeKeySpec;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.util.KeyValuePair;
+import org.springframework.security.crypto.codec.Base64;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.util.UriComponentsBuilder;
 
 public class CryptoUtils {
@@ -26,7 +34,7 @@ public class CryptoUtils {
 			return null;
 		}
 	}
-	
+
 	public static final String sha512(String str) {
 		try {
 			MessageDigest messageDigest =  MessageDigest.getInstance("SHA512");
@@ -38,7 +46,7 @@ public class CryptoUtils {
 			return null;
 		}
 	}
-	
+
 	public static final String signQueryParams(List<KeyValuePair> keyPairs, String secretKey, String appSecret) {
 		keyPairs.sort((x1, x2) -> {
 			return x1.getKey().compareTo(x2.getKey());
@@ -59,26 +67,26 @@ public class CryptoUtils {
 		String md5 = CryptoUtils.md5(params).toUpperCase();
 		return md5;
 	}
-	
+
 	public static final String md5KeFu(String str, String key) {
         try {
             MessageDigest md5 = MessageDigest.getInstance("MD5");
             md5.update(str.getBytes("UTF-8"));
-            
+
             String result="";
             byte[] temp;
             temp=md5.digest(key.getBytes("UTF-8"));
             for (int i=0; i<temp.length; i++){
                 result+=Integer.toHexString((0x000000ff & temp[i]) | 0xffffff00).substring(6);
             }
-            
+
             return result;
         } catch(Exception e)
         {
         	return null;
         }
     }
-	
+
 	public static boolean checkSignature(Map<String,String> params,String key, String signKey, String keyParam){
         boolean result = false;
         if(params.containsKey(signKey)){
@@ -91,7 +99,37 @@ public class CryptoUtils {
         return result;
     }
 
-	private static String buildPayParams(Map<String, String> payParams){
+	public static String encryptDESede(String key, String iv, String src) {
+		try {
+			DESedeKeySpec spec = new DESedeKeySpec(key.getBytes());
+			SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DESede");
+			SecretKey sec = keyFactory.generateSecret(spec);
+			Cipher cipher = Cipher.getInstance("DESede/CBC/PKCS5Padding");
+			IvParameterSpec IvParameters = new IvParameterSpec(iv.getBytes());
+			cipher.init(Cipher.ENCRYPT_MODE, sec, IvParameters);
+			return Base64Utils.encodeToString(cipher.doFinal(src.getBytes("UTF-8")));
+		} catch (java.lang.Exception e3) {
+			e3.printStackTrace();
+		}
+		return null;
+	}
+
+  public static String decryptDESede(String key, String iv, String src) {
+    try {
+			DESedeKeySpec spec = new DESedeKeySpec(key.getBytes());
+			SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DESede");
+			SecretKey sec = keyFactory.generateSecret(spec);
+			Cipher cipher = Cipher.getInstance("DESede/CBC/PKCS5Padding");
+			IvParameterSpec IvParameters = new IvParameterSpec(iv.getBytes());
+			cipher.init(Cipher.DECRYPT_MODE, sec, IvParameters);
+			return new String(cipher.doFinal(Base64Utils.decode(src.getBytes("UTF-8"))), "UTF-8");
+		} catch (Exception e1) {
+      e1.printStackTrace();
+    }
+    return null;
+  }
+
+  private static String buildPayParams(Map<String, String> payParams){
 		StringBuffer sb = new StringBuffer();
         List<String> keys = new ArrayList<String>(payParams.keySet());
         Collections.sort(keys);
