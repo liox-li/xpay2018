@@ -54,8 +54,13 @@
         <value>/WEB-INF/castor/ips-scan-rsp.xml</value>
         <value>/WEB-INF/castor/ips-query-trade-req.xml</value>
         <value>/WEB-INF/castor/ips-query-trade-rsp.xml</value>
+        <value>/WEB-INF/castor/ips-account-common.xml</value>
         <value>/WEB-INF/castor/ips-open-req.xml</value>
         <value>/WEB-INF/castor/ips-open-rsp.xml</value>
+        <value>/WEB-INF/castor/ips-transfer-req.xml</value>
+        <value>/WEB-INF/castor/ips-transfer-rsp.xml</value>
+        <value>/WEB-INF/castor/ips-withdrawal-req.xml</value>
+        <value>/WEB-INF/castor/ips-withdrawal-rsp.xml</value>
       </array>
     </property>
     <property name="suppressNamespaces" value="true" />
@@ -110,7 +115,26 @@
   <bean id="userOpenUnmarshaller" class="org.springframework.oxm.castor.CastorMarshaller">
     <property name="mappingLocations">
       <array>
+        <value>/WEB-INF/castor/ips-account-common.xml</value>
         <value>/WEB-INF/castor/ips-open-rsp.xml</value>
+      </array>
+    </property>
+  </bean>
+
+  <bean id="transferUnmarshaller" class="org.springframework.oxm.castor.CastorMarshaller">
+    <property name="mappingLocations">
+      <array>
+        <value>/WEB-INF/castor/ips-account-common.xml</value>
+        <value>/WEB-INF/castor/ips-transfer-rsp.xml</value>
+      </array>
+    </property>
+  </bean>
+
+  <bean id="withdrawalUnmarshaller" class="org.springframework.oxm.castor.CastorMarshaller">
+    <property name="mappingLocations">
+      <array>
+        <value>/WEB-INF/castor/ips-account-common.xml</value>
+        <value>/WEB-INF/castor/ips-withdrawal-rsp.xml</value>
       </array>
     </property>
   </bean>

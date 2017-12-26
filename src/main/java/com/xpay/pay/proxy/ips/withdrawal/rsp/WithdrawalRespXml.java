@@ -1,12 +1,12 @@
-package com.xpay.pay.proxy.ips.useropen.rsp;
+package com.xpay.pay.proxy.ips.withdrawal.rsp;
 
 import com.xpay.pay.proxy.ips.common.ResponseHead;
 
 /**
- * Created by sunjian on Date: 2017/12/25 下午4:23
+ * Created by sunjian on Date: 2017/12/26 下午9:00
  * Description:
  */
-public class OpenUserRespXml {
+public class WithdrawalRespXml {
 
   private ResponseHead head;
 

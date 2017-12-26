@@ -1,4 +1,4 @@
-package com.xpay.pay.proxy.ips.useropen;
+package com.xpay.pay.proxy.ips.common;
 
 /**
  * Created by sunjian on Date: 2017/12/25 下午4:08
