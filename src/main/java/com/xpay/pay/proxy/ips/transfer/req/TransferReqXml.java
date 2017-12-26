@@ -1,12 +1,12 @@
-package com.xpay.pay.proxy.ips.useropen.req;
+package com.xpay.pay.proxy.ips.transfer.req;
 
 import com.xpay.pay.proxy.ips.common.RequestHead;
 
 /**
- * Created by sunjian on Date: 2017/12/25 下午4:10
+ * Created by sunjian on Date: 2017/12/26 下午8:30
  * Description:
  */
-public class OpenUserReqXml {
+public class TransferReqXml {
 
   private RequestHead head;
 

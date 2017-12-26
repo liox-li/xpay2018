@@ -1,12 +1,12 @@
-package com.xpay.pay.proxy.ips.useropen.req;
+package com.xpay.pay.proxy.ips.withdrawal.req;
 
 import com.xpay.pay.proxy.ips.common.RequestHead;
 
 /**
- * Created by sunjian on Date: 2017/12/25 下午4:10
+ * Created by sunjian on Date: 2017/12/26 下午8:58
  * Description:
  */
-public class OpenUserReqXml {
+public class WithdrawalReqXml {
 
   private RequestHead head;
 

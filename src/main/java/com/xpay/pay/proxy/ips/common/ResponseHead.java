@@ -1,10 +1,10 @@
-package com.xpay.pay.proxy.ips.useropen.rsp;
+package com.xpay.pay.proxy.ips.common;
 
 /**
  * Created by sunjian on Date: 2017/12/25 下午4:24
  * Description:
  */
-public class Head {
+public class ResponseHead {
 
   private String reqDate;
 

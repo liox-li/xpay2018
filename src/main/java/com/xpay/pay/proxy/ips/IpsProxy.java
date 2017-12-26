@@ -1,12 +1,16 @@
 package com.xpay.pay.proxy.ips;
 
 import com.xpay.pay.exception.GatewayException;
-import com.xpay.pay.proxy.ips.useropen.IpsRequest;
-import com.xpay.pay.proxy.ips.useropen.IpsResponse;
-import com.xpay.pay.proxy.ips.useropen.req.Head;
+import com.xpay.pay.proxy.ips.common.IpsRequest;
+import com.xpay.pay.proxy.ips.common.IpsResponse;
+import com.xpay.pay.proxy.ips.common.RequestHead;
+import com.xpay.pay.proxy.ips.transfer.req.TransferReqXml;
+import com.xpay.pay.proxy.ips.transfer.rsp.TransferRespXml;
 import com.xpay.pay.proxy.ips.useropen.req.OpenUserReqXml;
 import com.xpay.pay.proxy.ips.useropen.rsp.Body;
 import com.xpay.pay.proxy.ips.useropen.rsp.OpenUserRespXml;
+import com.xpay.pay.proxy.ips.withdrawal.req.WithdrawalReqXml;
+import com.xpay.pay.proxy.ips.withdrawal.rsp.WithdrawalRespXml;
 import com.xpay.pay.util.CryptoUtils;
 import com.xpay.pay.util.TimeUtils;
 import java.io.ByteArrayInputStream;
@@ -38,6 +42,8 @@ import org.springframework.web.client.RestTemplate;
 public class IpsProxy {
 
   private static final String OPEN_URL = "https://ebp.ips.com.cn/fpms-access/action/user/open";
+  private static final String TRANSFER_URL = "https://ebp.ips.com.cn/fpms-access/action/trade/transfer.do";
+  private static final String WITHDRAWAL_URL = "https://ebp.ips.com.cn/fpms-access/action/withdrawal/withdrawal.html";
   private static final String MD5_SIGNATURE = "wmm7x3LwJdEPgmOQxcpBugQOmQewxXjwQD5ASRbKcFq7QTK6kOolYMpG9Ov5qt8RfNwaCoXX5edKt9HWbyxL5Qr1Z32oZE85Env04BUq4bX7RCHdxhT8u0rEX5BqCDsg";
   private static final String DES_IV = "2BBNEs28";
   private static final String DES_KEY = "oov94m6YhhFxAySqF99MoLRV";
@@ -46,7 +52,15 @@ public class IpsProxy {
 
   @Qualifier("userOpenUnmarshaller")
   @Autowired
-  protected Unmarshaller unmarshaller;
+  protected Unmarshaller userOpenUnmarshaller;
+
+  @Qualifier("transferUnmarshaller")
+  @Autowired
+  protected Unmarshaller transferUnmarshaller;
+
+  @Qualifier("withdrawalUnmarshaller")
+  @Autowired
+  protected Unmarshaller withdrawalUnmarshaller;
 
   @Qualifier("ipsMarshaller")
   @Autowired
@@ -86,7 +100,7 @@ public class IpsProxy {
     bodyStr = bodyStr.substring(bodyStr.indexOf("<body>"));
     logger.info("signature body: " + bodyStr + MD5_SIGNATURE);
     String signature = CryptoUtils.md5(bodyStr + MD5_SIGNATURE);
-    Head head = new Head();
+    RequestHead head = new RequestHead();
     head.setVersion("V1.0.1");
     head.setReqIp(reqIp);
     head.setReqDate(TimeUtils.formatTime(new Date(), "yyyy-MM-dd HH:mm:ss"));
@@ -115,15 +129,261 @@ public class IpsProxy {
     String response = restTemplate.exchange(OPEN_URL, HttpMethod.POST, httpEntity, String.class)
         .getBody();
     logger.info("open account response: " + response);
+    int start = response.indexOf("ipsResponse=");
     StreamSource streamSource = new StreamSource(
-        new ByteArrayInputStream(response.getBytes("UTF-8")));
-    IpsResponse ipsResponse = (IpsResponse) unmarshaller.unmarshal(streamSource);
+        new ByteArrayInputStream(response.substring(start + 12).getBytes("UTF-8")));
+    IpsResponse ipsResponse = (IpsResponse) userOpenUnmarshaller.unmarshal(streamSource);
     if (!"M000000".equals(ipsResponse.getRspCode())) {
       throw new GatewayException(ipsResponse.getRspCode(), ipsResponse.getRspMsg());
     }
     String xml = CryptoUtils.decryptDESede(DES_KEY, DES_IV, ipsResponse.getP3DesXmlPara());
     streamSource = new StreamSource(new ByteArrayInputStream(xml.getBytes("UTF-8")));
-    OpenUserRespXml openUserRespXml = (OpenUserRespXml) unmarshaller.unmarshal(streamSource);
+    OpenUserRespXml openUserRespXml = (OpenUserRespXml) userOpenUnmarshaller
+        .unmarshal(streamSource);
     return openUserRespXml.getBody();
+  }
+
+
+  public com.xpay.pay.proxy.ips.transfer.rsp.Body transfer(String reqIp, String merBillNo,
+      String merCode, String merAcctNo,
+      String customerCode, String transferAmount, String collectionItemName, String remark)
+      throws IOException {
+    com.xpay.pay.proxy.ips.transfer.req.Body body = new com.xpay.pay.proxy.ips.transfer.req.Body();
+    body.setMerBillNo(merBillNo);
+    body.setTransferType("2");
+    body.setMerAcctNo(merAcctNo);
+    body.setCustomerCode(customerCode);
+    body.setTransferAmount(transferAmount);
+    body.setCollectionItemName(collectionItemName);
+    body.setRemark(remark);
+    ByteArrayOutputStream os = new ByteArrayOutputStream();
+    marshaller.marshal(body, new StreamResult(os));
+
+    String bodyStr = os.toString();
+    bodyStr = bodyStr.substring(bodyStr.indexOf("<body>"));
+    logger.info("signature body: " + bodyStr + MD5_SIGNATURE);
+    String signature = CryptoUtils.md5(bodyStr + MD5_SIGNATURE);
+    RequestHead head = new RequestHead();
+    head.setVersion("V1.0.1");
+    head.setReqIp(reqIp);
+    head.setReqDate(TimeUtils.formatTime(new Date(), "yyyy-MM-dd HH:mm:ss"));
+    head.setSignature(signature);
+    TransferReqXml transferReqXml = new TransferReqXml();
+    transferReqXml.setBody(body);
+    transferReqXml.setHead(head);
+    IpsRequest ipsRequest = new IpsRequest();
+    ipsRequest.setArgMerCode(merCode);
+    os = new ByteArrayOutputStream();
+    marshaller.marshal(transferReqXml, new StreamResult(os));
+    String arg3DesXmlPara = CryptoUtils.encryptDESede(DES_KEY, DES_IV, os.toString());
+    logger.info("transfer des xml[3des]:" + arg3DesXmlPara);
+    ipsRequest.setArg3DesXmlPara(arg3DesXmlPara);
+    os = new ByteArrayOutputStream();
+    marshaller.marshal(ipsRequest, new StreamResult(os));
+    String request = os.toString();
+    logger.info("transfer request: " + request);
+    MultiValueMap<String, String> keyPairs = new LinkedMultiValueMap<>();
+    keyPairs.add("ipsRequest", request);
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+    headers.set("Accept", MediaType.ALL_VALUE);
+    HttpEntity<?> httpEntity = new HttpEntity<>(keyPairs, headers);
+    String response = restTemplate.exchange(TRANSFER_URL, HttpMethod.POST, httpEntity, String.class)
+        .getBody();
+    logger.info("transfer response: " + response);
+    int start = response.indexOf("ipsResponse=");
+    StreamSource streamSource = new StreamSource(
+        new ByteArrayInputStream(response.substring(start + 12).getBytes("UTF-8")));
+    IpsResponse ipsResponse = (IpsResponse) transferUnmarshaller.unmarshal(streamSource);
+    if (!"M000000".equals(ipsResponse.getRspCode())) {
+      throw new GatewayException(ipsResponse.getRspCode(), ipsResponse.getRspMsg());
+    }
+    String xml = CryptoUtils.decryptDESede(DES_KEY, DES_IV, ipsResponse.getP3DesXmlPara());
+    streamSource = new StreamSource(new ByteArrayInputStream(xml.getBytes("UTF-8")));
+    TransferRespXml transferRespXml = (TransferRespXml) transferUnmarshaller
+        .unmarshal(streamSource);
+    return transferRespXml.getBody();
+  }
+
+
+  public com.xpay.pay.proxy.ips.withdrawal.rsp.Body withdrawal(String reqIp, String merBillNo,
+      String merCode, String customerCode, String pageUrl, String s2sUrl, String bankCard,
+      String bankCode)
+      throws IOException {
+    com.xpay.pay.proxy.ips.withdrawal.req.Body body = new com.xpay.pay.proxy.ips.withdrawal.req.Body();
+    body.setMerBillNo(merBillNo);
+    body.setCustomerCode(customerCode);
+    body.setPageUrl(pageUrl);
+    body.setS2sUrl(s2sUrl);
+    body.setBankCard(bankCard);
+    body.setBankCode(bankCode);
+    ByteArrayOutputStream os = new ByteArrayOutputStream();
+    marshaller.marshal(body, new StreamResult(os));
+
+    String bodyStr = os.toString();
+    bodyStr = bodyStr.substring(bodyStr.indexOf("<body>"));
+    logger.info("signature body: " + bodyStr + MD5_SIGNATURE);
+    String signature = CryptoUtils.md5(bodyStr + MD5_SIGNATURE);
+    RequestHead head = new RequestHead();
+    head.setVersion("V1.0.1");
+    head.setReqIp(reqIp);
+    head.setReqDate(TimeUtils.formatTime(new Date(), "yyyy-MM-dd HH:mm:ss"));
+    head.setSignature(signature);
+    WithdrawalReqXml withdrawalReqXml = new WithdrawalReqXml();
+    withdrawalReqXml.setBody(body);
+    withdrawalReqXml.setHead(head);
+    IpsRequest ipsRequest = new IpsRequest();
+    ipsRequest.setArgMerCode(merCode);
+    os = new ByteArrayOutputStream();
+    marshaller.marshal(withdrawalReqXml, new StreamResult(os));
+    String arg3DesXmlPara = CryptoUtils.encryptDESede(DES_KEY, DES_IV, os.toString());
+    logger.info("withdrawal des xml[3des]:" + arg3DesXmlPara);
+    ipsRequest.setArg3DesXmlPara(arg3DesXmlPara);
+    os = new ByteArrayOutputStream();
+    marshaller.marshal(ipsRequest, new StreamResult(os));
+    String request = os.toString();
+    logger.info("withdrawal request: " + request);
+    MultiValueMap<String, String> keyPairs = new LinkedMultiValueMap<>();
+    keyPairs.add("ipsRequest", request);
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+    headers.set("Accept", MediaType.ALL_VALUE);
+    HttpEntity<?> httpEntity = new HttpEntity<>(keyPairs, headers);
+    String response = restTemplate.exchange(WITHDRAWAL_URL, HttpMethod.POST, httpEntity, String.class)
+        .getBody();
+    logger.info("withdrawal response: " + response);
+    int start = response.indexOf("ipsResponse=");
+    StreamSource streamSource = new StreamSource(
+        new ByteArrayInputStream(response.substring(start + 12).getBytes("UTF-8")));
+    IpsResponse ipsResponse = (IpsResponse) withdrawalUnmarshaller.unmarshal(streamSource);
+    if (!"M000000".equals(ipsResponse.getRspCode())) {
+      throw new GatewayException(ipsResponse.getRspCode(), ipsResponse.getRspMsg());
+    }
+    String xml = CryptoUtils.decryptDESede(DES_KEY, DES_IV, ipsResponse.getP3DesXmlPara());
+    streamSource = new StreamSource(new ByteArrayInputStream(xml.getBytes("UTF-8")));
+    WithdrawalRespXml withdrawalRespXml = (WithdrawalRespXml) withdrawalUnmarshaller
+        .unmarshal(streamSource);
+    return withdrawalRespXml.getBody();
+  }
+
+  public TransferAndWithdrawalResult transferAndWithdrawal(String reqIp, String merCode,
+      String transferMerBillNo,
+      String withdrawalMerBillNo, String merAcctNo, String customerCode, String transferAmount,
+      String collectionItemName,
+      String remark, String withDrawalPageUrl, String withdrawalServerUrl, String bankCard,
+      String bankCode) throws IOException {
+    TransferAndWithdrawalResult result = new TransferAndWithdrawalResult();
+    result.setSuccess(false);
+    com.xpay.pay.proxy.ips.transfer.rsp.Body transferBody = transfer(reqIp, transferMerBillNo,
+        merCode, merAcctNo, customerCode, transferAmount, collectionItemName, remark);
+    if ("10".equals(transferBody.getTradeState())) {
+      result.setTransferIpsBillNo(transferBody.getIpsBillNo());
+      result.setTransferTradeId(transferBody.getTradeId());
+      result.setTransferIpsFee(transferBody.getIpsFee());
+      com.xpay.pay.proxy.ips.withdrawal.rsp.Body withdrawalBody = withdrawal(reqIp,
+          withdrawalMerBillNo,
+          merCode, customerCode, withDrawalPageUrl, withdrawalServerUrl, bankCard, bankCode);
+      if (!"9".equals(withdrawalBody.getTradeState())) {
+        result.setSuccess(true);
+
+        result.setWithdrawalIpsBillNo(withdrawalBody.getIpsBillNo());
+        result.setWithdrawalAmount(withdrawalBody.getAmount());
+        result.setCustomerCode(withdrawalBody.getCustomerCode());
+        result.setWithdrawalMerBillNo(withdrawalBody.getMerBillNo());
+      }
+      result.setWithdrawalFailMsg(withdrawalBody.getFailMsg());
+    }
+
+    return result;
+  }
+
+
+  public static class TransferAndWithdrawalResult {
+
+    private boolean success;
+
+    private String transferIpsBillNo;
+
+    private String transferTradeId;
+
+    private String transferIpsFee;
+
+    private String withdrawalIpsBillNo;
+    private String withdrawalAmount;
+    private String customerCode;
+    private String withdrawalMerBillNo;
+    private String withdrawalFailMsg;
+
+    public boolean isSuccess() {
+      return success;
+    }
+
+    public void setSuccess(boolean success) {
+      this.success = success;
+    }
+
+    public String getTransferIpsBillNo() {
+      return transferIpsBillNo;
+    }
+
+    public void setTransferIpsBillNo(String transferIpsBillNo) {
+      this.transferIpsBillNo = transferIpsBillNo;
+    }
+
+    public String getTransferTradeId() {
+      return transferTradeId;
+    }
+
+    public void setTransferTradeId(String transferTradeId) {
+      this.transferTradeId = transferTradeId;
+    }
+
+    public String getTransferIpsFee() {
+      return transferIpsFee;
+    }
+
+    public void setTransferIpsFee(String transferIpsFee) {
+      this.transferIpsFee = transferIpsFee;
+    }
+
+    public String getWithdrawalIpsBillNo() {
+      return withdrawalIpsBillNo;
+    }
+
+    public void setWithdrawalIpsBillNo(String withdrawalIpsBillNo) {
+      this.withdrawalIpsBillNo = withdrawalIpsBillNo;
+    }
+
+    public String getWithdrawalAmount() {
+      return withdrawalAmount;
+    }
+
+    public void setWithdrawalAmount(String withdrawalAmount) {
+      this.withdrawalAmount = withdrawalAmount;
+    }
+
+    public String getCustomerCode() {
+      return customerCode;
+    }
+
+    public void setCustomerCode(String customerCode) {
+      this.customerCode = customerCode;
+    }
+
+    public String getWithdrawalMerBillNo() {
+      return withdrawalMerBillNo;
+    }
+
+    public void setWithdrawalMerBillNo(String withdrawalMerBillNo) {
+      this.withdrawalMerBillNo = withdrawalMerBillNo;
+    }
+
+    public String getWithdrawalFailMsg() {
+      return withdrawalFailMsg;
+    }
+
+    public void setWithdrawalFailMsg(String withdrawalFailMsg) {
+      this.withdrawalFailMsg = withdrawalFailMsg;
+    }
   }
 }
