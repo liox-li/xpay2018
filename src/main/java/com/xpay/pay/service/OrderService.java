@@ -49,6 +49,17 @@ public class OrderService {
 		return order;
 	}
 	
+	public Order findAnyByOrderNo(String orderNo) {
+		List<Order> orders = orderMapper.findAnyByOrderNo(orderNo);
+		Assert.notNull(orders, "Order not found - " + orderNo);
+		Order order = orders.stream().filter(x -> !x.getStatus().equals(OrderStatus.PAYERROR)).findAny().orElse(null);
+		Assert.notNull(order, "Order not found - " + orderNo);
+		order.setApp(appService.findById(order.getAppId()));
+		order.setStore(storeService.findById(order.getStoreId()));
+		order.setStoreChannel(storeService.findStoreChannelById(order.getStoreChannelId()));
+		return order;
+	}
+	
 	public Order findActiveByExtOrderNo(String extOrderNo) {
 		List<Order> orders = orderMapper.findByExtOrderNo(extOrderNo);
 		Assert.notNull(orders, "Order not found - " + extOrderNo);

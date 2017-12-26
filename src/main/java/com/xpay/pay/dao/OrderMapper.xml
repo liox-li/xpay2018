@@ -81,6 +81,13 @@
     WHERE bill_order.ext_order_no = #{extOrderNo} AND deleted = false
   </select>
   
+  <select id="findAnyByOrderNo" resultMap="OrderResultMap">
+    SELECT
+    <include refid="orderColumns" />
+    FROM bill_order
+    WHERE (bill_order.order_no = #{orderNo} OR bill_order.ext_order_no = #{orderNo} OR bill_order.target_order_no = #{orderNo} OR bill_order.seller_order_no = #{orderNo}) AND deleted = false
+  </select>
+  
   <select id="findByStoreIdAndTime" resultMap="OrderResultMap">
     SELECT
     <include refid="orderColumns" />
