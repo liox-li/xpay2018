@@ -493,12 +493,28 @@ public class AgentRestService extends AdminRestService {
 		
 		Assert.notBlank(orderNo, "Order no can't be null");
 		Order order = orderService.findAnyByOrderNo(orderNo);
+		Assert.isTrue(order!=null && (id<=10 || id==order.getStore().getAdminId() || id==order.getStore().getAgentId()), "Order not found");
 		
 		BaseResponse<Order> response = new BaseResponse<Order>();
 		response.setData(order);
 		return response;
 	}
 	
+	@RequestMapping(value = "/{id}/orders/{orderNo}", method = RequestMethod.DELETE)
+	public BaseResponse<Order> refundOrder(@PathVariable long id, 
+			@PathVariable String orderNo) {
+		validateAgent(id);
+		
+		Assert.notBlank(orderNo, "Order no can't be null");
+		Order order = orderService.findAnyByOrderNo(orderNo);
+		Assert.isTrue(order!=null && order.isRefundable(), "Order is not paid or already refunded");
+		
+		Bill bill = paymentService.refund(order.getAppId(), order.getOrderNo(), order.getStore().getCode(), true);
+		BaseResponse<Order> response = new BaseResponse<Order>();
+		order.setStatus(bill.getOrderStatus());
+		response.setData(order);
+		return response;
+	}
 	private void validateAgent(long agentId) {
 		Agent agent = this.getAgent();
 		Assert.isTrue(agent.getId()<=10 || agentId == agent.getId(), ApplicationConstants.STATUS_UNAUTHORIZED, "401", "Unauthorized request");
