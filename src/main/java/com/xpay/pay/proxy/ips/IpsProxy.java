@@ -205,9 +205,8 @@ public class IpsProxy {
     String response = restTemplate.exchange(TRANSFER_URL, HttpMethod.POST, httpEntity, String.class)
         .getBody();
     logger.info("transfer response: " + response);
-    int start = response.indexOf("ipsResponse=");
     StreamSource streamSource = new StreamSource(
-        new ByteArrayInputStream(response.substring(start + 12).getBytes("UTF-8")));
+        new ByteArrayInputStream(response.getBytes("UTF-8")));
     IpsResponse ipsResponse = (IpsResponse) transferUnmarshaller.unmarshal(streamSource);
     if (!"M000000".equals(ipsResponse.getRspCode())) {
       throw new GatewayException(ipsResponse.getRspCode(), ipsResponse.getRspMsg());
@@ -223,6 +222,35 @@ public class IpsProxy {
   public com.xpay.pay.proxy.ips.withdrawal.rsp.Body withdrawal(String reqIp, String merBillNo,
       String merCode, String customerCode, String pageUrl, String s2sUrl, String bankCard,
       String bankCode)
+      throws IOException {
+    String request = buildWithdrawalRequest(reqIp, merBillNo, merCode, customerCode, pageUrl,
+        s2sUrl, bankCard, bankCode);
+    logger.info("withdrawal request: " + request);
+    MultiValueMap<String, String> keyPairs = new LinkedMultiValueMap<>();
+    keyPairs.add("ipsRequest", request);
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+    headers.set("Accept", MediaType.ALL_VALUE);
+    HttpEntity<?> httpEntity = new HttpEntity<>(keyPairs, headers);
+    String response = restTemplate.exchange(WITHDRAWAL_URL, HttpMethod.POST, httpEntity, String.class)
+        .getBody();
+    logger.info("withdrawal response: " + response);
+    int start = response.indexOf("ipsResponse=");
+    StreamSource streamSource = new StreamSource(
+        new ByteArrayInputStream(response.substring(start + 12).getBytes("UTF-8")));
+    IpsResponse ipsResponse = (IpsResponse) withdrawalUnmarshaller.unmarshal(streamSource);
+    if (!"M000000".equals(ipsResponse.getRspCode())) {
+      throw new GatewayException(ipsResponse.getRspCode(), ipsResponse.getRspMsg());
+    }
+    String xml = CryptoUtils.decryptDESede(DES_KEY, DES_IV, ipsResponse.getP3DesXmlPara());
+    streamSource = new StreamSource(new ByteArrayInputStream(xml.getBytes("UTF-8")));
+    WithdrawalRespXml withdrawalRespXml = (WithdrawalRespXml) withdrawalUnmarshaller
+        .unmarshal(streamSource);
+    return withdrawalRespXml.getBody();
+  }
+
+  public String buildWithdrawalRequest(String reqIp, String merBillNo, String merCode,
+      String customerCode, String pageUrl, String s2sUrl, String bankCard, String bankCode)
       throws IOException {
     com.xpay.pay.proxy.ips.withdrawal.req.Body body = new com.xpay.pay.proxy.ips.withdrawal.req.Body();
     body.setMerBillNo(merBillNo);
@@ -255,29 +283,7 @@ public class IpsProxy {
     ipsRequest.setArg3DesXmlPara(arg3DesXmlPara);
     os = new ByteArrayOutputStream();
     marshaller.marshal(ipsRequest, new StreamResult(os));
-    String request = os.toString();
-    logger.info("withdrawal request: " + request);
-    MultiValueMap<String, String> keyPairs = new LinkedMultiValueMap<>();
-    keyPairs.add("ipsRequest", request);
-    HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-    headers.set("Accept", MediaType.ALL_VALUE);
-    HttpEntity<?> httpEntity = new HttpEntity<>(keyPairs, headers);
-    String response = restTemplate.exchange(WITHDRAWAL_URL, HttpMethod.POST, httpEntity, String.class)
-        .getBody();
-    logger.info("withdrawal response: " + response);
-    int start = response.indexOf("ipsResponse=");
-    StreamSource streamSource = new StreamSource(
-        new ByteArrayInputStream(response.substring(start + 12).getBytes("UTF-8")));
-    IpsResponse ipsResponse = (IpsResponse) withdrawalUnmarshaller.unmarshal(streamSource);
-    if (!"M000000".equals(ipsResponse.getRspCode())) {
-      throw new GatewayException(ipsResponse.getRspCode(), ipsResponse.getRspMsg());
-    }
-    String xml = CryptoUtils.decryptDESede(DES_KEY, DES_IV, ipsResponse.getP3DesXmlPara());
-    streamSource = new StreamSource(new ByteArrayInputStream(xml.getBytes("UTF-8")));
-    WithdrawalRespXml withdrawalRespXml = (WithdrawalRespXml) withdrawalUnmarshaller
-        .unmarshal(streamSource);
-    return withdrawalRespXml.getBody();
+    return os.toString();
   }
 
   public TransferAndWithdrawalResult transferAndWithdrawal(String reqIp, String merCode,

@@ -77,4 +77,19 @@ public class HtmlViewController {
     model.put("ipsRequest", requestXml);
     return new ModelAndView("ips_open", model);
   }
+
+  @RequestMapping(value = "/ips/withdraw", method = RequestMethod.GET)
+  public ModelAndView withdrawal(@RequestParam("customerCode") String customerCode,
+      @RequestParam("bankCard") String bankCard, @RequestParam("bankCode") String bankCode,
+      HttpServletRequest request)
+      throws IOException {
+
+    String requestXml = ipsProxy
+        .buildWithdrawalRequest(request.getRemoteAddr(), "", "204693", customerCode,
+            "http://www.wfpay.xyz", "http://www.wfpay.xyz", bankCard, bankCode);
+
+    Map<String, String> model = new HashMap<>();
+    model.put("ipsRequest", requestXml);
+    return new ModelAndView("ips_withdraw", model);
+  }
 }
