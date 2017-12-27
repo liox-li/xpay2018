@@ -509,11 +509,22 @@ public class AgentRestService extends AdminRestService {
 		Order order = orderService.findAnyByOrderNo(orderNo);
 		Assert.isTrue(order!=null && order.isRefundable(), "Order is not paid or already refunded");
 		
-		Bill bill = paymentService.refund(order.getAppId(), order.getOrderNo(), order.getStore().getCode(), true);
+		try {
+			Bill bill = paymentService.refund(order.getAppId(), order.getOrderNo(), order.getStore().getCode(), true);
+		} catch(Exception e) {
+			
+		}
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		order = orderService.findAnyByOrderNo(orderNo);
 		BaseResponse<Order> response = new BaseResponse<Order>();
-		order.setStatus(bill.getOrderStatus());
 		response.setData(order);
 		return response;
+
 	}
 	private void validateAgent(long agentId) {
 		Agent agent = this.getAgent();
