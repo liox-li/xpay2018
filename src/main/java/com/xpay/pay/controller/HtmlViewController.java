@@ -3,11 +3,14 @@ package com.xpay.pay.controller;
 import com.xpay.pay.model.Order;
 import com.xpay.pay.model.StoreChannel.PaymentGateway;
 import com.xpay.pay.proxy.PaymentRequest;
+import com.xpay.pay.proxy.ips.IpsProxy;
 import com.xpay.pay.proxy.ips.quick.IpsQuickProxy;
 import com.xpay.pay.service.OrderService;
 import com.xpay.pay.service.PaymentService;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -36,6 +40,9 @@ public class HtmlViewController {
   @Autowired
   private PaymentService paymentService;
 
+  @Autowired
+  private IpsProxy ipsProxy;
+
   @RequestMapping(value = "/{orderNo}", method = RequestMethod.GET)
   public ModelAndView pay(@PathVariable("orderNo") String orderNo) {
     logger.info("h5pay :" + orderNo);
@@ -52,5 +59,22 @@ public class HtmlViewController {
     }
 
     return new ModelAndView("h5_error");
+  }
+
+  @RequestMapping(value = "/ips/open", method = RequestMethod.POST)
+  public ModelAndView pay(@RequestParam("customerCode") String customerCode,
+      @RequestParam("identityNo") String identityNo, @RequestParam("userName") String userName,
+      @RequestParam("mobileNo") String mobileNo, HttpServletRequest request)
+      throws IOException {
+
+    String requestXml = ipsProxy
+        .buildOpenRequest(request.getRemoteAddr(), "204693", "2046930018", "2", customerCode, "1",
+            identityNo, userName, "", "",
+            mobileNo, "", "", "", "", "http://www.wfpay.xyz", "http://www.wfpay.xyz", "", "",
+            "");
+
+    Map<String, String> model = new HashMap<>();
+    model.put("ipsRequest", requestXml);
+    return new ModelAndView("ips_open", model);
   }
 }
