@@ -61,7 +61,7 @@ public class HtmlViewController {
     return new ModelAndView("h5_error");
   }
 
-  @RequestMapping(value = "/ips/open", method = RequestMethod.POST)
+  @RequestMapping(value = "/ips/open", method = RequestMethod.GET)
   public ModelAndView pay(@RequestParam("customerCode") String customerCode,
       @RequestParam("identityNo") String identityNo, @RequestParam("userName") String userName,
       @RequestParam("mobileNo") String mobileNo, HttpServletRequest request)
