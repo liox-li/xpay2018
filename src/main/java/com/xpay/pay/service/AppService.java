@@ -56,8 +56,12 @@ public class AppService {
 			return null;
 		}
 
-		return apps.stream().filter(x -> x.getId() == id).findFirst()
+		App app = apps.stream().filter(x -> x.getId() == id).findFirst()
 				.orElse(null);
+		if(app == null) {
+			app = mapper.findById(id);
+		}
+		return app;
 	}
 	
 	public List<App> findByAgentId(long agentId) {

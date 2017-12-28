@@ -285,7 +285,7 @@ public class AgentRestService extends AdminRestService {
 			agentId = id;
 		}
 		
-		Store store = storeService.createStore(agentId, request.getAdminId(),request.getName(), request.getBailPercentage(), request.getAppId(), request.getCsrTel(), request.getProxyUrl(), request.getDailyLimit(), null);
+		Store store = storeService.createStore(agentId, request.getAdminId(),request.getName(), request.getBailPercentage(), request.getAppId(), request.getCsrTel(), request.getProxyUrl(), request.getDailyLimit(), null, null);
 		StoreResponse storeResponse = toStoreResponse(store);
 		BaseResponse<StoreResponse> response = new BaseResponse<StoreResponse>();
 		response.setData(storeResponse);
@@ -310,16 +310,22 @@ public class AgentRestService extends AdminRestService {
 		App app = appService.createApp(id, request.getName());
 		Assert.notNull(app, "Can't create App");
 		
-		StoreChannel channel = new StoreChannel();
-		channel.setAgentId(agentId);
-		channel.setExtStoreId(request.getExtStoreId());
-		channel.setExtStoreName(request.getExtStoreName());
-		channel.setChannelProps(request.getChinaUmsProps());
-		channel.setPaymentGateway(request.getPaymentGateway());
-	
-		storeService.createStoreChannel(channel);
 		
-		Store store = storeService.createStore(agentId, admin.getId(), request.getName(), request.getBailPercentage(), app.getId(), request.getCsrTel(), request.getProxyUrl(), request.getDailyLimit(),code);
+		StoreChannel channel = null;
+		if(request.getChannelId() == null || request.getChannelId()<=0) {
+			channel = new StoreChannel();
+			channel.setAgentId(agentId);
+			channel.setExtStoreId(request.getExtStoreId());
+			channel.setExtStoreName(request.getExtStoreName());
+			channel.setChannelProps(request.getChinaUmsProps());
+			channel.setPaymentGateway(request.getPaymentGateway());
+			
+			storeService.createStoreChannel(channel);
+		} else {
+			channel = storeService.findStoreChannelById(request.getChannelId());
+		}
+		
+		Store store = storeService.createStore(agentId, admin.getId(), request.getName(), request.getBailPercentage(), app.getId(), request.getCsrTel(), request.getProxyUrl(), request.getDailyLimit(),code, request.getQuota());
 		
 		storeService.updateStoreChannels(store.getId(), new long[] {channel.getId()});
 		StoreResponse storeResponse = toStoreResponse(store);

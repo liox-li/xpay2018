@@ -92,7 +92,7 @@ public class StoreService {
 		return channelCache.get(id);
 	}
 	
-	private static final Long INIT_FREE_QUOTA = 2000L;
+	private static final Float INIT_FREE_QUOTA = 2000f;
 	private static final Long DEFAULT_DAILY_LIMIT = 50000L;
 	public Store createStore(long agentId, long adminId, String name, Float bailPercentage, long appId, String csrTel, String proxyUrl, Long dailyLimit, String code, Long quota) {
 		Float thisBaiPercentage = bailPercentage>0 && bailPercentage<10?bailPercentage:2;
@@ -106,7 +106,7 @@ public class StoreService {
 		store.setBailPercentage(thisBaiPercentage);
 		store.setCsrTel(csrTel);
 		store.setProxyUrl(proxyUrl);
-		Long thisQuota = quota == null ?INIT_FREE_QUOTA:quota;
+		Float thisQuota = quota == null ?INIT_FREE_QUOTA:quota;
 		store.setQuota(thisQuota.floatValue());
 		long thisDailyLimit = dailyLimit == null ?DEFAULT_DAILY_LIMIT:dailyLimit;
 		store.setDailyLimit(thisDailyLimit);
