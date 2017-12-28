@@ -130,10 +130,10 @@ public class StoreService {
 		if(StringUtils.isNotBlank(name)) {
 			store.setName(name);
 		}
-		if(bailPercentage!=null) {
+		if(bailPercentage!=null && bailPercentage >0) {
 			store.setBailPercentage(bailPercentage);
 		}
-		if(appId!=null) {
+		if(appId!=null && appId>0) {
 			store.setAppId(appId);
 		}
 		if(StringUtils.isNotBlank(csrTel)) {
@@ -142,10 +142,10 @@ public class StoreService {
 		if(StringUtils.isNotBlank(proxyUrl)) {
 			store.setProxyUrl(proxyUrl);
 		}
-		if(dailyLimit!=null) {
+		if(dailyLimit!=null && dailyLimit>0) {
 			store.setDailyLimit(dailyLimit);
 		}
-		if(agentId !=null) {
+		if(agentId !=null && agentId>0) {
 			store.setAgentId(agentId);
 		}
 		storeMapper.updateById(store);

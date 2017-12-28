@@ -3,7 +3,7 @@ package com.xpay.pay.rest.contract;
 public class CreateStoreRequest {
 	private String name;
 	private Float bailPercentage;
-	private long appId;
+	private Long appId;
 	private String csrTel;
 	private String proxyUrl;
 	private Long dailyLimit;
@@ -22,10 +22,10 @@ public class CreateStoreRequest {
 	public void setBailPercentage(Float bailPercentage) {
 		this.bailPercentage = bailPercentage;
 	}
-	public long getAppId() {
+	public Long getAppId() {
 		return appId;
 	}
-	public void setAppId(long appId) {
+	public void setAppId(Long appId) {
 		this.appId = appId;
 	}
 	public String getCsrTel() {
