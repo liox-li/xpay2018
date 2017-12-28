@@ -13,6 +13,8 @@ public class QuickCreateStoreRequest {
 	private PaymentGateway paymentGateway;
 	private String extStoreName;
 	private Long agentId;
+	private Long quota;
+	private Long channelId;
 	private ChinaUmsProps chinaUmsProps;
 	public String getName() {
 		return name;
@@ -74,6 +76,16 @@ public class QuickCreateStoreRequest {
 	public void setChinaUmsProps(ChinaUmsProps chinaUmsProps) {
 		this.chinaUmsProps = chinaUmsProps;
 	}
-	
-	
+	public Long getQuota() {
+		return quota;
+	}
+	public void setQuota(Long quota) {
+		this.quota = quota;
+	}
+	public Long getChannelId() {
+		return channelId;
+	}
+	public void setChannelId(Long channelId) {
+		this.channelId = channelId;
+	}
 }

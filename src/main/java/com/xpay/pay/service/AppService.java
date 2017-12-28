@@ -49,6 +49,9 @@ public class AppService {
 	}
 
 	public App findById(Long id) {
+		if(id == null) {
+			return null;
+		}
 		initCache();
 		
 		List<App> apps = cache.values();
@@ -56,8 +59,12 @@ public class AppService {
 			return null;
 		}
 
-		return apps.stream().filter(x -> x.getId() == id).findFirst()
+		App app = apps.stream().filter(x -> x.getId() == id).findFirst()
 				.orElse(null);
+		if(app == null) {
+			app = mapper.findById(id);
+		}
+		return app;
 	}
 	
 	public List<App> findByAgentId(long agentId) {

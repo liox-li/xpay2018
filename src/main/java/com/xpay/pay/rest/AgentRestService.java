@@ -285,7 +285,7 @@ public class AgentRestService extends AdminRestService {
 			agentId = id;
 		}
 		
-		Store store = storeService.createStore(agentId, request.getAdminId(),request.getName(), request.getBailPercentage(), request.getAppId(), request.getCsrTel(), request.getProxyUrl(), request.getDailyLimit());
+		Store store = storeService.createStore(agentId, request.getAdminId(),request.getName(), request.getBailPercentage(), request.getAppId(), request.getCsrTel(), request.getProxyUrl(), request.getDailyLimit(), null, null);
 		StoreResponse storeResponse = toStoreResponse(store);
 		BaseResponse<StoreResponse> response = new BaseResponse<StoreResponse>();
 		response.setData(storeResponse);
@@ -310,16 +310,22 @@ public class AgentRestService extends AdminRestService {
 		App app = appService.createApp(id, request.getName());
 		Assert.notNull(app, "Can't create App");
 		
-		StoreChannel channel = new StoreChannel();
-		channel.setAgentId(agentId);
-		channel.setExtStoreId(request.getExtStoreId());
-		channel.setExtStoreName(request.getExtStoreName());
-		channel.setChannelProps(request.getChinaUmsProps());
-		channel.setPaymentGateway(request.getPaymentGateway());
-	
-		storeService.createStoreChannel(channel);
 		
-		Store store = storeService.createStore(agentId, admin.getId(), request.getName(), request.getBailPercentage(), app.getId(), request.getCsrTel(), request.getProxyUrl(), request.getDailyLimit());
+		StoreChannel channel = null;
+		if(request.getChannelId() == null || request.getChannelId()<=0) {
+			channel = new StoreChannel();
+			channel.setAgentId(agentId);
+			channel.setExtStoreId(request.getExtStoreId());
+			channel.setExtStoreName(request.getExtStoreName());
+			channel.setChannelProps(request.getChinaUmsProps());
+			channel.setPaymentGateway(request.getPaymentGateway());
+			
+			storeService.createStoreChannel(channel);
+		} else {
+			channel = storeService.findStoreChannelById(request.getChannelId());
+		}
+		
+		Store store = storeService.createStore(agentId, admin.getId(), request.getName(), request.getBailPercentage(), app.getId(), request.getCsrTel(), request.getProxyUrl(), request.getDailyLimit(),code, request.getQuota());
 		
 		storeService.updateStoreChannels(store.getId(), new long[] {channel.getId()});
 		StoreResponse storeResponse = toStoreResponse(store);
@@ -493,12 +499,39 @@ public class AgentRestService extends AdminRestService {
 		
 		Assert.notBlank(orderNo, "Order no can't be null");
 		Order order = orderService.findAnyByOrderNo(orderNo);
+		Assert.isTrue(order!=null && (id<=10 || id==order.getStore().getAdminId() || id==order.getStore().getAgentId()), "Order not found");
 		
 		BaseResponse<Order> response = new BaseResponse<Order>();
 		response.setData(order);
 		return response;
 	}
 	
+	@RequestMapping(value = "/{id}/orders/{orderNo}", method = RequestMethod.DELETE)
+	public BaseResponse<Order> refundOrder(@PathVariable long id, 
+			@PathVariable String orderNo) {
+		validateAgent(id);
+		
+		Assert.notBlank(orderNo, "Order no can't be null");
+		Order order = orderService.findAnyByOrderNo(orderNo);
+		Assert.isTrue(order!=null && order.isRefundable(), "Order is not paid or already refunded");
+		
+		try {
+			Bill bill = paymentService.refund(order.getAppId(), order.getOrderNo(), order.getStore().getCode(), true);
+		} catch(Exception e) {
+			
+		}
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		order = orderService.findAnyByOrderNo(orderNo);
+		BaseResponse<Order> response = new BaseResponse<Order>();
+		response.setData(order);
+		return response;
+
+	}
 	private void validateAgent(long agentId) {
 		Agent agent = this.getAgent();
 		Assert.isTrue(agent.getId()<=10 || agentId == agent.getId(), ApplicationConstants.STATUS_UNAUTHORIZED, "401", "Unauthorized request");
