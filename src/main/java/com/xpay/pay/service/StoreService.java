@@ -94,13 +94,14 @@ public class StoreService {
 	
 	private static final Float INIT_FREE_QUOTA = 2000f;
 	private static final Long DEFAULT_DAILY_LIMIT = 50000L;
-	public Store createStore(long agentId, long adminId, String name, Float bailPercentage, long appId, String csrTel, String proxyUrl, Long dailyLimit) {
+	public Store createStore(long agentId, long adminId, String name, Float bailPercentage, long appId, String csrTel, String proxyUrl, Long dailyLimit, String code) {
 		Float thisBaiPercentage = bailPercentage>1 && bailPercentage<10?bailPercentage:2;
 		Store store = new Store();
 		store.setAgentId(agentId);
 		store.setAdminId(adminId);
 		store.setAppId(appId);
-		store.setCode(IDGenerator.buildStoreCode());
+		String thisCode = StringUtils.isBlank(code)?IDGenerator.buildStoreCode():code;
+		store.setCode(thisCode);
 		store.setName(name);
 		store.setBailPercentage(thisBaiPercentage);
 		store.setCsrTel(csrTel);
