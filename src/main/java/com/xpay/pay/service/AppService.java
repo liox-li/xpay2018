@@ -49,6 +49,9 @@ public class AppService {
 	}
 
 	public App findById(Long id) {
+		if(id == null) {
+			return null;
+		}
 		initCache();
 		
 		List<App> apps = cache.values();
