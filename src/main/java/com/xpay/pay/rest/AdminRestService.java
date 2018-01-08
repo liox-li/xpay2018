@@ -24,4 +24,18 @@ public abstract class AdminRestService {
 		Assert.notNull(agent, "Invalid token");
 		return agent;
 	}
+	
+	protected void validateAgent(long agentId) {
+		Agent agent = this.getAgent();
+		Assert.isTrue(agent.getId()<=10 || agentId == agent.getId(), ApplicationConstants.STATUS_UNAUTHORIZED, "401", "Unauthorized request");
+	}
+	
+	protected void assertAdmin() {
+		Assert.isTrue(this.getAgent().getId()<=10, ApplicationConstants.STATUS_UNAUTHORIZED, "401", "Unauthorized request");
+	}
+	
+	protected void assertGeneral(Long agentId, Agent agent) {
+		Assert.isTrue(agentId<=10 || agentId == agent.getAgentId() || agentId==agent.getId(), ApplicationConstants.STATUS_UNAUTHORIZED, "401", "Unauthorized request");
+	}
+	
 }

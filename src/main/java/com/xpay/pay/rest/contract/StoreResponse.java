@@ -14,6 +14,7 @@ public class StoreResponse {
 	private Float bailPercentage;
 	private String csrTel;
 	private String proxyUrl;
+	private String notifyUrl;
 	private Float todayTradeAmount;
 	private Long dailyLimit;
 	private Float quota;
@@ -85,6 +86,12 @@ public class StoreResponse {
 	}
 	public void setProxyUrl(String proxyUrl) {
 		this.proxyUrl = proxyUrl;
+	}
+	public String getNotifyUrl() {
+		return notifyUrl;
+	}
+	public void setNotifyUrl(String notifyUrl) {
+		this.notifyUrl = notifyUrl;
 	}
 	public Float getTodayTradeAmount() {
 		return todayTradeAmount;

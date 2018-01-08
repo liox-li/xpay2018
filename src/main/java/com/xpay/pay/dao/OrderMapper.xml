@@ -28,6 +28,7 @@
     <result column="subject" jdbcType="VARCHAR" property="subject" />    
     <result column="return_url" jdbcType="VARCHAR" property="returnUrl" /> 
     <result column="uid" jdbcType="VARCHAR" property="uid" />     
+    <result column="goods_id" jdbcType="BIGINT" property="goods_id" /> 
     <result column="create_date" jdbcType="VARCHAR" property="createDate" />         
   </resultMap>
   
@@ -57,6 +58,7 @@
     subject,
     return_url,
     uid,
+    goods_id,
     create_date
   </sql>
 
@@ -93,6 +95,13 @@
     <include refid="orderColumns" />
     FROM bill_order
     WHERE bill_order.store_id = #{storeId} AND update_date &gt;= #{startTime} AND update_date &lt; #{endTime} AND deleted = false
+  </select>
+  
+  <select id="findLastByGoodsId" resultMap="OrderResultMap">
+    SELECT
+    <include refid="orderColumns" />
+    FROM bill_order
+    WHERE bill_order.goods_id = #{goodsId} order by create_date desc limit 1
   </select>
   
   <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.Order">
@@ -170,6 +179,9 @@
       <if test="uid != null">
         uid,
       </if>  
+      <if test="goodsId != null">
+        goods_id,
+      </if>  
    </trim>
    <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="orderNo != null">
@@ -243,7 +255,10 @@
       </if>   
       <if test="uid != null">
         #{uid,jdbcType=VARCHAR},
-      </if>  
+      </if> 
+      <if test="goodsId != null">
+        #{goodsId,jdbcType=BIGINT},
+      </if> 
     </trim>
   </insert> 
      

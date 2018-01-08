@@ -15,8 +15,7 @@ public class Order {
 	private Long appId;
 	private long storeId;
 	private StoreChannel storeChannel;
-	private long storeChannelId;
-	private Float totalFee;
+	private long storeChannelId;	private Float totalFee;
 	private String orderTime;
 	private String refundTime;
 	private String sellerOrderNo;
@@ -39,6 +38,8 @@ public class Order {
 	private App app;
 	private Store store;
 	private Date createDate;
+	private Long goodsId;
+	private StoreGoods goods;
 	
 	public long getId() {
 		return id;
@@ -84,6 +85,13 @@ public class Order {
 	}
 	public void setStoreChannelId(long storeChannelId) {
 		this.storeChannelId = storeChannelId;
+	}
+	
+	public Long getGoodsId() {
+		return goodsId;
+	}
+	public void setGoodsId(Long goodsId) {
+		this.goodsId = goodsId;
 	}
 	public Float getTotalFee() {
 		return totalFee;
@@ -256,5 +264,11 @@ public class Order {
 
 	public void setRefundTime(String refundTime) {
 		this.refundTime = refundTime;
+	}
+	public StoreGoods getGoods() {
+		return goods;
+	}
+	public void setGoods(StoreGoods goods) {
+		this.goods = goods;
 	}
 }

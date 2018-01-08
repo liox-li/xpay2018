@@ -14,6 +14,7 @@ import com.xpay.pay.model.Order;
 import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
 import com.xpay.pay.model.StoreChannel.PaymentGateway;
+import com.xpay.pay.model.StoreGoods;
 import com.xpay.pay.proxy.IPaymentProxy;
 import com.xpay.pay.proxy.IPaymentProxy.PayChannel;
 import com.xpay.pay.proxy.PaymentProxyFactory;
@@ -65,6 +66,22 @@ public class PaymentService {
 		order.setSubject(subject);
 		orderService.insert(order);
 
+		return order;
+	}
+	
+	public Order createGoodsOrder(Store store, StoreGoods goods, String uid) {
+		Assert.isTrue(goods!=null && goods.getExtQrCodes()!=null && goods.getExtQrCode().length()>0, "No avaiable channels");
+		
+		Order order = new Order();
+		order.setSubject(goods.getName());
+		order.setCodeUrl(orderService.findAvaiableQrCode(goods));
+		order.setTotalFee(goods.getAmount());
+		order.setOrderNo(IDGenerator.buildShortOrderNo());
+		order.setStoreId(goods.getStoreId());
+		order.setNotifyUrl(store.getNotifyUrl());
+		order.setGoodsId(goods.getId());
+		order.setUid(uid);
+		orderService.insert(order);
 		return order;
 	}
 

@@ -285,7 +285,7 @@ public class AgentRestService extends AdminRestService {
 			agentId = id;
 		}
 		
-		Store store = storeService.createStore(agentId, request.getAdminId(),request.getName(), request.getBailPercentage(), request.getAppId(), request.getCsrTel(), request.getProxyUrl(), request.getDailyLimit(), null, null);
+		Store store = storeService.createStore(agentId, request.getAdminId(),request.getName(), request.getBailPercentage(), request.getAppId(), request.getCsrTel(), request.getProxyUrl(), request.getDailyLimit(), null, null, request.getNotifyUrl());
 		StoreResponse storeResponse = toStoreResponse(store);
 		BaseResponse<StoreResponse> response = new BaseResponse<StoreResponse>();
 		response.setData(storeResponse);
@@ -325,7 +325,7 @@ public class AgentRestService extends AdminRestService {
 			channel = storeService.findStoreChannelById(request.getChannelId());
 		}
 		
-		Store store = storeService.createStore(agentId, admin.getId(), request.getName(), request.getBailPercentage(), app.getId(), request.getCsrTel(), request.getProxyUrl(), request.getDailyLimit(),code, request.getQuota());
+		Store store = storeService.createStore(agentId, admin.getId(), request.getName(), request.getBailPercentage(), app.getId(), request.getCsrTel(), request.getProxyUrl(), request.getDailyLimit(),code, request.getQuota(), request.getNotifyUrl());
 		
 		storeService.updateStoreChannels(store.getId(), new long[] {channel.getId()});
 		StoreResponse storeResponse = toStoreResponse(store);
@@ -340,7 +340,7 @@ public class AgentRestService extends AdminRestService {
 			@RequestBody(required = true) CreateStoreRequest request) {
 		this.assertAdmin();
 		
-		Store store = storeService.updateStore(storeId, request.getAgentId(), request.getName(), request.getBailPercentage(), request.getAppId(), request.getCsrTel(), request.getProxyUrl(), request.getDailyLimit());
+		Store store = storeService.updateStore(storeId, request.getAgentId(), request.getName(), request.getBailPercentage(), request.getAppId(), request.getCsrTel(), request.getProxyUrl(), request.getDailyLimit(), request.getNotifyUrl());
 		StoreResponse storeResponse = toStoreResponse(store);
 		BaseResponse<StoreResponse> response = new BaseResponse<StoreResponse>();
 		response.setData(storeResponse);
@@ -532,19 +532,7 @@ public class AgentRestService extends AdminRestService {
 		return response;
 
 	}
-	private void validateAgent(long agentId) {
-		Agent agent = this.getAgent();
-		Assert.isTrue(agent.getId()<=10 || agentId == agent.getId(), ApplicationConstants.STATUS_UNAUTHORIZED, "401", "Unauthorized request");
-	}
-	
-	private void assertAdmin() {
-		Assert.isTrue(this.getAgent().getId()<=10, ApplicationConstants.STATUS_UNAUTHORIZED, "401", "Unauthorized request");
-	}
-	
-	private void assertGeneral(Long agentId, Agent agent) {
-		Assert.isTrue(agentId<=10 || agentId == agent.getAgentId() || agentId==agent.getId(), ApplicationConstants.STATUS_UNAUTHORIZED, "401", "Unauthorized request");
-	}
-	
+
 	private StoreResponse toStoreResponse(Store store) {
 		StoreResponse storeResponse = new StoreResponse();
 		storeResponse.setId(store.getId());
@@ -554,6 +542,7 @@ public class AgentRestService extends AdminRestService {
 		storeResponse.setCsrTel(store.getCsrTel());
 		storeResponse.setApp(appService.findById(store.getAppId()));
 		storeResponse.setProxyUrl(store.getProxyUrl());
+		storeResponse.setNotifyUrl(store.getNotifyUrl());
 		storeResponse.setDailyLimit(store.getDailyLimit());
 		storeResponse.setTodayTradeAmount(store.getNonBail());
 		storeResponse.setQuota(store.getQuota());

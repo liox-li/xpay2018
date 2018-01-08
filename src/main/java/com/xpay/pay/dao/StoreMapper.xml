@@ -24,6 +24,7 @@
     <result column="last_recharge_amt" jdbcType="NUMERIC" property="lastRechargeAmt" />
     <result column="channel_type" jdbcType="VARCHAR" property="channelType" />
     <result column="admin_id" jdbcType="VARCHAR" property="adminId" />
+    <result column="notify_url" jdbcType="VARCHAR" property="notifyUrl" />
   </resultMap>
   
   <sql id="storeColumns">
@@ -47,7 +48,8 @@
     last_trans_sum,
     last_recharge_amt,
     channel_type,
-    admin_id
+    admin_id,
+    notify_url
   </sql>
 
   <select id="findById" resultMap="StoreResultMap">
@@ -124,7 +126,10 @@
       </if> 
        <if test="channelType != null">
         channel_type,
-      </if>       
+      </if> 
+       <if test="notifyUrl != null">
+        notify_url,
+      </if>         
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
      	#{code,jdbcType=VARCHAR},
@@ -165,6 +170,9 @@
         </if>
          <if test="channelType != null">
         	#{channelType,jdbcType=NUMERIC},
+        </if>
+        <if test="notifyUrl != null">
+        	#{notifyUrl,jdbcType=VARCHAR},
         </if>
     </trim>
   </insert>
@@ -223,6 +231,9 @@
       <if test="lastRechargeAmt != null">
         last_recharge_amt = #{lastRechargeAmt,jdbcType=NUMERIC},
       </if> 
+      <if test="notifyUrl != null">
+        notify_url = #{notifyUrl,jdbcType=VARCHAR},
+      </if>
       update_date = now()
     </set>
     where id = #{id,jdbcType=BIGINT}

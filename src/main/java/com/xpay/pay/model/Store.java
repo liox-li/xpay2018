@@ -32,6 +32,7 @@ public class Store {
 	private Float lastRechargeAmt;
 	private String channelType;
 	private Long adminId;
+	private String notifyUrl;
 	
 	public long getId() {
 		return id;
@@ -255,6 +256,14 @@ public class Store {
 		this.adminId = adminId;
 	}
 
+	public String getNotifyUrl() {
+		return notifyUrl;
+	}
+
+	public void setNotifyUrl(String notifyUrl) {
+		this.notifyUrl = notifyUrl;
+	}
+
 
 	//	private static final int SECURE_LOW_BOUNDER = 50;
 //	private static final int SECURE_UP_BOUNDER = 300;
@@ -293,5 +302,5 @@ public class Store {
 			return 0f;
 		}
 		return this.channels.get(0).getPaymentGateway().getBaseBailPercentage();
-	}
+	}	
 }

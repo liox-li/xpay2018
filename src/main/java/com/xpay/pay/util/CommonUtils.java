@@ -192,4 +192,16 @@ public class CommonUtils {
 		return dest;
 	}
 	
+	public static <T> int indexOf(T[] arr, T t) {
+		if(arr == null || arr.length == 0 || t == null) {
+			return -1;
+		}
+		for(int i = 0; i<arr.length;i++) {
+			if(t.equals(arr[i])) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
 }

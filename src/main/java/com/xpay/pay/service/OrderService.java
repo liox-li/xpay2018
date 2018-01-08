@@ -16,6 +16,7 @@ import com.xpay.pay.model.Agent;
 import com.xpay.pay.model.Order;
 import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
+import com.xpay.pay.model.StoreGoods;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.util.CommonUtils;
 
@@ -142,6 +143,17 @@ public class OrderService {
 	
 	public boolean update(Order order) {
 		return orderMapper.updateById(order);
+	}
+
+	public String findAvaiableQrCode(StoreGoods goods) {
+		Order order = orderMapper.findLastByGoodsId(goods.getId());
+		if(order == null) {
+			return goods.getExtQrCodes()[0];
+		}
+		String qrCode = order.getCodeUrl();
+		int index = CommonUtils.indexOf(goods.getExtQrCodes(), qrCode);
+		int nextIndex = index>=goods.getExtQrCodes().length-1?0:index+1;
+		return goods.getExtQrCodes()[nextIndex];
 	}
 	
 }

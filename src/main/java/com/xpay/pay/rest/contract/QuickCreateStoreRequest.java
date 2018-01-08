@@ -8,6 +8,7 @@ public class QuickCreateStoreRequest {
 	private Float bailPercentage;
 	private String csrTel;
 	private String proxyUrl;
+	private String notifyUrl;
 	private Long dailyLimit;
 	private String extStoreId;
 	private PaymentGateway paymentGateway;
@@ -39,6 +40,12 @@ public class QuickCreateStoreRequest {
 	}
 	public void setProxyUrl(String proxyUrl) {
 		this.proxyUrl = proxyUrl;
+	}
+	public String getNotifyUrl() {
+		return notifyUrl;
+	}
+	public void setNotifyUrl(String notifyUrl) {
+		this.notifyUrl = notifyUrl;
 	}
 	public Long getDailyLimit() {
 		return dailyLimit;
