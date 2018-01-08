@@ -81,6 +81,8 @@ public class PaymentService {
 		order.setNotifyUrl(store.getNotifyUrl());
 		order.setGoodsId(goods.getId());
 		order.setUid(uid);
+		order.setOrderTime(IDGenerator.formatNow(IDGenerator.TimePattern14));
+		order.setPayChannel(PayChannel.ALL);
 		orderService.insert(order);
 		return order;
 	}

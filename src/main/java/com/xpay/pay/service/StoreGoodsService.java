@@ -21,7 +21,7 @@ public class StoreGoodsService {
 	
 	public StoreGoods findByCode(String code) {
 		Assert.notNull(code, "Invalid code");
-		return mapper.findByIdCode(code);
+		return mapper.findByCode(code);
 	}
 	
 	public boolean insert(StoreGoods goods) {
