@@ -80,6 +80,7 @@ public class OrderService {
 		Order order = orderMapper.findLastBySellerOrderNo(sellerOrderNo, amount, subject, startTime, orderTime);
 		
 		Assert.notNull(order, "Order not found - extOrderNo=" + extOrderNo+",sellerOrderNo="+sellerOrderNo+",amount="+amount+",subject="+subject+", startTime="+startTime+", orderTime"+orderTime);
+		Assert.isTrue(OrderStatus.NOTPAY.equals(order.getStatus()), "Order already paid - extOrderNo=" + extOrderNo+",sellerOrderNo="+sellerOrderNo+",amount="+amount+",subject="+subject+", startTime="+startTime+", orderTime"+orderTime);
 		order.setStore(storeService.findById(order.getStoreId()));
 		order.setGoods(goodsService.findById(order.getGoodsId()));
 		return order;  

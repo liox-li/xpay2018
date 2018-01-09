@@ -36,6 +36,7 @@ public class WechatNotifyHandler extends AbstractNotifyHandler {
 			
 			orderNo = order == null?null:order.getOrderNo();
 			totalFee = notification.getAmount();
+		
 		} catch (Exception e) {
 			logger.error("WechatNotifyHandler extractNotifyBody "+content, e);
 		}
