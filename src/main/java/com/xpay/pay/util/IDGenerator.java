@@ -18,6 +18,7 @@ public class IDGenerator {
 	private static final char X = 'X';
 	private static final char S = 'S';
 	private static final char R = 'R';
+	private static final char G = 'G';
 
 	public static String buildOrderNo(int appId, long storeId) {
 		StringBuffer sb = new StringBuffer();
@@ -136,4 +137,13 @@ public class IDGenerator {
 		sb.append(randomNum(7));
 		return sb.toString();
 	}
+
+	public static String buildGoodsCode() {
+		StringBuffer sb = new StringBuffer();
+		sb.append(G);
+		sb.append(formatNow(TimePattern14));
+		sb.append(randomNum(5));
+		return sb.toString();
+	}
+
 }

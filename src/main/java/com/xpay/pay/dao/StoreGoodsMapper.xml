@@ -55,11 +55,11 @@
     <trim prefix="values (" suffix=")" suffixOverrides=",">
      	#{storeId,jdbcType=BIGINT},
      	#{code,jdbcType=VARCHAR},
-     	#{ext_store_id,jdbcType=VARCHAR},
+     	#{extStoreId,jdbcType=VARCHAR},
      	#{name,jdbcType=VARCHAR},
      	#{desc,jdbcType=VARCHAR},
-     	#{amount,jdbcType=NEMERIC},
-     	#{extQrCode,jdbcType=NEMERIC},
+     	#{amount,jdbcType=NUMERIC},
+     	#{extQrCode,jdbcType=VARCHAR},
     </trim>
   </insert>
   
@@ -76,10 +76,10 @@
        description =  #{desc,jdbcType=VARCHAR},
       </if>
       <if test="amount != null">
-       amount =  #{amount,jdbcType=NEMERIC},
+       amount =  #{amount,jdbcType=NUMERIC},
       </if>
        <if test="extQrCode != null">
-       ext_qrcode =  #{extQrCode,jdbcType=NEMERIC},
+       ext_qrcode =  #{extQrCode,jdbcType=VARCHAR},
       </if>
       update_date = now()
     </set>

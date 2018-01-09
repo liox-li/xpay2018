@@ -42,7 +42,7 @@ public class StoreGoodsRestService extends AdminRestService {
 			@RequestBody StoreGoods goods) {
 		validateAgent(id);
 		
-		boolean result = storeGoodsService.insert(goods);
+		boolean result = storeGoodsService.create(goods);
 		Assert.isTrue(result, "Create goods failed");
 		BaseResponse<StoreGoods> response = new BaseResponse<StoreGoods>();
 		response.setData(goods);

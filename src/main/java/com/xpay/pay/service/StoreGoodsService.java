@@ -2,12 +2,14 @@ package com.xpay.pay.service;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.xpay.pay.dao.StoreGoodsMapper;
 import com.xpay.pay.exception.Assert;
 import com.xpay.pay.model.StoreGoods;
+import com.xpay.pay.util.IDGenerator;
 
 @Service
 public class StoreGoodsService {
@@ -24,8 +26,11 @@ public class StoreGoodsService {
 		return mapper.findByCode(code);
 	}
 	
-	public boolean insert(StoreGoods goods) {
-		Assert.isTrue(goods == null, "Invalid good to be inserted");
+	public boolean create(StoreGoods goods) {
+		Assert.isTrue(goods != null, "Invalid good to be inserted");
+		if(StringUtils.isBlank(goods.getCode())) {
+			goods.setCode(IDGenerator.buildGoodsCode());
+		}
 		return mapper.insert(goods);
 	}
 	
