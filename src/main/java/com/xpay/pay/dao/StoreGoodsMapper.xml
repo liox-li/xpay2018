@@ -72,7 +72,7 @@
       <if test="name != null">
        name =  #{name,jdbcType=VARCHAR},
       </if>
-       <if test="description != null">
+       <if test="desc != null">
        description =  #{desc,jdbcType=VARCHAR},
       </if>
       <if test="amount != null">

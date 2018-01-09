@@ -28,7 +28,7 @@
     <result column="subject" jdbcType="VARCHAR" property="subject" />    
     <result column="return_url" jdbcType="VARCHAR" property="returnUrl" /> 
     <result column="uid" jdbcType="VARCHAR" property="uid" />     
-    <result column="goods_id" jdbcType="BIGINT" property="goods_id" /> 
+    <result column="goods_id" jdbcType="BIGINT" property="goodsId" /> 
     <result column="create_date" jdbcType="VARCHAR" property="createDate" />         
   </resultMap>
   

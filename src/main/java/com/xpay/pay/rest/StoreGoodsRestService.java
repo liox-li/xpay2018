@@ -49,4 +49,27 @@ public class StoreGoodsRestService extends AdminRestService {
 		return response;
 	}
 	
+	@RequestMapping(value = "/{id}/stores/{storeId}/goods/{goodsId}", method = RequestMethod.PATCH)
+	public BaseResponse<StoreGoods> updateStoreGoods(@PathVariable long id, @PathVariable long storeId, 
+			 @PathVariable long goodsId, @RequestBody StoreGoods goods) {
+		validateAgent(id);
+		
+		boolean result = storeGoodsService.update(goodsId, goods);
+		Assert.isTrue(result, "Create goods failed");
+		BaseResponse<StoreGoods> response = new BaseResponse<StoreGoods>();
+		response.setData(goods);
+		return response;
+	}
+	
+	@RequestMapping(value = "/{id}/stores/{storeId}/goods/{goodsId}", method = RequestMethod.DELETE)
+	public BaseResponse<StoreGoods> deleteStoreGoods(@PathVariable long id, @PathVariable long storeId, 
+			 @PathVariable long goodsId) {
+		validateAgent(id);
+		
+		boolean result = storeGoodsService.delete(goodsId);
+		Assert.isTrue(result, "Create goods failed");
+		BaseResponse<StoreGoods> response = new BaseResponse<StoreGoods>();
+		return response;
+	}
+	
 }
