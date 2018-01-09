@@ -18,7 +18,7 @@ public class KekePayNotifyHandler extends AbstractNotifyHandler {
   protected NotifyBody extractNotifyBody(String url, String content) {
 	  String billNo = "";
 	  String extOrderNo = "";
-	  String totalFee = "";
+	  int totalFee = 0;
 	  String status = "";
 	  try {
 		  String paramStr = url.substring(url.indexOf("?")+1);
@@ -33,7 +33,7 @@ public class KekePayNotifyHandler extends AbstractNotifyHandler {
 			  } if ("tradeStatus".equals(key)) {
 			  	  status = pair[1];
 			  } else if ("orderPrice".equals(key)) {
-				  totalFee = String.valueOf((int) (Float.valueOf(pair[1]) * 100));
+				  totalFee =(int) (Float.valueOf(pair[1]) * 100);
 			  } else if ("trxNo".equals(key)) {
 			 	  extOrderNo = pair[1];
 			  }

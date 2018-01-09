@@ -42,7 +42,7 @@ public class TxfNotifyHandler extends AbstractNotifyHandler {
 		} catch (Exception e) {
 			logger.error("TxfNotifyHandler extractNotifyBody "+content, e);
 		}
-		return StringUtils.isBlank(billNo)?null:new NotifyBody(billNo, null, TxfProxy.toOrderStatus(status), totalFee, targetOrderNo);
+		return StringUtils.isBlank(billNo)?null:new NotifyBody(billNo, null, TxfProxy.toOrderStatus(status), CommonUtils.toInt(totalFee), targetOrderNo);
 	}
 
 	private static final String SUCCESS_STR = "SUCCESS";

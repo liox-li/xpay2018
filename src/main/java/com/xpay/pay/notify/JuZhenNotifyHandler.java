@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.xpay.pay.proxy.juzhen.JuZhenProxy;
+import com.xpay.pay.util.CommonUtils;
 import com.xpay.pay.util.JsonUtils;
 
 @Service
@@ -19,7 +20,7 @@ public class JuZhenNotifyHandler extends AbstractNotifyHandler {
 			String orderId = notification.getOrderId();
 			String totalFee = notification.getTransAmt();
 			String status = notification.getOrdStatus();
-			return new NotifyBody(null, orderId, JuZhenProxy.toOrderStatus(status), totalFee, "");
+			return new NotifyBody(null, orderId, JuZhenProxy.toOrderStatus(status), CommonUtils.toInt(totalFee), "");
 		}
 		return null;
 	}

@@ -19,6 +19,7 @@ import com.xpay.pay.model.StoreChannel;
 import com.xpay.pay.model.StoreGoods;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.util.CommonUtils;
+import com.xpay.pay.util.TimeUtils;
 
 @Service
 public class OrderService {
@@ -28,6 +29,8 @@ public class OrderService {
 	protected AppService appService;
 	@Autowired
 	protected StoreService storeService;
+	@Autowired
+	protected StoreGoodsService goodsService;
 
 	public List<Order> findByOrderNo(String orderNo) {
 		List<Order> orders = orderMapper.findByOrderNo(orderNo);
@@ -70,6 +73,16 @@ public class OrderService {
 		order.setStore(storeService.findById(order.getStoreId()));
 		order.setStoreChannel(storeService.findStoreChannelById(order.getStoreChannelId()));
 		return order;
+	}
+	
+	public Order findActiveByOrderTime(String sellerOrderNo, String extOrderNo, Float amount, String subject, Date orderTime) {
+		Date startTime = TimeUtils.timeBefore(orderTime, 10000);
+		Order order = orderMapper.findLastBySellerOrderNo(sellerOrderNo, amount, subject, startTime, orderTime);
+		
+		Assert.notNull(order, "Order not found - extOrderNo=" + extOrderNo+",sellerOrderNo="+sellerOrderNo+",amount="+amount+",subject="+subject+", startTime="+startTime+", orderTime"+orderTime);
+		order.setStore(storeService.findById(order.getStoreId()));
+		order.setGoods(goodsService.findById(order.getGoodsId()));
+		return order;  
 	}
 	
 	public StoreChannel findUnusedChannelByStore(Store store, String orderNo) {

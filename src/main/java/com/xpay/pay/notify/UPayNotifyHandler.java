@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.xpay.pay.proxy.upay.UPayProxy;
+import com.xpay.pay.util.CommonUtils;
 import com.xpay.pay.util.JsonUtils;
 
 @Service
@@ -27,7 +28,7 @@ public class UPayNotifyHandler extends AbstractNotifyHandler {
 			}
 		} catch (Exception e) {
 		}
-		return StringUtils.isBlank(orderNo)?null:new NotifyBody(orderNo, extOrderNo, UPayProxy.toOrderStatus(status), totalFee, targetOrderNo);
+		return StringUtils.isBlank(orderNo)?null:new NotifyBody(orderNo, extOrderNo, UPayProxy.toOrderStatus(status), CommonUtils.toInt(totalFee), targetOrderNo);
 	}
 
 	private static final String SUCCESS_STR = "success";

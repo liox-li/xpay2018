@@ -77,10 +77,12 @@ public class PaymentService {
 		order.setCodeUrl(orderService.findAvaiableQrCode(goods));
 		order.setTotalFee(goods.getAmount());
 		order.setOrderNo(IDGenerator.buildShortOrderNo());
+		order.setSellerOrderNo(goods.getExtStoreId());
 		order.setStoreId(goods.getStoreId());
 		order.setNotifyUrl(store.getNotifyUrl());
 		order.setGoodsId(goods.getId());
 		order.setUid(uid);
+		order.setStatus(OrderStatus.NOTPAY);
 		order.setOrderTime(IDGenerator.formatNow(IDGenerator.TimePattern14));
 		order.setPayChannel(PayChannel.ALL);
 		orderService.insert(order);

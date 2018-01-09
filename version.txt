@@ -1,7 +1,7 @@
 branch=refs/heads/master
-buildTimestamp=2018-01-09 00:59:56 +0000
-buildVersion=884
-commitId=5681653d982bb7db69dc24fa71fd70a486bec5cf
+buildTimestamp=2018-01-09 06:33:38 +0000
+buildVersion=898
+commitId=dd507316f523b3e7c8e4839ee60b97e7a8c4af71
 
 hostname=lenovo-PC
 isSnapshot=true
@@ -12,4 +12,4 @@ osName=Windows 7
 osVersion=6.1
 project=XPAY
 username=lenovo
-version=0.1.884
+version=0.1.898

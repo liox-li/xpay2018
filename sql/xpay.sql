@@ -240,6 +240,9 @@ ALTER TABLE bill_order ALTER COLUMN store_channel drop not null;
 ALTER TABLE bill_order ALTER COLUMN app_id drop not null;
 CREATE INDEX idx_bill_order_goods_id ON bill_order(goods_id); 
 
+drop index idx_seller_order_no;
+CREATE INDEX idx_bill_order_seller_no ON bill_order(seller_order_no, total_fee, create_date); 
+
 CREATE TABLE IF NOT EXISTS bill_store_goods (
 	id BIGSERIAL PRIMARY KEY,
 	store_id BIGINT NOT NULL,
@@ -248,7 +251,7 @@ CREATE TABLE IF NOT EXISTS bill_store_goods (
 	description varchar(256),
 	amount NUMERIC NOT NULL,
 	ext_store_id varchar(64) NOT NULL,
-	ext_qrcode varchar(256) NOT NULL,
+	ext_qrcode varchar(1024) NOT NULL,
 	create_date TIMESTAMP WITH TIME ZONE NOT NULL default now(), 
 	update_date TIMESTAMP WITH TIME ZONE NOT NULL default now(),
 	deleted boolean DEFAULT FALSE

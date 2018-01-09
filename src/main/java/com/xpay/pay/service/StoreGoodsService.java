@@ -44,4 +44,9 @@ public class StoreGoodsService {
 		Assert.isTrue(goodsId>0, "Invalid good to be deleted");
 		return mapper.deleteById(goodsId);
 	}
+
+	public StoreGoods findById(Long goodsId) {
+		Assert.isTrue(goodsId>0, "Invalid good to be deleted");
+		return mapper.findById(goodsId);
+	}
 }

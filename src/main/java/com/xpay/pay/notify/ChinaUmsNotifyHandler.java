@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.xpay.pay.proxy.chinaums.ChinaUmsProxy;
 import com.xpay.pay.service.OrderService;
+import com.xpay.pay.util.CommonUtils;
 import com.xpay.pay.util.JsonUtils;
 
 @Service
@@ -42,7 +43,7 @@ public class ChinaUmsNotifyHandler extends AbstractNotifyHandler {
 		} catch (Exception e) {
 			
 		}
-		return StringUtils.isBlank(billNo)?null:new NotifyBody(null, billNo, ChinaUmsProxy.toOrderStatus(status), totalFee, targetOrderNo);
+		return StringUtils.isBlank(billNo)?null:new NotifyBody(null, billNo, ChinaUmsProxy.toOrderStatus(status), CommonUtils.toInt(totalFee), targetOrderNo);
 	}
 
 	private static final String SUCCESS_STR = "success";

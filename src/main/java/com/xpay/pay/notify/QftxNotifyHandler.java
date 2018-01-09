@@ -3,6 +3,7 @@ package com.xpay.pay.notify;
 import com.xpay.pay.proxy.PaymentResponse;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.proxy.qftx.mp.QftxMpProxy;
+import com.xpay.pay.util.CommonUtils;
 import com.xpay.pay.util.CryptoUtils;
 import com.xpay.pay.util.XmlUtils;
 import java.util.Map;
@@ -37,7 +38,7 @@ public class QftxNotifyHandler extends AbstractNotifyHandler {
     OrderStatus status =
         "0".equals(params.get("pay_result")) ? OrderStatus.SUCCESS : OrderStatus.PAYERROR;
     String totalFee = params.get("total_fee");
-    return new NotifyBody(billNo, null, status, totalFee, null);
+    return new NotifyBody(billNo, null, status, CommonUtils.toInt(totalFee), null);
   }
 
   @Override

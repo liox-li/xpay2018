@@ -63,4 +63,11 @@ public class TimeUtils {
 	    long differenceDates = difference / (24 * 60 * 60 * 1000);
 	    return (int)differenceDates;
 	}
+
+	public static Date timeBefore(Date time, long ms) {
+		if(time == null) {
+			return null;
+		}
+		return new Date(time.getTime()-ms);
+	}
 }

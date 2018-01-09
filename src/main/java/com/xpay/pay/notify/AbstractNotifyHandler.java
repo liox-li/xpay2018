@@ -13,7 +13,6 @@ import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.service.OrderService;
 import com.xpay.pay.service.PaymentService;
 import com.xpay.pay.service.StoreService;
-import com.xpay.pay.util.CommonUtils;
 
 @Service
 public abstract class AbstractNotifyHandler implements INotifyHandler {
@@ -44,7 +43,7 @@ public abstract class AbstractNotifyHandler implements INotifyHandler {
 		NotifyBody body = this.extractNotifyBody(url, content);
 		if(body!=null) {
 			order = fetchOrder(body);
-			if(order!=null &&  CommonUtils.toInt(body.getTotalFee()) == (int) (order.getTotalFee() * 100)) {
+			if(order!=null &&  body.getTotalFee() == (int) (order.getTotalFee() * 100)) {
 				updateOrderStatus(order, body);
 				updateTradeAmount(order);
 				updateStoreChannel(order.getStoreChannel());
@@ -119,9 +118,9 @@ public abstract class AbstractNotifyHandler implements INotifyHandler {
 		private OrderStatus status;
 		private String extOrderNo;
 		private String targetOrderNo;
-		private String totalFee;
+		private Integer totalFee;
 		
-		public NotifyBody(String billNo, String extOrderNo, OrderStatus status, String totalFee, String targetOrderNo) {
+		public NotifyBody(String billNo, String extOrderNo, OrderStatus status, Integer totalFee, String targetOrderNo) {
 			this.billNo = billNo;
 			this.extOrderNo = extOrderNo;
 			this.status = status;
@@ -157,11 +156,11 @@ public abstract class AbstractNotifyHandler implements INotifyHandler {
 		public void setTargetOrderNo(String targetOrderNo) {
 			this.targetOrderNo = targetOrderNo;
 		}
-		public String getTotalFee() {
+		public Integer getTotalFee() {
 			return totalFee;
 		}
 
-		public void setTotalFee(String totalFee) {
+		public void setTotalFee(Integer totalFee) {
 			this.totalFee = totalFee;
 		}
 	}
