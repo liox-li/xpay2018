@@ -102,6 +102,9 @@ public abstract class AbstractNotifyHandler implements INotifyHandler {
 	}
 	
 	private void updateStoreChannel(StoreChannel channel) {
+		if(channel == null) {
+			return;
+		}
 		try {
 			storeService.updateStoreChannel(channel);
 		} catch(Exception e) {

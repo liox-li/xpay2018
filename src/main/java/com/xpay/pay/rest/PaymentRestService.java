@@ -139,9 +139,8 @@ public class PaymentRestService extends AuthRestService {
 
 	private void validateQuota(Store store) {
 		Assert.notNull(store, "No store found");
-		Assert.isTrue(store.getNonBail()<store.getQuota(), "No enough quota remained");
+		Assert.isTrue(-1 ==store.getQuota() || store.getNonBail()<store.getQuota(), "No enough quota remained");
 		Assert.isTrue(-1 == store.getDailyLimit() || store.getNonBail() < store.getDailyLimit(), "Exceed transaction limit");
-		
 	}
 
 	private void validateStoreLink(Store store, String returnUrl) {
