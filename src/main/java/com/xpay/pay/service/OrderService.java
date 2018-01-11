@@ -31,6 +31,8 @@ public class OrderService {
 	protected StoreService storeService;
 	@Autowired
 	protected StoreGoodsService goodsService;
+	@Autowired
+	private LockerService lockerService;
 
 	public List<Order> findByOrderNo(String orderNo) {
 		List<Order> orders = orderMapper.findByOrderNo(orderNo);
@@ -50,6 +52,7 @@ public class OrderService {
 		order.setApp(appService.findById(order.getAppId()));
 		order.setStore(storeService.findById(order.getStoreId()));
 		order.setStoreChannel(storeService.findStoreChannelById(order.getStoreChannelId()));
+		order.setGoods(goodsService.findById(order.getGoodsId()));
 		return order;
 	}
 	
@@ -165,9 +168,32 @@ public class OrderService {
 			return goods.getExtQrCodes()[0];
 		}
 		String qrCode = order.getCodeUrl();
+		
 		int index = CommonUtils.indexOf(goods.getExtQrCodes(), qrCode);
 		int nextIndex = index>=goods.getExtQrCodes().length-1?0:index+1;
-		return goods.getExtQrCodes()[nextIndex];
+		String result = goods.getExtQrCodes()[nextIndex];
+		boolean lock = aquireLock(result);
+		Assert.isTrue(lock, "No avaiable channel");
+		return result;
+	}
+	
+	private static final Long lockTime = 10000L;
+	private static final Long checkInterval = 1000L;
+	private boolean aquireLock(String key) {
+		boolean lock = false;
+		for(int i=0;i<10;i++) {
+			lock = lockerService.lock(key, lockTime);
+			if(lock) {
+				break;
+			}
+			try {
+				Thread.sleep(checkInterval);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return lock;
 	}
 	
 }

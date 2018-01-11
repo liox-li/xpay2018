@@ -259,3 +259,11 @@ CREATE TABLE IF NOT EXISTS bill_store_goods (
 ALTER SEQUENCE bill_store_goods_id_seq RESTART 100;
 CREATE INDEX idx_bill_store_goods_code ON bill_store_goods(code); 
 CREATE INDEX idx_bill_store_goods_store ON bill_store_goods(store_id); 
+
+CREATE TABLE IF NOT EXISTS db_locker (
+	key varchar(128) NOT NULL,
+	create_date TIMESTAMP WITH TIME ZONE NOT NULL default now(), 
+	update_date TIMESTAMP WITH TIME ZONE NOT NULL default now(),
+	deleted boolean DEFAULT FALSE
+);
+CREATE UNIQUE INDEX idx_db_locker_key ON db_locker(key); 

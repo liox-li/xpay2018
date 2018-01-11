@@ -12,6 +12,7 @@ import com.xpay.pay.model.StoreChannel;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.service.OrderService;
 import com.xpay.pay.service.PaymentService;
+import com.xpay.pay.service.StoreGoodsService;
 import com.xpay.pay.service.StoreService;
 
 @Service
@@ -24,6 +25,8 @@ public abstract class AbstractNotifyHandler implements INotifyHandler {
 	protected StoreService storeService;
 	@Autowired
 	protected PaymentService paymentService;
+	@Autowired
+	protected StoreGoodsService goodsService;
 	
 	@Override
 	public boolean validateSignature(String content) {

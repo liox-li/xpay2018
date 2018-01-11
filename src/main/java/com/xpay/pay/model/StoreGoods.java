@@ -14,6 +14,7 @@ public class StoreGoods {
 	private Float amount;
 	private String extQrCode;
 	private Date updateDate;
+	
 	public Long getId() {
 		return id;
 	}
@@ -71,5 +72,4 @@ public class StoreGoods {
 	public void setUpdateDate(Date updateDate) {
 		this.updateDate = updateDate;
 	}
-	
 }

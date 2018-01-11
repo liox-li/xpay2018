@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xpay.pay.dao.DbLockerMapper">
+
+  <resultMap id="DbLockerMap" type="com.xpay.pay.model.DbLocker">
+    <result column="key" jdbcType="VARCHAR" property="key" />
+    <result column="update_date" jdbcType="VARCHAR" property="updateDate" />
+  </resultMap>
+  
+  <sql id="dbLockerColumns">
+    key,
+    update_date
+  </sql>
+  
+   <select id="findByKey" resultMap="DbLockerMap">
+    SELECT
+    <include refid="dbLockerColumns" />
+    FROM db_locker
+    WHERE key = #{key} AND deleted = false
+  </select>
+  
+  <insert id="insert" parameterType="com.xpay.pay.model.DbLocker">
+    insert into db_locker
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+     key
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+     	#{key,jdbcType=VARCHAR}
+    </trim>
+  </insert>
+  
+  <update id="lock" parameterType="com.xpay.pay.model.DbLocker">
+    update db_locker
+    <set>
+      update_date = now()
+    </set>
+    where key = #{key} and update_date &lt;= #{updateDate} and deleted = false
+  </update>
+  
+  <update id="delete">
+    update db_locker
+    <set>
+      deleted = true,
+      update_date = now()
+    </set>
+    where key = #{key,jdbcType=VARCHAR}
+      and deleted = false
+  </update>
+  
+</mapper>

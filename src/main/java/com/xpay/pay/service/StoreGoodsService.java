@@ -34,10 +34,13 @@ public class StoreGoodsService {
 		return mapper.insert(goods);
 	}
 	
-	public boolean update(long goodsId, StoreGoods goods) {
-		Assert.isTrue(goodsId>0 && goods != null, "Invalid good to be updated");
-		goods.setId(goodsId);
-		return mapper.updateById(goods);
+	public boolean update(Long goodsId, StoreGoods goods) {
+		if(goodsId == null || goodsId<=0) {
+			return false;
+		}
+		StoreGoods goodsToBeUpdated = (goods == null)?new StoreGoods():goods; 
+		goodsToBeUpdated.setId(goodsId);
+		return mapper.updateById(goodsToBeUpdated);
 	}
 	
 	public boolean delete(long goodsId) {
@@ -46,7 +49,9 @@ public class StoreGoodsService {
 	}
 
 	public StoreGoods findById(Long goodsId) {
-		Assert.isTrue(goodsId>0, "Invalid good to be deleted");
+		if(goodsId == null || goodsId<=0) {
+			return null;
+		}
 		return mapper.findById(goodsId);
 	}
 }
