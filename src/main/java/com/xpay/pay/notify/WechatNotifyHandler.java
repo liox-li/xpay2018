@@ -73,7 +73,7 @@ public class WechatNotifyHandler extends AbstractNotifyHandler {
 		String sSecond = orderNo.substring(15,17);
 		int second = Integer.valueOf(sSecond);
 		c.set(year, month-1, day, hourOfDay, minute, second);
-		
+		c.add(Calendar.SECOND, 2);
 		return c.getTime();
 	}
 	

@@ -79,7 +79,7 @@ public class OrderService {
 	}
 	
 	public Order findActiveByOrderTime(String sellerOrderNo, String extOrderNo, Float amount, String subject, Date orderTime) {
-		Date startTime = TimeUtils.timeBefore(orderTime, 10000);
+		Date startTime = TimeUtils.timeBefore(orderTime, 8000);
 		Order order = orderMapper.findLastBySellerOrderNo(sellerOrderNo, amount, subject, startTime, orderTime);
 		
 		Assert.notNull(order, "Order not found - extOrderNo=" + extOrderNo+",sellerOrderNo="+sellerOrderNo+",amount="+amount+",subject="+subject+", startTime="+startTime+", orderTime"+orderTime);
