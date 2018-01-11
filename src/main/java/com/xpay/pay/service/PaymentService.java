@@ -1,5 +1,8 @@
 package com.xpay.pay.service;
 
+import static com.xpay.pay.ApplicationConstants.CODE_COMMON;
+import static com.xpay.pay.ApplicationConstants.STATUS_BAD_REQUEST;
+import static com.xpay.pay.ApplicationConstants.STATUS_UNAUTHORIZED;
 import static com.xpay.pay.proxy.IPaymentProxy.NO_RESPONSE;
 
 import org.apache.commons.lang3.StringUtils;
@@ -71,14 +74,15 @@ public class PaymentService {
 	
 	public Order createGoodsOrder(Store store, StoreGoods goods, String uid) {
 		Assert.isTrue(goods!=null && goods.getExtQrCodes()!=null && goods.getExtQrCode().length()>0, "No avaiable channels");
+		validateQuota(store);
 		
 		Order order = new Order();
 		order.setSubject(goods.getName());
-		order.setCodeUrl(orderService.findAvaiableQrCode(goods));
+		order.setCodeUrl(orderService.findAvaiableQrCode(store, goods));
 		order.setTotalFee(goods.getAmount());
 		order.setOrderNo(IDGenerator.buildShortOrderNo());
 		order.setSellerOrderNo(goods.getExtStoreId());
-		order.setStoreId(goods.getStoreId());
+		order.setStoreId(store.getId());
 		order.setNotifyUrl(store.getNotifyUrl());
 		order.setGoodsId(goods.getId());
 		order.setUid(uid);
@@ -117,15 +121,35 @@ public class PaymentService {
 	}
 
 	public boolean updateTradeAmount(Order order) {
-		if(order != null) {
-			Store store = order.getStore();
+		if(order == null) {
+			return true;
+		}
+		Store store = order.getStore();
+		if(order.getGoods() == null || order.getGoods().getStoreId()==order.getStoreId()) {
 			float newNonBail = store.getNonBail() + order.getTotalFee();
 			store.setNonBail(newNonBail);
+			return storeService.updateById(store);
+		} else if(order.getGoods() != null && order.getGoods().getStoreId()!=order.getStoreId()) {
+			float newBail = store.getBail() + order.getTotalFee();
+			store.setBail(newBail);
 			return storeService.updateById(store);
 		}
 		return true;
 	}
 
+	public void validateQuota(Store store) {
+		Assert.notNull(store, "No store found");
+		Assert.isTrue(-1 ==store.getQuota() || store.getNonBail()<store.getQuota(), "No enough quota remained");
+		Assert.isTrue(-1 == store.getDailyLimit() || store.getNonBail() < store.getDailyLimit(), "Exceed transaction limit");
+	}
+
+	public void validateStoreLink(Store store, String returnUrl) {
+		Assert.notNull(store, "No store found");
+		Assert.notEmpty(returnUrl, STATUS_BAD_REQUEST, CODE_COMMON, "ReturnUrl cannot be null");
+		Assert.isTrue(store.isValidStoreLink(returnUrl), STATUS_UNAUTHORIZED, CODE_COMMON, "Unauthorized returnUrl");
+	}
+
+	
 	public Bill query(Long appId, String orderNo, String storeCode, boolean isCsr) {
 		Order order = orderService.findActiveByOrderNo(orderNo);
 		Assert.isTrue(storeCode.equals(order.getStore().getCode()), "No such order found for the store");

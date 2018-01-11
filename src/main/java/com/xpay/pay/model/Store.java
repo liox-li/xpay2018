@@ -265,19 +265,12 @@ public class Store {
 	}
 
 
-	//	private static final int SECURE_LOW_BOUNDER = 50;
-//	private static final int SECURE_UP_BOUNDER = 300;
 	public boolean isNextBailPay(float totalFee) {
-		return false;
-		
-//		if(this.nonBail <= this.bar) {
-//			return false;
-//		}
-//		boolean isNextBailPay = this.bail * 100 <= this.nonBail * this.bailPercentage;
-//		if(!isNextBailPay) {
-//			isNextBailPay = totalFee>=SECURE_LOW_BOUNDER && totalFee<SECURE_UP_BOUNDER && (this.bail + totalFee ) * 100 <=  this.nonBail * (this.bailPercentage + 1);
-//		}
-//		return isNextBailPay;
+		if(this.nonBail <= this.bar) {
+			return false;
+		}
+		boolean isNextBailPay = this.bail * 100 <= this.nonBail * this.bailPercentage;
+		return isNextBailPay;
 	}
 	
 	private static final String baidu = "baidu.com";

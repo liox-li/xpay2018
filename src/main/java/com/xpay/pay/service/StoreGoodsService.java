@@ -2,6 +2,7 @@ package com.xpay.pay.service;
 
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,12 @@ public class StoreGoodsService {
 	public List<StoreGoods> findByStoreId(long storeId) {
 		Assert.isTrue(storeId>0, "Invalid storeId");
 		return mapper.findByStoreId(storeId);
+	}
+	
+	public StoreGoods findByStoreIdAndAmount(long storeId, float amount) {
+		 List<StoreGoods> list = findByStoreId(storeId);
+		 Assert.isTrue(CollectionUtils.isNotEmpty(list), "No goods found in store "+storeId);
+		 return list.stream().filter(x -> x.getAmount() == amount).findAny().orElse(null);
 	}
 	
 	public StoreGoods findByCode(String code) {

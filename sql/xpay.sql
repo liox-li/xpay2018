@@ -251,7 +251,7 @@ CREATE TABLE IF NOT EXISTS bill_store_goods (
 	description varchar(256),
 	amount NUMERIC NOT NULL,
 	ext_store_id varchar(64) NOT NULL,
-	ext_qrcode varchar(1024) NOT NULL,
+	ext_qrcode varchar(256) NOT NULL,
 	create_date TIMESTAMP WITH TIME ZONE NOT NULL default now(), 
 	update_date TIMESTAMP WITH TIME ZONE NOT NULL default now(),
 	deleted boolean DEFAULT FALSE

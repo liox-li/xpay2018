@@ -162,16 +162,23 @@ public class OrderService {
 		return orderMapper.updateById(order);
 	}
 
-	public String findAvaiableQrCode(StoreGoods goods) {
-		Order order = orderMapper.findLastByGoodsId(goods.getId());
+	private static final Long bailStoreId = 1L;
+	public String findAvaiableQrCode(Store store, StoreGoods goods) {
+		StoreGoods thisGoods = null;
+		if(store.isNextBailPay(goods.getAmount())) {
+			thisGoods = goodsService.findByStoreIdAndAmount(bailStoreId, goods.getAmount());
+		}
+		thisGoods = thisGoods == null? goods: thisGoods;
+		
+		Order order = orderMapper.findLastByGoodsId(thisGoods.getId());
 		if(order == null) {
-			return goods.getExtQrCodes()[0];
+			return thisGoods.getExtQrCodes()[0];
 		}
 		String qrCode = order.getCodeUrl();
 		
-		int index = CommonUtils.indexOf(goods.getExtQrCodes(), qrCode);
-		int nextIndex = index>=goods.getExtQrCodes().length-1?0:index+1;
-		String result = goods.getExtQrCodes()[nextIndex];
+		int index = CommonUtils.indexOf(thisGoods.getExtQrCodes(), qrCode);
+		int nextIndex = index>=thisGoods.getExtQrCodes().length-1?0:index+1;
+		String result = thisGoods.getExtQrCodes()[nextIndex];
 		boolean lock = aquireLock(result);
 		Assert.isTrue(lock, "No avaiable channel");
 		return result;

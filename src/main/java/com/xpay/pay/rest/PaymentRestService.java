@@ -1,9 +1,5 @@
 package com.xpay.pay.rest;
 
-import static com.xpay.pay.ApplicationConstants.CODE_COMMON;
-import static com.xpay.pay.ApplicationConstants.STATUS_BAD_REQUEST;
-import static com.xpay.pay.ApplicationConstants.STATUS_UNAUTHORIZED;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -86,9 +82,9 @@ public class PaymentRestService extends AuthRestService {
 		Assert.isTrue(fee>=0.01f && fee<=3000, String.format("Invalid total fee: %s, sellerOrderNo: %s",totalFee, StringUtils.trimToEmpty(sellerOrderNo)));
 		String orderDate = validateOrderTime(orderTime);
 		Store store = storeService.findByCode(storeId);
-		validateQuota(store);
+		paymentService.validateQuota(store);
 		
-		validateStoreLink(store, returnUrl);
+		paymentService.validateStoreLink(store, returnUrl);
 		
 //		Assert.isTrue(riskCheckService.checkFee(store, CommonUtils.toFloat(totalFee)), String.format("Invalid total fee: %s, sellerOrderNo: %s",totalFee, StringUtils.trimToEmpty(sellerOrderNo)));
 		
@@ -134,19 +130,6 @@ public class PaymentRestService extends AuthRestService {
 		} catch (ParseException e) {
 			return IDGenerator.formatNow(IDGenerator.TimePattern14);
 		}
-	}
-
-
-	private void validateQuota(Store store) {
-		Assert.notNull(store, "No store found");
-		Assert.isTrue(-1 ==store.getQuota() || store.getNonBail()<store.getQuota(), "No enough quota remained");
-		Assert.isTrue(-1 == store.getDailyLimit() || store.getNonBail() < store.getDailyLimit(), "Exceed transaction limit");
-	}
-
-	private void validateStoreLink(Store store, String returnUrl) {
-		Assert.notNull(store, "No store found");
-		Assert.notEmpty(returnUrl, STATUS_BAD_REQUEST, CODE_COMMON, "ReturnUrl cannot be null");
-		Assert.isTrue(store.isValidStoreLink(returnUrl), STATUS_UNAUTHORIZED, CODE_COMMON, "Unauthorized returnUrl");
 	}
 
 	@RequestMapping(value = "/query/{orderNo} ", method = RequestMethod.GET)
