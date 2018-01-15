@@ -172,7 +172,9 @@ public class OrderService {
 		
 		String qrCode = lockerService.findOldestByKeys(thisGoods.getExtQrCodes());
 		int index = CommonUtils.indexOf(thisGoods.getExtQrCodes(), qrCode);
-		goods.setName(goods.getName()+(index+1));
+		if(index !=0 ) {
+			goods.setName(goods.getName()+(index+1));
+		}
 		boolean lock = aquireLock(qrCode);
 		Assert.isTrue(lock, "No avaiable channel");
 		return qrCode;
