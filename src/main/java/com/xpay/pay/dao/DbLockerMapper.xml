@@ -19,6 +19,26 @@
     WHERE key = #{key} AND deleted = false
   </select>
   
+  <select id="findByKeys" resultMap="DbLockerMap">
+    SELECT
+    <include refid="dbLockerColumns" />
+    FROM db_locker
+    WHERE (key = #{key1} 
+     <if test="key2 != null">
+     	or key=#{key2}
+     </if>
+     <if test="key3 != null">
+     	or key=#{key3}
+     </if>
+     <if test="key4 != null">
+     	or key=#{key4}
+     </if>
+     <if test="key5 != null">
+     	or key=#{key5}
+     </if>
+    ) AND deleted = false
+  </select>
+  
   <insert id="insert" parameterType="com.xpay.pay.model.DbLocker">
     insert into db_locker
     <trim prefix="(" suffix=")" suffixOverrides=",">

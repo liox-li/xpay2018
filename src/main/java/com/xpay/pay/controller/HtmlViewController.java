@@ -5,6 +5,7 @@ import com.xpay.pay.model.StoreChannel.PaymentGateway;
 import com.xpay.pay.proxy.PaymentRequest;
 import com.xpay.pay.proxy.ips.IpsProxy;
 import com.xpay.pay.proxy.ips.quick.IpsQuickProxy;
+import com.xpay.pay.proxy.ips.transfer.rsp.Body;
 import com.xpay.pay.service.OrderService;
 import com.xpay.pay.service.PaymentService;
 import java.io.IOException;
@@ -62,7 +63,7 @@ public class HtmlViewController {
   }
 
   @RequestMapping(value = "/ips/open", method = RequestMethod.GET)
-  public ModelAndView pay(@RequestParam("customerCode") String customerCode,
+  public ModelAndView open(@RequestParam("customerCode") String customerCode,
       @RequestParam("identityNo") String identityNo, @RequestParam("userName") String userName,
       @RequestParam("mobileNo") String mobileNo, HttpServletRequest request)
       throws IOException {
@@ -77,7 +78,50 @@ public class HtmlViewController {
     model.put("ipsRequest", requestXml);
     return new ModelAndView("ips_open", model);
   }
+  
+  @RequestMapping(value = "/ips/transfer", method = RequestMethod.GET)
+  public ModelAndView transfer(@RequestParam("customerCode") String customerCode,
+      @RequestParam("transferAmount") String transferAmount, 
+      @RequestParam("collectionItemName") String collectionItemName, 
+      HttpServletRequest request)
+      throws IOException {
 
+    Body transferResponse = ipsProxy.transfer(request.getRemoteAddr(), "", "204693", "2046930018", customerCode, transferAmount, collectionItemName, "");
+
+    Map<String, String> model = new HashMap<>();
+    model.put("resp", transferResponse.getTradeState());
+    return new ModelAndView("ips_transfer", model);
+  }
+  
+  
+  /**
+   * 1100 中国工商银行 
+   * 1101 中国农业银行
+   * 1102 招商银行 
+   * 1103 兴业银行 
+   * 1104 中信银行
+   * 1106 中国建设银行
+   * 1107 中国银行
+   * 1108 交通银行
+   * 1109 浦东发展银行
+   * 1110 民生银行
+   * 1111 华夏银行
+   * 1112 光大银行
+   * 1113 北京银行
+   * 1114 广发银行
+   * 1116 上海银行
+   * 1119 中国邮政储蓄银行
+   * 1120 浙商银行
+   * 1121 平安银行
+   * 1123 渤海银行
+   * 1827 恒丰银行
+   * @param customerCode
+   * @param bankCard
+   * @param bankCode
+   * @param request
+   * @return
+   * @throws IOException
+   */
   @RequestMapping(value = "/ips/withdraw", method = RequestMethod.GET)
   public ModelAndView withdrawal(@RequestParam("customerCode") String customerCode,
       @RequestParam("bankCard") String bankCard, @RequestParam("bankCode") String bankCode,

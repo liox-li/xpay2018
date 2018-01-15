@@ -170,23 +170,17 @@ public class OrderService {
 		}
 		thisGoods = thisGoods == null? goods: thisGoods;
 		
-		Order order = orderMapper.findLastByGoodsId(thisGoods.getId());
-		if(order == null) {
-			return thisGoods.getExtQrCodes()[0];
-		}
-		String qrCode = order.getCodeUrl();
-		
+		String qrCode = lockerService.findOldestByKeys(thisGoods.getExtQrCodes());
 		int index = CommonUtils.indexOf(thisGoods.getExtQrCodes(), qrCode);
-		int nextIndex = index>=thisGoods.getExtQrCodes().length-1?0:index+1;
-		String result = thisGoods.getExtQrCodes()[nextIndex];
-		boolean lock = aquireLock(result);
+		goods.setName(goods.getName()+(index+1));
+		boolean lock = aquireLock(qrCode);
 		Assert.isTrue(lock, "No avaiable channel");
-		return result;
+		return qrCode;
 	}
 	
-	private static final Long lockTime = 10000L;
+	private static final Long lockTime = 7000L;
 	private static final Long checkInterval = 1000L;
-	private boolean aquireLock(String key) {
+	public boolean aquireLock(String key) {
 		boolean lock = false;
 		for(int i=0;i<10;i++) {
 			lock = lockerService.lock(key, lockTime);

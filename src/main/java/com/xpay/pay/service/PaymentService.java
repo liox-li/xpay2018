@@ -77,8 +77,8 @@ public class PaymentService {
 		validateQuota(store);
 		
 		Order order = new Order();
-		order.setSubject(goods.getName());
 		order.setCodeUrl(orderService.findAvaiableQrCode(store, goods));
+		order.setSubject(goods.getName());
 		order.setTotalFee(goods.getAmount());
 		order.setOrderNo(IDGenerator.buildShortOrderNo());
 		order.setSellerOrderNo(goods.getExtStoreId());
