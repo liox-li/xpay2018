@@ -3,10 +3,10 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>跳转中...</title>
+<title>环迅提现</title>
 <body>
-<form id="form" action="https://mobilegw.ips.com.cn/psfp-mgw/paymenth5.do" method="post">
-  <input name="pGateWayReq" type="hidden" value="<c:out value="${pGateWayReq}" /> " />
+<form id="form" action="https://ebp.ips.com.cn/fpms-access/action/withdrawal/withdrawal.html" method="post">
+  <input name="ipsRequest" type="hidden" value="<c:out value="${ipsRequest}" /> " />
 </form>
 <script>
 window.onload= function(){
