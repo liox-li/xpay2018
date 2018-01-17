@@ -21,7 +21,8 @@ public class NotificationResponse {
 	private String targetOrderNo;
 	private String attach;
 	private String payInfo;
-	private long channelNo;
+	private Long channelNo;
+	private String uid;
 	private String sign;
 	
 	public String getOrderNo() {
@@ -102,11 +103,17 @@ public class NotificationResponse {
 	public void setPayInfo(String payInfo) {
 		this.payInfo = payInfo;
 	}
-	public long getChannelNo() {
+	public Long getChannelNo() {
 		return channelNo;
 	}
-	public void setChannelNo(long channelNo) {
+	public void setChannelNo(Long channelNo) {
 		this.channelNo = channelNo;
+	}
+	public String getUid() {
+		return uid;
+	}
+	public void setUid(String uid) {
+		this.uid = uid;
 	}
 	public String getSign() {
 		return sign;
@@ -154,7 +161,12 @@ public class NotificationResponse {
 		if(StringUtils.isNotBlank(payInfo)) {
 			keyValues.add(new KeyValuePair("payInfo", payInfo));
 		}
-		keyValues.add(new KeyValuePair("channelNo", String.valueOf(channelNo)));
+		if(StringUtils.isNotBlank(uid)) {
+			keyValues.add(new KeyValuePair("uid", uid));
+		}
+		if(channelNo!=null && channelNo>0) {
+			keyValues.add(new KeyValuePair("channelNo", String.valueOf(channelNo)));
+		}
 		
 		return keyValues;
 	}

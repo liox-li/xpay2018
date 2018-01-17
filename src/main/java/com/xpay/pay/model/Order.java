@@ -15,7 +15,7 @@ public class Order {
 	private Long appId;
 	private long storeId;
 	private StoreChannel storeChannel;
-	private long storeChannelId;	private Float totalFee;
+	private Long storeChannelId;	private Float totalFee;
 	private String orderTime;
 	private String refundTime;
 	private String sellerOrderNo;
@@ -80,10 +80,10 @@ public class Order {
 			this.storeChannelId = storeChannel.getId();
 		}
 	}
-	public long getStoreChannelId() {
+	public Long getStoreChannelId() {
 		return storeChannelId;
 	}
-	public void setStoreChannelId(long storeChannelId) {
+	public void setStoreChannelId(Long storeChannelId) {
 		this.storeChannelId = storeChannelId;
 	}
 	

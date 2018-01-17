@@ -89,7 +89,7 @@ public class PaymentService {
 		order.setStatus(OrderStatus.NOTPAY);
 		order.setOrderTime(IDGenerator.formatNow(IDGenerator.TimePattern14));
 		order.setPayChannel(PayChannel.ALL);
-		order.setDeviceId(uid);
+		order.setAppId(store.getAppId());
 		orderService.insert(order);
 		return order;
 	}

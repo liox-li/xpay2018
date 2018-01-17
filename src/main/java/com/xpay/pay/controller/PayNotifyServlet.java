@@ -28,6 +28,7 @@ import com.xpay.pay.notify.NotifyHandlerFactory;
 import com.xpay.pay.proxy.notify.NotifyProxy;
 import com.xpay.pay.rest.contract.BaseResponse;
 import com.xpay.pay.rest.contract.NotificationResponse;import com.xpay.pay.util.CryptoUtils;
+import com.xpay.pay.util.JsonUtils;
 
 
 public class PayNotifyServlet extends HttpServlet {
@@ -99,7 +100,9 @@ public class PayNotifyServlet extends HttpServlet {
 				&& order.isSettle()) {
 			CompletableFuture.runAsync(() -> {
 				NotificationResponse notification = this.toNotResponse(order);
-				notification.setChannelNo(order.getStoreChannelId());
+				if(order.getStoreChannel()!=null&& order.getStoreChannelId()>0) {
+					notification.setChannelNo(order.getStoreChannelId());
+				}
 				String sign = CryptoUtils.signQueryParams(notification.toKeyValuePairs(), null, order.getApp().getSecret());
 				notification.setSign(sign);
 				BaseResponse response = null;
@@ -114,7 +117,7 @@ public class PayNotifyServlet extends HttpServlet {
 							}
 						}
 					} catch(Exception e) {
-						
+						logger.warn("notify failed", e);
 					}
 					
 					try {
@@ -152,12 +155,17 @@ public class PayNotifyServlet extends HttpServlet {
 			notification.setSellerOrderNo(order.getSellerOrderNo());
 			notification.setExtOrderNo(order.getExtOrderNo());
 			notification.setTargetOrderNo(order.getTargetOrderNo());
-			notification.setCodeUrl(order.getCodeUrl());
+			if(order.getGoods()!=null) {
+				notification.setCodeUrl(GoodsQrCodeServlet.QR_CODE_PREFIX+order.getGoods().getCode()+"?uid="+order.getUid());
+			} else {
+				notification.setCodeUrl(order.getCodeUrl());
+			}
 			notification.setPrepayId(order.getPrepayId());
 			notification.setTokenId(order.getTokenId());
 			notification.setTotalFee(order.getTotalFee());
 			notification.setOrderStatus(order.getStatus().getValue());
 			notification.setAttach(order.getAttach());
+			notification.setUid(order.getUid());
 			return notification;
 		} catch(Exception e) {
 			logger.error("convert to NotResponse failed", e);

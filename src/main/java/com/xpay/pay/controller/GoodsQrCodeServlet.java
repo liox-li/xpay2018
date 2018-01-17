@@ -20,11 +20,13 @@ import com.xpay.pay.model.StoreGoods;
 import com.xpay.pay.service.PaymentService;
 import com.xpay.pay.service.StoreGoodsService;
 import com.xpay.pay.service.StoreService;
+import com.xpay.pay.util.AppConfig;
 import com.xpay.pay.util.CommonUtils;
 
 public class GoodsQrCodeServlet extends HttpServlet {
 	private static final long serialVersionUID = 5131564714596607060L;
 	protected final Logger logger = LogManager.getLogger("AccessLog");
+	public static final String QR_CODE_PREFIX = AppConfig.XPayConfig.getProperty("qrcode.endpoint", "http://www.zmpay.top/xpay/qrcode/");
 
 	@Autowired
 	protected StoreGoodsService goodsService;

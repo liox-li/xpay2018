@@ -89,7 +89,10 @@ public class StoreService {
 		return storeMapper.updateById(store);
 	}
 	
-	public StoreChannel findStoreChannelById(long id) {
+	public StoreChannel findStoreChannelById(Long id) {
+		if(id == null || id<=0) {
+			return null;
+		}
 		return channelCache.get(id);
 	}
 	
