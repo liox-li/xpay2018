@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,7 @@ import com.xpay.pay.util.TimeUtils;
 
 @Service
 public class OrderService {
+	protected final Logger logger = LogManager.getLogger(OrderService.class);
 	@Autowired
 	protected OrderMapper orderMapper;
 	@Autowired
@@ -176,6 +179,9 @@ public class OrderService {
 			goods.setName(goods.getName()+(index+1));
 		}
 		boolean lock = aquireLock(qrCode);
+		if(!lock) {
+			logger.error("No lock found: "+qrCode);
+		}
 		Assert.isTrue(lock, "No avaiable channel");
 		return qrCode;
 	}

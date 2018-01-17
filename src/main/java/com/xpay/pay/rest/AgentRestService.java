@@ -311,23 +311,31 @@ public class AgentRestService extends AdminRestService {
 		Assert.notNull(app, "Can't create App");
 		
 		
-		StoreChannel channel = null;
-		if(request.getChannelId() == null || request.getChannelId()<=0) {
-			channel = new StoreChannel();
-			channel.setAgentId(agentId);
-			channel.setExtStoreId(request.getExtStoreId());
-			channel.setExtStoreName(request.getExtStoreName());
-			channel.setChannelProps(request.getChinaUmsProps());
-			channel.setPaymentGateway(request.getPaymentGateway());
-			
-			storeService.createStoreChannel(channel);
-		} else {
-			channel = storeService.findStoreChannelById(request.getChannelId());
+		boolean storeWithChannel = false;
+		if((request.getChannelId()!=null && request.getChannelId()>0) || request.getChinaUmsProps()!=null) {
+			storeWithChannel = true;
 		}
 		
+		StoreChannel channel = null;
+		if(storeWithChannel) {
+			if((request.getChannelId() == null || request.getChannelId()<=0)) {
+				channel = new StoreChannel();
+				channel.setAgentId(agentId);
+				channel.setExtStoreId(request.getExtStoreId());
+				channel.setExtStoreName(request.getExtStoreName());
+				channel.setChannelProps(request.getChinaUmsProps());
+				channel.setPaymentGateway(request.getPaymentGateway());
+				
+				storeService.createStoreChannel(channel);
+			} else {
+				channel = storeService.findStoreChannelById(request.getChannelId());
+			}
+		}
 		Store store = storeService.createStore(agentId, admin.getId(), request.getName(), request.getBailPercentage(), app.getId(), request.getCsrTel(), request.getProxyUrl(), request.getDailyLimit(),code, request.getQuota(), request.getNotifyUrl());
 		
-		storeService.updateStoreChannels(store.getId(), new long[] {channel.getId()});
+		if(channel!=null) {
+			storeService.updateStoreChannels(store.getId(), new long[] {channel.getId()});
+		}
 		StoreResponse storeResponse = toStoreResponse(store);
 		BaseResponse<StoreResponse> response = new BaseResponse<StoreResponse>();
 		response.setData(storeResponse);

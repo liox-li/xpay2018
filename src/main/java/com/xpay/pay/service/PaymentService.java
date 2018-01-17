@@ -80,7 +80,7 @@ public class PaymentService {
 		order.setCodeUrl(orderService.findAvaiableQrCode(store, goods));
 		order.setSubject(goods.getName());
 		order.setTotalFee(goods.getAmount());
-		order.setOrderNo(IDGenerator.buildShortOrderNo());
+		order.setOrderNo(IDGenerator.buildQrOrderNo(goods.getStoreId()));
 		order.setSellerOrderNo(goods.getExtStoreId());
 		order.setStoreId(store.getId());
 		order.setNotifyUrl(store.getNotifyUrl());
@@ -89,6 +89,7 @@ public class PaymentService {
 		order.setStatus(OrderStatus.NOTPAY);
 		order.setOrderTime(IDGenerator.formatNow(IDGenerator.TimePattern14));
 		order.setPayChannel(PayChannel.ALL);
+		order.setDeviceId(uid);
 		orderService.insert(order);
 		return order;
 	}

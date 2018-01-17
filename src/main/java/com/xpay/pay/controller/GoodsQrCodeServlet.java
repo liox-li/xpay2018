@@ -20,6 +20,7 @@ import com.xpay.pay.model.StoreGoods;
 import com.xpay.pay.service.PaymentService;
 import com.xpay.pay.service.StoreGoodsService;
 import com.xpay.pay.service.StoreService;
+import com.xpay.pay.util.CommonUtils;
 
 public class GoodsQrCodeServlet extends HttpServlet {
 	private static final long serialVersionUID = 5131564714596607060L;
@@ -60,12 +61,27 @@ public class GoodsQrCodeServlet extends HttpServlet {
 		String parameters = StringUtils.isBlank(request.getQueryString()) ? "" : "?" + request.getQueryString();
 		logger.info("GoodsQrCode: " + path + parameters);
 		String uid = request.getParameter("uid");
-		Store store = storeService.findById(goods.getStoreId());
+		String storeIdStr = request.getParameter("storeId");
+		long storeId = goods.getStoreId();
+		if(StringUtils.isNotBlank(storeIdStr)) {
+			storeId = CommonUtils.toLong(storeIdStr);
+			storeId = storeId>0?storeId:goods.getStoreId();
+		}
+		Store store = storeService.findById(storeId);
 		Order order = paymentService.createGoodsOrder(store, goods, uid);
 		if(order == null || StringUtils.isBlank(order.getCodeUrl())) {
 			response.sendError(400, "无效商品");
 		    return;
 		}
+		
+		if(isRechargetOrder(storeId, goods)) {
+			long agentId = CommonUtils.toLong(request.getParameter("agentId"));
+			storeService.rechargeOrder(agentId, store, goods, order.getOrderNo());
+		}
 		response.sendRedirect(order.getCodeUrl());
+	}
+	
+	private boolean isRechargetOrder(long storeId, StoreGoods goods) {
+		return (storeId != 1L && goods!=null && goods.getStoreId() ==1L);
 	}
 }

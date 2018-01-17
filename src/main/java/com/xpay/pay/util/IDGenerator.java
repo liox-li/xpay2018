@@ -40,6 +40,20 @@ public class IDGenerator {
 		return sb.toString();
 	}
 	
+	private static final long MY_STORE_ID=1L;
+	public static String buildQrOrderNo(long storeId) {
+		StringBuffer sb = new StringBuffer();
+		if(MY_STORE_ID == storeId) {
+			sb.append(S);
+		} else {
+			sb.append(X);
+		}
+		sb.append(StringUtils.leftPad(String.valueOf(storeId), 4, "0"));
+		sb.append(formatNow(TimePattern17));
+		sb.append(randomNum(3));
+		return sb.toString();
+	}
+	
 	public static String buildShortOrderNo() {
 		StringBuffer sb = new StringBuffer();
 		sb.append(X);

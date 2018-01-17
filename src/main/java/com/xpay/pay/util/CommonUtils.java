@@ -89,6 +89,14 @@ public class CommonUtils {
 		return val.intValue();
 	}
 	
+	public static long toLong(String val) {
+		try {
+			return Long.valueOf(val);
+		} catch(Exception e) {
+			return Long.MIN_VALUE;
+		}
+	}
+	
 	public static <E> boolean in(Collection<E> coll, E e) {
 		if(CollectionUtils.isEmpty(coll)) {
 			return false;

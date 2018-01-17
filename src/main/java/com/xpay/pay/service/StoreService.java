@@ -22,6 +22,7 @@ import com.xpay.pay.model.Agent;
 import com.xpay.pay.model.Agent.Role;
 import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
+import com.xpay.pay.model.StoreGoods;
 import com.xpay.pay.model.StoreLink;
 import com.xpay.pay.model.StoreTransaction;
 import com.xpay.pay.model.StoreTransaction.TransactionType;
@@ -176,6 +177,26 @@ public class StoreService {
 		
 		return transaction;
 	}
+	
+	public StoreTransaction rechargeOrder(long agentId, Store store, StoreGoods goods, String orderNo) {
+		int addQuota = (int)(goods.getAmount() *100 / (store.getBailPercentage()-0.6f));
+//		store.setQuota(store.getQuota()+addQuota);
+//		storeMapper.updateById(store);
+		
+		StoreTransaction transaction = new StoreTransaction();
+		transaction.setAgentId(agentId);
+		transaction.setAmount(goods.getAmount());
+		transaction.setQuota(Float.valueOf(addQuota));
+		transaction.setOperation(TransactionType.RECHARGE);
+		transaction.setStoreId(store.getId());
+		transaction.setBailPercentage(store.getBailPercentage());
+		transaction.setOrderNo(orderNo);
+		transaction.setStatus(OrderStatus.NOTPAY);
+		storeTransactionMapper.insert(transaction);
+		
+		return transaction;
+	}
+	
 	
 	public List<StoreTransaction> findTransactionsByStoreId(long storeId, Date startTime, Date endTime) {
 		return storeTransactionMapper.findByStoreIdAndTime(storeId, startTime, endTime);
