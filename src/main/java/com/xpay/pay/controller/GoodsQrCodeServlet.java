@@ -63,6 +63,10 @@ public class GoodsQrCodeServlet extends HttpServlet {
 		String parameters = StringUtils.isBlank(request.getQueryString()) ? "" : "?" + request.getQueryString();
 		logger.info("GoodsQrCode: " + path + parameters);
 		String uid = request.getParameter("uid");
+		if(StringUtils.isBlank(uid)) {
+			response.sendError(400, "uid不能为空");
+		    return;
+		}
 		String storeIdStr = request.getParameter("storeId");
 		long storeId = goods.getStoreId();
 		if(StringUtils.isNotBlank(storeIdStr)) {
