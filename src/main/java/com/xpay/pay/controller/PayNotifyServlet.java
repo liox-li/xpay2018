@@ -152,14 +152,16 @@ public class PayNotifyServlet extends HttpServlet {
 		try {
 			NotificationResponse notification = new NotificationResponse();
 			notification.setOrderNo(order.getOrderNo());
-			notification.setSellerOrderNo(order.getSellerOrderNo());
 			notification.setExtOrderNo(order.getExtOrderNo());
 			notification.setTargetOrderNo(order.getTargetOrderNo());
 			if(order.getGoods()!=null) {
 				notification.setCodeUrl(GoodsQrCodeServlet.QR_CODE_PREFIX+order.getGoods().getCode()+"?uid="+order.getUid());
+				notification.setSubject(order.getSubject());
 			} else {
+				notification.setSellerOrderNo(order.getSellerOrderNo());
 				notification.setCodeUrl(order.getCodeUrl());
 			}
+			
 			notification.setPrepayId(order.getPrepayId());
 			notification.setTokenId(order.getTokenId());
 			notification.setTotalFee(order.getTotalFee());

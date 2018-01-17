@@ -11,6 +11,7 @@ public class NotificationResponse {
 	private String orderNo;
 	private String storeId;
 	private String storeName;
+	private String subject;
 	private String sellerOrderNo;
 	private String codeUrl;
 	private String tokenId;
@@ -115,6 +116,12 @@ public class NotificationResponse {
 	public void setUid(String uid) {
 		this.uid = uid;
 	}
+	public String getSubject() {
+		return subject;
+	}
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
 	public String getSign() {
 		return sign;
 	}
@@ -163,6 +170,9 @@ public class NotificationResponse {
 		}
 		if(StringUtils.isNotBlank(uid)) {
 			keyValues.add(new KeyValuePair("uid", uid));
+		}
+		if(StringUtils.isNotBlank(subject)) {
+			keyValues.add(new KeyValuePair("subject", subject));
 		}
 		if(channelNo!=null && channelNo>0) {
 			keyValues.add(new KeyValuePair("channelNo", String.valueOf(channelNo)));
