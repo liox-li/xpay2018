@@ -239,10 +239,11 @@ public class AgentRestService extends AdminRestService {
 	
 	@RequestMapping(value = "/{id}/stores", method = RequestMethod.GET)
 	public BaseResponse<List<StoreResponse>> getAgentStores(@PathVariable long id) {
-		validateAgent(id);
-		
 		Agent agent = agentService.findById(id);
 		Assert.notNull(agent, String.format("Agent not found, %s", id));
+		if(agent.getAgentId() != this.getAgent().getId()) {
+			validateAgent(id);
+		}
 		
 		List<Store> stores = storeService.findByAgent(agent);
 		List<StoreResponse> storeResponses = new ArrayList<StoreResponse>();
@@ -398,6 +399,7 @@ public class AgentRestService extends AdminRestService {
 			sb.append("&agentId=");
 			sb.append(id);
 			rechargeResponse.setCodeUrl(sb.toString());
+			rechargeResponse.setOrderNo(orderNo);
 			response.setData(rechargeResponse);
 			return response;
 		} else {
@@ -438,6 +440,17 @@ public class AgentRestService extends AdminRestService {
 		validateAgent(id);
 		
 		StoreTransaction transactions = storeService.findTransactionById(transactionId);
+		BaseResponse<StoreTransaction> response = new BaseResponse<StoreTransaction>();
+		response.setData(transactions);
+		return response;
+	}
+	
+	@RequestMapping(value = "/{id}/transactions/orders/{orderNo}", method = RequestMethod.GET)
+	public BaseResponse<StoreTransaction> listTransactionByOrderNo(@PathVariable long id, 
+			@PathVariable  String orderNo) {
+		validateAgent(id);
+		
+		StoreTransaction transactions = storeService.findTransactionByOrderNo(orderNo);
 		BaseResponse<StoreTransaction> response = new BaseResponse<StoreTransaction>();
 		response.setData(transactions);
 		return response;

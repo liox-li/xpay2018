@@ -112,6 +112,6 @@ public class GoodsQrCodeServlet extends HttpServlet {
 			}
 			return order==null;
 		} 
-		return false;
+		return true;
 	}
 }

@@ -310,4 +310,8 @@ public class StoreService {
 		return list;
 	}
 
+	public StoreTransaction findTransactionByOrderNo(String orderNo) {
+		return storeTransactionMapper.findByOrderNo(orderNo);
+	}
+
 }
