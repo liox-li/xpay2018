@@ -379,40 +379,57 @@ public class AgentRestService extends AdminRestService {
 			@PathVariable long storeId,
 			@RequestBody(required = true) RechargeRequest request) {
 		validateAgent(id);
-		Assert.isTrue(request!=null && request.getAmount()>=100f, "Recharge amount must be greater than 100");
-		
+	
 		Store store = storeService.findById(BAIL_STORE_ID);
 		Long appId = store.getAppId();
 		String orderNo = IDGenerator.buildRechargeOrderNo(appId.intValue(), storeId);
 		App app = appService.findById(appId);
 		
-		
-		Order order = paymentService.createOrder(app, null, orderNo, store, request.getChannel(), null, "127.0.0.1", request.getAmount(), IDGenerator.formatTime(new Date(), IDGenerator.TimePattern14), "", null, null, null, subject, null);
-		Assert.notNull(order,"Create order failed");
-		Bill bill = null;
-		BaseResponse<RechargeResponse> response = new BaseResponse<RechargeResponse>();
-		try {
-			bill = paymentService.unifiedOrder(order);
-			if(bill!=null) {
-				StoreTransaction transaction = storeService.rechargeOrder(id, storeId, request.getAmount(),orderNo);
-				
-				RechargeResponse rechargeResponse = new RechargeResponse();
-				rechargeResponse.setTransactionId(transaction.getId());
-				rechargeResponse.setCodeUrl(bill.getCodeUrl());
-				response.setData(rechargeResponse);
+		if(StringUtils.isNoneBlank(request.getCodeUrl())) {
+			BaseResponse<RechargeResponse> response = new BaseResponse<RechargeResponse>();
+			RechargeResponse rechargeResponse = new RechargeResponse();
+			String codeUrl = request.getCodeUrl();
+			StringBuffer sb = new StringBuffer();
+			sb.append(codeUrl);
+			sb.append("?uid=1&orderNo=");
+			sb.append(orderNo);
+			sb.append("&storeId=");
+			sb.append(storeId);
+			sb.append("&agentId=");
+			sb.append(id);
+			rechargeResponse.setCodeUrl(sb.toString());
+			response.setData(rechargeResponse);
+			return response;
+		} else {
+			Assert.isTrue(request!=null && request.getAmount()>=100f, "Recharge amount must be greater than 100");
+			
+			Order order = paymentService.createOrder(app, null, orderNo, store, request.getChannel(), null, "127.0.0.1", request.getAmount(), IDGenerator.formatTime(new Date(), IDGenerator.TimePattern14), "", null, null, null, subject, null);
+			Assert.notNull(order,"Create order failed");
+			Bill bill = null;
+			BaseResponse<RechargeResponse> response = new BaseResponse<RechargeResponse>();
+			try {
+				bill = paymentService.unifiedOrder(order);
+				if(bill!=null) {
+					StoreTransaction transaction = storeService.rechargeOrder(id, storeId, request.getAmount(),orderNo);
+					
+					RechargeResponse rechargeResponse = new RechargeResponse();
+					rechargeResponse.setTransactionId(transaction.getId());
+					rechargeResponse.setCodeUrl(bill.getCodeUrl());
+					response.setData(rechargeResponse);
+				}
+			} catch (GatewayException e) {
+				response.setStatus(ApplicationConstants.STATUS_BAD_GATEWAY);
+				response.setCode(e.getCode());
+				response.setMessage(e.getMessage());
+			} catch (ApplicationException e) {
+				response.setStatus(ApplicationConstants.STATUS_INTERNAL_SERVER_ERROR);
+				response.setCode(e.getCode());
+				response.setMessage(e.getMessage());
+			} finally {
+				paymentService.updateBill(order, bill);
 			}
-		} catch (GatewayException e) {
-			response.setStatus(ApplicationConstants.STATUS_BAD_GATEWAY);
-			response.setCode(e.getCode());
-			response.setMessage(e.getMessage());
-		} catch (ApplicationException e) {
-			response.setStatus(ApplicationConstants.STATUS_INTERNAL_SERVER_ERROR);
-			response.setCode(e.getCode());
-			response.setMessage(e.getMessage());
-		} finally {
-			paymentService.updateBill(order, bill);
+			return response;
 		}
-		return response;
 	}
 	
 	@RequestMapping(value = "/{id}/transactions/{transactionId}", method = RequestMethod.GET)

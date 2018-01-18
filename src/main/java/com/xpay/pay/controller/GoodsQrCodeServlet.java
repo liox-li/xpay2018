@@ -17,6 +17,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import com.xpay.pay.model.Order;
 import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreGoods;
+import com.xpay.pay.service.OrderService;
 import com.xpay.pay.service.PaymentService;
 import com.xpay.pay.service.StoreGoodsService;
 import com.xpay.pay.service.StoreService;
@@ -36,6 +37,9 @@ public class GoodsQrCodeServlet extends HttpServlet {
 	
 	@Autowired
 	protected StoreService storeService;
+	
+	@Autowired
+	protected OrderService orderService;
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
@@ -74,7 +78,14 @@ public class GoodsQrCodeServlet extends HttpServlet {
 			storeId = storeId>0?storeId:goods.getStoreId();
 		}
 		Store store = storeService.findById(storeId);
-		Order order = paymentService.createGoodsOrder(store, goods, uid);
+		
+		String orderNo = request.getParameter("orderNo");
+		if(!validateRechargeOrder(orderNo)) {
+			response.sendError(400, "订单已存在");
+			return;
+		}
+		
+		Order order = paymentService.createGoodsOrder(store, goods, uid, orderNo);
 		if(order == null || StringUtils.isBlank(order.getCodeUrl())) {
 			response.sendError(400, "无效商品");
 		    return;
@@ -89,5 +100,18 @@ public class GoodsQrCodeServlet extends HttpServlet {
 	
 	private boolean isRechargetOrder(long storeId, StoreGoods goods) {
 		return (storeId != 1L && goods!=null && goods.getStoreId() ==1L);
+	}
+	
+	private boolean validateRechargeOrder(String orderNo) {
+		if(StringUtils.isNotBlank(orderNo)) {
+			Order order = null;
+			try {
+				order = orderService.findActiveByOrderNo(orderNo);
+			} catch(Exception e) {
+				
+			}
+			return order==null;
+		} 
+		return false;
 	}
 }

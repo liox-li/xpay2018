@@ -6,6 +6,7 @@ import com.xpay.pay.proxy.IPaymentProxy.PayChannel;
 public class RechargeRequest {
 	private Float amount;
 	private PayChannel channel;
+	private String codeUrl;
 	private TransactionType transactionType;
 
 	public Float getAmount() {
@@ -30,5 +31,13 @@ public class RechargeRequest {
 
 	public void setTransactionType(TransactionType transactionType) {
 		this.transactionType = transactionType;
+	}
+
+	public String getCodeUrl() {
+		return codeUrl;
+	}
+
+	public void setCodeUrl(String codeUrl) {
+		this.codeUrl = codeUrl;
 	}
 }

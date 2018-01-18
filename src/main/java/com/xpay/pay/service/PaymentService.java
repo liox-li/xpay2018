@@ -71,7 +71,7 @@ public class PaymentService {
 		return order;
 	}
 	
-	public Order createGoodsOrder(Store store, StoreGoods goods, String uid) {
+	public Order createGoodsOrder(Store store, StoreGoods goods, String uid, String orderNo) {
 		Assert.isTrue(goods!=null && goods.getExtQrCodes()!=null && goods.getExtQrCode().length()>0, "No avaiable channels");
 		validateQuota(store);
 		
@@ -79,7 +79,11 @@ public class PaymentService {
 		order.setCodeUrl(orderService.findAvaiableQrCode(store, goods));
 		order.setSubject(goods.getName());
 		order.setTotalFee(goods.getAmount());
-		order.setOrderNo(IDGenerator.buildQrOrderNo(goods.getStoreId()));
+		if(StringUtils.isNotBlank(orderNo)) {
+			order.setOrderNo(orderNo);
+		} else {
+			order.setOrderNo(IDGenerator.buildQrOrderNo(goods.getStoreId()));
+		}
 		order.setSellerOrderNo(uid);
 		order.setStoreId(store.getId());
 		order.setNotifyUrl(store.getNotifyUrl());
