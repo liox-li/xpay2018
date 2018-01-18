@@ -81,12 +81,12 @@ public class OrderService {
 		return order;
 	}
 	
-	public Order findActiveByOrderTime(String sellerOrderNo, String extOrderNo, Float amount, String subject, Date orderTime) {
+	public Order findActiveByOrderTime(String extStoreCode, String extOrderNo, Float amount, String subject, Date orderTime) {
 		Date startTime = TimeUtils.timeBefore(orderTime, 7000);
-		Order order = orderMapper.findLastBySellerOrderNo(sellerOrderNo, amount, subject, startTime, orderTime);
+		Order order = orderMapper.findLastByExtStoreCode(extStoreCode, amount, subject, startTime, orderTime);
 		
-		Assert.notNull(order, "Order not found - extOrderNo=" + extOrderNo+",sellerOrderNo="+sellerOrderNo+",amount="+amount+",subject="+subject+", startTime="+startTime+", orderTime"+orderTime);
-		Assert.isTrue(OrderStatus.NOTPAY.equals(order.getStatus()), "Order already paid - extOrderNo=" + extOrderNo+",sellerOrderNo="+sellerOrderNo+",amount="+amount+",subject="+subject+", startTime="+startTime+", orderTime"+orderTime);
+		Assert.notNull(order, "Order not found - extOrderNo=" + extOrderNo+",extStoreCode="+extStoreCode+",amount="+amount+",subject="+subject+", startTime="+startTime+", orderTime"+orderTime);
+		Assert.isTrue(OrderStatus.NOTPAY.equals(order.getStatus()), "Order already paid - extOrderNo=" + extOrderNo+",extStoreCode="+extStoreCode+",amount="+amount+",subject="+subject+", startTime="+startTime+", orderTime"+orderTime);
 		order.setStore(storeService.findById(order.getStoreId()));
 		order.setGoods(goodsService.findById(order.getGoodsId()));
 		return order;  

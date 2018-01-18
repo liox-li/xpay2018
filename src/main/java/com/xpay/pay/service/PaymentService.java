@@ -53,7 +53,6 @@ public class PaymentService {
 		Order order = new Order();
 		order.setApp(app);
 		order.setOrderNo(orderNo);
-		order.setUid(uid);
 		order.setStore(store);
 		order.setStoreId(store.getId());
 		order.setStoreChannel(storeChannel);
@@ -81,11 +80,11 @@ public class PaymentService {
 		order.setSubject(goods.getName());
 		order.setTotalFee(goods.getAmount());
 		order.setOrderNo(IDGenerator.buildQrOrderNo(goods.getStoreId()));
-		order.setSellerOrderNo(goods.getExtStoreId());
+		order.setSellerOrderNo(uid);
 		order.setStoreId(store.getId());
 		order.setNotifyUrl(store.getNotifyUrl());
 		order.setGoodsId(goods.getId());
-		order.setUid(uid);
+		order.setExtStoreCode(goods.getExtStoreId());
 		order.setStatus(OrderStatus.NOTPAY);
 		order.setOrderTime(IDGenerator.formatNow(IDGenerator.TimePattern14));
 		order.setPayChannel(PayChannel.ALL);
@@ -218,7 +217,7 @@ public class PaymentService {
 		request.setTotalFee(order.getTotalFee());
 		request.setAttach(order.getAttach());
 		request.setOrderNo(order.getOrderNo());
-		request.setUserOpenId(order.getUid());
+//		request.setUserOpenId(order.getDeviceId());
 		request.setNotifyUrl(DEFAULT_NOTIFY_URL+order.getStoreChannel().getPaymentGateway().toString().toLowerCase());
 
 		PaymentGateway gateway = order.getStoreChannel().getPaymentGateway();

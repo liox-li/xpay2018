@@ -5,13 +5,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -20,15 +18,14 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-
 import com.xpay.pay.ApplicationConstants;
 import com.xpay.pay.model.Order;
 import com.xpay.pay.notify.INotifyHandler;
 import com.xpay.pay.notify.NotifyHandlerFactory;
 import com.xpay.pay.proxy.notify.NotifyProxy;
 import com.xpay.pay.rest.contract.BaseResponse;
-import com.xpay.pay.rest.contract.NotificationResponse;import com.xpay.pay.util.CryptoUtils;
-import com.xpay.pay.util.JsonUtils;
+import com.xpay.pay.rest.contract.NotificationResponse;
+import com.xpay.pay.util.CryptoUtils;
 
 
 public class PayNotifyServlet extends HttpServlet {
@@ -155,7 +152,7 @@ public class PayNotifyServlet extends HttpServlet {
 			notification.setExtOrderNo(order.getExtOrderNo());
 			notification.setTargetOrderNo(order.getTargetOrderNo());
 			if(order.getGoods()!=null) {
-				notification.setCodeUrl(GoodsQrCodeServlet.QR_CODE_PREFIX+order.getGoods().getCode()+"?uid="+order.getUid());
+				notification.setCodeUrl(GoodsQrCodeServlet.QR_CODE_PREFIX+order.getGoods().getCode()+"?uid="+order.getSellerOrderNo());
 				notification.setSubject(order.getSubject());
 			} else {
 				notification.setSellerOrderNo(order.getSellerOrderNo());
@@ -167,7 +164,7 @@ public class PayNotifyServlet extends HttpServlet {
 			notification.setTotalFee(order.getTotalFee());
 			notification.setOrderStatus(order.getStatus().getValue());
 			notification.setAttach(order.getAttach());
-			notification.setUid(order.getUid());
+			notification.setUid(order.getSellerOrderNo());
 			return notification;
 		} catch(Exception e) {
 			logger.error("convert to NotResponse failed", e);
