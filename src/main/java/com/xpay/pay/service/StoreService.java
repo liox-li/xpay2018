@@ -98,7 +98,8 @@ public class StoreService {
 	
 	private static final Float INIT_FREE_QUOTA = 2000f;
 	private static final Long DEFAULT_DAILY_LIMIT = 50000L;
-	public Store createStore(long agentId, long adminId, String name, Float bailPercentage, long appId, String csrTel, String proxyUrl, Long dailyLimit, String code, Long quota, String notifyUrl) {
+	private static final Float DEFAULT_BAR = 1000f;
+	public Store createStore(long agentId, long adminId, String name, Float bailPercentage, long appId, String csrTel, String proxyUrl, Long dailyLimit, String code, Long quota, String notifyUrl, Float bar) {
 		Float thisBaiPercentage = bailPercentage>0 && bailPercentage<10?bailPercentage:2;
 		Store store = new Store();
 		store.setAgentId(agentId);
@@ -110,6 +111,11 @@ public class StoreService {
 		store.setBailPercentage(thisBaiPercentage);
 		store.setCsrTel(csrTel);
 		store.setProxyUrl(proxyUrl);
+		if(bar!=null && bar>1000f) {
+			store.setBar(DEFAULT_BAR);
+		} else {
+			store.setBar(DEFAULT_BAR);
+		}
 		store.setNotifyUrl(notifyUrl);
 		Float thisQuota = quota == null ?INIT_FREE_QUOTA:quota;
 		store.setQuota(thisQuota.floatValue());

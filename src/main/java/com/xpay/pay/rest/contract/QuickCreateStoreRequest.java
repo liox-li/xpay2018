@@ -17,6 +17,7 @@ public class QuickCreateStoreRequest {
 	private Long quota;
 	private Long channelId;
 	private ChinaUmsProps chinaUmsProps;
+	private Float bar;
 	public String getName() {
 		return name;
 	}
@@ -94,5 +95,11 @@ public class QuickCreateStoreRequest {
 	}
 	public void setChannelId(Long channelId) {
 		this.channelId = channelId;
+	}
+	public Float getBar() {
+		return bar;
+	}
+	public void setBar(Float bar) {
+		this.bar = bar;
 	}
 }
