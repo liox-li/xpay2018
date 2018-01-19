@@ -27,7 +27,7 @@ public class WechatNotifyHandler extends AbstractNotifyHandler {
 			WechatNotification notification = JsonUtils.fromJson(content, WechatNotification.class);
 			Date orderTime = parseOrderTimeFromOrderNo(notification.getOrderNo());
 			Date payTime = TimeUtils.parseTime(notification.getPayTime(), "yyyy-MM-dd HH:mm:ss");
-			if(orderTime.compareTo(payTime)>0 || !isWithinMinutes(orderTime, payTime, 1)) {
+			if(orderTime.compareTo(payTime)>0 || !isWithinMinutes(orderTime, payTime, 20)) {
 				return null;
 			}
 			extOrderNo = notification.getOrderNo();

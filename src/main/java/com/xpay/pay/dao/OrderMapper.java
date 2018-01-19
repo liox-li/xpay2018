@@ -18,5 +18,5 @@ public interface OrderMapper extends BaseMapper<Order> {
 
 	Order findLastByGoodsId(long goodsId);
 	
-	Order findLastByExtStoreCode(@Param("extStoreCode")String extStoreCode, @Param("amount")Float amount, @Param("subject")String subject, @Param("startTime")Date startTime, @Param("endTime")Date endTime);
+	List<Order> findLastByExtStoreCode(@Param("extStoreCode")String extStoreCode,  @Param("subject")String subject, @Param("startTime")Date startTime, @Param("endTime")Date endTime);
 }
