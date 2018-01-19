@@ -82,7 +82,7 @@ public class OrderService {
 	}
 	
 	public Order findActiveByOrderTime(String extStoreCode, String extOrderNo, Float amount, String subject, Date orderTime) {
-		Date startTime = TimeUtils.timeBefore(orderTime, 15000);
+		Date startTime = TimeUtils.timeBefore(orderTime, 19000);
 		List<Order> orders = orderMapper.findLastByExtStoreCode(extStoreCode,subject, startTime, orderTime);
 		Assert.isTrue(CollectionUtils.isNotEmpty(orders), "Order not found - extOrderNo=" + extOrderNo+",extStoreCode="+extStoreCode+",amount="+amount+",subject="+subject+", startTime="+startTime+", orderTime"+orderTime);
 		Order order = orders.stream().filter(x ->  (Math.abs(x.getTotalFee()-amount)<0.00000001f)).findFirst().orElse(null);
@@ -187,7 +187,7 @@ public class OrderService {
 		return qrCode;
 	}
 	
-	private static final Long lockTime = 9000L;
+	private static final Long lockTime = 10000L;
 	private static final Long checkInterval = 1000L;
 	public boolean aquireLock(String key) {
 		boolean lock = false;
