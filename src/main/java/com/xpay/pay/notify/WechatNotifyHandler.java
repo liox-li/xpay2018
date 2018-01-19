@@ -149,16 +149,4 @@ public class WechatNotifyHandler extends AbstractNotifyHandler {
 			this.note = note;
 		}
 	}
-	
-	public static void main(String args[]) {
-		String orderNo = "100017121320658481277792970";
-		Date date1 = parseOrderTimeFromOrderNo(orderNo);
-		System.out.println(date1);
-		
-		Date date2 = TimeUtils.parseTime("2017-12-13 12:58:52", "yyyy-MM-dd HH:mm:ss");
-		System.out.println(date2);
-		
-		System.out.println(isWithinMinutes(date1, date2, 1));
-		System.out.println(date1.compareTo(date2));
-	}
 }
