@@ -30,6 +30,7 @@ import com.xpay.pay.model.StoreChannel.ChannelType;
 import com.xpay.pay.model.StoreChannel.PaymentGateway;
 import com.xpay.pay.model.StoreTransaction;
 import com.xpay.pay.model.StoreTransaction.TransactionType;
+import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.rest.contract.BaseResponse;
 import com.xpay.pay.rest.contract.CreateAppRequest;
 import com.xpay.pay.rest.contract.CreateStoreChannelRequest;
@@ -43,6 +44,7 @@ import com.xpay.pay.rest.contract.UpdateStoreChannelRequest;
 import com.xpay.pay.rest.contract.UpdateStoreChannelResponse;
 import com.xpay.pay.service.AgentService;
 import com.xpay.pay.service.AppService;
+import com.xpay.pay.service.NotifyService;
 import com.xpay.pay.service.OrderService;
 import com.xpay.pay.service.PaymentService;
 import com.xpay.pay.service.StoreService;
@@ -62,6 +64,8 @@ public class AgentRestService extends AdminRestService {
 	private PaymentService paymentService;
 	@Autowired
 	private AgentService agentService;
+	@Autowired
+	private NotifyService notifyService;
 	
 	@RequestMapping(value = "/agents", method = RequestMethod.GET)
 	public BaseResponse<List<Agent>> findAll() {
@@ -538,6 +542,27 @@ public class AgentRestService extends AdminRestService {
 		Assert.notBlank(orderNo, "Order no can't be null");
 		Order order = orderService.findAnyByOrderNo(orderNo);
 		Assert.isTrue(order!=null && (id<=10 || id==order.getStore().getAdminId() || id==order.getStore().getAgentId()), "Order not found");
+		
+		BaseResponse<Order> response = new BaseResponse<Order>();
+		response.setData(order);
+		return response;
+	}
+	
+	@RequestMapping(value = "/{id}/orders/{orderNo}/remedy", method = RequestMethod.POST)
+	public BaseResponse<Order> remedyOrder(@PathVariable long id, 
+			@PathVariable String orderNo, @RequestParam String extOrderNo) {
+		validateAgent(id);
+		
+		Assert.notBlank(orderNo, "Order no can't be null");
+		Assert.notBlank(extOrderNo, "Ext Order No can't be null");
+		Order order = orderService.findAnyByOrderNo(orderNo);
+		Assert.isTrue(order!=null && OrderStatus.NOTPAY.equals(order.getStatus()), "Order not found or already paid");
+		
+		order.setExtOrderNo(extOrderNo);
+		order.setStatus(OrderStatus.SUCCESS);
+		orderService.update(order);
+		
+		notifyService.notify(order);
 		
 		BaseResponse<Order> response = new BaseResponse<Order>();
 		response.setData(order);
