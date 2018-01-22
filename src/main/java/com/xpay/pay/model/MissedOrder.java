@@ -1,12 +1,20 @@
 package com.xpay.pay.model;
 
 public class MissedOrder {
+	private Long id;
 	private String orderNo;
 	private String payTime;
 	private Float amount;
 	private String subject;
 	private String extStoreId;
 	private int status;
+	
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
 	public String getOrderNo() {
 		return orderNo;
 	}
