@@ -575,6 +575,12 @@ public class AgentRestService extends AdminRestService {
 		order.setStatus(OrderStatus.SUCCESS);
 		orderService.update(order);
 		
+		MissedOrder missedOrder = missedOrderService.findByOrderNo(extOrderNo);
+		if(missedOrder != null) {
+			missedOrder.setStatus(1);
+			missedOrderService.update(missedOrder);
+		}
+		
 		notifyService.notify(order);
 		
 		BaseResponse<Order> response = new BaseResponse<Order>();

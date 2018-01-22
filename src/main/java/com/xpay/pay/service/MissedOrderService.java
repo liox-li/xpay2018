@@ -32,4 +32,8 @@ public class MissedOrderService {
 		return mapper.findAllUnresovled();
 	}
 	
+	public MissedOrder findByOrderNo(String orderNo) {
+		return mapper.findByOrderNo(orderNo);
+	}
+	
 }

@@ -40,7 +40,7 @@
     SELECT
     <include refid="missedOrderColumns" />
     FROM bill_missed_order
-    WHERE order_no = #{orderNo} AND deleted = false
+    WHERE ext_order_no = #{orderNo} AND deleted = false
   </select>
   
   <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.MissedOrder">
