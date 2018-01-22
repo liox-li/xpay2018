@@ -23,6 +23,7 @@ import com.xpay.pay.model.Agent;
 import com.xpay.pay.model.Agent.Role;
 import com.xpay.pay.model.App;
 import com.xpay.pay.model.Bill;
+import com.xpay.pay.model.MissedOrder;
 import com.xpay.pay.model.Order;
 import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
@@ -44,6 +45,7 @@ import com.xpay.pay.rest.contract.UpdateStoreChannelRequest;
 import com.xpay.pay.rest.contract.UpdateStoreChannelResponse;
 import com.xpay.pay.service.AgentService;
 import com.xpay.pay.service.AppService;
+import com.xpay.pay.service.MissedOrderService;
 import com.xpay.pay.service.NotifyService;
 import com.xpay.pay.service.OrderService;
 import com.xpay.pay.service.PaymentService;
@@ -66,6 +68,8 @@ public class AgentRestService extends AdminRestService {
 	private AgentService agentService;
 	@Autowired
 	private NotifyService notifyService;
+	@Autowired
+	private MissedOrderService missedOrderService;
 	
 	@RequestMapping(value = "/agents", method = RequestMethod.GET)
 	public BaseResponse<List<Agent>> findAll() {
@@ -545,6 +549,15 @@ public class AgentRestService extends AdminRestService {
 		
 		BaseResponse<Order> response = new BaseResponse<Order>();
 		response.setData(order);
+		return response;
+	}
+	
+	@RequestMapping(value = "/{id}/orders/missed", method = RequestMethod.GET)
+	public BaseResponse<List<MissedOrder>> findOrder(@PathVariable long id) {
+		validateAgent(id);
+		List<MissedOrder> missedOrders = missedOrderService.findAllUnresolved();
+		BaseResponse<List<MissedOrder>> response = new BaseResponse<List<MissedOrder>>();
+		response.setData(missedOrders);
 		return response;
 	}
 	

@@ -273,3 +273,16 @@ drop index idx_bill_order_seller_no;
 CREATE INDEX idx_bill_order_seller_no ON bill_order(seller_order_no);
 CREATE INDEX idx_bill_order_ext_store_code ON bill_order(ext_store_code, total_fee, create_date); 
 
+CREATE TABLE IF NOT EXISTS bill_missed_order (
+	id BIGSERIAL PRIMARY KEY,
+	ext_order_no varchar(64) NOT NULL,
+	pay_time varchar(64) NOT NULL,
+	amount NUMERIC NOT NULL,
+	subject varchar(64) NOT NULL,
+	ext_store_id varchar(64) NOT NULL,
+	status integer NOT NULL DEFAULT 0,
+	create_date TIMESTAMP WITH TIME ZONE NOT NULL default now(), 
+	update_date TIMESTAMP WITH TIME ZONE NOT NULL default now(),
+	deleted boolean DEFAULT FALSE
+);
+ALTER SEQUENCE bill_missed_order_id_seq RESTART 100;

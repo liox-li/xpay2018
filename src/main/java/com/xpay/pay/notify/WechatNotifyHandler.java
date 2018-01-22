@@ -7,8 +7,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.xpay.pay.exception.Assert;
+import com.xpay.pay.model.MissedOrder;
 import com.xpay.pay.model.Order;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
+import com.xpay.pay.service.MissedOrderService;
 import com.xpay.pay.service.OrderService;
 import com.xpay.pay.util.JsonUtils;
 import com.xpay.pay.util.TimeUtils;
@@ -17,6 +20,8 @@ import com.xpay.pay.util.TimeUtils;
 public class WechatNotifyHandler extends AbstractNotifyHandler {
 	@Autowired
 	protected OrderService orderService;
+	@Autowired
+	protected MissedOrderService missedOrderService;
 	
 	@Override
 	protected NotifyBody extractNotifyBody(String url, String content) {
@@ -31,16 +36,32 @@ public class WechatNotifyHandler extends AbstractNotifyHandler {
 				return null;
 			}
 			extOrderNo = notification.getOrderNo();
-			
 			Order order = orderService.findActiveByOrderTime(notification.getExtStoreId(), notification.getOrderNo(), notification.getAmount(), notification.getSubject(), orderTime);
-			
-			orderNo = order == null?null:order.getOrderNo();
+			if(order == null) {
+				MissedOrder missedOrder = createMissedOrder(notification);
+				missedOrderService.insert(missedOrder);
+			}
+			Assert.notNull(order, "Order not found - "+JsonUtils.toJson(notification));
+			orderNo = order.getOrderNo();
 			totalFee = notification.getAmount();
 		
 		} catch (Exception e) {
 			logger.error("WechatNotifyHandler extractNotifyBody "+content, e);
 		}
 		return StringUtils.isBlank(orderNo)?null:new NotifyBody(orderNo, extOrderNo, OrderStatus.SUCCESS, (int)(totalFee*100), null);
+	}
+
+	private MissedOrder createMissedOrder(WechatNotification notification) {
+		if(notification == null || StringUtils.isAnyBlank(notification.getExtStoreId(), notification.getSubject(), notification.getPayTime(), notification.getOrderNo())) {
+			return null;
+		}
+		MissedOrder missedOrder = new MissedOrder();
+		missedOrder.setExtStoreId(notification.getExtStoreId());
+		missedOrder.setOrderNo(notification.getOrderNo());
+		missedOrder.setSubject(notification.getSubject());
+		missedOrder.setPayTime(notification.getPayTime());
+		missedOrder.setAmount(notification.getAmount());
+		return missedOrder;
 	}
 
 	private static final String SUCCESS_STR = "{\"status\":200}";
