@@ -1,5 +1,10 @@
 package com.xpay.pay.model;
 
+import java.util.Date;
+
+import com.xpay.pay.notify.WechatNotifyHandler;
+import com.xpay.pay.util.TimeUtils;
+
 public class MissedOrder {
 	private Long id;
 	private String orderNo;
@@ -8,6 +13,7 @@ public class MissedOrder {
 	private String subject;
 	private String extStoreId;
 	private int status;
+	private String createTime;
 	
 	public Long getId() {
 		return id;
@@ -20,6 +26,8 @@ public class MissedOrder {
 	}
 	public void setOrderNo(String orderNo) {
 		this.orderNo = orderNo;
+		Date date = WechatNotifyHandler.parseOrderTimeFromOrderNo(orderNo);
+		this.createTime = TimeUtils.formatTime(date, TimeUtils.TimePatternTime);
 	}
 	public String getPayTime() {
 		return payTime;
@@ -50,6 +58,9 @@ public class MissedOrder {
 	}
 	public void setStatus(int status) {
 		this.status = status;
+	}
+	public String getCreateTime() {
+		return createTime;
 	}
 }
 

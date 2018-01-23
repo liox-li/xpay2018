@@ -108,7 +108,7 @@
     SELECT
     <include refid="orderColumns" />
     FROM bill_order
-    WHERE bill_order.ext_store_code = #{extStoreCode} AND subject = #{subject} AND create_date &gt;=#{startTime} AND create_date &lt;=#{endTime} order by create_date limit 1
+    WHERE bill_order.ext_store_code = #{extStoreCode} AND subject = #{subject} AND create_date &gt;=#{startTime} AND create_date &lt;=#{endTime} order by create_date desc limit 1
   </select>
   
   <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.Order">

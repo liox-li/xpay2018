@@ -76,7 +76,7 @@ public class WechatNotifyHandler extends AbstractNotifyHandler {
 		return FAIL_STR;
 	}
 	
-	private static final Date parseOrderTimeFromOrderNo(String orderNo) {
+	public static final Date parseOrderTimeFromOrderNo(String orderNo) {
 		if(StringUtils.isBlank(orderNo) || orderNo.length()<19) {
 			return null;
 		}
