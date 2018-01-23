@@ -85,7 +85,7 @@ public class OrderService {
 	}
 	
 	public Order findActiveByOrderTime(String extStoreCode, String extOrderNo, Float amount, String subject, Date orderTime) {
-		Date startTime = TimeUtils.timeBefore(orderTime, 15000);
+		Date startTime = TimeUtils.timeBefore(orderTime, 60000);
 		List<Order> orders = orderMapper.findLastByExtStoreCode(extStoreCode,subject, startTime, orderTime);
 		if(CollectionUtils.isNotEmpty(orders)) {
 			Order order = orders.stream().filter(x ->  (Math.abs(x.getTotalFee()-amount)<0.00000001f)).findFirst().orElse(null);

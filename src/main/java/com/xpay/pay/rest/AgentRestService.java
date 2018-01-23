@@ -553,14 +553,14 @@ public class AgentRestService extends AdminRestService {
 	}
 	
 	@RequestMapping(value = "/{id}/orders/missed", method = RequestMethod.GET)
-	public BaseResponse<List<MissedOrder>> findOrder(@PathVariable long id, @RequestParam(required = false) Long adminId) {
+	public BaseResponse<List<MissedOrder>> findOrder(@PathVariable long id) {
 		validateAgent(id);
 		
 		List<MissedOrder> missedOrders = new ArrayList<MissedOrder>(); 
-		if(adminId==null || adminId<=0) {
+		if(id<=10) {
 			missedOrders = missedOrderService.findAllUnresolved();
 		} else {
-			missedOrders = missedOrderService.findAllUnresolved(adminId);
+			missedOrders = missedOrderService.findAllUnresolved(id);
 		}
 		BaseResponse<List<MissedOrder>> response = new BaseResponse<List<MissedOrder>>();
 		response.setData(missedOrders);
