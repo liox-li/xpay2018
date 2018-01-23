@@ -5,8 +5,10 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.util.KeyValuePair;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.google.common.collect.Lists;
-
+@JsonInclude(Include.NON_NULL)
 public class NotificationResponse {
 	private String orderNo;
 	private String storeId;
