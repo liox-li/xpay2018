@@ -37,12 +37,7 @@ public class LockerService {
 		if(keys == null || keys.length<1) {
 			return null;
 		}
-		String key1 = keys[0];
-		String key2 = keys.length>1?keys[1]:null;
-		String key3 = keys.length>2?keys[2]:null;
-		String key4 = keys.length>3?keys[3]:null;
-		String key5 = keys.length>4?keys[4]:null;
-		List<DbLocker> lockers = mapper.findByKeys(key1, key2, key3, key4, key5);
+		List<DbLocker> lockers = mapper.findByKeys(keys);
 		if(CollectionUtils.isEmpty(lockers)) {
 			return keys[0];
 		}
