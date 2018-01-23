@@ -43,6 +43,7 @@ public class OrderService {
 		for (Order order : orders) {
 			order.setApp(appService.findById(order.getAppId()));
 			order.setStore(storeService.findById(order.getStoreId()));
+			order.setGoods(goodsService.findById(order.getGoodsId()));
 		}
 		return orders;
 	}
@@ -67,6 +68,7 @@ public class OrderService {
 		order.setApp(appService.findById(order.getAppId()));
 		order.setStore(storeService.findById(order.getStoreId()));
 		order.setStoreChannel(storeService.findStoreChannelById(order.getStoreChannelId()));
+		order.setGoods(goodsService.findById(order.getGoodsId()));
 		return order;
 	}
 	
@@ -78,6 +80,7 @@ public class OrderService {
 		order.setApp(appService.findById(order.getAppId()));
 		order.setStore(storeService.findById(order.getStoreId()));
 		order.setStoreChannel(storeService.findStoreChannelById(order.getStoreChannelId()));
+		order.setGoods(goodsService.findById(order.getGoodsId()));
 		return order;
 	}
 	

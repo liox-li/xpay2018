@@ -97,7 +97,7 @@ public class NotifyService {
 			
 			notification.setPrepayId(order.getPrepayId());
 			notification.setTokenId(order.getTokenId());
-			notification.setTotalFee(order.getTotalFee());
+			notification.setTotalFee(String.valueOf(order.getTotalFee()));
 			notification.setOrderStatus(order.getStatus().getValue());
 			notification.setAttach(order.getAttach());
 			notification.setUid(order.getSellerOrderNo());
