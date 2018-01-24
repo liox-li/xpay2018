@@ -11,6 +11,7 @@
     <result column="description" jdbcType="VARCHAR" property="desc" />
     <result column="amount" jdbcType="NUMERIC" property="amount" />
     <result column="ext_qrcode" jdbcType="VARCHAR" property="extQrCode" />
+    <result column="ext_goods" jdbcType="VARCHAR" property="extGoods" />
     <result column="update_date" jdbcType="VARCHAR" property="updateDate" />
   </resultMap>
   
@@ -23,6 +24,7 @@
     description,
     amount,
     ext_qrcode,
+    ext_goods,
     update_date
   </sql>
 
@@ -50,7 +52,13 @@
   <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.StoreChannel">
     insert into bill_store_goods
     <trim prefix="(" suffix=")" suffixOverrides=",">
-     store_id, code, ext_store_id, name, description, amount, ext_qrcode,
+     store_id, code, ext_store_id, name, description, amount, 
+     <if test="extQrCode != null">
+       ext_qrcode,
+     </if>,
+     <if test="extGoods != null">
+       ext_goods,
+     </if>,
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
      	#{storeId,jdbcType=BIGINT},
@@ -59,7 +67,12 @@
      	#{name,jdbcType=VARCHAR},
      	#{desc,jdbcType=VARCHAR},
      	#{amount,jdbcType=NUMERIC},
-     	#{extQrCode,jdbcType=VARCHAR},
+     	<if test="extQrCode != null">
+        	#{extQrCode,jdbcType=VARCHAR},
+      	</if>
+      	<if test="extGoods != null">
+        	#{extGoods,jdbcType=VARCHAR},
+      	</if>
     </trim>
   </insert>
   
@@ -78,8 +91,11 @@
       <if test="amount != null">
        amount =  #{amount,jdbcType=NUMERIC},
       </if>
-       <if test="extQrCode != null">
+      <if test="extQrCode != null">
        ext_qrcode =  #{extQrCode,jdbcType=VARCHAR},
+      </if>
+      <if test="extGoods != null">
+       ext_goods =  #{extGoods,jdbcType=VARCHAR},
       </if>
       update_date = now()
     </set>
