@@ -5,6 +5,7 @@ import static com.xpay.pay.ApplicationConstants.STATUS_BAD_REQUEST;
 import static com.xpay.pay.ApplicationConstants.STATUS_UNAUTHORIZED;
 import static com.xpay.pay.proxy.IPaymentProxy.NO_RESPONSE;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -72,7 +73,7 @@ public class PaymentService {
 	}
 	
 	public Order createGoodsOrder(Store store, StoreGoods goods, String uid, String orderNo) {
-		Assert.isTrue(goods!=null && goods.getExtQrCodes()!=null && goods.getExtQrCode().length()>0, "No avaiable channels");
+		Assert.isTrue(goods!=null && CollectionUtils.isNotEmpty(goods.getExtGoodsList()), "No avaiable goods");
 		validateQuota(store);
 		
 		Order order = new Order();

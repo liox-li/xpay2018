@@ -19,6 +19,7 @@ import com.xpay.pay.model.Order;
 import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
 import com.xpay.pay.model.StoreGoods;
+import com.xpay.pay.model.StoreGoods.ExtGoods;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.util.CommonUtils;
 import com.xpay.pay.util.TimeUtils;
@@ -181,9 +182,10 @@ public class OrderService {
 		thisGoods = thisGoods == null? goods: thisGoods;
 		
 		String qrCode = lockerService.findOldestByKeys(thisGoods.getExtQrCodes());
-		int index = CommonUtils.indexOf(thisGoods.getExtQrCodes(), qrCode);
-		if(index>=0) {
-			goods.setName(goods.getName()+(index+1));
+		ExtGoods extGoods = thisGoods.getExtGoodsList().stream().filter(x -> x.getExtQrCode().equals(qrCode)).findAny().orElse(null);
+		
+		if(extGoods!=null) {
+			goods.setName(goods.getName()+extGoods.getNote());
 		}
 		boolean lock = aquireLock(qrCode);
 		if(!lock) {

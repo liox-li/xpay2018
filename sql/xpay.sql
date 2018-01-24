@@ -268,7 +268,7 @@ CREATE TABLE IF NOT EXISTS db_locker (
 );
 CREATE UNIQUE INDEX idx_db_locker_key ON db_locker(key); 
 
- ALTER TABLE bill_order RENAME COLUMN uid TO ext_store_code;
+ALTER TABLE bill_order RENAME COLUMN uid TO ext_store_code;
 drop index idx_bill_order_seller_no;
 CREATE INDEX idx_bill_order_seller_no ON bill_order(seller_order_no);
 CREATE INDEX idx_bill_order_ext_store_code ON bill_order(ext_store_code, total_fee, create_date); 
@@ -286,3 +286,5 @@ CREATE TABLE IF NOT EXISTS bill_missed_order (
 	deleted boolean DEFAULT FALSE
 );
 ALTER SEQUENCE bill_missed_order_id_seq RESTART 100;
+
+ALTER TABLE bill_store_goods ADD COLUMN ext_goods varchar(2048);

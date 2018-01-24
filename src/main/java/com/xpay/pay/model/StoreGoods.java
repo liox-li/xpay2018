@@ -71,6 +71,9 @@ public class StoreGoods {
 		this.extQrCode = extQrCode;
 	}
 	public String[] getExtQrCodes() {
+		if(StringUtils.isEmpty(this.extQrCode) && CollectionUtils.isNotEmpty(this.getExtGoodsList())) {
+			return this.getExtGoodsList().stream().map(x -> x.getExtQrCode()).toArray(String[]::new);
+		}
 		return StringUtils.split(extQrCode, ',');
 	}
 	public Date getUpdateDate() {

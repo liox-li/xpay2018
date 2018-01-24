@@ -55,10 +55,10 @@
      store_id, code, ext_store_id, name, description, amount, 
      <if test="extQrCode != null">
        ext_qrcode,
-     </if>,
+     </if>
      <if test="extGoods != null">
        ext_goods,
-     </if>,
+     </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
      	#{storeId,jdbcType=BIGINT},
