@@ -71,10 +71,10 @@ public class StoreGoods {
 		this.extQrCode = extQrCode;
 	}
 	public String[] getExtQrCodes() {
-		if(StringUtils.isEmpty(this.extQrCode) && CollectionUtils.isNotEmpty(this.getExtGoodsList())) {
+		if(CollectionUtils.isNotEmpty(this.getExtGoodsList())) {
 			return this.getExtGoodsList().stream().map(x -> x.getExtQrCode()).toArray(String[]::new);
 		}
-		return StringUtils.split(extQrCode, ',');
+		return new String[0];
 	}
 	public Date getUpdateDate() {
 		return updateDate;
@@ -89,7 +89,7 @@ public class StoreGoods {
 				extGoodsList = JsonUtils.fromJsonArray(extGoods, ExtGoods.class);
 			} else if(StringUtils.isNotBlank(extQrCode)) {
 				extGoodsList = new ArrayList<ExtGoods>();
-				String[] goodsArr = this.getExtQrCodes();
+				String[] goodsArr = StringUtils.split(this.extQrCode, ',');
 				for(int i=0;i<goodsArr.length;i++) {
 					ExtGoods goods = new ExtGoods();
 					goods.setExtQrCode(goodsArr[i]);
