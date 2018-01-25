@@ -40,10 +40,10 @@ public class WechatNotifyHandler extends AbstractNotifyHandler {
 			if(order == null) {
 				MissedOrder missedOrder = createMissedOrder(notification);
 				missedOrderService.insert(missedOrder);
-			}
+			} 
 			Assert.notNull(order, "Order not found - "+JsonUtils.toJson(notification));
 			orderNo = order.getOrderNo();
-			totalFee = notification.getAmount();
+			totalFee = order.getTotalFee();
 		
 		} catch (Exception e) {
 			logger.error("WechatNotifyHandler extractNotifyBody "+content, e);
