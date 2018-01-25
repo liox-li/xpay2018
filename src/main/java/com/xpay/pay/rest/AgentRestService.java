@@ -3,6 +3,7 @@ package com.xpay.pay.rest;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -531,6 +532,11 @@ public class AgentRestService extends AdminRestService {
 		}
 		
 		BaseResponse<List<Order>> response = new BaseResponse<List<Order>>();
+		if(CollectionUtils.isEmpty(orders)) {
+			return response;
+		}
+		
+		orders = orders.stream().filter(x -> !x.getOrderNo().startsWith("S")).collect(Collectors.toList());
 		if(CollectionUtils.isNotEmpty(orders)) {
 			response.setCount(orders.size());
 		}
@@ -545,7 +551,7 @@ public class AgentRestService extends AdminRestService {
 		
 		Assert.notBlank(orderNo, "Order no can't be null");
 		Order order = orderService.findAnyByOrderNo(orderNo);
-		Assert.isTrue(order!=null && (id<=10 || id==order.getStore().getAdminId() || id==order.getStore().getAgentId()), "Order not found");
+		Assert.isTrue(order!=null && !order.getOrderNo().startsWith("S") && (id<=10 || id==order.getStore().getAdminId() || id==order.getStore().getAgentId()), "Order not found");
 		
 		BaseResponse<Order> response = new BaseResponse<Order>();
 		response.setData(order);
@@ -581,13 +587,18 @@ public class AgentRestService extends AdminRestService {
 		order.setStatus(OrderStatus.SUCCESS);
 		orderService.update(order);
 		
+
 		MissedOrder missedOrder = missedOrderService.findByOrderNo(extOrderNo);
 		if(missedOrder != null) {
 			missedOrder.setStatus(1);
 			missedOrderService.update(missedOrder);
 		}
 		
-		notifyService.notify(order);
+		if(order.isRechargeOrder()) {
+			storeService.settleRechargeTransaction(order.getOrderNo());
+		} else {
+			notifyService.notify(order);
+		}
 		
 		BaseResponse<Order> response = new BaseResponse<Order>();
 		response.setData(order);
