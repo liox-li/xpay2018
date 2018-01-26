@@ -266,11 +266,12 @@ public class Store {
 
 
 	public boolean isNextBailPay(float totalFee) {
-		if(this.nonBail <= this.bar) {
-			return false;
-		}
-		boolean isNextBailPay = this.bail * 100 <= this.nonBail * this.bailPercentage;
-		return isNextBailPay;
+		return false; 
+//		if(this.nonBail <= this.bar) {
+//			return false;
+//		}
+//		boolean isNextBailPay = this.bail * 100 <= this.nonBail * this.bailPercentage;
+//		return isNextBailPay;
 	}
 	
 	private static final String baidu = "baidu.com";

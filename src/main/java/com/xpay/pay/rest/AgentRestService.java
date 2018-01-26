@@ -322,7 +322,7 @@ public class AgentRestService extends AdminRestService {
 		
 		
 		boolean storeWithChannel = false;
-		if((request.getChannelId()!=null && request.getChannelId()>0) || request.getChinaUmsProps()!=null) {
+		if((request.getChannelId()!=null && request.getChannelId()>0) || (request.getChinaUmsProps()!=null && StringUtils.isNotBlank(request.getExtStoreId()))) {
 			storeWithChannel = true;
 		}
 		
