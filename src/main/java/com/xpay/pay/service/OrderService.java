@@ -22,6 +22,7 @@ import com.xpay.pay.model.StoreChannel;
 import com.xpay.pay.model.StoreGoods;
 import com.xpay.pay.model.StoreGoods.ExtGoods;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
+import com.xpay.pay.util.AppConfig;
 import com.xpay.pay.util.CommonUtils;
 import com.xpay.pay.util.TimeUtils;
 
@@ -175,15 +176,17 @@ public class OrderService {
 	}
 
 	private static final long bailStoreId = 1L;
-	private static final long storeLockTime = 20000L;
-	private static final long goodsLockTime = 10000L;
+	private static final long storeLockTime = AppConfig.XPayConfig.getProperty("store.lock.time", 10000L);
+	private static final long goodsLockTime = AppConfig.XPayConfig.getProperty("goods.lock.time", 10000L);
 	private static final long checkInterval = 1000L;
 	public String findAvaiableQrCode(Store store, StoreGoods goods) {
-		boolean stoceLock  = aquireLock(store.getCode(), storeLockTime, checkInterval);
-		if(!stoceLock) {
-			logger.error("No lock found: "+store.getCode());
+		if(storeLockTime>0) {
+			boolean stoceLock  = aquireLock(store.getCode(), storeLockTime, checkInterval);
+			if(!stoceLock) {
+				logger.error("No lock found: "+store.getCode());
+			}
+			Assert.isTrue(stoceLock, "No avaiable channel");
 		}
-		Assert.isTrue(stoceLock, "No avaiable channel");
 		
 		StoreGoods thisGoods = null;
 		if(store.isNextBailPay(goods.getAmount())) {
@@ -197,11 +200,15 @@ public class OrderService {
 		if(extGoods!=null) {
 			goods.setName(StringUtils.trim(goods.getName())+StringUtils.trim(extGoods.getNote()));
 		}
-		boolean lock = aquireLock(qrCode, goodsLockTime, checkInterval);
-		if(!lock) {
-			logger.error("No lock found: "+qrCode);
+		
+		if(goodsLockTime>0) {
+			boolean lock = aquireLock(qrCode, goodsLockTime, checkInterval);
+			if(!lock) {
+				logger.error("No lock found: "+qrCode);
+			}
+			Assert.isTrue(lock, "No avaiable channel");
 		}
-		Assert.isTrue(lock, "No avaiable channel");
+		
 		return qrCode;
 	}
 

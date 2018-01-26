@@ -85,4 +85,12 @@ public class AppConfig {
 		}
 		return defaultValue;
 	}
+	
+	public long getProperty(String key, long defaultValue) {
+		String val = properties.getProperty(key, "");
+		if ((StringUtils.isNotBlank(val))) {
+			return CommonUtils.toLong(val);
+		}
+		return defaultValue;
+	}
 }
