@@ -288,3 +288,4 @@ CREATE TABLE IF NOT EXISTS bill_missed_order (
 ALTER SEQUENCE bill_missed_order_id_seq RESTART 100;
 
 ALTER TABLE bill_store_goods ADD COLUMN ext_goods varchar(2048);
+ALTER TABLE bill_store_goods ALTER COLUMN ext_qrcode drop not null;

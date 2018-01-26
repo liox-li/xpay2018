@@ -174,8 +174,17 @@ public class OrderService {
 		return orderMapper.updateById(order);
 	}
 
-	private static final Long bailStoreId = 1L;
+	private static final long bailStoreId = 1L;
+	private static final long storeLockTime = 20000L;
+	private static final long goodsLockTime = 10000L;
+	private static final long checkInterval = 1000L;
 	public String findAvaiableQrCode(Store store, StoreGoods goods) {
+		boolean stoceLock  = aquireLock(store.getCode(), storeLockTime, checkInterval);
+		if(!stoceLock) {
+			logger.error("No lock found: "+store.getCode());
+		}
+		Assert.isTrue(stoceLock, "No avaiable channel");
+		
 		StoreGoods thisGoods = null;
 		if(store.isNextBailPay(goods.getAmount())) {
 			thisGoods = goodsService.findByStoreIdAndAmount(bailStoreId, goods.getAmount());
@@ -188,17 +197,15 @@ public class OrderService {
 		if(extGoods!=null) {
 			goods.setName(StringUtils.trim(goods.getName())+StringUtils.trim(extGoods.getNote()));
 		}
-		boolean lock = aquireLock(qrCode);
+		boolean lock = aquireLock(qrCode, goodsLockTime, checkInterval);
 		if(!lock) {
 			logger.error("No lock found: "+qrCode);
 		}
 		Assert.isTrue(lock, "No avaiable channel");
 		return qrCode;
 	}
-	
-	private static final Long lockTime = 10000L;
-	private static final Long checkInterval = 1000L;
-	public boolean aquireLock(String key) {
+
+	public boolean aquireLock(String key, long lockTime, long checkInterval) {
 		boolean lock = false;
 		for(int i=0;i<10;i++) {
 			lock = lockerService.lock(key, lockTime);

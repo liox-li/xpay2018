@@ -43,7 +43,7 @@ public class WechatNotifyHandler extends AbstractNotifyHandler {
 			} 
 			Assert.notNull(order, "Order not found - "+JsonUtils.toJson(notification));
 			orderNo = order.getOrderNo();
-			totalFee = order.getTotalFee();
+			totalFee = notification.getAmount();
 		
 		} catch (Exception e) {
 			logger.error("WechatNotifyHandler extractNotifyBody "+content, e);
