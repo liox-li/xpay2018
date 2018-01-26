@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -185,7 +186,7 @@ public class OrderService {
 		ExtGoods extGoods = thisGoods.getExtGoodsList().stream().filter(x -> x.getExtQrCode().equals(qrCode)).findAny().orElse(null);
 		
 		if(extGoods!=null) {
-			goods.setName(goods.getName()+extGoods.getNote());
+			goods.setName(StringUtils.trim(goods.getName())+StringUtils.trim(extGoods.getNote()));
 		}
 		boolean lock = aquireLock(qrCode);
 		if(!lock) {
