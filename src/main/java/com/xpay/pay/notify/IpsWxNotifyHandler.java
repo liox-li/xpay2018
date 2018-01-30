@@ -59,7 +59,7 @@ public class IpsWxNotifyHandler extends AbstractNotifyHandler {
             : OrderStatus.PAYERROR;
     String totalFee = String
         .valueOf((int) (Float.valueOf(notify.getWxPayRsp().getBody().getOrdAmt()) * 100));
-    return new NotifyBody(billNo, notify.getWxPayRsp().getBody().getIpsBillNo(), status, totalFee,
+    return new NotifyBody(billNo, notify.getWxPayRsp().getBody().getIpsBillno(), status, totalFee,
         null);
   }
 
