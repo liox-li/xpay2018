@@ -23,8 +23,8 @@
 
   <class name="com.xpay.pay.proxy.ips.wxpay.payreq.Body">
     <map-to xml="body"/>
-    <field name="merBillNo" nillable="true" required="true" type="string">
-      <bind-xml name="MerBillNo" node="element"/>
+    <field name="merBillno" nillable="true" required="true" type="string">
+      <bind-xml name="MerBillno" node="element"/>
     </field>
     <field name="goodsInfo" nillable="true" required="true" type="com.xpay.pay.proxy.ips.wxpay.payreq.GoodsInfo">
       <bind-xml name="GoodsInfo" node="element"/>
@@ -41,8 +41,8 @@
     <field name="ordTime" nillable="true" required="true" type="string">
       <bind-xml name="OrdTime" node="element"/>
     </field>
-    <field name="merchanturl" nillable="true" required="true" type="string">
-      <bind-xml name="Merchanturl" node="element"/>
+    <field name="merchantUrl" nillable="true" required="true" type="string">
+      <bind-xml name="MerchantUrl" node="element"/>
     </field>
     <field name="serverUrl" nillable="true" required="true" type="string">
       <bind-xml name="ServerUrl" node="element"/>
