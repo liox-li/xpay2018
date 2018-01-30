@@ -76,7 +76,8 @@ public class StoreChannel {
 		if(StringUtils.isNotBlank(props)) {
 			if(this.paymentGateway == PaymentGateway.CHINAUMSH5) {
 				this.channelProps = JsonUtils.fromJson(props, ChinaUmsProps.class);
-			} else if(this.paymentGateway == PaymentGateway.IPSSCAN) {
+			} else if(this.paymentGateway == PaymentGateway.IPSSCAN
+					|| this.paymentGateway == PaymentGateway.IPSWX) {
 				this.channelProps = JsonUtils.fromJson(props, IpsProps.class);
 			} else if(this.paymentGateway == PaymentGateway.SUPay) {
 				this.channelProps = JsonUtils.fromJson(props, SUPayProps.class);
@@ -132,6 +133,7 @@ public class StoreChannel {
 		SUPay("pay", "", ""),
 		IPSSCAN("pay","query", "refund"),
 		IPSQUICK("pay","query", "refund"),
+		IPSWX("pay","query", "refund"),
 		TXF("", "query", "refund");
 		
 		String unifiedOrder;

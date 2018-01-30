@@ -1,6 +1,7 @@
 package com.xpay.pay.notify;
 
 import com.xpay.pay.model.StoreChannel.PaymentGateway;
+import com.xpay.pay.proxy.ips.wxpay.IpsWxProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +30,8 @@ public class NotifyHandlerFactory {
   SUPayNotifyHandler suPayNotifyHandler;
   @Autowired
   TxfNotifyHandler txfNotifyHandler;
+  @Autowired
+  IpsWxNotifyHandler ipsWxNotifyHandler;
 
   public INotifyHandler getNotifyHandler(String uri) {
     if (uri.contains(PaymentGateway.CHINAUMSH5.name().toLowerCase()) || uri
@@ -56,7 +59,9 @@ public class NotifyHandlerFactory {
       return suPayNotifyHandler;
     } else if (uri.contains(PaymentGateway.TXF.name().toLowerCase())) {
         return txfNotifyHandler;
-      } 
+    } else if (uri.contains(PaymentGateway.IPSWX.name().toLowerCase())) {
+      return ipsWxNotifyHandler;
+    }
     else {
       return null;
     }

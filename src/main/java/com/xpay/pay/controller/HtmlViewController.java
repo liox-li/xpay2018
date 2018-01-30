@@ -5,6 +5,7 @@ import com.xpay.pay.model.StoreChannel.PaymentGateway;
 import com.xpay.pay.proxy.PaymentRequest;
 import com.xpay.pay.proxy.ips.IpsProxy;
 import com.xpay.pay.proxy.ips.quick.IpsQuickProxy;
+import com.xpay.pay.proxy.ips.wxpay.IpsWxProxy;
 import com.xpay.pay.service.OrderService;
 import com.xpay.pay.service.PaymentService;
 import java.io.IOException;
@@ -38,6 +39,9 @@ public class HtmlViewController {
   private IpsQuickProxy ipsQuickProxy;
 
   @Autowired
+  private IpsWxProxy ipsWxpayProxy;
+
+  @Autowired
   private PaymentService paymentService;
 
   @Autowired
@@ -56,6 +60,12 @@ public class HtmlViewController {
       Map<String, String> model = new HashMap<>();
       model.put("pGateWayReq", reqParam);
       return new ModelAndView("ips_quick", model);
+    } else if(PaymentGateway.IPSWX.equals(order.getStoreChannel().getPaymentGateway())) {
+      PaymentRequest paymentRequest = paymentService.toPaymentRequest(order);
+      String reqParam = ipsWxpayProxy.getReqParam(paymentRequest);
+      Map<String, String> model = new HashMap<>();
+      model.put("wxPayReq", reqParam);
+      return new ModelAndView("ips_wx", model);
     }
 
     return new ModelAndView("h5_error");
