@@ -72,7 +72,7 @@
     <field name="goodsName" nillable="true" required="true" type="string">
       <bind-xml name="GoodsName" node="element"/>
     </field>
-    <field name="godsCount" nillable="true" required="true" type="string">
+    <field name="goodsCount" nillable="true" required="true" type="string">
       <bind-xml name="GoodsCount" node="element"/>
     </field>
   </class>
