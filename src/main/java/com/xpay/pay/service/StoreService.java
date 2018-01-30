@@ -94,18 +94,20 @@ public class StoreService {
 	
 	private static final Float INIT_FREE_QUOTA = 2000f;
 	private static final Long DEFAULT_DAILY_LIMIT = 50000L;
-	public Store createStore(long agentId, long adminId, String name, Float bailPercentage, long appId, String csrTel, String proxyUrl, Long dailyLimit) {
-		Float thisBaiPercentage = bailPercentage>1 && bailPercentage<10?bailPercentage:2;
+	public Store createStore(long agentId, long adminId, String name, Float bailPercentage, long appId, String csrTel, String proxyUrl, Long dailyLimit, String code, Long quota) {
+		Float thisBaiPercentage = bailPercentage>0 && bailPercentage<10?bailPercentage:2;
 		Store store = new Store();
 		store.setAgentId(agentId);
 		store.setAdminId(adminId);
 		store.setAppId(appId);
-		store.setCode(IDGenerator.buildStoreCode());
+		String thisCode = StringUtils.isBlank(code)?IDGenerator.buildStoreCode():code;
+		store.setCode(thisCode);
 		store.setName(name);
 		store.setBailPercentage(thisBaiPercentage);
 		store.setCsrTel(csrTel);
 		store.setProxyUrl(proxyUrl);
-		store.setQuota(INIT_FREE_QUOTA);
+		Float thisQuota = quota == null ?INIT_FREE_QUOTA:quota;
+		store.setQuota(thisQuota.floatValue());
 		long thisDailyLimit = dailyLimit == null ?DEFAULT_DAILY_LIMIT:dailyLimit;
 		store.setDailyLimit(thisDailyLimit);
 		storeMapper.insert(store);
@@ -129,10 +131,10 @@ public class StoreService {
 		if(StringUtils.isNotBlank(name)) {
 			store.setName(name);
 		}
-		if(bailPercentage!=null) {
+		if(bailPercentage!=null && bailPercentage >0) {
 			store.setBailPercentage(bailPercentage);
 		}
-		if(appId!=null) {
+		if(appId!=null && appId>0) {
 			store.setAppId(appId);
 		}
 		if(StringUtils.isNotBlank(csrTel)) {
@@ -141,10 +143,10 @@ public class StoreService {
 		if(StringUtils.isNotBlank(proxyUrl)) {
 			store.setProxyUrl(proxyUrl);
 		}
-		if(dailyLimit!=null) {
+		if(dailyLimit!=null && dailyLimit>0) {
 			store.setDailyLimit(dailyLimit);
 		}
-		if(agentId !=null) {
+		if(agentId !=null && agentId>0) {
 			store.setAgentId(agentId);
 		}
 		storeMapper.updateById(store);
