@@ -9,7 +9,7 @@ public class Body {
   private String merBillNo;
   private String merCode;
   private String account;
-  private String ipsBillNo;
+  private String ipsBillno;
   private String ipsBillTime;
   private String ordAmt;
   private String retEncodeType;
@@ -39,12 +39,12 @@ public class Body {
     this.account = account;
   }
 
-  public String getIpsBillNo() {
-    return ipsBillNo;
+  public String getIpsBillno() {
+    return ipsBillno;
   }
 
-  public void setIpsBillNo(String ipsBillNo) {
-    this.ipsBillNo = ipsBillNo;
+  public void setIpsBillno(String ipsBillno) {
+    this.ipsBillno = ipsBillno;
   }
 
   public String getIpsBillTime() {
