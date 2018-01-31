@@ -131,9 +131,13 @@ public class IDGenerator {
 	}
 
 	public static final String buildTimeSeriesId() {
+		return buildTimeSeriesId(7);
+	}
+
+	public static final String buildTimeSeriesId(int randNum) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(formatNow(TimePattern17));
-		sb.append(randomNum(7));
+		sb.append(randomNum(randNum));
 		return sb.toString();
 	}
 }

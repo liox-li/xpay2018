@@ -107,7 +107,7 @@ public class IpsWxProxy extends AbstractIpsProxy {
     String signature = CryptoUtils.md5(bodyStr + merCode + md5Signature);
     ReqHead head = new ReqHead();
     head.setVersion(getVersion());
-    head.setMsgId(IDGenerator.buildTimeSeriesId());
+    head.setMsgId(IDGenerator.buildTimeSeriesId(3));
     head.setMerCode(merCode);
     head.setAccount(account);
     head.setReqDate(paymentRequest.getOrderTime());
