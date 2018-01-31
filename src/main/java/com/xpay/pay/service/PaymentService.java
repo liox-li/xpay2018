@@ -185,7 +185,8 @@ public class PaymentService {
 			String notifyUrl = request.getNotifyUrl() + "/"+request.getOrderNo();
 			request.setNotifyUrl(notifyUrl);
 		} else if(PaymentGateway.IPSSCAN.equals(gateway)
-				|| PaymentGateway.IPSQUICK.equals(gateway)){
+				|| PaymentGateway.IPSQUICK.equals(gateway)
+				|| PaymentGateway.IPSWX.equals(gateway)){
 			request.setOrderTime(order.getOrderTime());
 		}
 //		else if(PaymentGateway.RUBIPAY.equals(order.getStoreChannel().getPaymentGateway())) {
@@ -220,7 +221,8 @@ public class PaymentService {
 		} else if(PaymentGateway.MIAOFU.equals(gateway)) {
 			request.setGatewayOrderNo(order.getExtOrderNo());
 		} else if(PaymentGateway.IPSQUICK.equals(gateway)
-				||PaymentGateway.IPSSCAN.equals(gateway)) {
+				||PaymentGateway.IPSSCAN.equals(gateway)
+				||PaymentGateway.IPSWX.equals(gateway)) {
 			if(OrderStatus.REFUNDING.equals(order.getStatus()) || OrderStatus.REFUND.equals(order.getStatus()) || OrderStatus.REFUNDERROR.equals(order.getStatus())){
         request.setRefundTime(order.getRefundTime());
         request.setRefundOrderNo(order.getRefundOrderNo());
@@ -275,6 +277,7 @@ public class PaymentService {
 				PaymentGateway.CHINAUMSV3.equals(gateway) ||
 				PaymentGateway.UPAY.equals(gateway) ||
 				PaymentGateway.IPSQUICK.equals(gateway) ||
+				PaymentGateway.IPSWX.equals(gateway) ||
 				PaymentGateway.KEKEPAY.equals(gateway) ||
 				PaymentGateway.TXF.equals(gateway);
 	}
