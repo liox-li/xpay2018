@@ -87,7 +87,7 @@ public class IpsWxProxy extends AbstractIpsProxy {
     } else {
       body.setMerType("0");
     }
-    DecimalFormat numberFormat = new DecimalFormat("#.##");
+    DecimalFormat numberFormat = new DecimalFormat("#.00");
     numberFormat.setGroupingUsed(false);
     body.setOrdAmt(numberFormat.format(paymentRequest.getTotalFee()));
     body.setOrdTime(TimeUtils
