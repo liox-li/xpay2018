@@ -125,6 +125,6 @@ public class IpsWxProxy extends AbstractIpsProxy {
   }
 
   protected String getVersion() {
-    return "v1.0.0";
+    return "v1.0.1";
   }
 }
