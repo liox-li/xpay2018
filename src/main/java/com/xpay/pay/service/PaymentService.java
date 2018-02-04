@@ -88,6 +88,7 @@ public class PaymentService {
 		order.setSellerOrderNo(uid);
 		order.setStoreId(store.getId());
 		order.setNotifyUrl(store.getNotifyUrl());
+		order.setReturnUrl(store.getReturnUrl());
 		order.setGoodsId(goods.getId());
 		order.setExtStoreCode(goods.getExtStoreId());
 		order.setStatus(OrderStatus.NOTPAY);

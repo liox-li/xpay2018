@@ -33,6 +33,7 @@ public class Store {
 	private String channelType;
 	private Long adminId;
 	private String notifyUrl;
+	private String returnUrl;
 	
 	public long getId() {
 		return id;
@@ -264,6 +265,13 @@ public class Store {
 		this.notifyUrl = notifyUrl;
 	}
 
+	public String getReturnUrl() {
+		return returnUrl;
+	}
+
+	public void setReturnUrl(String returnUrl) {
+		this.returnUrl = returnUrl;
+	}
 
 	public boolean isNextBailPay(float totalFee) {
 		return false; 

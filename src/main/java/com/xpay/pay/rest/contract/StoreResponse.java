@@ -15,6 +15,7 @@ public class StoreResponse {
 	private String csrTel;
 	private String proxyUrl;
 	private String notifyUrl;
+	private String returnUrl;
 	private Float todayTradeAmount;
 	private Long dailyLimit;
 	private Float quota;
@@ -92,6 +93,12 @@ public class StoreResponse {
 	}
 	public void setNotifyUrl(String notifyUrl) {
 		this.notifyUrl = notifyUrl;
+	}
+	public String getReturnUrl() {
+		return returnUrl;
+	}
+	public void setReturnUrl(String returnUrl) {
+		this.returnUrl = returnUrl;
 	}
 	public Float getTodayTradeAmount() {
 		return todayTradeAmount;

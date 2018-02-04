@@ -7,6 +7,7 @@ public class CreateStoreRequest {
 	private String csrTel;
 	private String proxyUrl;
 	private String notifyUrl;
+	private String returnUrl;
 	private Long dailyLimit;
 	private Long adminId;
 	private Long agentId;
@@ -46,6 +47,12 @@ public class CreateStoreRequest {
 	}
 	public void setNotifyUrl(String notifyUrl) {
 		this.notifyUrl = notifyUrl;
+	}
+	public String getReturnUrl() {
+		return returnUrl;
+	}
+	public void setReturnUrl(String returnUrl) {
+		this.returnUrl = returnUrl;
 	}
 	public Long getDailyLimit() {
 		return dailyLimit;

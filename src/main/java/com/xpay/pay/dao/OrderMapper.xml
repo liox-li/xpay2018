@@ -87,7 +87,7 @@
     SELECT
     <include refid="orderColumns" />
     FROM bill_order
-    WHERE bill_order.seller_order_no = #{sellerOrderNo} AND deleted = false ORDER BY id DESC LIMIT 1
+    WHERE bill_order.seller_order_no = #{sellerOrderNo} AND deleted = false ORDER BY id DESC LIMIT 5
   </select>
   
   <select id="findAnyByOrderNo" resultMap="OrderResultMap">

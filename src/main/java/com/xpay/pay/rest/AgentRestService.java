@@ -665,6 +665,7 @@ public class AgentRestService extends AdminRestService {
 		storeResponse.setApp(appService.findById(store.getAppId()));
 		storeResponse.setProxyUrl(store.getProxyUrl());
 		storeResponse.setNotifyUrl(store.getNotifyUrl());
+		storeResponse.setReturnUrl(store.getReturnUrl());
 		storeResponse.setDailyLimit(store.getDailyLimit());
 		storeResponse.setTodayTradeAmount(store.getNonBail());
 		storeResponse.setQuota(store.getQuota());
