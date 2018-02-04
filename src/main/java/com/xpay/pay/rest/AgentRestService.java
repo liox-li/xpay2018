@@ -30,6 +30,7 @@ import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
 import com.xpay.pay.model.StoreChannel.ChannelType;
 import com.xpay.pay.model.StoreChannel.PaymentGateway;
+import com.xpay.pay.model.StoreGoods;
 import com.xpay.pay.model.StoreTransaction;
 import com.xpay.pay.model.StoreTransaction.TransactionType;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
@@ -50,6 +51,7 @@ import com.xpay.pay.service.MissedOrderService;
 import com.xpay.pay.service.NotifyService;
 import com.xpay.pay.service.OrderService;
 import com.xpay.pay.service.PaymentService;
+import com.xpay.pay.service.StoreGoodsService;
 import com.xpay.pay.service.StoreService;
 import com.xpay.pay.util.IDGenerator;
 import com.xpay.pay.util.TimeUtils;
@@ -71,6 +73,8 @@ public class AgentRestService extends AdminRestService {
 	private NotifyService notifyService;
 	@Autowired
 	private MissedOrderService missedOrderService;
+	@Autowired
+	private StoreGoodsService goodsService;
 	
 	@RequestMapping(value = "/agents", method = RequestMethod.GET)
 	public BaseResponse<List<Agent>> findAll() {
@@ -302,6 +306,25 @@ public class AgentRestService extends AdminRestService {
 		return response;
 	}
 	
+	@RequestMapping(value = "/{id}/stores/{storeId}", method = RequestMethod.DELETE)
+	public BaseResponse deleteAgentStore(@PathVariable long id, 
+			@PathVariable long storeId) {
+		this.assertAdmin();
+		
+		Store store = storeService.findById(storeId);
+		Assert.notNull(store, "Store not found");
+		Assert.isTrue(CollectionUtils.isEmpty(store.getChannels()), "Store channel is not empty");
+		
+		List<StoreGoods> goods = goodsService.findByStoreId(storeId);
+		Assert.isTrue(CollectionUtils.isEmpty(goods), "Store Goods is not empty");
+		
+		if(storeService.deleteStore(storeId)) {
+			return BaseResponse.OK;
+		} else {
+			return BaseResponse.SERVER_ERROR;
+		}
+	}
+	
 	@RequestMapping(value = "/{id}/stores/quick", method = RequestMethod.PUT)
 	public BaseResponse<StoreResponse> createStore(@PathVariable long id, 
 			@RequestBody(required = true) QuickCreateStoreRequest request) {
@@ -358,7 +381,7 @@ public class AgentRestService extends AdminRestService {
 			@RequestBody(required = true) CreateStoreRequest request) {
 		this.assertAdmin();
 		
-		Store store = storeService.updateStore(storeId, request.getAgentId(), request.getName(), request.getBailPercentage(), request.getAppId(), request.getCsrTel(), request.getProxyUrl(), request.getDailyLimit(), request.getNotifyUrl());
+		Store store = storeService.updateStore(storeId, request.getAgentId(), request.getAdminId(), request.getName(), request.getBailPercentage(), request.getAppId(), request.getCsrTel(), request.getProxyUrl(), request.getDailyLimit(), request.getNotifyUrl());
 		StoreResponse storeResponse = toStoreResponse(store);
 		BaseResponse<StoreResponse> response = new BaseResponse<StoreResponse>();
 		response.setData(storeResponse);

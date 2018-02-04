@@ -222,6 +222,12 @@
       <if test="appId != null">
         app_id = #{appId,jdbcType=BIGINT},
       </if> 
+      <if test="agentId != null">
+        agent_id = #{agentId,jdbcType=BIGINT},
+      </if> 
+      <if test="adminId != null">
+        admin_id = #{adminId,jdbcType=BIGINT},
+      </if> 
       <if test="quota != null">
         quota = #{quota,jdbcType=NUMERIC},
       </if> 

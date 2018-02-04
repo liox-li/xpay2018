@@ -137,7 +137,7 @@ public class StoreService {
 		return store;
 	}
 	
-	public Store updateStore(Long storeId, Long agentId, String name, Float bailPercentage, Long appId, String csrTel, String proxyUrl, Long dailyLimit, String notifyUrl) {
+	public Store updateStore(Long storeId, Long agentId, Long adminId, String name, Float bailPercentage, Long appId, String csrTel, String proxyUrl, Long dailyLimit, String notifyUrl) {
 		Store store = storeMapper.findById(storeId);
 		if(StringUtils.isNotBlank(name)) {
 			store.setName(name);
@@ -159,6 +159,9 @@ public class StoreService {
 		}
 		if(agentId !=null && agentId>0) {
 			store.setAgentId(agentId);
+		}
+		if(adminId!=null && adminId>0) {
+			store.setAdminId(adminId);
 		}
 		if(StringUtils.isNotBlank(notifyUrl)) {
 			store.setNotifyUrl(notifyUrl);
@@ -318,6 +321,10 @@ public class StoreService {
 
 	public StoreTransaction findTransactionByOrderNo(String orderNo) {
 		return storeTransactionMapper.findByOrderNo(orderNo);
+	}
+
+	public boolean deleteStore(long storeId) {
+		return storeMapper.deleteById(storeId);
 	}
 
 }
