@@ -83,6 +83,13 @@
     WHERE bill_order.ext_order_no = #{extOrderNo} AND deleted = false
   </select>
   
+  <select id="findBySellerOrderNo" resultMap="OrderResultMap">
+    SELECT
+    <include refid="orderColumns" />
+    FROM bill_order
+    WHERE bill_order.seller_order_no = #{sellerOrderNo} AND deleted = false ORDER BY id DESC LIMIT 1
+  </select>
+  
   <select id="findAnyByOrderNo" resultMap="OrderResultMap">
     SELECT
     <include refid="orderColumns" />

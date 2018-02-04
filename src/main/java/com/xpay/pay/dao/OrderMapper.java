@@ -14,6 +14,8 @@ public interface OrderMapper extends BaseMapper<Order> {
 	
 	List<Order> findByExtOrderNo(String extOrderNo);
 	
+	List<Order> findBySellerOrderNo(String sellerOrderNo);
+	
 	List<Order> findByStoreIdAndTime(@Param("storeId")long storeId, @Param("startTime")Date startTime, @Param("endTime")Date endTime);
 
 	Order findLastByGoodsId(long goodsId);

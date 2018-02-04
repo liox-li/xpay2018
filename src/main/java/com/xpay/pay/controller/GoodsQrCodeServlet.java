@@ -79,11 +79,23 @@ public class GoodsQrCodeServlet extends HttpServlet {
 		}
 		Store store = storeService.findById(storeId);
 		
+		Order customerOrder = orderService.findPaidBySellerOrderNo(uid);
+		if(customerOrder!=null) {
+			if(StringUtils.isNotBlank(customerOrder.getReturnUrl())) {
+				response.sendRedirect(customerOrder.getReturnUrl());
+			} else {
+				response.sendError(400, "订单已存在");
+			}
+			return;
+		}
+		
 		String orderNo = request.getParameter("orderNo");
-		if(!validateRechargeOrder(orderNo)) {
+		if(!validateRechargeOrder(orderNo, uid)) {
 			response.sendError(400, "订单已存在");
 			return;
 		}
+		
+		
 		
 		Order order = paymentService.createGoodsOrder(store, goods, uid, orderNo);
 		if(order == null || StringUtils.isBlank(order.getCodeUrl())) {
@@ -102,7 +114,7 @@ public class GoodsQrCodeServlet extends HttpServlet {
 		return (storeId != 1L && goods!=null && goods.getStoreId() ==1L);
 	}
 	
-	private boolean validateRechargeOrder(String orderNo) {
+	private boolean validateRechargeOrder(String orderNo, String sellerOrderNo) {
 		if(StringUtils.isNotBlank(orderNo)) {
 			Order order = null;
 			try {

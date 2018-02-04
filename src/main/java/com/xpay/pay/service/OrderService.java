@@ -51,6 +51,15 @@ public class OrderService {
 		return orders;
 	}
 	
+	public Order findPaidBySellerOrderNo(String orderNo) {
+		List<Order> orders = orderMapper.findBySellerOrderNo(orderNo);
+		if(CollectionUtils.isEmpty(orders)) {
+			return null;
+		}
+		Order order = orders.stream().filter(x -> x.getStatus().equals(OrderStatus.SUCCESS)).findAny().orElse(null);
+		return order;
+	}
+	
 	public Order findActiveByOrderNo(String orderNo) {
 		List<Order> orders = orderMapper.findByOrderNo(orderNo);
 		Assert.notNull(orders, "Order not found - " + orderNo);
