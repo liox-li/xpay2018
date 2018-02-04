@@ -93,7 +93,11 @@ public class PaymentService {
 		order.setExtStoreCode(goods.getExtStoreId());
 		order.setStatus(OrderStatus.NOTPAY);
 		order.setOrderTime(IDGenerator.formatNow(IDGenerator.TimePattern14));
-		order.setPayChannel(PayChannel.ALL);
+		if(order.getCodeUrl().startsWith("https://qr.chinaums.com")) {
+			order.setPayChannel(PayChannel.XIAOWEI);
+		} else {
+			order.setPayChannel(PayChannel.XIAOWEI_H5);
+		}
 		order.setAppId(store.getAppId());
 		orderService.insert(order);
 		return order;
