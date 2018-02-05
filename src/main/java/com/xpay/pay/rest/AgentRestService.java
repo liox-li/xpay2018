@@ -33,6 +33,7 @@ import com.xpay.pay.model.StoreChannel.PaymentGateway;
 import com.xpay.pay.model.StoreGoods;
 import com.xpay.pay.model.StoreTransaction;
 import com.xpay.pay.model.StoreTransaction.TransactionType;
+import com.xpay.pay.proxy.IPaymentProxy.PayChannel;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.rest.contract.BaseResponse;
 import com.xpay.pay.rest.contract.CreateAppRequest;
@@ -548,8 +549,11 @@ public class AgentRestService extends AdminRestService {
 		if(StringUtils.isBlank(storeId)) {
 			Agent agent = agentService.findById(id);
 			Assert.notNull(agent, String.format("Agent not found, %s", id));
-
-			orders = orderService.findByAgentAndTime(agent, startTime, endTime);
+			if(Role.H5PROVIDER.equals(agent.getRole())) {
+				orders = orderService.finByPayChannelAndTime(PayChannel.XIAOWEI_H5, startTime, endTime);
+			} else {
+				orders = orderService.findByAgentAndTime(agent, startTime, endTime);
+			}
 		} else {
 			orders = orderService.findByStoreIdAndTime(storeId, startTime, endTime);
 		}

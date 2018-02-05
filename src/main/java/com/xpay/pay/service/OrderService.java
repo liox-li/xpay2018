@@ -21,6 +21,7 @@ import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
 import com.xpay.pay.model.StoreGoods;
 import com.xpay.pay.model.StoreGoods.ExtGoods;
+import com.xpay.pay.proxy.IPaymentProxy.PayChannel;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.util.AppConfig;
 import com.xpay.pay.util.CommonUtils;
@@ -236,6 +237,10 @@ public class OrderService {
 			}
 		}
 		return lock;
+	}
+
+	public List<Order> finByPayChannelAndTime(PayChannel payChannel, Date startTime, Date endTime) {
+		return orderMapper.findByPayChannelAndTime(payChannel.name(), startTime, endTime);
 	}
 	
 }
