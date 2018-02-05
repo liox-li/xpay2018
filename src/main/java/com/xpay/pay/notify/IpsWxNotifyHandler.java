@@ -53,7 +53,7 @@ public class IpsWxNotifyHandler extends AbstractNotifyHandler {
         .equals(notify.getWxPayRsp().getHead().getRspCode())) {
       return null;
     }
-    String billNo = notify.getWxPayRsp().getBody().getMerBillNo();
+    String billNo = notify.getWxPayRsp().getBody().getMerBillno();
     OrderStatus status =
         "Y".equals(notify.getWxPayRsp().getBody().getStatus()) ? OrderStatus.SUCCESS
             : OrderStatus.PAYERROR;
