@@ -6,7 +6,7 @@ package com.xpay.pay.proxy.ips.wxpay.notify;
  */
 public class Body {
 
-  private String merBillNo;
+  private String merBillno;
   private String merCode;
   private String account;
   private String ipsBillno;
@@ -15,12 +15,12 @@ public class Body {
   private String retEncodeType;
   private String status;
 
-  public String getMerBillNo() {
-    return merBillNo;
+  public String getMerBillno() {
+    return merBillno;
   }
 
-  public void setMerBillNo(String merBillNo) {
-    this.merBillNo = merBillNo;
+  public void setMerBillno(String merBillno) {
+    this.merBillno = merBillno;
   }
 
   public String getMerCode() {
