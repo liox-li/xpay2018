@@ -218,6 +218,7 @@ public class StoreChannel {
 	public static class IpsProps implements ChannelProps {
 		private String merType;
 		private String subMerCode;
+		private Boolean useH5Ext;
 
 		public String getMerType() {
 			return merType;
@@ -233,6 +234,14 @@ public class StoreChannel {
 
 		public void setSubMerCode(String subMerCode) {
 			this.subMerCode = subMerCode;
+		}
+
+		public Boolean isUseH5Ext() {
+			return useH5Ext;
+		}
+
+		public void setUseH5Ext(Boolean useH5Ext) {
+			this.useH5Ext = useH5Ext;
 		}
 	}
 

@@ -2,6 +2,7 @@ package com.xpay.pay.service;
 
 import static com.xpay.pay.proxy.IPaymentProxy.NO_RESPONSE;
 
+import com.xpay.pay.model.StoreChannel.IpsProps;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -188,6 +189,14 @@ public class PaymentService {
 				|| PaymentGateway.IPSQUICK.equals(gateway)
 				|| PaymentGateway.IPSWX.equals(gateway)){
 			request.setOrderTime(order.getOrderTime());
+			if(request.getChannelProps() != null) {
+				IpsProps props = (IpsProps) request.getChannelProps();
+				if(props.isUseH5Ext()!=null && props.isUseH5Ext()) {
+					request.setExtH5(true);
+				}else{
+					request.setExtH5(false);
+				}
+			}
 		}
 //		else if(PaymentGateway.RUBIPAY.equals(order.getStoreChannel().getPaymentGateway())) {
 //			request.setServerIp(LOCAL_ID);

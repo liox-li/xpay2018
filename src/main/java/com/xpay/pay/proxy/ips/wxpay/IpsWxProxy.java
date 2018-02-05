@@ -21,7 +21,6 @@ import com.xpay.pay.util.IDGenerator;
 import com.xpay.pay.util.TimeUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.sql.Time;
 import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -41,7 +40,7 @@ public class IpsWxProxy extends AbstractIpsProxy {
       throw new GatewayException(ApplicationConstants.CODE_COMMON,
           "Total fee must be more than 0.");
     }
-    String url = DEFAULT_H5API_URL + request.getOrderNo();
+    String url = (request.isExtH5() ? EXT_H5API_URL : DEFAULT_H5API_URL) + request.getOrderNo();
     PaymentResponse response = new PaymentResponse();
     response.setCode(PaymentResponse.SUCCESS);
     Bill bill = new Bill();
@@ -82,8 +81,12 @@ public class IpsWxProxy extends AbstractIpsProxy {
     body.setGoodsInfo(goodsInfo);
     if (paymentRequest.getChannelProps() != null) {
       IpsProps props = (IpsProps) paymentRequest.getChannelProps();
-      body.setMerType(props.getMerType());
-      body.setSubMerCode(props.getSubMerCode());
+      if (props.getMerType() != null) {
+        body.setMerType(props.getMerType());
+        body.setSubMerCode(props.getSubMerCode());
+      } else {
+        body.setMerType("0");
+      }
     } else {
       body.setMerType("0");
     }

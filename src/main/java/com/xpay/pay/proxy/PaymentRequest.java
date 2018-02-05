@@ -27,6 +27,7 @@ public class PaymentRequest {
 	private String userOpenId;
 	private String bankId;
 	private String cardType;
+	private boolean extH5;
 	
 	public String getExtStoreId() {
 		return extStoreId;
@@ -165,6 +166,14 @@ public class PaymentRequest {
 	}
 	public void setCardType(String cardType) {
 		this.cardType = cardType;
+	}
+
+	public boolean isExtH5() {
+		return extH5;
+	}
+
+	public void setExtH5(boolean extH5) {
+		this.extH5 = extH5;
 	}
 
 	public static class GoodsBean {
