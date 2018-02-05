@@ -99,7 +99,7 @@ public class StoreService {
 	private static final Float INIT_FREE_QUOTA = 2000f;
 	private static final Long DEFAULT_DAILY_LIMIT = 50000L;
 	private static final Float DEFAULT_BAR = 1000f;
-	public Store createStore(long agentId, long adminId, String name, Float bailPercentage, long appId, String csrTel, String proxyUrl, Long dailyLimit, String code, Long quota, String notifyUrl, Float bar) {
+	public Store createStore(long agentId, long adminId, String name, Float bailPercentage, long appId, String csrTel, String proxyUrl, Long dailyLimit, String code, Long quota, String notifyUrl, String returnUrl, Float bar) {
 		Float thisBaiPercentage = bailPercentage>0 && bailPercentage<10?bailPercentage:2;
 		Store store = new Store();
 		store.setAgentId(agentId);
@@ -111,6 +111,7 @@ public class StoreService {
 		store.setBailPercentage(thisBaiPercentage);
 		store.setCsrTel(csrTel);
 		store.setProxyUrl(proxyUrl);
+		store.setReturnUrl(returnUrl);
 		if(bar!=null && bar>1000f) {
 			store.setBar(DEFAULT_BAR);
 		} else {
@@ -137,7 +138,7 @@ public class StoreService {
 		return store;
 	}
 	
-	public Store updateStore(Long storeId, Long agentId, Long adminId, String name, Float bailPercentage, Long appId, String csrTel, String proxyUrl, Long dailyLimit, String notifyUrl) {
+	public Store updateStore(Long storeId, Long agentId, Long adminId, String name, Float bailPercentage, Long appId, String csrTel, String proxyUrl, Long dailyLimit, String notifyUrl, String returnUrl) {
 		Store store = storeMapper.findById(storeId);
 		if(StringUtils.isNotBlank(name)) {
 			store.setName(name);
@@ -165,6 +166,9 @@ public class StoreService {
 		}
 		if(StringUtils.isNotBlank(notifyUrl)) {
 			store.setNotifyUrl(notifyUrl);
+		}
+		if(StringUtils.isNotBlank(returnUrl)) {
+			store.setReturnUrl(returnUrl);
 		}
 		storeMapper.updateById(store);
 		return store;
