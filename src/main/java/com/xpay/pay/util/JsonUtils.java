@@ -43,6 +43,7 @@ public class JsonUtils {
 		try {
 			return jsonMapper.readValue(jsonStr, clazz);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 	}

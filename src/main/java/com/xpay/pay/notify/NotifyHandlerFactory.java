@@ -32,6 +32,8 @@ public class NotifyHandlerFactory {
   TxfNotifyHandler txfNotifyHandler;
   @Autowired
   IpsWxNotifyHandler ipsWxNotifyHandler;
+  @Autowired
+  HmNotifyHandler hmNotifyHandler;
 
   public INotifyHandler getNotifyHandler(String uri) {
     if (uri.contains(PaymentGateway.CHINAUMSH5.name().toLowerCase()) || uri
@@ -61,6 +63,8 @@ public class NotifyHandlerFactory {
         return txfNotifyHandler;
     } else if (uri.contains(PaymentGateway.IPSWX.name().toLowerCase())) {
       return ipsWxNotifyHandler;
+    } else if (uri.contains(PaymentGateway.HM.name().toLowerCase())) {
+      return hmNotifyHandler;
     }
     else {
       return null;

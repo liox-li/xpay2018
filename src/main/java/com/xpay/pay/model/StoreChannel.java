@@ -134,6 +134,7 @@ public class StoreChannel {
 		IPSSCAN("pay","query", "refund"),
 		IPSQUICK("pay","query", "refund"),
 		IPSWX("pay","query", "refund"),
+		HM("pay","query", ""),
 		TXF("", "query", "refund");
 		
 		String unifiedOrder;

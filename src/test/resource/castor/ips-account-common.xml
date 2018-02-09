@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapping PUBLIC "-//EXOLAB/Castor Mapping DTD Version 1.0//EN"
+  "http://castor.org/mapping.dtd">
+
+<mapping>
+
+  <class name="com.xpay.pay.proxy.ips.common.IpsRequest">
+    <map-to xml="ipsRequest"/>
+    <field name="argMerCode" nillable="true" required="true" type="string">
+      <bind-xml name="argMerCode" node="element"/>
+    </field>
+    <field name="arg3DesXmlPara" nillable="true" required="true" type="string">
+      <bind-xml name="arg3DesXmlPara" node="element"/>
+    </field>
+  </class>
+
+  <class name="com.xpay.pay.proxy.ips.common.IpsResponse">
+    <map-to xml="ipsResponse"/>
+    <field name="argMerCode" nillable="true" required="true" type="string">
+      <bind-xml name="argMerCode" node="element"/>
+    </field>
+    <field name="rspCode" nillable="true" required="true" type="string">
+      <bind-xml name="rspCode" node="element"/>
+    </field>
+    <field name="rspMsg" nillable="true" required="true" type="string">
+      <bind-xml name="rspMsg" node="element"/>
+    </field>
+    <field name="p3DesXmlPara" nillable="true" required="true" type="string">
+      <bind-xml name="p3DesXmlPara" node="element"/>
+    </field>
+  </class>
+
+  <class name="com.xpay.pay.proxy.ips.common.RequestHead">
+    <map-to xml="body"/>
+    <field name="version" nillable="true" required="true" type="string">
+      <bind-xml name="version" node="element"/>
+    </field>
+    <field name="reqIp" nillable="true" required="true" type="string">
+      <bind-xml name="reqIp" node="element"/>
+    </field>
+    <field name="reqDate" nillable="true" required="true" type="string">
+      <bind-xml name="reqDate" node="element"/>
+    </field>
+    <field name="signature" nillable="true" required="true" type="string">
+      <bind-xml name="signature" node="element"/>
+    </field>
+  </class>
+
+  <class name="com.xpay.pay.proxy.ips.common.ResponseHead">
+    <map-to xml="body"/>
+    <field name="reqDate" nillable="true" required="true" type="string">
+      <bind-xml name="version" node="element"/>
+    </field>
+    <field name="respDate" nillable="true" required="true" type="string">
+      <bind-xml name="reqIp" node="element"/>
+    </field>
+    <field name="signature" nillable="true" required="true" type="string">
+      <bind-xml name="reqDate" node="element"/>
+    </field>
+  </class>
+
+</mapping>
