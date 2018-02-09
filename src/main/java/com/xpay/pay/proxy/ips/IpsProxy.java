@@ -212,6 +212,7 @@ public class IpsProxy {
       throw new GatewayException(ipsResponse.getRspCode(), ipsResponse.getRspMsg());
     }
     String xml = CryptoUtils.decryptDESede(DES_KEY, DES_IV, ipsResponse.getP3DesXmlPara());
+    logger.info("transfer body xml: " + xml);
     streamSource = new StreamSource(new ByteArrayInputStream(xml.getBytes("UTF-8")));
     TransferRespXml transferRespXml = (TransferRespXml) transferUnmarshaller
         .unmarshal(streamSource);

@@ -24,6 +24,8 @@
     <result column="last_recharge_amt" jdbcType="NUMERIC" property="lastRechargeAmt" />
     <result column="channel_type" jdbcType="VARCHAR" property="channelType" />
     <result column="admin_id" jdbcType="VARCHAR" property="adminId" />
+    <result column="notify_url" jdbcType="VARCHAR" property="notifyUrl" />
+    <result column="return_url" jdbcType="VARCHAR" property="returnUrl" />
   </resultMap>
   
   <sql id="storeColumns">
@@ -47,7 +49,9 @@
     last_trans_sum,
     last_recharge_amt,
     channel_type,
-    admin_id
+    admin_id,
+    notify_url,
+    return_url
   </sql>
 
   <select id="findById" resultMap="StoreResultMap">
@@ -124,6 +128,12 @@
       </if> 
        <if test="channelType != null">
         channel_type,
+      </if> 
+       <if test="notifyUrl != null">
+        notify_url,
+      </if>   
+      <if test="returnUrl != null">
+        return_url,
       </if>       
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -165,6 +175,12 @@
         </if>
          <if test="channelType != null">
         	#{channelType,jdbcType=NUMERIC},
+        </if>
+        <if test="notifyUrl != null">
+        	#{notifyUrl,jdbcType=VARCHAR},
+        </if>
+        <if test="returnUrl != null">
+        	#{returnUrl,jdbcType=VARCHAR},
         </if>
     </trim>
   </insert>
@@ -214,6 +230,12 @@
       <if test="appId != null">
         app_id = #{appId,jdbcType=BIGINT},
       </if> 
+      <if test="agentId != null">
+        agent_id = #{agentId,jdbcType=BIGINT},
+      </if> 
+      <if test="adminId != null">
+        admin_id = #{adminId,jdbcType=BIGINT},
+      </if> 
       <if test="quota != null">
         quota = #{quota,jdbcType=NUMERIC},
       </if> 
@@ -223,6 +245,12 @@
       <if test="lastRechargeAmt != null">
         last_recharge_amt = #{lastRechargeAmt,jdbcType=NUMERIC},
       </if> 
+      <if test="notifyUrl != null">
+        notify_url = #{notifyUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="returnUrl != null">
+        return_url = #{returnUrl,jdbcType=VARCHAR},
+      </if>
       update_date = now()
     </set>
     where id = #{id,jdbcType=BIGINT}

@@ -18,6 +18,7 @@ public class IDGenerator {
 	private static final char X = 'X';
 	private static final char S = 'S';
 	private static final char R = 'R';
+	private static final char G = 'G';
 
 	public static String buildOrderNo(int appId, long storeId) {
 		StringBuffer sb = new StringBuffer();
@@ -33,6 +34,20 @@ public class IDGenerator {
 		StringBuffer sb = new StringBuffer();
 		sb.append(S);
 		sb.append(StringUtils.leftPad(String.valueOf(appId), 3, "0"));
+		sb.append(StringUtils.leftPad(String.valueOf(storeId), 4, "0"));
+		sb.append(formatNow(TimePattern17));
+		sb.append(randomNum(3));
+		return sb.toString();
+	}
+	
+	private static final long MY_STORE_ID=1L;
+	public static String buildQrOrderNo(long storeId) {
+		StringBuffer sb = new StringBuffer();
+		if(MY_STORE_ID == storeId) {
+			sb.append(S);
+		} else {
+			sb.append(X);
+		}
 		sb.append(StringUtils.leftPad(String.valueOf(storeId), 4, "0"));
 		sb.append(formatNow(TimePattern17));
 		sb.append(randomNum(3));
@@ -140,4 +155,13 @@ public class IDGenerator {
 		sb.append(randomNum(randNum));
 		return sb.toString();
 	}
+
+	public static String buildGoodsCode() {
+		StringBuffer sb = new StringBuffer();
+		sb.append(G);
+		sb.append(formatNow(TimePattern14));
+		sb.append(randomNum(5));
+		return sb.toString();
+	}
+
 }

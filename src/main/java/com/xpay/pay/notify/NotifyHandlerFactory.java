@@ -34,9 +34,15 @@ public class NotifyHandlerFactory {
   IpsWxNotifyHandler ipsWxNotifyHandler;
   @Autowired
   HmNotifyHandler hmNotifyHandler;
+  @Autowired
+  WechatNotifyHandler wechatNotifyHandler;
 
+  private static final String WECHAT = "wechat";
   public INotifyHandler getNotifyHandler(String uri) {
-    if (uri.contains(PaymentGateway.CHINAUMSH5.name().toLowerCase()) || uri
+	  if(uri.contains(WECHAT)) {
+		  return wechatNotifyHandler;
+	  }
+	  else if (uri.contains(PaymentGateway.CHINAUMSH5.name().toLowerCase()) || uri
         .contains(PaymentGateway.CHINAUMSWAP.name().toLowerCase())
         || uri.contains(PaymentGateway.CHINAUMSV3.name().toLowerCase())) {
       return chinaUmsH5Handler;

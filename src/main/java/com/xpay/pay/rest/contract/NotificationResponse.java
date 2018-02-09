@@ -5,23 +5,27 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.util.KeyValuePair;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.google.common.collect.Lists;
-
+@JsonInclude(Include.NON_NULL)
 public class NotificationResponse {
 	private String orderNo;
 	private String storeId;
 	private String storeName;
+	private String subject;
 	private String sellerOrderNo;
 	private String codeUrl;
 	private String tokenId;
 	private String prepayId;
 	private int orderStatus;
-	private Float totalFee;
+	private String totalFee;
 	private String extOrderNo;
 	private String targetOrderNo;
 	private String attach;
 	private String payInfo;
-	private long channelNo;
+	private Long channelNo;
+	private String uid;
 	private String sign;
 	
 	public String getOrderNo() {
@@ -72,10 +76,11 @@ public class NotificationResponse {
 	public void setOrderStatus(int orderStatus) {
 		this.orderStatus = orderStatus;
 	}
-	public Float getTotalFee() {
+	
+	public String getTotalFee() {
 		return totalFee;
 	}
-	public void setTotalFee(Float totalFee) {
+	public void setTotalFee(String totalFee) {
 		this.totalFee = totalFee;
 	}
 	public String getExtOrderNo() {
@@ -102,11 +107,23 @@ public class NotificationResponse {
 	public void setPayInfo(String payInfo) {
 		this.payInfo = payInfo;
 	}
-	public long getChannelNo() {
+	public Long getChannelNo() {
 		return channelNo;
 	}
-	public void setChannelNo(long channelNo) {
+	public void setChannelNo(Long channelNo) {
 		this.channelNo = channelNo;
+	}
+	public String getUid() {
+		return uid;
+	}
+	public void setUid(String uid) {
+		this.uid = uid;
+	}
+	public String getSubject() {
+		return subject;
+	}
+	public void setSubject(String subject) {
+		this.subject = subject;
 	}
 	public String getSign() {
 		return sign;
@@ -139,7 +156,7 @@ public class NotificationResponse {
 			keyValues.add(new KeyValuePair("prepayId", prepayId));
 		}
 		keyValues.add(new KeyValuePair("orderStatus", String.valueOf(orderStatus)));
-		if(totalFee!=null) {
+		if(StringUtils.isNotBlank(totalFee)) {
 			keyValues.add(new KeyValuePair("totalFee", String.valueOf(totalFee)));
 		}
 		if(StringUtils.isNotBlank(extOrderNo)) {
@@ -154,7 +171,15 @@ public class NotificationResponse {
 		if(StringUtils.isNotBlank(payInfo)) {
 			keyValues.add(new KeyValuePair("payInfo", payInfo));
 		}
-		keyValues.add(new KeyValuePair("channelNo", String.valueOf(channelNo)));
+		if(StringUtils.isNotBlank(uid)) {
+			keyValues.add(new KeyValuePair("uid", uid));
+		}
+		if(StringUtils.isNotBlank(subject)) {
+			keyValues.add(new KeyValuePair("subject", subject));
+		}
+		if(channelNo!=null && channelNo>0) {
+			keyValues.add(new KeyValuePair("channelNo", String.valueOf(channelNo)));
+		}
 		
 		return keyValues;
 	}

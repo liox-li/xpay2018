@@ -1,12 +1,13 @@
 package com.xpay.pay.rest.contract;
 
 public class RechargeResponse {
-	private long transactionId;
+	private Long transactionId;
+	private String orderNo;
 	private String codeUrl;
-	public long getTransactionId() {
+	public Long getTransactionId() {
 		return transactionId;
 	}
-	public void setTransactionId(long transactionId) {
+	public void setTransactionId(Long transactionId) {
 		this.transactionId = transactionId;
 	}
 	public String getCodeUrl() {
@@ -15,4 +16,11 @@ public class RechargeResponse {
 	public void setCodeUrl(String codeUrl) {
 		this.codeUrl = codeUrl;
 	}
+	public String getOrderNo() {
+		return orderNo;
+	}
+	public void setOrderNo(String orderNo) {
+		this.orderNo = orderNo;
+	}
+	
 }

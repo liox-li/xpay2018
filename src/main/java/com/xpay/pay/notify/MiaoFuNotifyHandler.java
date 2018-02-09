@@ -13,7 +13,7 @@ public class MiaoFuNotifyHandler extends AbstractNotifyHandler {
 	protected NotifyBody extractNotifyBody(String url, String content) {
 		String billNo = "";
 		String extOrderNo = "";
-		String totalFee = "";
+		int totalFee = 0;
 		OrderStatus status = OrderStatus.NOTPAY;
 		try {
 			billNo = url.substring(url.lastIndexOf("/")+1);
@@ -28,7 +28,7 @@ public class MiaoFuNotifyHandler extends AbstractNotifyHandler {
 				if ("trade_status".equals(key)) {
 					status = "ok".equalsIgnoreCase(pair[1])?OrderStatus.SUCCESS:status;
 				} else if ("total_amount".equals(key)) {
-					totalFee = String.valueOf((int)(Float.valueOf(pair[1])*100));
+					totalFee = (int)(Float.valueOf(pair[1])*100);
 				} else if ("trade_no".equals(key)) {
 					extOrderNo = pair[1];
 				}

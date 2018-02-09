@@ -1,8 +1,12 @@
 package com.xpay.pay.service;
 
+import static com.xpay.pay.ApplicationConstants.CODE_COMMON;
+import static com.xpay.pay.ApplicationConstants.STATUS_BAD_REQUEST;
+import static com.xpay.pay.ApplicationConstants.STATUS_UNAUTHORIZED;
 import static com.xpay.pay.proxy.IPaymentProxy.NO_RESPONSE;
 
 import com.xpay.pay.model.StoreChannel.IpsProps;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +19,7 @@ import com.xpay.pay.model.Order;
 import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
 import com.xpay.pay.model.StoreChannel.PaymentGateway;
+import com.xpay.pay.model.StoreGoods;
 import com.xpay.pay.proxy.IPaymentProxy;
 import com.xpay.pay.proxy.IPaymentProxy.PayChannel;
 import com.xpay.pay.proxy.PaymentProxyFactory;
@@ -50,7 +55,6 @@ public class PaymentService {
 		Order order = new Order();
 		order.setApp(app);
 		order.setOrderNo(orderNo);
-		order.setUid(uid);
 		order.setStore(store);
 		order.setStoreId(store.getId());
 		order.setStoreChannel(storeChannel);
@@ -66,6 +70,37 @@ public class PaymentService {
 		order.setSubject(subject);
 		orderService.insert(order);
 
+		return order;
+	}
+	
+	public Order createGoodsOrder(Store store, StoreGoods goods, String uid, String orderNo) {
+		Assert.isTrue(goods!=null && CollectionUtils.isNotEmpty(goods.getExtGoodsList()), "No avaiable goods");
+		validateQuota(store);
+		
+		Order order = new Order();
+		order.setCodeUrl(orderService.findAvaiableQrCode(store, goods));
+		order.setSubject(goods.getName());
+		order.setTotalFee(goods.getAmount());
+		if(StringUtils.isNotBlank(orderNo)) {
+			order.setOrderNo(orderNo);
+		} else {
+			order.setOrderNo(IDGenerator.buildQrOrderNo(goods.getStoreId()));
+		}
+		order.setSellerOrderNo(uid);
+		order.setStoreId(store.getId());
+		order.setNotifyUrl(store.getNotifyUrl());
+		order.setReturnUrl(store.getReturnUrl());
+		order.setGoodsId(goods.getId());
+		order.setExtStoreCode(goods.getExtStoreId());
+		order.setStatus(OrderStatus.NOTPAY);
+		order.setOrderTime(IDGenerator.formatNow(IDGenerator.TimePattern14));
+		if(order.getCodeUrl().startsWith("https://qr.chinaums.com")) {
+			order.setPayChannel(PayChannel.XIAOWEI);
+		} else {
+			order.setPayChannel(PayChannel.XIAOWEI_H5);
+		}
+		order.setAppId(store.getAppId());
+		orderService.insert(order);
 		return order;
 	}
 
@@ -97,15 +132,35 @@ public class PaymentService {
 	}
 
 	public boolean updateTradeAmount(Order order) {
-		if(order != null) {
-			Store store = order.getStore();
+		if(order == null) {
+			return true;
+		}
+		Store store = order.getStore();
+		if(order.getGoods() == null || order.getGoods().getStoreId()==order.getStoreId()) {
 			float newNonBail = store.getNonBail() + order.getTotalFee();
 			store.setNonBail(newNonBail);
+			return storeService.updateById(store);
+		} else if(order.getGoods() != null && order.getGoods().getStoreId()!=order.getStoreId()) {
+			float newBail = store.getBail() + order.getTotalFee();
+			store.setBail(newBail);
 			return storeService.updateById(store);
 		}
 		return true;
 	}
 
+	public void validateQuota(Store store) {
+		Assert.notNull(store, "No store found");
+		Assert.isTrue(-1 ==store.getQuota() || store.getNonBail()<store.getQuota(), "No enough quota remained");
+		Assert.isTrue(-1 == store.getDailyLimit() || store.getNonBail() < store.getDailyLimit(), "Exceed transaction limit");
+	}
+
+	public void validateStoreLink(Store store, String returnUrl) {
+		Assert.notNull(store, "No store found");
+		Assert.notEmpty(returnUrl, STATUS_BAD_REQUEST, CODE_COMMON, "ReturnUrl cannot be null");
+		Assert.isTrue(store.isValidStoreLink(returnUrl), STATUS_UNAUTHORIZED, CODE_COMMON, "Unauthorized returnUrl");
+	}
+
+	
 	public Bill query(Long appId, String orderNo, String storeCode, boolean isCsr) {
 		Order order = orderService.findActiveByOrderNo(orderNo);
 		Assert.isTrue(storeCode.equals(order.getStore().getCode()), "No such order found for the store");
@@ -173,7 +228,7 @@ public class PaymentService {
 		request.setTotalFee(order.getTotalFee());
 		request.setAttach(order.getAttach());
 		request.setOrderNo(order.getOrderNo());
-		request.setUserOpenId(order.getUid());
+//		request.setUserOpenId(order.getDeviceId());
 		request.setNotifyUrl(DEFAULT_NOTIFY_URL+order.getStoreChannel().getPaymentGateway().toString().toLowerCase());
 
 		PaymentGateway gateway = order.getStoreChannel().getPaymentGateway();

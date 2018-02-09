@@ -74,7 +74,7 @@ public class Agent {
 		this.agentId = agentId;
 	}
 	public static enum Role {
-		ADMIN, STORE, AGENT;
+		ADMIN, STORE, AGENT, H5PROVIDER;
 	}
 	
 }

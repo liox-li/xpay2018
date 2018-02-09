@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xpay.pay.dao.MissedOrderMapper">
+
+  <resultMap id="MissedOrderResultMap" type="com.xpay.pay.model.MissedOrder">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="ext_order_no" jdbcType="VARCHAR" property="orderNo" />
+    <result column="pay_time" jdbcType="VARCHAR" property="payTime" />
+    <result column="amount" jdbcType="VARCHAR" property="amount" />
+    <result column="subject" jdbcType="VARCHAR" property="subject" />
+     <result column="ext_store_id" jdbcType="VARCHAR" property="extStoreId" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+  </resultMap>
+  
+  <sql id="missedOrderColumns">
+    id,
+    ext_order_no,
+    pay_time,
+    amount,
+    subject,
+    ext_store_id,
+    status
+  </sql>
+
+  <select id="findById" resultMap="MissedOrderResultMap">
+    SELECT
+    <include refid="missedOrderColumns" />
+    FROM bill_missed_order
+    WHERE id = #{id} AND deleted = false
+  </select>
+  
+  <select id="findAllUnresovled" resultMap="MissedOrderResultMap">
+    SELECT
+    <include refid="missedOrderColumns" />
+    FROM bill_missed_order
+    WHERE status=0 AND deleted = false
+  </select>
+  
+  <select id="findByOrderNo" resultMap="MissedOrderResultMap">
+    SELECT
+    <include refid="missedOrderColumns" />
+    FROM bill_missed_order
+    WHERE ext_order_no = #{orderNo} AND deleted = false
+  </select>
+  
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.MissedOrder">
+    insert into bill_missed_order
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+     ext_order_no, pay_time, amount, subject, ext_store_id
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+     	#{orderNo,jdbcType=VARCHAR},
+     	#{payTime,jdbcType=VARCHAR},
+     	#{amount,jdbcType=NUMERIC},
+     	#{subject,jdbcType=VARCHAR},
+     	#{extStoreId,jdbcType=VARCHAR}
+    </trim>
+  </insert>
+  
+  <update id="updateById" parameterType="com.xpay.pay.model.MissedOrder">
+    update bill_missed_order
+    <set>
+      status = #{status,jdbcType=INTEGER},
+      update_date = now()
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+      and deleted = false
+  </update>
+  
+  <update id="deleteById">
+    update bill_missed_order
+    <set>
+      deleted = true,
+      update_date = now()
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+      and deleted = false
+  </update>
+  
+</mapper>

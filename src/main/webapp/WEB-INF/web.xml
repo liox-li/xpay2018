@@ -63,6 +63,11 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 	</servlet>
 	
 	<servlet>
+		<servlet-name>GoodsQrCodeServlet</servlet-name>
+		<servlet-class>com.xpay.pay.controller.GoodsQrCodeServlet</servlet-class>
+	</servlet>
+	
+	<servlet>
 		<servlet-name>TokenServlet</servlet-name>
 		<servlet-class>com.xpay.pay.controller.TokenServlet</servlet-class>
 	</servlet>
@@ -95,6 +100,11 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 	<servlet-mapping>
 		<servlet-name>JsPayServlet</servlet-name>
 		<url-pattern>/jspay/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>GoodsQrCodeServlet</servlet-name>
+		<url-pattern>/qrcode/*</url-pattern>
 	</servlet-mapping>
 	
 	<servlet-mapping>

@@ -11,12 +11,11 @@ public class Order {
 	private long id;
 	private String orderNo;
 	private String refundOrderNo;
-	private String uid;
+	private String extStoreCode;
 	private Long appId;
 	private long storeId;
 	private StoreChannel storeChannel;
-	private long storeChannelId;
-	private Float totalFee;
+	private Long storeChannelId;	private Float totalFee;
 	private String orderTime;
 	private String refundTime;
 	private String sellerOrderNo;
@@ -39,6 +38,8 @@ public class Order {
 	private App app;
 	private Store store;
 	private Date createDate;
+	private Long goodsId;
+	private StoreGoods goods;
 	
 	public long getId() {
 		return id;
@@ -52,11 +53,11 @@ public class Order {
 	public void setOrderNo(String orderNo) {
 		this.orderNo = orderNo;
 	}
-	public String getUid() {
-		return uid;
+	public String getExtStoreCode() {
+		return extStoreCode;
 	}
-	public void setUid(String uid) {
-		this.uid = uid;
+	public void setExtStoreCode(String extStoreCode) {
+		this.extStoreCode = extStoreCode;
 	}
 	public Long getAppId() {
 		return appId;
@@ -79,11 +80,18 @@ public class Order {
 			this.storeChannelId = storeChannel.getId();
 		}
 	}
-	public long getStoreChannelId() {
+	public Long getStoreChannelId() {
 		return storeChannelId;
 	}
-	public void setStoreChannelId(long storeChannelId) {
+	public void setStoreChannelId(Long storeChannelId) {
 		this.storeChannelId = storeChannelId;
+	}
+	
+	public Long getGoodsId() {
+		return goodsId;
+	}
+	public void setGoodsId(Long goodsId) {
+		this.goodsId = goodsId;
 	}
 	public Float getTotalFee() {
 		return totalFee;
@@ -256,5 +264,11 @@ public class Order {
 
 	public void setRefundTime(String refundTime) {
 		this.refundTime = refundTime;
+	}
+	public StoreGoods getGoods() {
+		return goods;
+	}
+	public void setGoods(StoreGoods goods) {
+		this.goods = goods;
 	}
 }

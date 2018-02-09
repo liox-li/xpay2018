@@ -102,7 +102,6 @@ ALTER TABLE bill_order ADD COLUMN target_order_no varchar(64);
 CREATE INDEX idx_target_order_no ON bill_order(target_order_no); 
 CREATE INDEX idx_order_store_channel ON bill_order(store_channel); 
 
-
 CREATE TABLE IF NOT EXISTS bill_order_detail (
 	id BIGSERIAL PRIMARY KEY,
 	store_name varchar(64),
@@ -233,3 +232,62 @@ ALTER TABLE bill_store ADD COLUMN last_recharge_amt NUMERIC default 0;
 ALTER TABLE bill_store ADD COLUMN channel_type varchar(32);
 ALTER TABLE bill_store ADD COLUMN admin_id BIGINT;
 ALTER TABLE bill_agent DROP COLUMN store_id;
+
+ALTER TABLE bill_store ADD COLUMN notify_url VARCHAR(256);
+ALTER TABLE bill_order ADD COLUMN goods_id BIGINT;
+
+ALTER TABLE bill_order ALTER COLUMN store_channel drop not null; 
+ALTER TABLE bill_order ALTER COLUMN app_id drop not null;
+CREATE INDEX idx_bill_order_goods_id ON bill_order(goods_id); 
+
+drop index idx_seller_order_no;
+CREATE INDEX idx_bill_order_seller_no ON bill_order(seller_order_no, total_fee, create_date); 
+
+CREATE TABLE IF NOT EXISTS bill_store_goods (
+	id BIGSERIAL PRIMARY KEY,
+	store_id BIGINT NOT NULL,
+	code varchar(64) NOT NULL,
+	name varchar(64) NOT NULL,
+	description varchar(256),
+	amount NUMERIC NOT NULL,
+	ext_store_id varchar(64) NOT NULL,
+	ext_qrcode varchar(256) NOT NULL,
+	create_date TIMESTAMP WITH TIME ZONE NOT NULL default now(), 
+	update_date TIMESTAMP WITH TIME ZONE NOT NULL default now(),
+	deleted boolean DEFAULT FALSE
+);
+ALTER SEQUENCE bill_store_goods_id_seq RESTART 100;
+CREATE INDEX idx_bill_store_goods_code ON bill_store_goods(code); 
+CREATE INDEX idx_bill_store_goods_store ON bill_store_goods(store_id); 
+
+CREATE TABLE IF NOT EXISTS db_locker (
+	key varchar(128) NOT NULL,
+	create_date TIMESTAMP WITH TIME ZONE NOT NULL default now(), 
+	update_date TIMESTAMP WITH TIME ZONE NOT NULL default now(),
+	deleted boolean DEFAULT FALSE
+);
+CREATE UNIQUE INDEX idx_db_locker_key ON db_locker(key); 
+
+ALTER TABLE bill_order RENAME COLUMN uid TO ext_store_code;
+drop index idx_bill_order_seller_no;
+CREATE INDEX idx_bill_order_seller_no ON bill_order(seller_order_no);
+CREATE INDEX idx_bill_order_ext_store_code ON bill_order(ext_store_code, total_fee, create_date); 
+
+CREATE TABLE IF NOT EXISTS bill_missed_order (
+	id BIGSERIAL PRIMARY KEY,
+	ext_order_no varchar(64) NOT NULL,
+	pay_time varchar(64) NOT NULL,
+	amount NUMERIC NOT NULL,
+	subject varchar(64) NOT NULL,
+	ext_store_id varchar(64) NOT NULL,
+	status integer NOT NULL DEFAULT 0,
+	create_date TIMESTAMP WITH TIME ZONE NOT NULL default now(), 
+	update_date TIMESTAMP WITH TIME ZONE NOT NULL default now(),
+	deleted boolean DEFAULT FALSE
+);
+ALTER SEQUENCE bill_missed_order_id_seq RESTART 100;
+
+ALTER TABLE bill_store_goods ADD COLUMN ext_goods varchar(2048);
+ALTER TABLE bill_store_goods ALTER COLUMN ext_qrcode drop not null;
+
+ALTER TABLE bill_store ADD COLUMN return_url varchar(256);

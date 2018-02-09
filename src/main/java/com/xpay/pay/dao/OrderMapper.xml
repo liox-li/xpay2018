@@ -27,7 +27,8 @@
     <result column="status" jdbcType="VARCHAR" property="status" />  
     <result column="subject" jdbcType="VARCHAR" property="subject" />    
     <result column="return_url" jdbcType="VARCHAR" property="returnUrl" /> 
-    <result column="uid" jdbcType="VARCHAR" property="uid" />     
+    <result column="ext_store_code" jdbcType="VARCHAR" property="extStoreCode" />     
+    <result column="goods_id" jdbcType="BIGINT" property="goodsId" /> 
     <result column="create_date" jdbcType="VARCHAR" property="createDate" />         
   </resultMap>
   
@@ -56,7 +57,8 @@
     status,
     subject,
     return_url,
-    uid,
+    ext_store_code,
+    goods_id,
     create_date
   </sql>
 
@@ -81,6 +83,13 @@
     WHERE bill_order.ext_order_no = #{extOrderNo} AND deleted = false
   </select>
   
+  <select id="findBySellerOrderNo" resultMap="OrderResultMap">
+    SELECT
+    <include refid="orderColumns" />
+    FROM bill_order
+    WHERE bill_order.seller_order_no = #{sellerOrderNo} AND deleted = false ORDER BY id DESC LIMIT 5
+  </select>
+  
   <select id="findAnyByOrderNo" resultMap="OrderResultMap">
     SELECT
     <include refid="orderColumns" />
@@ -92,7 +101,28 @@
     SELECT
     <include refid="orderColumns" />
     FROM bill_order
-    WHERE bill_order.store_id = #{storeId} AND update_date &gt;= #{startTime} AND update_date &lt; #{endTime} AND deleted = false
+    WHERE bill_order.store_id = #{storeId} AND update_date &gt;= #{startTime} AND update_date &lt; #{endTime} AND deleted = false ORDER BY update_date DESC
+  </select>
+  
+  <select id="findByPayChannelAndTime" resultMap="OrderResultMap">
+    SELECT
+    <include refid="orderColumns" />
+    FROM bill_order
+    WHERE bill_order.pay_channel = #{payChannel} AND update_date &gt;= #{startTime} AND update_date &lt; #{endTime} AND deleted = false ORDER BY update_date DESC
+  </select>
+  
+  <select id="findLastByGoodsId" resultMap="OrderResultMap">
+    SELECT
+    <include refid="orderColumns" />
+    FROM bill_order
+    WHERE bill_order.goods_id = #{goodsId} order by create_date desc limit 1
+  </select>
+  
+  <select id="findLastByExtStoreCode" resultMap="OrderResultMap">
+    SELECT
+    <include refid="orderColumns" />
+    FROM bill_order
+    WHERE bill_order.ext_store_code = #{extStoreCode} AND subject = #{subject} AND create_date &gt;=#{startTime} AND create_date &lt;=#{endTime} order by create_date desc limit 1
   </select>
   
   <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.Order">
@@ -167,8 +197,11 @@
       <if test="returnUrl != null">
         return_url,
       </if>  
-      <if test="uid != null">
-        uid,
+      <if test="extStoreCode != null">
+        ext_store_code,
+      </if>  
+      <if test="goodsId != null">
+        goods_id,
       </if>  
    </trim>
    <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -241,9 +274,12 @@
       <if test="returnUrl != null">
         #{returnUrl,jdbcType=VARCHAR},
       </if>   
-      <if test="uid != null">
-        #{uid,jdbcType=VARCHAR},
-      </if>  
+      <if test="extStoreCode != null">
+        #{extStoreCode,jdbcType=VARCHAR},
+      </if> 
+      <if test="goodsId != null">
+        #{goodsId,jdbcType=BIGINT},
+      </if> 
     </trim>
   </insert> 
      

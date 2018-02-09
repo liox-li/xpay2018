@@ -32,6 +32,8 @@ public class Store {
 	private Float lastRechargeAmt;
 	private String channelType;
 	private Long adminId;
+	private String notifyUrl;
+	private String returnUrl;
 	
 	public long getId() {
 		return id;
@@ -255,19 +257,28 @@ public class Store {
 		this.adminId = adminId;
 	}
 
+	public String getNotifyUrl() {
+		return notifyUrl;
+	}
 
-	//	private static final int SECURE_LOW_BOUNDER = 50;
-//	private static final int SECURE_UP_BOUNDER = 300;
+	public void setNotifyUrl(String notifyUrl) {
+		this.notifyUrl = notifyUrl;
+	}
+
+	public String getReturnUrl() {
+		return returnUrl;
+	}
+
+	public void setReturnUrl(String returnUrl) {
+		this.returnUrl = returnUrl;
+	}
+
 	public boolean isNextBailPay(float totalFee) {
-		return false;
-		
+		return false; 
 //		if(this.nonBail <= this.bar) {
 //			return false;
 //		}
 //		boolean isNextBailPay = this.bail * 100 <= this.nonBail * this.bailPercentage;
-//		if(!isNextBailPay) {
-//			isNextBailPay = totalFee>=SECURE_LOW_BOUNDER && totalFee<SECURE_UP_BOUNDER && (this.bail + totalFee ) * 100 <=  this.nonBail * (this.bailPercentage + 1);
-//		}
 //		return isNextBailPay;
 	}
 	
@@ -293,5 +304,5 @@ public class Store {
 			return 0f;
 		}
 		return this.channels.get(0).getPaymentGateway().getBaseBailPercentage();
-	}
+	}	
 }

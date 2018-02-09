@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.xpay.pay.proxy.chinaums.ChinaUmsProxy;
+import com.xpay.pay.util.CommonUtils;
 
 @Service
 public class ChinaUmsH5NotifyHandler extends AbstractNotifyHandler {
@@ -36,7 +37,7 @@ public class ChinaUmsH5NotifyHandler extends AbstractNotifyHandler {
 		} catch (Exception e) {
 			logger.error("ChinaUmsH5NotifyHandler extractNotifyBody "+content, e);
 		}
-		return StringUtils.isBlank(billNo)?null:new NotifyBody(null, billNo, ChinaUmsProxy.toOrderStatus(status), totalFee, targetOrderNo);
+		return StringUtils.isBlank(billNo)?null:new NotifyBody(null, billNo, ChinaUmsProxy.toOrderStatus(status), CommonUtils.toInt(totalFee), targetOrderNo);
 	}
 
 	private static final String SUCCESS_STR = "SUCCESS";

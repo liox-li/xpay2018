@@ -22,6 +22,7 @@ import com.xpay.pay.model.Agent;
 import com.xpay.pay.model.Agent.Role;
 import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
+import com.xpay.pay.model.StoreGoods;
 import com.xpay.pay.model.StoreLink;
 import com.xpay.pay.model.StoreTransaction;
 import com.xpay.pay.model.StoreTransaction.TransactionType;
@@ -88,13 +89,17 @@ public class StoreService {
 		return storeMapper.updateById(store);
 	}
 	
-	public StoreChannel findStoreChannelById(long id) {
+	public StoreChannel findStoreChannelById(Long id) {
+		if(id == null || id<=0) {
+			return null;
+		}
 		return channelCache.get(id);
 	}
 	
 	private static final Float INIT_FREE_QUOTA = 2000f;
 	private static final Long DEFAULT_DAILY_LIMIT = 50000L;
-	public Store createStore(long agentId, long adminId, String name, Float bailPercentage, long appId, String csrTel, String proxyUrl, Long dailyLimit, String code, Long quota) {
+	private static final Float DEFAULT_BAR = 1000f;
+	public Store createStore(long agentId, long adminId, String name, Float bailPercentage, long appId, String csrTel, String proxyUrl, Long dailyLimit, String code, Long quota, String notifyUrl, String returnUrl, Float bar) {
 		Float thisBaiPercentage = bailPercentage>0 && bailPercentage<10?bailPercentage:2;
 		Store store = new Store();
 		store.setAgentId(agentId);
@@ -106,6 +111,13 @@ public class StoreService {
 		store.setBailPercentage(thisBaiPercentage);
 		store.setCsrTel(csrTel);
 		store.setProxyUrl(proxyUrl);
+		store.setReturnUrl(returnUrl);
+		if(bar!=null && bar>1000f) {
+			store.setBar(DEFAULT_BAR);
+		} else {
+			store.setBar(DEFAULT_BAR);
+		}
+		store.setNotifyUrl(notifyUrl);
 		Float thisQuota = quota == null ?INIT_FREE_QUOTA:quota;
 		store.setQuota(thisQuota.floatValue());
 		long thisDailyLimit = dailyLimit == null ?DEFAULT_DAILY_LIMIT:dailyLimit;
@@ -126,7 +138,7 @@ public class StoreService {
 		return store;
 	}
 	
-	public Store updateStore(Long storeId, Long agentId, String name, Float bailPercentage, Long appId, String csrTel, String proxyUrl, Long dailyLimit) {
+	public Store updateStore(Long storeId, Long agentId, Long adminId, String name, Float bailPercentage, Long appId, String csrTel, String proxyUrl, Long dailyLimit, String notifyUrl, String returnUrl) {
 		Store store = storeMapper.findById(storeId);
 		if(StringUtils.isNotBlank(name)) {
 			store.setName(name);
@@ -148,6 +160,15 @@ public class StoreService {
 		}
 		if(agentId !=null && agentId>0) {
 			store.setAgentId(agentId);
+		}
+		if(adminId!=null && adminId>0) {
+			store.setAdminId(adminId);
+		}
+		if(StringUtils.isNotBlank(notifyUrl)) {
+			store.setNotifyUrl(notifyUrl);
+		}
+		if(StringUtils.isNotBlank(returnUrl)) {
+			store.setReturnUrl(returnUrl);
 		}
 		storeMapper.updateById(store);
 		return store;
@@ -172,6 +193,26 @@ public class StoreService {
 		
 		return transaction;
 	}
+	
+	public StoreTransaction rechargeOrder(long agentId, Store store, StoreGoods goods, String orderNo) {
+		int addQuota = (int)(goods.getAmount() *100 / (store.getBailPercentage()-0.6f));
+//		store.setQuota(store.getQuota()+addQuota);
+//		storeMapper.updateById(store);
+		
+		StoreTransaction transaction = new StoreTransaction();
+		transaction.setAgentId(agentId);
+		transaction.setAmount(goods.getAmount());
+		transaction.setQuota(Float.valueOf(addQuota));
+		transaction.setOperation(TransactionType.RECHARGE);
+		transaction.setStoreId(store.getId());
+		transaction.setBailPercentage(store.getBailPercentage());
+		transaction.setOrderNo(orderNo);
+		transaction.setStatus(OrderStatus.NOTPAY);
+		storeTransactionMapper.insert(transaction);
+		
+		return transaction;
+	}
+	
 	
 	public List<StoreTransaction> findTransactionsByStoreId(long storeId, Date startTime, Date endTime) {
 		return storeTransactionMapper.findByStoreIdAndTime(storeId, startTime, endTime);
@@ -280,6 +321,14 @@ public class StoreService {
 			}
 		}
 		return list;
+	}
+
+	public StoreTransaction findTransactionByOrderNo(String orderNo) {
+		return storeTransactionMapper.findByOrderNo(orderNo);
+	}
+
+	public boolean deleteStore(long storeId) {
+		return storeMapper.deleteById(storeId);
 	}
 
 }

@@ -1,13 +1,14 @@
 package com.xpay.pay.notify;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.proxy.supay.Notify;
 import com.xpay.pay.proxy.supay.SUPayProxy;
 import com.xpay.pay.proxy.supay.SUPayResponse;
 import com.xpay.pay.util.JsonUtils;
 import com.xpay.pay.util.RSASignature;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
 
 /**
  * Created by sunjian on Date: 2017/12/15 上午12:14
@@ -22,7 +23,7 @@ public class SUPayNotifyHandler extends AbstractNotifyHandler {
     String extOrderNo = "";
     String status = "";
     String targetOrderNo = "";
-    String totalFee = "";
+    int totalFee = 0;
     try {
       SUPayResponse suPayResponse = JsonUtils.fromJson(content, SUPayResponse.class);
 
@@ -40,7 +41,7 @@ public class SUPayNotifyHandler extends AbstractNotifyHandler {
         orderNo = notify.getMerOrderId();
         extOrderNo = notify.getPlatformOrderId();
         status = notify.getStatus();
-        totalFee = notify.getAmount().toString();
+        totalFee = notify.getAmount();
       }
     } catch (Exception e) {
     }

@@ -8,6 +8,8 @@ public class QuickCreateStoreRequest {
 	private Float bailPercentage;
 	private String csrTel;
 	private String proxyUrl;
+	private String notifyUrl;
+	private String returnUrl;
 	private Long dailyLimit;
 	private String extStoreId;
 	private PaymentGateway paymentGateway;
@@ -16,6 +18,7 @@ public class QuickCreateStoreRequest {
 	private Long quota;
 	private Long channelId;
 	private ChinaUmsProps chinaUmsProps;
+	private Float bar;
 	public String getName() {
 		return name;
 	}
@@ -39,6 +42,18 @@ public class QuickCreateStoreRequest {
 	}
 	public void setProxyUrl(String proxyUrl) {
 		this.proxyUrl = proxyUrl;
+	}
+	public String getNotifyUrl() {
+		return notifyUrl;
+	}
+	public void setNotifyUrl(String notifyUrl) {
+		this.notifyUrl = notifyUrl;
+	}
+	public String getReturnUrl() {
+		return returnUrl;
+	}
+	public void setReturnUrl(String returnUrl) {
+		this.returnUrl = returnUrl;
 	}
 	public Long getDailyLimit() {
 		return dailyLimit;
@@ -87,5 +102,11 @@ public class QuickCreateStoreRequest {
 	}
 	public void setChannelId(Long channelId) {
 		this.channelId = channelId;
+	}
+	public Float getBar() {
+		return bar;
+	}
+	public void setBar(Float bar) {
+		this.bar = bar;
 	}
 }

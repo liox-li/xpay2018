@@ -68,7 +68,7 @@ public class JsonUtils {
 		// instance.enable(SerializationFeature.WRITE_ENUMS_USING_INDEX);
 		instance.setSerializationInclusion(Include.NON_NULL);
 		instance.setSerializationInclusion(Include.NON_EMPTY);
-		instance.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ"));
+		instance.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
 		instance.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		return instance;
 	}

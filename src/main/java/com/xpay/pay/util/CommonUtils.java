@@ -89,6 +89,14 @@ public class CommonUtils {
 		return val.intValue();
 	}
 	
+	public static long toLong(String val) {
+		try {
+			return Long.valueOf(val);
+		} catch(Exception e) {
+			return Long.MIN_VALUE;
+		}
+	}
+	
 	public static <E> boolean in(Collection<E> coll, E e) {
 		if(CollectionUtils.isEmpty(coll)) {
 			return false;
@@ -190,6 +198,18 @@ public class CommonUtils {
 			dest = m.replaceAll("");
 		}
 		return dest;
+	}
+	
+	public static <T> int indexOf(T[] arr, T t) {
+		if(arr == null || arr.length == 0 || t == null) {
+			return -1;
+		}
+		for(int i = 0; i<arr.length;i++) {
+			if(t.equals(arr[i])) {
+				return i;
+			}
+		}
+		return -1;
 	}
 	
 }

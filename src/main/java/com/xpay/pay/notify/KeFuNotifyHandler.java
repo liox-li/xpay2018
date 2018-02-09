@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.xpay.pay.proxy.kefu.KeFuProxy;
+import com.xpay.pay.util.CommonUtils;
 
 @Service
 public class KeFuNotifyHandler extends AbstractNotifyHandler {
@@ -37,7 +38,7 @@ public class KeFuNotifyHandler extends AbstractNotifyHandler {
 		} catch (Exception e) {
 			
 		}
-		return StringUtils.isBlank(billNo)?null:new NotifyBody(null, billNo, KeFuProxy.toOrderStatus(status), totalFee, targetOrderNo);
+		return StringUtils.isBlank(billNo)?null:new NotifyBody(null, billNo, KeFuProxy.toOrderStatus(status), CommonUtils.toInt(totalFee), targetOrderNo);
 	}
 
 

@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,17 +19,27 @@ import com.xpay.pay.model.Agent;
 import com.xpay.pay.model.Order;
 import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
+import com.xpay.pay.model.StoreGoods;
+import com.xpay.pay.model.StoreGoods.ExtGoods;
+import com.xpay.pay.proxy.IPaymentProxy.PayChannel;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
+import com.xpay.pay.util.AppConfig;
 import com.xpay.pay.util.CommonUtils;
+import com.xpay.pay.util.TimeUtils;
 
 @Service
 public class OrderService {
+	protected final Logger logger = LogManager.getLogger(OrderService.class);
 	@Autowired
 	protected OrderMapper orderMapper;
 	@Autowired
 	protected AppService appService;
 	@Autowired
 	protected StoreService storeService;
+	@Autowired
+	protected StoreGoodsService goodsService;
+	@Autowired
+	private LockerService lockerService;
 
 	public List<Order> findByOrderNo(String orderNo) {
 		List<Order> orders = orderMapper.findByOrderNo(orderNo);
@@ -34,8 +47,18 @@ public class OrderService {
 		for (Order order : orders) {
 			order.setApp(appService.findById(order.getAppId()));
 			order.setStore(storeService.findById(order.getStoreId()));
+			order.setGoods(goodsService.findById(order.getGoodsId()));
 		}
 		return orders;
+	}
+	
+	public Order findPaidBySellerOrderNo(String orderNo) {
+		List<Order> orders = orderMapper.findBySellerOrderNo(orderNo);
+		if(CollectionUtils.isEmpty(orders)) {
+			return null;
+		}
+		Order order = orders.stream().filter(x -> x.getStatus().equals(OrderStatus.SUCCESS)).findAny().orElse(null);
+		return order;
 	}
 	
 	public Order findActiveByOrderNo(String orderNo) {
@@ -46,6 +69,7 @@ public class OrderService {
 		order.setApp(appService.findById(order.getAppId()));
 		order.setStore(storeService.findById(order.getStoreId()));
 		order.setStoreChannel(storeService.findStoreChannelById(order.getStoreChannelId()));
+		order.setGoods(goodsService.findById(order.getGoodsId()));
 		return order;
 	}
 	
@@ -57,6 +81,7 @@ public class OrderService {
 		order.setApp(appService.findById(order.getAppId()));
 		order.setStore(storeService.findById(order.getStoreId()));
 		order.setStoreChannel(storeService.findStoreChannelById(order.getStoreChannelId()));
+		order.setGoods(goodsService.findById(order.getGoodsId()));
 		return order;
 	}
 	
@@ -68,7 +93,23 @@ public class OrderService {
 		order.setApp(appService.findById(order.getAppId()));
 		order.setStore(storeService.findById(order.getStoreId()));
 		order.setStoreChannel(storeService.findStoreChannelById(order.getStoreChannelId()));
+		order.setGoods(goodsService.findById(order.getGoodsId()));
 		return order;
+	}
+	
+	public Order findActiveByOrderTime(String extStoreCode, String extOrderNo, Float amount, String subject, Date orderTime) {
+		Date startTime = TimeUtils.timeBefore(orderTime, 60000);
+		List<Order> orders = orderMapper.findLastByExtStoreCode(extStoreCode,subject, startTime, orderTime);
+		if(CollectionUtils.isNotEmpty(orders)) {
+			Order order = orders.stream().filter(x ->  (Math.abs(x.getTotalFee()-amount)<=0.5f)).findFirst().orElse(null);
+			if(order == null) {
+				return null;
+			}
+			order.setStore(storeService.findById(order.getStoreId()));
+			order.setGoods(goodsService.findById(order.getGoodsId()));
+			return order;  
+		}
+		return null;
 	}
 	
 	public StoreChannel findUnusedChannelByStore(Store store, String orderNo) {
@@ -142,6 +183,64 @@ public class OrderService {
 	
 	public boolean update(Order order) {
 		return orderMapper.updateById(order);
+	}
+
+	private static final long bailStoreId = 1L;
+	private static final long storeLockTime = AppConfig.XPayConfig.getProperty("store.lock.time", 10000L);
+	private static final long goodsLockTime = AppConfig.XPayConfig.getProperty("goods.lock.time", 10000L);
+	private static final long checkInterval = 1000L;
+	public String findAvaiableQrCode(Store store, StoreGoods goods) {
+		if(storeLockTime>0) {
+			boolean stoceLock  = aquireLock(store.getCode(), storeLockTime, checkInterval);
+			if(!stoceLock) {
+				logger.error("No lock found: "+store.getCode());
+			}
+			Assert.isTrue(stoceLock, "No avaiable channel");
+		}
+		
+		StoreGoods thisGoods = null;
+		if(store.isNextBailPay(goods.getAmount())) {
+			thisGoods = goodsService.findByStoreIdAndAmount(bailStoreId, goods.getAmount());
+		}
+		thisGoods = thisGoods == null? goods: thisGoods;
+		
+		String qrCode = lockerService.findOldestByKeys(thisGoods.getExtQrCodes());
+		ExtGoods extGoods = thisGoods.getExtGoodsList().stream().filter(x -> x.getExtQrCode().equals(qrCode)).findAny().orElse(null);
+		
+		if(extGoods!=null) {
+			goods.setName(StringUtils.trim(goods.getName())+StringUtils.trim(extGoods.getNote()));
+		}
+		
+		if(goodsLockTime>0) {
+			boolean lock = aquireLock(qrCode, goodsLockTime, checkInterval);
+			if(!lock) {
+				logger.error("No lock found: "+qrCode);
+			}
+			Assert.isTrue(lock, "No avaiable channel");
+		}
+		
+		return qrCode;
+	}
+
+	public boolean aquireLock(String key, long lockTime, long checkInterval) {
+		boolean lock = false;
+		for(int i=0;i<10;i++) {
+			lock = lockerService.lock(key, lockTime);
+			if(lock) {
+				break;
+			}
+			try {
+				Thread.sleep(checkInterval);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return lock;
+	}
+
+	public List<Order> finByPayChannelAndTime(PayChannel payChannel, Date startTime, Date endTime) {
+		return orderMapper.findByPayChannelAndTime(payChannel.name(), startTime, endTime);
 	}
 	
 }

@@ -57,8 +57,7 @@ public class IpsNotifyHandler extends AbstractNotifyHandler {
     OrderStatus status =
         "Y".equals(notify.getGateWayRsp().getBody().getStatus()) ? OrderStatus.SUCCESS
             : OrderStatus.PAYERROR;
-    String totalFee = String
-        .valueOf((int) (Float.valueOf(notify.getGateWayRsp().getBody().getAmount()) * 100));
+    int totalFee =(int) (Float.valueOf(notify.getGateWayRsp().getBody().getAmount()) * 100);
     return new NotifyBody(billNo, notify.getGateWayRsp().getBody().getIpsBillNo(), status, totalFee,
         null);
   }

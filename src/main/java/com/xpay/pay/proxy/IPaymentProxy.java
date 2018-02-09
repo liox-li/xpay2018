@@ -21,7 +21,7 @@ public interface IPaymentProxy {
 	public PaymentResponse refund(PaymentRequest request);
 	
 	public enum PayChannel {
-		ALL(0), ALIPAY(1), WECHAT(2), CASH(3), CREDITCARD(4);
+		ALL(0), ALIPAY(1), WECHAT(2), CASH(3), CREDITCARD(4), XIAOWEI(5), XIAOWEI_H5(6);
 		
 		String id;
 		
