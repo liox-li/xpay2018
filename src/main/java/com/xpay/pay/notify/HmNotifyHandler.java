@@ -2,6 +2,7 @@ package com.xpay.pay.notify;
 
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.proxy.hm.TranRsp;
+import com.xpay.pay.util.CommonUtils;
 import com.xpay.pay.util.JsonUtils;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,7 @@ public class HmNotifyHandler extends AbstractNotifyHandler {
         "Y".equals(tranRsp.getTransStatus()) ? OrderStatus.SUCCESS
             : OrderStatus.PAYERROR;
     return new NotifyBody(tranRsp.getOrderNo(), tranRsp.getTransSeq(), status,
-        tranRsp.getTransAmount(),
+        CommonUtils.toInt(tranRsp.getTransAmount()),
         null);
   }
 
