@@ -101,8 +101,12 @@ public class IpsScanProxy extends AbstractIpsProxy {
     }
     if (request.getChannelProps() != null) {
       IpsProps props = (IpsProps) request.getChannelProps();
-      body.setMerType(props.getMerType());
-      body.setSubMerCode(props.getSubMerCode());
+      if(props.getMerType() != null) {
+        body.setMerType(props.getMerType());
+        body.setSubMerCode(props.getSubMerCode());
+      } else {
+        body.setMerType("0");
+      }
     } else{
       body.setMerType("0");
     }

@@ -76,7 +76,8 @@ public class StoreChannel {
 		if(StringUtils.isNotBlank(props)) {
 			if(this.paymentGateway == PaymentGateway.CHINAUMSH5) {
 				this.channelProps = JsonUtils.fromJson(props, ChinaUmsProps.class);
-			} else if(this.paymentGateway == PaymentGateway.IPSSCAN) {
+			} else if(this.paymentGateway == PaymentGateway.IPSSCAN
+					|| this.paymentGateway == PaymentGateway.IPSWX) {
 				this.channelProps = JsonUtils.fromJson(props, IpsProps.class);
 			} else if(this.paymentGateway == PaymentGateway.SUPay) {
 				this.channelProps = JsonUtils.fromJson(props, SUPayProps.class);
@@ -132,6 +133,8 @@ public class StoreChannel {
 		SUPay("pay", "", ""),
 		IPSSCAN("pay","query", "refund"),
 		IPSQUICK("pay","query", "refund"),
+		IPSWX("pay","query", "refund"),
+		HM("pay","query", ""),
 		TXF("", "query", "refund");
 		
 		String unifiedOrder;
@@ -216,6 +219,7 @@ public class StoreChannel {
 	public static class IpsProps implements ChannelProps {
 		private String merType;
 		private String subMerCode;
+		private Boolean useH5Ext;
 
 		public String getMerType() {
 			return merType;
@@ -231,6 +235,14 @@ public class StoreChannel {
 
 		public void setSubMerCode(String subMerCode) {
 			this.subMerCode = subMerCode;
+		}
+
+		public Boolean isUseH5Ext() {
+			return useH5Ext;
+		}
+
+		public void setUseH5Ext(Boolean useH5Ext) {
+			this.useH5Ext = useH5Ext;
 		}
 	}
 

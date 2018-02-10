@@ -5,6 +5,7 @@ import static com.xpay.pay.ApplicationConstants.STATUS_BAD_REQUEST;
 import static com.xpay.pay.ApplicationConstants.STATUS_UNAUTHORIZED;
 import static com.xpay.pay.proxy.IPaymentProxy.NO_RESPONSE;
 
+import com.xpay.pay.model.StoreChannel.IpsProps;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -240,8 +241,17 @@ public class PaymentService {
 			String notifyUrl = request.getNotifyUrl() + "/"+request.getOrderNo();
 			request.setNotifyUrl(notifyUrl);
 		} else if(PaymentGateway.IPSSCAN.equals(gateway)
-				|| PaymentGateway.IPSQUICK.equals(gateway)){
+				|| PaymentGateway.IPSQUICK.equals(gateway)
+				|| PaymentGateway.IPSWX.equals(gateway)){
 			request.setOrderTime(order.getOrderTime());
+			if(request.getChannelProps() != null) {
+				IpsProps props = (IpsProps) request.getChannelProps();
+				if(props.isUseH5Ext()!=null && props.isUseH5Ext()) {
+					request.setExtH5(true);
+				}else{
+					request.setExtH5(false);
+				}
+			}
 		}
 //		else if(PaymentGateway.RUBIPAY.equals(order.getStoreChannel().getPaymentGateway())) {
 //			request.setServerIp(LOCAL_ID);
@@ -275,7 +285,8 @@ public class PaymentService {
 		} else if(PaymentGateway.MIAOFU.equals(gateway)) {
 			request.setGatewayOrderNo(order.getExtOrderNo());
 		} else if(PaymentGateway.IPSQUICK.equals(gateway)
-				||PaymentGateway.IPSSCAN.equals(gateway)) {
+				||PaymentGateway.IPSSCAN.equals(gateway)
+				||PaymentGateway.IPSWX.equals(gateway)) {
 			if(OrderStatus.REFUNDING.equals(order.getStatus()) || OrderStatus.REFUND.equals(order.getStatus()) || OrderStatus.REFUNDERROR.equals(order.getStatus())){
         request.setRefundTime(order.getRefundTime());
         request.setRefundOrderNo(order.getRefundOrderNo());
@@ -330,6 +341,7 @@ public class PaymentService {
 				PaymentGateway.CHINAUMSV3.equals(gateway) ||
 				PaymentGateway.UPAY.equals(gateway) ||
 				PaymentGateway.IPSQUICK.equals(gateway) ||
+				PaymentGateway.IPSWX.equals(gateway) ||
 				PaymentGateway.KEKEPAY.equals(gateway) ||
 				PaymentGateway.TXF.equals(gateway);
 	}

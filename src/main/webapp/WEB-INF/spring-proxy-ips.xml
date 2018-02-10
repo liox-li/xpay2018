@@ -48,6 +48,7 @@
         <value>/WEB-INF/castor/ips-query-merbillno-req.xml</value>
         <value>/WEB-INF/castor/ips-query-merbillno-rsp.xml</value>
         <value>/WEB-INF/castor/ips-quick-req.xml</value>
+        <value>/WEB-INF/castor/ips-wxpay-req.xml</value>
         <value>/WEB-INF/castor/ips-refund-req.xml</value>
         <value>/WEB-INF/castor/ips-refund-rsp.xml</value>
         <value>/WEB-INF/castor/ips-scan-req.xml</value>
@@ -72,6 +73,15 @@
       <array>
         <value>/WEB-INF/castor/ips-common.xml</value>
         <value>/WEB-INF/castor/ips-notify.xml</value>
+      </array>
+    </property>
+  </bean>
+
+  <bean id="ipsWxNotifyUnmarshaller" class="org.springframework.oxm.castor.CastorMarshaller">
+    <property name="mappingLocations">
+      <array>
+        <value>/WEB-INF/castor/ips-common.xml</value>
+        <value>/WEB-INF/castor/ips-wxnotify.xml</value>
       </array>
     </property>
   </bean>

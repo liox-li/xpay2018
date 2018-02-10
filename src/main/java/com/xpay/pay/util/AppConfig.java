@@ -49,6 +49,8 @@ public class AppConfig {
 	
 	public static final AppConfig TxfConfig = new AppConfig(load("txf.config"));
 
+	public static final AppConfig HmConfig = new AppConfig(load("hm.config"));
+
 	public AppConfig(Properties properties) {
 		this.properties = properties;
 	}

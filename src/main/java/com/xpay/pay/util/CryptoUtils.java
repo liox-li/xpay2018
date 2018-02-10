@@ -13,10 +13,13 @@ import java.util.Map;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.DESedeKeySpec;
 import javax.crypto.spec.IvParameterSpec;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.util.KeyValuePair;
+import org.springframework.security.crypto.codec.Hex;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -112,7 +115,22 @@ public class CryptoUtils {
 		return null;
 	}
 
-  public static String decryptDESede(String key, String iv, String src) {
+
+	public static String encrypt3DESECB(String keySecurite, String src) {
+		try {
+			DESedeKeySpec spec = new DESedeKeySpec(keySecurite.getBytes());
+			SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DESede");
+			SecretKey sec = keyFactory.generateSecret(spec);
+			Cipher cipher = Cipher.getInstance("DESede");
+			cipher.init(Cipher.ENCRYPT_MODE, sec);
+			return new String(Hex.encode(cipher.doFinal(src.getBytes("UTF-8"))));
+		} catch (java.lang.Exception e3) {
+			e3.printStackTrace();
+		}
+		return null;
+	}
+
+	public static String decryptDESede(String key, String iv, String src) {
     try {
 			DESedeKeySpec spec = new DESedeKeySpec(key.getBytes());
 			SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DESede");
@@ -126,6 +144,37 @@ public class CryptoUtils {
     }
     return null;
   }
+
+
+	public static String encryptDES(String key, String iv, String src) {
+		try {
+			DESKeySpec spec = new DESKeySpec(key.getBytes());
+			SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
+			SecretKey sec = keyFactory.generateSecret(spec);
+			Cipher cipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
+			IvParameterSpec IvParameters = new IvParameterSpec(iv.getBytes());
+			cipher.init(Cipher.ENCRYPT_MODE, sec, IvParameters);
+			return Base64Utils.encodeToString(cipher.doFinal(src.getBytes("UTF-8")));
+		} catch (java.lang.Exception e3) {
+			e3.printStackTrace();
+		}
+		return null;
+	}
+
+	public static String decryptDES(String key, String iv, String src) {
+		try {
+			DESKeySpec spec = new DESKeySpec(key.getBytes());
+			SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
+			SecretKey sec = keyFactory.generateSecret(spec);
+			Cipher cipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
+			IvParameterSpec IvParameters = new IvParameterSpec(iv.getBytes());
+			cipher.init(Cipher.DECRYPT_MODE, sec, IvParameters);
+			return new String(cipher.doFinal(Base64Utils.decode(src.getBytes("UTF-8"))), "UTF-8");
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+		return null;
+	}
 
   private static String buildPayParams(Map<String, String> payParams){
 		StringBuffer sb = new StringBuffer();
