@@ -6,15 +6,24 @@ package com.xpay.pay.proxy.ips.transfer.rsp;
  */
 public class Head {
 
-  private String version;
+  private String reqDate;
+  private String respDate;
   private String signature;
 
-  public String getVersion() {
-    return version;
+  public String getReqDate() {
+    return reqDate;
   }
 
-  public void setVersion(String version) {
-    this.version = version;
+  public void setReqDate(String reqDate) {
+    this.reqDate = reqDate;
+  }
+
+  public String getRespDate() {
+    return respDate;
+  }
+
+  public void setRespDate(String respDate) {
+    this.respDate = respDate;
   }
 
   public String getSignature() {
