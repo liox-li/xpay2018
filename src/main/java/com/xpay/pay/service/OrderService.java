@@ -19,6 +19,7 @@ import com.xpay.pay.model.Agent;
 import com.xpay.pay.model.Order;
 import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
+import com.xpay.pay.model.StoreExtGoods;
 import com.xpay.pay.model.StoreGoods;
 import com.xpay.pay.model.StoreGoods.ExtGoods;
 import com.xpay.pay.proxy.IPaymentProxy.PayChannel;
@@ -40,6 +41,9 @@ public class OrderService {
 	protected StoreGoodsService goodsService;
 	@Autowired
 	private LockerService lockerService;
+	@Autowired
+	private StoreExtGoodsService storeExtGoodsService;
+	
 
 	public List<Order> findByOrderNo(String orderNo) {
 		List<Order> orders = orderMapper.findByOrderNo(orderNo);
@@ -190,6 +194,12 @@ public class OrderService {
 	private static final long goodsLockTime = AppConfig.XPayConfig.getProperty("goods.lock.time", 10000L);
 	private static final long checkInterval = 1000L;
 	public String findAvaiableQrCode(Store store, StoreGoods goods) {
+		//logic for one nayou Goods mapped to multi china ums goods in multi ums stores
+		List<StoreExtGoods> storeExtGoods = storeExtGoodsService.findByGoodsId(goods.getId());
+		if(!CollectionUtils.isEmpty(storeExtGoods)) {
+			return findAvaiableQrCode(goods, storeExtGoods);
+		}
+		
 		if(storeLockTime>0) {
 			boolean stoceLock  = aquireLock(store.getCode(), storeLockTime, checkInterval);
 			if(!stoceLock) {
@@ -209,6 +219,38 @@ public class OrderService {
 		
 		if(extGoods!=null) {
 			goods.setName(StringUtils.trim(goods.getName())+StringUtils.trim(extGoods.getNote()));
+		}
+		
+		if(goodsLockTime>0) {
+			boolean lock = aquireLock(qrCode, goodsLockTime, checkInterval);
+			if(!lock) {
+				logger.error("No lock found: "+qrCode);
+			}
+			Assert.isTrue(lock, "No avaiable channel");
+		}
+		
+		return qrCode;
+	}
+
+	private String findAvaiableQrCode(StoreGoods goods, List<StoreExtGoods> storeExtGoods) {
+		StoreExtGoods extGoods = storeExtGoods.stream().filter(x -> CollectionUtils.isNotEmpty(x.getExtGoodsList())).collect(Collectors.collectingAndThen(Collectors.toList(), collected -> {
+		      Collections.shuffle(collected);
+		      return collected.stream();
+		  })).findFirst().orElse(null);
+		
+		if(storeLockTime>0) {
+			boolean stoceLock  = aquireLock(extGoods.getExtStoreId(), storeLockTime, checkInterval);
+			if(!stoceLock) {
+				logger.error("No lock found: "+extGoods.getExtStoreId());
+			}
+			Assert.isTrue(stoceLock, "No avaiable channel");
+		}
+		
+		String qrCode = lockerService.findOldestByKeys(extGoods.getExtQrCodes());
+		ExtGoods umsGoods = extGoods.getExtGoodsList().stream().filter(x -> x.getExtQrCode().equals(qrCode)).findAny().orElse(null);
+		
+		if(extGoods!=null) {
+			goods.setName(StringUtils.trim(goods.getName())+StringUtils.trim(umsGoods.getNote()));
 		}
 		
 		if(goodsLockTime>0) {

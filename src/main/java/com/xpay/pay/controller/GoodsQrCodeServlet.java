@@ -55,6 +55,10 @@ public class GoodsQrCodeServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		String path = request.getPathInfo();
+		String parameters = StringUtils.isBlank(request.getQueryString()) ? "" : "?" + request.getQueryString();
+		logger.info("GoodsQrCode: " + path + parameters);
+		
 		String uri = request.getRequestURI();
 		String goodsCode = uri.substring(uri.lastIndexOf("/") + 1);
 		StoreGoods goods = goodsService.findByCode(goodsCode);
@@ -63,22 +67,12 @@ public class GoodsQrCodeServlet extends HttpServlet {
 			response.sendError(400, "无效商品");
 			return;
 		}
-		String path = request.getPathInfo();
-		String parameters = StringUtils.isBlank(request.getQueryString()) ? "" : "?" + request.getQueryString();
-		logger.info("GoodsQrCode: " + path + parameters);
+
 		String uid = request.getParameter("uid");
 		if(StringUtils.isBlank(uid)) {
 			response.sendError(400, "uid不能为空");
 		    return;
 		}
-		String storeIdStr = request.getParameter("storeId");
-		long storeId = goods.getStoreId();
-		if(StringUtils.isNotBlank(storeIdStr)) {
-			storeId = CommonUtils.toLong(storeIdStr);
-			storeId = storeId>0?storeId:goods.getStoreId();
-		}
-		Store store = storeService.findById(storeId);
-		
 		Order customerOrder = orderService.findPaidBySellerOrderNo(uid);
 		if(customerOrder!=null) {
 			if(StringUtils.isNotBlank(customerOrder.getReturnUrl())) {
@@ -88,14 +82,21 @@ public class GoodsQrCodeServlet extends HttpServlet {
 			}
 			return;
 		}
+
+		String storeIdStr = request.getParameter("storeId");
+		long storeId = goods.getStoreId();
+		if(StringUtils.isNotBlank(storeIdStr)) {
+			storeId = CommonUtils.toLong(storeIdStr);
+			storeId = storeId>0?storeId:goods.getStoreId();
+		}
+		Store store = storeService.findById(storeId);
 		
+		// recharget order	
 		String orderNo = request.getParameter("orderNo");
 		if(!validateRechargeOrder(orderNo, uid)) {
 			response.sendError(400, "订单已存在");
 			return;
 		}
-		
-		
 		
 		Order order = paymentService.createGoodsOrder(store, goods, uid, orderNo);
 		if(order == null || StringUtils.isBlank(order.getCodeUrl())) {

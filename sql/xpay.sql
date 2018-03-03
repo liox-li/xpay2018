@@ -291,3 +291,19 @@ ALTER TABLE bill_store_goods ADD COLUMN ext_goods varchar(2048);
 ALTER TABLE bill_store_goods ALTER COLUMN ext_qrcode drop not null;
 
 ALTER TABLE bill_store ADD COLUMN return_url varchar(256);
+
+CREATE TABLE IF NOT EXISTS bill_ext_goods (
+	id BIGSERIAL PRIMARY KEY,
+	goods_id BIGINT,
+	store_id BIGINT NOT NULL,
+	ext_store_id varchar(64) NOT NULL,
+	ext_store_name varchar(64) NOT NULL,
+	ext_goods varchar(2048),
+	create_date TIMESTAMP WITH TIME ZONE NOT NULL default now(), 
+	update_date TIMESTAMP WITH TIME ZONE NOT NULL default now(),
+	deleted boolean DEFAULT FALSE
+);
+ALTER SEQUENCE bill_ext_goods_id_seq RESTART 100;
+CREATE INDEX idx_bill_ext_goods_id ON bill_ext_goods(goods_id);
+CREATE INDEX idx_bill_ext_store_id ON bill_ext_goods(store_id);
+CREATE INDEX idx_bill_ext_ext_store_id ON bill_ext_goods(ext_store_id);

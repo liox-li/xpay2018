@@ -20,6 +20,7 @@ public class StoreGoods {
 	private String extQrCode;
 	private String extGoods;
 	private List<ExtGoods> extGoodsList;
+	private List<StoreExtGoods> storeExtGoodsList;
 	private Date updateDate;
 	
 	public Long getId() {
@@ -115,9 +116,26 @@ public class StoreGoods {
 		this.extGoodsList = extGoodsList;
 	}
 
+	
+	public List<StoreExtGoods> getStoreExtGoodsList() {
+		return storeExtGoodsList;
+	}
+	public void setStoreExtGoodsList(List<StoreExtGoods> storeExtGoodsList) {
+		this.storeExtGoodsList = storeExtGoodsList;
+	}
+
+
 	public static class ExtGoods {
+		private String extStoreId;
 		private String extQrCode;
 		private String note;
+		
+		public String getExtStoreId() {
+			return extStoreId;
+		}
+		public void setExtStoreId(String extStoreId) {
+			this.extStoreId = extStoreId;
+		}
 		public String getExtQrCode() {
 			return extQrCode;
 		}

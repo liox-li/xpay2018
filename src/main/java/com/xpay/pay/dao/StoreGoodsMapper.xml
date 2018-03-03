@@ -49,7 +49,7 @@
     WHERE code = #{code} and deleted = false
   </select>
   
-  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.StoreChannel">
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.StoreGoods">
     insert into bill_store_goods
     <trim prefix="(" suffix=")" suffixOverrides=",">
      store_id, code, ext_store_id, name, description, amount, 
@@ -76,7 +76,7 @@
     </trim>
   </insert>
   
-  <update id="updateById" parameterType="com.xpay.pay.model.StoreChannel">
+  <update id="updateById" parameterType="com.xpay.pay.model.StoreGoods">
     update bill_store_goods
      <set>
       <if test="extStoreId != null">
