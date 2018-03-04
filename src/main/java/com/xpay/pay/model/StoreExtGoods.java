@@ -15,6 +15,8 @@ public class StoreExtGoods {
 	private Long storeId;
 	private String extStoreId;
 	private String extStoreName;
+	private String name;
+	private Float amount;
 	private String extGoods;
 	private List<ExtGoods> extGoodsList;
 	private Date updateDate;
@@ -48,6 +50,18 @@ public class StoreExtGoods {
 	}
 	public void setExtStoreName(String extStoreName) {
 		this.extStoreName = extStoreName;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public Float getAmount() {
+		return amount;
+	}
+	public void setAmount(Float amount) {
+		this.amount = amount;
 	}
 	public String[] getExtQrCodes() {
 		if(CollectionUtils.isNotEmpty(this.getExtGoodsList())) {

@@ -10,5 +10,7 @@ public interface StoreExtGoodsMapper extends BaseMapper<StoreExtGoods> {
 	public List<StoreExtGoods> findByStoreId(long storeId);
 	
 	public List<StoreExtGoods> findByExtStoreId(String extStoreId);
+	
+	public Boolean deleteByExtStoreId(String extStoreId);
 }
 

@@ -14,6 +14,7 @@ import com.xpay.pay.exception.Assert;
 import com.xpay.pay.model.StoreExtGoods;
 import com.xpay.pay.model.StoreGoods;
 import com.xpay.pay.model.StoreGoods.ExtGoods;
+import com.xpay.pay.rest.contract.ExtStore;
 import com.xpay.pay.util.IDGenerator;
 
 @Service
@@ -75,4 +76,5 @@ public class StoreGoodsService {
 		}
 		return mapper.findById(goodsId);
 	}
+
 }

@@ -8,6 +8,8 @@
     <result column="store_id" jdbcType="BIGINT" property="storeId" />
     <result column="ext_store_id" jdbcType="VARCHAR" property="extStoreId" />
     <result column="ext_store_name" jdbcType="VARCHAR" property="extStoreName" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="amount" jdbcType="NUMERIC" property="amount" />
     <result column="ext_goods" jdbcType="VARCHAR" property="extGoods" />
     <result column="update_date" jdbcType="VARCHAR" property="updateDate" />
   </resultMap>
@@ -18,6 +20,8 @@
   	store_id,
     ext_store_id,
     ext_store_name,
+    name,
+    amount,
     ext_goods,
     update_date
   </sql>
@@ -59,6 +63,12 @@
      store_id, 
      ext_store_id,
      ext_store_name,
+     <if test="name != null">
+       name,
+     </if>
+     <if test="amount != null">
+       amount,
+     </if>
      <if test="extGoods != null">
        ext_goods,
      </if>
@@ -70,6 +80,12 @@
      	#{storeId,jdbcType=BIGINT},
      	#{extStoreId,jdbcType=VARCHAR},
      	#{extStoreName,jdbcType=VARCHAR},
+     	<if test="name != null">
+        	#{name,jdbcType=VARCHAR},
+      	</if>
+      	<if test="amount != null">
+        	#{amount,jdbcType=NUMERIC},
+      	</if>
      	<if test="extGoods != null">
         	#{extGoods,jdbcType=VARCHAR},
       	</if>
@@ -91,6 +107,12 @@
       <if test="extStoreName != null">
        ext_store_name =  #{extStoreName,jdbcType=VARCHAR},
       </if>
+      <if test="name != null">
+       name =  #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null">
+       amount =  #{amount,jdbcType=NUMERIC},
+      </if>
       <if test="extGoods != null">
        ext_goods =  #{extGoods,jdbcType=VARCHAR},
       </if>
@@ -107,6 +129,16 @@
       update_date = now()
     </set>
     where id = #{id,jdbcType=BIGINT}
+        and deleted = false
+  </update>
+  
+  <update id="deleteByExtStoreId">
+    update bill_ext_goods
+    <set>
+      deleted = true,
+      update_date = now()
+    </set>
+    where ext_store_id = #{extStoreId,jdbcType=VARCHAR}
         and deleted = false
   </update>
   
