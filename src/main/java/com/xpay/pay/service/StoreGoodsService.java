@@ -38,13 +38,6 @@ public class StoreGoodsService {
 	public StoreGoods findByCode(String code) {
 		Assert.notNull(code, "Invalid code");
 		StoreGoods goods = mapper.findByCode(code);
-		if(CollectionUtils.isEmpty(goods.getExtGoodsList())) {
-			List<StoreExtGoods> storeExtGoods = extGoodsMapper.findByGoodsId(goods.getId());
-			if(!CollectionUtils.isEmpty(storeExtGoods)) {
-				List<ExtGoods> extGoodsList = storeExtGoods.stream().map(x -> x.getExtGoodsList()).flatMap(y -> y.stream()).collect(Collectors.toList());
-				goods.setExtGoodsList(extGoodsList);
-			}
-		}
 		return goods;
 	}
 	
@@ -53,7 +46,17 @@ public class StoreGoodsService {
 		if(StringUtils.isBlank(goods.getCode())) {
 			goods.setCode(IDGenerator.buildGoodsCode());
 		}
-		return mapper.insert(goods);
+		
+		boolean result = mapper.insert(goods);
+		if(CollectionUtils.isNotEmpty(goods.getExtGoodsIds())) {
+			goods.getExtGoodsIds().forEach(x -> {
+				StoreExtGoods extGoods = extGoodsMapper.findById(x);
+				extGoods.setGoodsId(goods.getId());
+				extGoodsMapper.updateById(extGoods);
+			}
+		);
+		}
+		return result;
 	}
 	
 	public boolean update(Long goodsId, StoreGoods goods) {
@@ -62,7 +65,8 @@ public class StoreGoodsService {
 		}
 		StoreGoods goodsToBeUpdated = (goods == null)?new StoreGoods():goods; 
 		goodsToBeUpdated.setId(goodsId);
-		return mapper.updateById(goodsToBeUpdated);
+		boolean result = mapper.updateById(goodsToBeUpdated);
+		return result;
 	}
 	
 	public boolean delete(long goodsId) {

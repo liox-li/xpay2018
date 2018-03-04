@@ -27,6 +27,15 @@ public class StoreExtGoodsService {
 		return mapper.findByExtStoreId(extStoreId);
 	}
 
+	public boolean detach(long goodsId, long extGoodsId) {
+		StoreExtGoods extGoods = mapper.findById(extGoodsId);
+		if(goodsId == extGoods.getGoodsId()) {
+			extGoods.setGoodsId(-1L);
+			return mapper.updateById(extGoods);
+		}
+		return false;
+	}
+	
 	public List<ExtStore> getExtStorePool(long storeId) {
 		return this.mapper.findByStoreId(storeId).stream().map(x -> new ExtStore(x.getExtStoreId(), x.getExtStoreName())).distinct().collect(Collectors.toList());
 	}

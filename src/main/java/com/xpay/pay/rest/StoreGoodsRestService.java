@@ -34,6 +34,7 @@ public class StoreGoodsRestService extends AdminRestService {
 		validateAgent(id);
 		
 		List<StoreGoods> goods = storeGoodsService.findByStoreId(storeId);
+		goods.forEach(x -> x.setStoreExtGoodsList(extGoodsService.findByGoodsId(x.getId())));
 		BaseResponse<List<StoreGoods>> response = new BaseResponse<List<StoreGoods>>();
 		response.setData(goods);
 		if(CollectionUtils.isNotEmpty(goods)) {
@@ -145,6 +146,16 @@ public class StoreGoodsRestService extends AdminRestService {
 		BaseResponse<List<StoreExtGoods>> response = new BaseResponse<List<StoreExtGoods>>();
 		response.setData(extGoods);
 		return response;
+	}
+	
+	@RequestMapping(value = "/{id}/stores/{storeId}/store_pool/goods/{goodsId}/detach/{extGoodsId}", method = RequestMethod.POST)
+	public BaseResponse deleteExtStoreGoods(@PathVariable long id, @PathVariable long storeId, @PathVariable long goodsId, @PathVariable long extGoodsId) {
+		validateAgent(id);
+
+//		List<StoreExtGoods> extGoods = extGoodsService.findByStoreId(storeId).stream().filter(x -> x.getExtStoreId().equals(extStoreId) && !CollectionUtils.isEmpty(x.getExtGoodsList())).collect(Collectors.toList());
+		boolean result = extGoodsService.detach(goodsId, extGoodsId);
+		Assert.isTrue(result, "detach goods faile");
+		return BaseResponse.OK;
 	}
 	
 }
