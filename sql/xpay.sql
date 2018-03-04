@@ -309,3 +309,5 @@ CREATE INDEX idx_bill_ext_store_id ON bill_ext_goods(store_id);
 CREATE INDEX idx_bill_ext_ext_store_id ON bill_ext_goods(ext_store_id);
 ALTER TABLE bill_ext_goods ADD COLUMN name varchar(64);
 ALTER TABLE bill_ext_goods ADD COLUMN amount NUMERIC;
+
+ALTER TABLE bill_store_goods ALTER COLUMN ext_store_id drop not null;
