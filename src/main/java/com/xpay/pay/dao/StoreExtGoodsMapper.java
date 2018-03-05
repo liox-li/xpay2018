@@ -7,7 +7,7 @@ import com.xpay.pay.model.StoreExtGoods;
 public interface StoreExtGoodsMapper extends BaseMapper<StoreExtGoods> {
 	public List<StoreExtGoods> findByGoodsId(long goodsId);
 	
-	public List<StoreExtGoods> findByStoreId(long storeId);
+	public List<StoreExtGoods> findByAdminId(long adminId);
 	
 	public List<StoreExtGoods> findByExtStoreId(String extStoreId);
 	

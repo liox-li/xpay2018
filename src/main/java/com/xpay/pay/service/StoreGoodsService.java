@@ -48,14 +48,6 @@ public class StoreGoodsService {
 		}
 		
 		boolean result = mapper.insert(goods);
-		if(CollectionUtils.isNotEmpty(goods.getExtGoodsIds())) {
-			goods.getExtGoodsIds().forEach(x -> {
-				StoreExtGoods extGoods = extGoodsMapper.findById(x);
-				extGoods.setGoodsId(goods.getId());
-				extGoodsMapper.updateById(extGoods);
-			}
-		);
-		}
 		return result;
 	}
 	

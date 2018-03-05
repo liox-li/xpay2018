@@ -21,7 +21,6 @@ public class StoreGoods {
 	private String extGoods;
 	private List<ExtGoods> extGoodsList;
 	private List<StoreExtGoods> storeExtGoodsList;
-	private List<Long> extGoodsIds;
 	private Date updateDate;
 	
 	public Long getId() {
@@ -124,15 +123,6 @@ public class StoreGoods {
 	public void setStoreExtGoodsList(List<StoreExtGoods> storeExtGoodsList) {
 		this.storeExtGoodsList = storeExtGoodsList;
 	}
-
-
-	public List<Long> getExtGoodsIds() {
-		return extGoodsIds;
-	}
-	public void setExtGoodsIds(List<Long> extGoodsIds) {
-		this.extGoodsIds = extGoodsIds;
-	}
-
 
 	public static class ExtGoods {
 		private String extStoreId;

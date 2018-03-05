@@ -311,3 +311,5 @@ ALTER TABLE bill_ext_goods ADD COLUMN name varchar(64);
 ALTER TABLE bill_ext_goods ADD COLUMN amount NUMERIC;
 
 ALTER TABLE bill_store_goods ALTER COLUMN ext_store_id drop not null;
+
+ALTER TABLE bill_ext_goods RENAME COLUMN store_id TO admin_id;

@@ -3,6 +3,7 @@ package com.xpay.pay.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +20,8 @@ public class StoreExtGoodsService {
 		return mapper.findByGoodsId(goodsId);
 	}
 	
-	public List<StoreExtGoods> findByStoreId(long storeId) {
-		return mapper.findByStoreId(storeId);
+	public List<StoreExtGoods> findByAdminId(long adminId) {
+		return mapper.findByAdminId(adminId);
 	}
 	
 	public List<StoreExtGoods> findByExtStoreId(String extStoreId) {
@@ -36,13 +37,13 @@ public class StoreExtGoodsService {
 		return false;
 	}
 	
-	public List<ExtStore> getExtStorePool(long storeId) {
-		return this.mapper.findByStoreId(storeId).stream().map(x -> new ExtStore(x.getExtStoreId(), x.getExtStoreName())).distinct().collect(Collectors.toList());
+	public List<ExtStore> getExtStorePool(long adminId) {
+		return mapper.findByAdminId(adminId).stream().map(x -> new ExtStore(x.getExtStoreId(), x.getExtStoreName())).distinct().collect(Collectors.toList());
 	}
 
-	public boolean createExtStore(Long storeId, ExtStore extStore) {
+	public boolean createExtStore(Long adminId, ExtStore extStore) {
 		StoreExtGoods goods = new StoreExtGoods();
-		goods.setStoreId(storeId);
+		goods.setAdminId(adminId);
 		goods.setExtStoreId(extStore.getExtStoreId());
 		goods.setExtStoreName(extStore.getExtStoreName());
 		
@@ -59,5 +60,33 @@ public class StoreExtGoodsService {
 
 	public boolean deleteExtStore(String extStoreId) {
 		return mapper.deleteByExtStoreId(extStoreId);
+	}
+
+	public boolean attach(long adminId, long goodsId, List<Long> extGoodsIds) {
+		if(goodsId<10 || CollectionUtils.isEmpty(extGoodsIds)) {
+			return false;
+		}
+		extGoodsIds.forEach(x -> {
+			StoreExtGoods extGoods = mapper.findById(x);
+			if(extGoods.getAdminId() == adminId && (extGoods.getGoodsId() == null || extGoods.getGoodsId()!=goodsId)) {
+				extGoods.setGoodsId(goodsId);
+				mapper.updateById(extGoods);
+			}
+		});
+		return true;	
+	}
+
+	public boolean detach(long adminId, long goodsId, List<Long> extGoodsIds) {
+		if(goodsId<10 || CollectionUtils.isEmpty(extGoodsIds)) {
+			return false;
+		}
+		extGoodsIds.forEach(x -> {
+			StoreExtGoods extGoods = mapper.findById(x);
+			if(extGoods.getAdminId() == adminId && extGoods.getGoodsId() == goodsId) {
+				extGoods.setGoodsId(-1L);
+				mapper.updateById(extGoods);
+			}
+		});
+		return true;
 	}
 }

@@ -12,7 +12,7 @@ import com.xpay.pay.util.JsonUtils;
 public class StoreExtGoods {
 	private Long id;
 	private Long goodsId;
-	private Long storeId;
+	private Long adminId;
 	private String extStoreId;
 	private String extStoreName;
 	private String name;
@@ -33,11 +33,11 @@ public class StoreExtGoods {
 		this.goodsId = goodsId;
 	}
 	
-	public Long getStoreId() {
-		return storeId;
+	public Long getAdminId() {
+		return adminId;
 	}
-	public void setStoreId(Long storeId) {
-		this.storeId = storeId;
+	public void setAdminId(Long adminId) {
+		this.adminId = adminId;
 	}
 	public String getExtStoreId() {
 		return extStoreId;

@@ -1,7 +1,6 @@
 package com.xpay.pay.rest;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +16,7 @@ import com.xpay.pay.model.StoreExtGoods;
 import com.xpay.pay.model.StoreGoods;
 import com.xpay.pay.rest.contract.BaseResponse;
 import com.xpay.pay.rest.contract.ExtStore;
+import com.xpay.pay.rest.contract.GoodsLinkRequest;
 import com.xpay.pay.service.StoreExtGoodsService;
 import com.xpay.pay.service.StoreGoodsService;
 
@@ -82,31 +82,31 @@ public class StoreGoodsRestService extends AdminRestService {
 		return response;
 	}
 	
-	@RequestMapping(value = "/{id}/stores/{storeId}/store_pool", method = RequestMethod.GET)
-	public BaseResponse<List<ExtStore>> getStorePool(@PathVariable long id, @PathVariable long storeId) {
+	@RequestMapping(value = "/{id}/store_pool", method = RequestMethod.GET)
+	public BaseResponse<List<ExtStore>> getStorePool(@PathVariable long id) {
 		validateAgent(id);
 		
-		List<ExtStore> result = extGoodsService.getExtStorePool(storeId);
+		List<ExtStore> result = extGoodsService.getExtStorePool(id);
 		Assert.notNull(result, "No ext store pool found");
 		BaseResponse<List<ExtStore>> response = new BaseResponse<List<ExtStore>>();
 		response.setData(result);
 		return response;
 	}
 	
-	@RequestMapping(value = "/{id}/stores/{storeId}/store_pool", method = RequestMethod.PUT)
-	public BaseResponse addExtStore(@PathVariable long id, @PathVariable long storeId,  @RequestBody ExtStore extStore) {
+	@RequestMapping(value = "/{id}/store_pool", method = RequestMethod.PUT)
+	public BaseResponse addExtStore(@PathVariable long id,  @RequestBody ExtStore extStore) {
 		validateAgent(id);
 		
-		List<ExtStore> extStores = extGoodsService.getExtStorePool(storeId);
+		List<ExtStore> extStores = extGoodsService.getExtStorePool(id);
 		Assert.isTrue(!extStores.stream().filter(x -> x.equals(extStore)).findAny().isPresent(), "Ext Store already exist");
 		
-		boolean result = extGoodsService.createExtStore(storeId, extStore);
+		boolean result = extGoodsService.createExtStore(id, extStore);
 		Assert.isTrue(result, "Create ext store faile");
 		return BaseResponse.OK;
 	}
 	
-	@RequestMapping(value = "/{id}/stores/{storeId}/store_pool/{extStoreId}", method = RequestMethod.DELETE)
-	public BaseResponse deleteExtStore(@PathVariable long id, @PathVariable long storeId,  @PathVariable String extStoreId) {
+	@RequestMapping(value = "/{id}/store_pool/{extStoreId}", method = RequestMethod.DELETE)
+	public BaseResponse deleteExtStore(@PathVariable long id,  @PathVariable String extStoreId) {
 		validateAgent(id);
 		
 		boolean result = extGoodsService.deleteExtStore(extStoreId);
@@ -114,17 +114,17 @@ public class StoreGoodsRestService extends AdminRestService {
 		return BaseResponse.OK;
 	}
 	
-	@RequestMapping(value = "/{id}/stores/{storeId}/store_pool/{extStoreId}/goods", method = RequestMethod.POST)
-	public BaseResponse addExtStoreGoods(@PathVariable long id, @PathVariable long storeId, @PathVariable String extStoreId,  @RequestBody StoreGoods storeGoods) {
+	@RequestMapping(value = "/{id}/store_pool/{extStoreId}/goods", method = RequestMethod.POST)
+	public BaseResponse addExtStoreGoods(@PathVariable long id,  @PathVariable String extStoreId,  @RequestBody StoreGoods storeGoods) {
 		validateAgent(id);
-		List<ExtStore> extStores = extGoodsService.getExtStorePool(storeId);
+		List<ExtStore> extStores = extGoodsService.getExtStorePool(id);
 		ExtStore extStore = extStores.stream().filter(x -> x.getExtStoreId().equals(extStoreId) ).findAny().orElse(null);
 		Assert.notNull(extStore, "Ext store not found");
 		
-		StoreExtGoods extGoods = extGoodsService.findByStoreId(storeId).stream().filter(x -> x.getExtStoreId().equals(extStoreId) && CollectionUtils.isEmpty(x.getExtGoodsList())).findAny().orElse(null);
+		StoreExtGoods extGoods = extGoodsService.findByAdminId(id).stream().filter(x -> x.getExtStoreId().equals(extStoreId) && CollectionUtils.isEmpty(x.getExtGoodsList())).findAny().orElse(null);
 		if(extGoods == null) {
 			extGoods = new StoreExtGoods();
-			extGoods.setStoreId(storeId);
+			extGoods.setAdminId(id);
 			extGoods.setExtStoreId(extStoreId);
 			extGoods.setExtStoreName(extStore.getExtStoreName());
 		}
@@ -137,8 +137,8 @@ public class StoreGoodsRestService extends AdminRestService {
 		return BaseResponse.OK;
 	}
 	
-	@RequestMapping(value = "/{id}/stores/{storeId}/store_pool/{extStoreId}/goods", method = RequestMethod.GET)
-	public BaseResponse<List<StoreExtGoods>> getExtStoreGoods(@PathVariable long id, @PathVariable long storeId, @PathVariable String extStoreId) {
+	@RequestMapping(value = "/{id}/store_pool/{extStoreId}/goods", method = RequestMethod.GET)
+	public BaseResponse<List<StoreExtGoods>> getExtStoreGoods(@PathVariable long id,  @PathVariable String extStoreId) {
 		validateAgent(id);
 
 //		List<StoreExtGoods> extGoods = extGoodsService.findByStoreId(storeId).stream().filter(x -> x.getExtStoreId().equals(extStoreId) && !CollectionUtils.isEmpty(x.getExtGoodsList())).collect(Collectors.toList());
@@ -148,12 +148,20 @@ public class StoreGoodsRestService extends AdminRestService {
 		return response;
 	}
 	
-	@RequestMapping(value = "/{id}/stores/{storeId}/store_pool/goods/{goodsId}/detach/{extGoodsId}", method = RequestMethod.POST)
-	public BaseResponse deleteExtStoreGoods(@PathVariable long id, @PathVariable long storeId, @PathVariable long goodsId, @PathVariable long extGoodsId) {
+	@RequestMapping(value = "/{id}/store_pool/goods/attach", method = RequestMethod.POST)
+	public BaseResponse attachExtStoreGoods(@PathVariable long id, @RequestBody GoodsLinkRequest request) {
 		validateAgent(id);
 
-//		List<StoreExtGoods> extGoods = extGoodsService.findByStoreId(storeId).stream().filter(x -> x.getExtStoreId().equals(extStoreId) && !CollectionUtils.isEmpty(x.getExtGoodsList())).collect(Collectors.toList());
-		boolean result = extGoodsService.detach(goodsId, extGoodsId);
+		boolean result = extGoodsService.attach(id, request.getGoodsId(), request.getExtGoodsIds());
+		Assert.isTrue(result, "detach goods faile");
+		return BaseResponse.OK;
+	}
+	
+	@RequestMapping(value = "/{id}/store_pool/goods/detach", method = RequestMethod.POST)
+	public BaseResponse detachExtStoreGoods(@PathVariable long id, @RequestBody GoodsLinkRequest request) {
+		validateAgent(id);
+
+		boolean result = extGoodsService.detach(id, request.getGoodsId(), request.getExtGoodsIds());
 		Assert.isTrue(result, "detach goods faile");
 		return BaseResponse.OK;
 	}
