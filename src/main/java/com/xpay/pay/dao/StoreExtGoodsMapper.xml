@@ -77,7 +77,7 @@
     	<if test="goodsId != null">
         	#{goodsId,jdbcType=BIGINT},
       	</if>
-     	#{admin,jdbcType=BIGINT},
+     	#{adminId,jdbcType=BIGINT},
      	#{extStoreId,jdbcType=VARCHAR},
      	#{extStoreName,jdbcType=VARCHAR},
      	<if test="name != null">
