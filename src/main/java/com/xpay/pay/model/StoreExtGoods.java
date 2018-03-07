@@ -90,6 +90,9 @@ public class StoreExtGoods {
 	}
 	public void setExtGoodsList(List<ExtGoods> extGoodsList) {
 		this.extGoodsList = extGoodsList;
+		if(CollectionUtils.isNotEmpty(extGoodsList)) {
+			this.extGoods = JsonUtils.toJson(extGoodsList);
+		}
 	}
 	public Date getUpdateDate() {
 		return updateDate;

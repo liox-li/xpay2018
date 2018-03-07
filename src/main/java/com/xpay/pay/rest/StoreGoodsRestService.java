@@ -3,6 +3,8 @@ package com.xpay.pay.rest;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,11 +21,13 @@ import com.xpay.pay.rest.contract.ExtStore;
 import com.xpay.pay.rest.contract.GoodsLinkRequest;
 import com.xpay.pay.service.StoreExtGoodsService;
 import com.xpay.pay.service.StoreGoodsService;
+import com.xpay.pay.util.JsonUtils;
 
 @CrossOrigin(maxAge = 3600)
 @RestController
 public class StoreGoodsRestService extends AdminRestService {
-
+	protected final Logger logger = LogManager.getLogger(StoreGoodsRestService.class);
+	
 	@Autowired
 	private StoreGoodsService storeGoodsService;
 	@Autowired
@@ -121,21 +125,38 @@ public class StoreGoodsRestService extends AdminRestService {
 		ExtStore extStore = extStores.stream().filter(x -> x.getExtStoreId().equals(extStoreId) ).findAny().orElse(null);
 		Assert.notNull(extStore, "Ext store not found");
 		
-		StoreExtGoods extGoods = extGoodsService.findByAdminId(id).stream().filter(x -> x.getExtStoreId().equals(extStoreId) && CollectionUtils.isEmpty(x.getExtGoodsList())).findAny().orElse(null);
+		StoreExtGoods extGoods = null;
+		//update By Id
+		if(storeGoods.getId()!=null && storeGoods.getId()>0) {
+			extGoods = extGoodsService.findById(storeGoods.getId());
+		}
+		//check if empty goods there
+		if(extGoods == null) {
+		  extGoods = extGoodsService.findByAdminId(id).stream().filter(x -> x.getExtStoreId().equals(extStoreId) && (x.getGoodsId() == null || x.getGoodsId()<0) && CollectionUtils.isEmpty(x.getExtGoodsList())).findAny().orElse(null);
+		}
+		//create goods
 		if(extGoods == null) {
 			extGoods = new StoreExtGoods();
 			extGoods.setAdminId(id);
 			extGoods.setExtStoreId(extStoreId);
 			extGoods.setExtStoreName(extStore.getExtStoreName());
 		}
+		
 		extGoods.setName(storeGoods.getName());
 		extGoods.setAmount(storeGoods.getAmount());
 		extGoods.setExtGoodsList(storeGoods.getExtGoodsList());
-				
 		boolean result = extGoodsService.createExtStoreGoods(extGoods);
 		Assert.isTrue(result, "Create ext store faile");
 		return BaseResponse.OK;
 	}
+	
+	@RequestMapping(value = "/{id}/store_pool/{extStoreId}/goods/{goodsId}", method = RequestMethod.DELETE)
+	public BaseResponse deleteExtStoreGoods(@PathVariable long id,  @PathVariable String extStoreId,  @PathVariable long goodsId) {
+		boolean result = extGoodsService.deleteExtStoreGoods(goodsId);
+		Assert.isTrue(result, "Delete ext store faile");
+		return BaseResponse.OK;
+	}
+
 	
 	@RequestMapping(value = "/{id}/store_pool/{extStoreId}/goods", method = RequestMethod.GET)
 	public BaseResponse<List<StoreExtGoods>> getExtStoreGoods(@PathVariable long id,  @PathVariable String extStoreId) {

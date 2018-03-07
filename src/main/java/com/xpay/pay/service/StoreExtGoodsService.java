@@ -16,6 +16,10 @@ public class StoreExtGoodsService {
 	@Autowired
 	private StoreExtGoodsMapper mapper;
 	
+	public StoreExtGoods findById(long id) {
+		return mapper.findById(id);
+	}
+	
 	public List<StoreExtGoods> findByGoodsId(long goodsId) {
 		return mapper.findByGoodsId(goodsId);
 	}
@@ -88,5 +92,9 @@ public class StoreExtGoodsService {
 			}
 		});
 		return true;
+	}
+
+	public boolean deleteExtStoreGoods(long goodsId) {
+		return mapper.deleteById(goodsId);
 	}
 }
