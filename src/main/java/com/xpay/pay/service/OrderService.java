@@ -101,9 +101,12 @@ public class OrderService {
 		return order;
 	}
 	
+	private static final long timeWindowStart = AppConfig.XPayConfig.getProperty("time.window.start", 60000L);
+	private static final long timeWindoEnd = AppConfig.XPayConfig.getProperty("time.window.end", -9000L);
 	public Order findActiveByOrderTime(String extStoreCode, String extOrderNo, Float amount, String subject, Date orderTime) {
-		Date startTime = TimeUtils.timeBefore(orderTime, 60000);
-		List<Order> orders = orderMapper.findLastByExtStoreCode(extStoreCode,subject, startTime, orderTime);
+		Date startTime = TimeUtils.timeBefore(orderTime, timeWindowStart);
+		Date endTime = TimeUtils.timeBefore(orderTime, timeWindoEnd);
+		List<Order> orders = orderMapper.findLastByExtStoreCode(extStoreCode,subject, startTime, endTime);
 		if(CollectionUtils.isNotEmpty(orders)) {
 			Order order = orders.stream().filter(x ->  (Math.abs(x.getTotalFee()-amount)<=0.5f)).findFirst().orElse(null);
 			if(order == null) {
@@ -113,6 +116,7 @@ public class OrderService {
 			order.setGoods(goodsService.findById(order.getGoodsId()));
 			return order;  
 		}
+		logger.info("find orders " + orders == null?0:orders.size() +", amount = "+amount + ",extStoreCode="+extStoreCode+", subject="+subject+", startTime="+startTime+", orderTime="+endTime);
 		return null;
 	}
 	
