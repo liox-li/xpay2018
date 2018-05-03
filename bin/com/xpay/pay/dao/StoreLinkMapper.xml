@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xpay.pay.dao.StoreLinkMapper">
+
+  <resultMap id="StoreLinkResultMap" type="com.xpay.pay.model.StoreLink">
+    <result column="id" jdbcType="BIGINT" property="id" />
+    <result column="store_id" jdbcType="BIGINT" property="storeId" />
+    <result column="app_link" jdbcType="VARCHAR" property="link" />
+  </resultMap>
+  
+  <sql id="storeLinkColumns">
+  	id,
+    store_id,
+    app_link
+  </sql>
+
+  <select id="findById" resultMap="StoreLinkResultMap">
+    SELECT
+    <include refid="storeLinkColumns" />
+    FROM bill_store_link
+    WHERE bill_store_link.id = #{id} AND deleted = false
+  </select>
+
+  <select id="findByStoreId" resultMap="StoreLinkResultMap">
+    SELECT
+    <include refid="storeLinkColumns" />
+    FROM bill_store_link
+    WHERE bill_store_link.store_id = #{storeId} AND deleted = false
+  </select>
+  
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.StoreLink">
+    insert into bill_store_link
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+     store_id, app_link
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+     	#{storeId,jdbcType=BIGINT},
+     	#{link,jdbcType=VARCHAR}
+    </trim>
+  </insert>
+  
+   <update id="updateById" parameterType="com.xpay.pay.model.StoreLink">
+    update bill_store_link
+     <set>
+      <if test="link != null">
+        app_link = #{link,jdbcType=VARCHAR},
+      </if>
+      update_date = now()
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+        and deleted = false
+  </update>
+  
+  <update id="deleteById">
+    update bill_store_link
+    <set>
+      deleted = true,
+      update_date = now()
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+        and deleted = false
+  </update>
+  
+</mapper>

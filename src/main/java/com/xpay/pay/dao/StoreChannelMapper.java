@@ -8,4 +8,5 @@ public interface StoreChannelMapper extends BaseMapper<StoreChannel> {
 	public List<StoreChannel> findAll();
 	
 	public List<StoreChannel> findByAgentId(long agentId);
+  
 }

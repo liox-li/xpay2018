@@ -7,25 +7,32 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import com.google.common.collect.Lists;
+import com.xpay.pay.MemoryCache;
 import com.xpay.pay.cache.CacheManager;
 import com.xpay.pay.cache.ICache;
 import com.xpay.pay.dao.StoreChannelMapper;
 import com.xpay.pay.dao.StoreLinkMapper;
 import com.xpay.pay.dao.StoreMapper;
 import com.xpay.pay.dao.StoreTransactionMapper;
+import com.xpay.pay.dao.SubChannelMapper;
 import com.xpay.pay.model.Agent;
 import com.xpay.pay.model.Agent.Role;
+import com.xpay.pay.model.StoreChannel.PaymentGateway;
 import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
 import com.xpay.pay.model.StoreGoods;
 import com.xpay.pay.model.StoreLink;
 import com.xpay.pay.model.StoreTransaction;
 import com.xpay.pay.model.StoreTransaction.TransactionType;
+import com.xpay.pay.model.SubChannel;
+import com.xpay.pay.model.SubChannel.Status;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.util.IDGenerator;
 
@@ -36,13 +43,19 @@ public class StoreService {
 	@Autowired
 	protected StoreChannelMapper storeChannelMapper;
 	@Autowired
+	protected SubChannelMapper subChannelMapper;
+	@Autowired
 	protected StoreTransactionMapper storeTransactionMapper;
 	@Autowired
 	protected StoreLinkMapper storeLinkMapper;
+	@Autowired
+	private PaymentService paymentService;
+	protected final Logger logger = LogManager.getLogger(StoreService.class);
+	
 	private static ICache<Long, StoreChannel> channelCache = CacheManager.create(StoreChannel.class, 2000);
 	private static ICache<Long, List<StoreLink>> linkCache = CacheManager.create(List.class, 5000);
 	
-	public Store findByCode(String code) {
+	public Store findByCode(String code) {		
 		Store store = storeMapper.findByCode(code);
 		Assert.notNull(store, "Unknow storeId "+code);
 		List<StoreChannel> channels = this.findChannelByIds(store.getChannelIds());
@@ -298,6 +311,8 @@ public class StoreService {
 	
 	@PostConstruct
 	private void initStoreChannelCache() {
+		/**初始化ips轮询环境，一定要在初始化storechannels 前做 */
+		paymentService.initIPSLoopEnv(PaymentGateway.IPSSCAN);
 		if(channelCache.size() == 0) {
 			List<StoreChannel> channels = storeChannelMapper.findAll();
 			for(StoreChannel channel: channels) {
@@ -329,6 +344,39 @@ public class StoreService {
 
 	public boolean deleteStore(long storeId) {
 		return storeMapper.deleteById(storeId);
+	}
+	
+	public Boolean createSubChannel(SubChannel subChannel) {
+		return subChannelMapper.insert(subChannel);
+	}
+	
+	public Boolean deleteSubChannel(SubChannel subChannel) {
+		MemoryCache.IPS_STORE_SUB_CHANNEL.remove(subChannel);
+		return  subChannelMapper.deleteById(subChannel.getId());
+	}
+	
+	public List<SubChannel> listSubChannel(Status status) {
+		if( status == null){
+			return subChannelMapper.findAll();
+		}else{
+			return subChannelMapper.findByStatus(status.name());
+		}
+		
+	}
+	
+	public List<SubChannel> listSubChannelByPoolType(String poolType) {
+		return subChannelMapper.findByPoolType(poolType);
+		
+	}
+	
+	public void changeSubChannelStatus(Long subChannelId,Status status) {
+		 this.subChannelMapper.changeSubChannelStatus(subChannelId,status.name());
+		
+	}
+	
+	public static void main(String arg[]){
+		String[] idStrs = StringUtils.split("2266", ",");
+		System.out.println(idStrs[0]);
 	}
 
 }

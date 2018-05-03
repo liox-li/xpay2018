@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.oxm.Unmarshaller;
@@ -50,16 +52,27 @@ public class IpsScanProxy extends AbstractIpsProxy {
       ByteArrayOutputStream os;
       os = new ByteArrayOutputStream();
       marshaller.marshal(ips, new StreamResult(os));
-      String scanPayRequest = os.toString();
+      String scanPayRequest = new String(os.toByteArray(),"UTF-8");
       scanPayRequest = scanPayRequest.substring(scanPayRequest.indexOf("<Ips>"));
       logger.info("ips order request: " + scanPayRequest);
       String result = scanService.scanPay(scanPayRequest);
+      //支付宝支付通道商户被和谐后，返回是空
+      if(request.getPayChannel() != null && request.getPayChannel() == PayChannel.ALIPAY){
+    	  if(result == null || "".equals(result.trim())){
+    		  logger.info("请求返回结果为【" + result+"】,疑似商户被关闭了！");
+    		  throw new GatewayException("-2222222","疑似商户被关闭了！");
+    	  }
+      }
       logger.info("ips order response: " + result);
       StreamSource streamSource = new StreamSource(new ByteArrayInputStream(result.getBytes()));
       com.xpay.pay.proxy.ips.scan.gatewayrsp.Ips respIps = (com.xpay.pay.proxy.ips.scan.gatewayrsp.Ips) unmarshaller
           .unmarshal(streamSource);
       logger.info("ips response code:" + respIps.getGateWayRsp().getHead().getRspCode());
       if (!SUCCESS.equals(respIps.getGateWayRsp().getHead().getRspCode())) {
+    	  if(respIps.getGateWayRsp().getHead().getRspMsg().indexOf("返回失败") >=0 ){
+    		  logger.info("请求返回结果为【" +respIps.getGateWayRsp().getHead().getRspCode()+">>" +respIps.getGateWayRsp().getHead().getRspMsg()+"】,疑似商户被关闭了！");
+    		  throw new GatewayException("-2222222","疑似商户被关闭了！");
+    	  }
         throw new GatewayException(respIps.getGateWayRsp().getHead().getRspCode(),
             respIps.getGateWayRsp().getHead().getRspMsg());
       }
@@ -99,11 +112,24 @@ public class IpsScanProxy extends AbstractIpsProxy {
       default:
         throw new RuntimeException("Not Support the pay channel");
     }
+    body.setGoodsName(request.getSubject());
+   
     if (request.getChannelProps() != null) {
       IpsProps props = (IpsProps) request.getChannelProps();
       if(props.getMerType() != null) {
         body.setMerType(props.getMerType());
         body.setSubMerCode(props.getSubMerCode());
+        if(StringUtils.isNotBlank(props.getGoodNames())){
+        	String [] goodNameList = props.getGoodNames().split(",");
+        	String goodName = null;
+        	if(goodNameList != null && goodNameList.length >0){
+        	  int index =	(int)(Math.random()*goodNameList.length);
+        	  goodName = goodNameList[index];
+        	}
+        	if(StringUtils.isNotBlank(goodName)){
+        		body.setGoodsName(goodName);//使用预定义的商品名称
+        	}
+        }
       } else {
         body.setMerType("0");
       }
@@ -120,11 +146,11 @@ public class IpsScanProxy extends AbstractIpsProxy {
     body.setRetEncodeType("17");
     body.setServerUrl(request.getNotifyUrl());
     body.setBillEXP("2");
-    body.setGoodsName(request.getSubject());
+    
     gateWayReq.setBody(body);
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     marshaller.marshal(body, new StreamResult(os));
-    String bodyStr = os.toString();
+    String bodyStr = new String(os.toByteArray(),"UTF-8");
     bodyStr = bodyStr.substring(bodyStr.indexOf("<body>"));
     logger.info("signature body: " + bodyStr + merCode + md5Signature);
     String signature = CryptoUtils.md5(bodyStr + merCode + md5Signature);

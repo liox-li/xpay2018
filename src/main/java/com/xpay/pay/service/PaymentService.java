@@ -5,21 +5,31 @@ import static com.xpay.pay.ApplicationConstants.STATUS_BAD_REQUEST;
 import static com.xpay.pay.ApplicationConstants.STATUS_UNAUTHORIZED;
 import static com.xpay.pay.proxy.IPaymentProxy.NO_RESPONSE;
 
+import java.util.List;
+
 import com.xpay.pay.model.StoreChannel.IpsProps;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.xpay.pay.ApplicationConstants;
+import com.xpay.pay.MemoryCache;
+import com.xpay.pay.RiskEngine;
+import com.xpay.pay.dao.SubChannelMapper;
 import com.xpay.pay.exception.Assert;
+import com.xpay.pay.exception.GatewayException;
 import com.xpay.pay.model.App;
 import com.xpay.pay.model.Bill;
 import com.xpay.pay.model.Order;
 import com.xpay.pay.model.Store;
 import com.xpay.pay.model.StoreChannel;
 import com.xpay.pay.model.StoreChannel.PaymentGateway;
+import com.xpay.pay.model.SubChannel.Status;
 import com.xpay.pay.model.StoreGoods;
+import com.xpay.pay.model.SubChannel;
 import com.xpay.pay.proxy.IPaymentProxy;
 import com.xpay.pay.proxy.IPaymentProxy.PayChannel;
 import com.xpay.pay.proxy.PaymentProxyFactory;
@@ -38,26 +48,45 @@ public class PaymentService {
 	private OrderService orderService;
 	@Autowired
 	private StoreService storeService;
-
+	@Autowired
+	protected SubChannelMapper subChannelMapper;
+	
+	protected final Logger logger = LogManager.getLogger(PaymentService.class);
 	public Order createOrder(App app, String uid, String orderNo, Store store, PayChannel channel,
 			String deviceId, String ip, Float totalFee, String orderTime,
 			String sellerOrderNo, String attach, String notifyUrl,String returnUrl,
-			String subject, String storeChannelId) {
+			String subject, String storeChannelId,Long subChannelId) {
 		StoreChannel storeChannel = null;
+		//商户指定storeChannelId优先级最高
 		if(StringUtils.isNotBlank(storeChannelId)) {
-			storeService.findStoreChannelById(Long.valueOf(storeChannelId));
-		} else {
+			storeChannel = storeService.findStoreChannelById(Long.valueOf(storeChannelId));
+		} else {			
 			storeChannel = orderService.findUnusedChannelByStore(store, orderNo);
-			storeChannel = storeChannel == null? orderService.findUnusedChannelByAgent(store.getAgentId(), orderNo): storeChannel;
+		    if(storeChannel == null){
+		    	storeChannel = orderService.findUnusedChannelByAgent(store.getAgentId(),store.getId(), orderNo);
+		    }
 		}
-		Assert.notNull(storeChannel, String.format("No avaiable store channel, please try later, sellerOrderNo: %s", StringUtils.trimToEmpty(sellerOrderNo)));
-
+		Assert.notNull(storeChannel, String.format("No avaiable store channel, please try later, sellerOrderNo: %s", StringUtils.trimToEmpty(sellerOrderNo)));		
 		Order order = new Order();
 		order.setApp(app);
 		order.setOrderNo(orderNo);
 		order.setStore(store);
 		order.setStoreId(store.getId());
-		order.setStoreChannel(storeChannel);
+		order.setStoreChannel(storeChannel);		
+		//如果商户指定了sub channel 
+		StoreChannel newStoreChannel = null;
+		if(subChannelId != null && subChannelId >0){
+			 newStoreChannel = storeChannel.calcSubChannel(subChannelId); // !importance 每次下订单都要重置
+		}else{
+			newStoreChannel = storeChannel.calcSubChannel(); // !importance 每次下订单都要重置
+			
+		}
+		if(newStoreChannel.getSubChannel() != null && newStoreChannel.getSubChannel().getId() != null){
+			order.setStoreChannel(newStoreChannel);
+			order.setSubChannelId(newStoreChannel.getSubChannel().getId());
+			logger.info("订单>>"+order.getOrderNo()+" 使用子渠道:"+newStoreChannel.getSubChannel().getId());
+		}
+		
 		order.setPayChannel(channel);
 		order.setDeviceId(deviceId);
 		order.setIp(ip);
@@ -100,21 +129,50 @@ public class PaymentService {
 			order.setPayChannel(PayChannel.XIAOWEI_H5);
 		}
 		order.setAppId(store.getAppId());
+		
 		orderService.insert(order);
 		return order;
 	}
 
 	public Bill unifiedOrder(Order order) {
-		PaymentRequest request = this.toPaymentRequest(order);
-		IPaymentProxy paymentProxy = paymentProxyFactory.getPaymentProxy(order.getStoreChannel().getPaymentGateway());
-		PaymentResponse response = paymentProxy.unifiedOrder(request);
-
-		Bill bill = response.getBill();
-		Assert.isTrue(!StringUtils.isBlank(bill.getCodeUrl()) || !StringUtils.isBlank(bill.getTokenId()),
-				ApplicationConstants.STATUS_BAD_GATEWAY, NO_RESPONSE,
-				response.getMsg());
-		bill.setOrder(order);
-		return bill;
+		Long subChannelId = null;
+		try{
+			PaymentRequest request = this.toPaymentRequest(order);
+			PaymentGateway gateway = order.getStoreChannel().getPaymentGateway();
+			PaymentResponse response =  null;
+			if(order.getStoreChannel() != null && order.getStoreChannel().getSubChannel() != null){
+				 subChannelId =  order.getStoreChannel().getSubChannel().getId();
+				 
+				// MemoryCache.IPS_STORE_CHANNEL_BLACK_LIST.remove(subChannelId);
+			}
+			//如果是ips，那么触发轮询算法
+			if(gateway != null && (gateway == PaymentGateway.IPSQUICK || gateway == PaymentGateway.IPSSCAN)){
+				this.handleIPSLoop(order);
+			}
+			//创建支付代理
+			IPaymentProxy paymentProxy = paymentProxyFactory.getPaymentProxy(order.getStoreChannel().getPaymentGateway());			
+			response = paymentProxy.unifiedOrder(request);
+  
+			Bill bill = response.getBill();
+			Assert.isTrue(!StringUtils.isBlank(bill.getCodeUrl()) || !StringUtils.isBlank(bill.getTokenId()),
+					ApplicationConstants.STATUS_BAD_GATEWAY, NO_RESPONSE,
+					response.getMsg());
+			bill.setOrder(order);
+			
+			return bill;
+		}catch(GatewayException e){
+			if("-2222222".equals(e.getCode())){
+				//【轮询规则埋点】商户被禁用了,把渠道加到我们的黑名单
+				//先删再增加，避免重复
+				logger.info("发现异常，子商户："+subChannelId+"加入黑名单");
+				if(subChannelId != null){
+					MemoryCache.IPS_STORE_CHANNEL_BLACK_LIST.remove(subChannelId);
+					MemoryCache.IPS_STORE_CHANNEL_BLACK_LIST.add(subChannelId);
+				}
+				
+			}
+			throw e;
+		}
 	}
 
 	public boolean updateBill(Order order, Bill bill) {
@@ -344,6 +402,86 @@ public class PaymentService {
 				PaymentGateway.IPSWX.equals(gateway) ||
 				PaymentGateway.KEKEPAY.equals(gateway) ||
 				PaymentGateway.TXF.equals(gateway);
+	}
+	//初始化ips轮询数据
+	private static long CACHE_TIMMER = 0;
+	private static long CACHE_LIFE = 1000*60*10;//10 MIN
+	public void initIPSLoopEnv(PaymentGateway paymentGateway){
+		long now = System.currentTimeMillis();
+		if(MemoryCache.IPS_STORE_SUB_CHANNEL.size() >0 && now - CACHE_TIMMER < CACHE_LIFE){
+			logger.info("IPS子商户缓存数据还有:"+(CACHE_LIFE - (now- CACHE_TIMMER))/1000+"秒过期");
+			return ;
+		}
+		StringBuilder logSB = new StringBuilder();
+		//logSB.append("ips通道黑名单长度:"+MemoryCache.IPS_STORE_CHANNEL_BLACK_LIST.size());
+		//logSB.append(",名单长度:"+MemoryCache.IPS_STORE_SUB_CHANNEL.size());
+		for(Long blackId:MemoryCache.IPS_STORE_CHANNEL_BLACK_LIST){
+			if(blackId != null && blackId >0){
+				subChannelMapper.changeSubChannelStatus(blackId, Status.LOCKED.name());
+				logger.info("停用子商户:"+blackId);
+			}
+		}
+		//清空黑名单
+		MemoryCache.IPS_STORE_CHANNEL_BLACK_LIST.clear();
+		if(paymentGateway == PaymentGateway.IPSSCAN ||paymentGateway == PaymentGateway.IPSQUICK){
+			List<SubChannel> subChannelList = subChannelMapper.findIpsAll();
+			if(subChannelList == null || subChannelList.size() <=0){
+				return ;
+			}
+			
+			
+			for(SubChannel item :subChannelList){				
+				if(item.getStatus() == Status.LOCKED || item.getStatus() == Status.DISABLE){
+					MemoryCache.IPS_STORE_SUB_CHANNEL.remove(item);
+				}else{
+					if(!MemoryCache.IPS_STORE_SUB_CHANNEL.contains(item)){
+						MemoryCache.IPS_STORE_SUB_CHANNEL.add(item);
+					}
+					
+				}
+				
+				
+			}
+			logSB.append("更新黑名单长度:"+MemoryCache.IPS_STORE_CHANNEL_BLACK_LIST.size());
+			logSB.append(",更新名单长度:"+MemoryCache.IPS_STORE_SUB_CHANNEL.size());
+			logger.info(logSB);
+		}
+		 try{
+			 orderService.handleSubChannelMatrix();	
+		    }catch(Exception e){
+		    	logger.info("处理SubChannelMatrix异常>>",e);
+		    }
+		
+		CACHE_TIMMER = System.currentTimeMillis();
+	}
+	//处理ips轮询,记录最新的使用情况
+	private void handleIPSLoop(Order order){
+		SubChannel subChannel = order.getStoreChannel().getSubChannel();
+		long subChannelId = -1;
+		long subChannelTime = -1;
+		long subChannelUpdateTime = -1;
+		//【轮询规则埋点】发起支付后把支付渠道最新的支付时间记录起来			
+		if(subChannel != null && subChannel.getId() != null){
+			subChannelId = subChannel.getId();
+			subChannelTime = subChannel.getTimestamp();
+			MemoryCache.IPS_STORE_SUB_CHANNEL.remove(subChannel);//重写了subchannel 对象的equal方法，所以可以删掉
+			subChannelUpdateTime = System.currentTimeMillis();
+			subChannel.setTimestamp(subChannelUpdateTime);
+			MemoryCache.IPS_STORE_SUB_CHANNEL.add(subChannel);
+			logger.info("更新子商户>"+subChannel.getId()+">>"+subChannel.getTimestamp());
+		}
+		//该子商户1.5 min内不允许发生多笔支付
+		/*if(subChannelTime == -1 || subChannelUpdateTime - subChannelTime > (RiskEngine.Time_Interval)){
+			
+			logger.info("发起IPS通道订单支付,orderNo>>"+order.getOrderNo()+",sellerOrderNo>>"
+					+order.getSellerOrderNo()+",channel>>"+order.getStoreChannel().getId()
+					+",subchannel>>"+subChannelId+",subchannelTime>>"+subChannelTime+",subChannelUpdateTime>>"+subChannelUpdateTime);		
+		}else{
+			logger.info("发起IPS通道订单支付失败，1min内不允许重复支付,orderNo>>"+order.getOrderNo()+",sellerOrderNo>>"
+					+order.getSellerOrderNo()+",channel>>"+order.getStoreChannel().getId()
+					+",subchannel>>"+subChannelId+",subchannelTime>>"+subChannelTime+",subChannelUpdateTime>>"+subChannelUpdateTime);
+		 throw new GatewayException(RiskEngine.frequently_code,"交易太频繁！");
+		}*/
 	}
 
 }

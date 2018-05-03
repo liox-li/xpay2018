@@ -57,7 +57,7 @@ public class IpsQuickProxy extends AbstractIpsProxy {
       ByteArrayOutputStream os;
       os = new ByteArrayOutputStream();
       marshaller.marshal(ips, new StreamResult(os));
-      String quickReq = os.toString();
+      String quickReq = new String(os.toByteArray(),"UTF-8");//os.toString(); TODO
       logger.info("ips order request: " + quickReq);
       return quickReq;
     } catch (IOException e) {
@@ -92,7 +92,7 @@ public class IpsQuickProxy extends AbstractIpsProxy {
     gateWayReq.setBody(body);
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     marshaller.marshal(body, new StreamResult(os));
-    String bodyStr = os.toString();
+    String bodyStr = new String(os.toByteArray(),"UTF-8");//os.toString();
     bodyStr = bodyStr.substring(bodyStr.indexOf("<body>"));
     String signature = CryptoUtils.md5(bodyStr + merCode + md5Signature);
     ReqHead head = new ReqHead();

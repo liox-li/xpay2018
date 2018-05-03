@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xpay.pay.dao.StoreChannelMapper">
+
+  <resultMap id="StoreChannelResultMap" type="com.xpay.pay.model.StoreChannel">
+    <result column="id" jdbcType="BIGINT" property="id" />
+    <result column="ext_store_id" jdbcType="VARCHAR" property="extStoreId" />
+    <result column="ext_store_name" jdbcType="VARCHAR" property="extStoreName" />
+    <result column="payment_gateway" jdbcType="VARCHAR" property="paymentGateway" />
+    <result column="agent_id" jdbcType="BIGINT" property="agentId" />
+    <result column="props" jdbcType="VARCHAR" property="props" />
+    <result column="update_date" jdbcType="VARCHAR" property="updateDate" />
+  </resultMap>
+  
+  <sql id="storeChannelColumns">
+  	id,
+    ext_store_id,
+    ext_store_name,
+    payment_gateway,
+    agent_id,
+    props,
+    update_date
+  </sql>
+
+  <select id="findById" resultMap="StoreChannelResultMap">
+    SELECT
+    <include refid="storeChannelColumns" />
+    FROM bill_store_channel
+    WHERE bill_store_channel.id = #{id} AND deleted = false
+  </select>
+
+  <select id="findAll" resultMap="StoreChannelResultMap">
+    SELECT
+    <include refid="storeChannelColumns" />
+    FROM bill_store_channel
+    WHERE deleted = false
+  </select>
+  
+  <select id="findByAgentId" resultMap="StoreChannelResultMap">
+    SELECT
+    <include refid="storeChannelColumns" />
+    FROM bill_store_channel
+    WHERE bill_store_channel.agent_id = #{agentId} and deleted = false
+  </select>
+  
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.StoreChannel">
+    insert into bill_store_channel
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+     ext_store_id, ext_store_name, payment_gateway, agent_id,
+     <if test="props != null">
+     	props,
+     </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+     	#{extStoreId,jdbcType=VARCHAR},
+     	#{extStoreName,jdbcType=VARCHAR},
+     	#{paymentGateway,jdbcType=VARCHAR},
+     	#{agentId,jdbcType=BIGINT},
+     	<if test="props != null">
+     		#{props,jdbcType=VARCHAR},
+     	</if>
+    </trim>
+  </insert>
+  
+  <update id="updateById" parameterType="com.xpay.pay.model.StoreChannel">
+    update bill_store_channel
+     <set>
+      <if test="extStoreId != null">
+        ext_store_id = #{extStoreId,jdbcType=VARCHAR},
+      </if>
+      <if test="paymentGateway != null">
+       payment_gateway =  #{paymentGateway,jdbcType=VARCHAR},
+      </if>
+       <if test="props != null">
+       props =  #{props,jdbcType=VARCHAR},
+      </if>
+      update_date = now()
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+        and deleted = false
+  </update>
+  
+  <update id="deleteById">
+    update bill_store_channel
+    <set>
+      deleted = true,
+      update_date = now()
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+        and deleted = false
+  </update>
+  
+</mapper>

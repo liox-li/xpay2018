@@ -14,6 +14,7 @@ public class OrderRequest {
 	private String returnUrl;
 	private String subject;
 	private String uid;
+	private String subChannelId; 
 	public String getStoreId() {
 		return storeId;
 	}
@@ -86,5 +87,13 @@ public class OrderRequest {
 	public void setUid(String uid) {
 		this.uid = uid;
 	}
+	public String getSubChannelId() {
+		return subChannelId;
+	}
+	public void setSubChannelId(String subChannelId) {
+		this.subChannelId = subChannelId;
+	}
+	
+	
 	
 }

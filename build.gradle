@@ -2,6 +2,9 @@ buildscript {
 	repositories {
 		mavenCentral() 
 	}
+	dependencies {
+
+	}
 }
 
 apply plugin: 'java'
@@ -61,7 +64,7 @@ ext {
 	if(project.hasProperty('env')) {
 		profile = project['env']
 	} else {
-		profile = 'dev'
+		profile = 'prod'
 	}
 	
 	println "----->env is set to [${profile}]"
@@ -73,14 +76,14 @@ sourceSets {
 			srcDir 'src/main/java' 
 		}
 	}
-	test{
+	/*test{
 		java{
 			srcDir 'src/test/java'
 		}
 		resources{
 			srcDir 'src/test/resource'
 		}
-	}
+	}*/
 	integration {
 		java {
 			srcDir 'src/integration/java'
@@ -136,6 +139,10 @@ dependencies {
 	compile 'com.esotericsoftware:kryo:3.0.3'
 	compile 'org.codehaus.castor:castor-xml:1.4.1'
 	compile 'javax.servlet:jstl:1.2'
+	compile fileTree(dir:'libs',include:['*.jar'])
+	compile group: 'org.jodd', name: 'jodd-http', version: '3.7'
+	compile group: 'org.jodd', name: 'jodd-core', version: '3.7'
+	compile group: 'org.jodd', name: 'jodd-upload', version: '3.7'
 	providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-all:1.9.5'
@@ -143,6 +150,7 @@ dependencies {
     testCompile 'org.powermock:powermock-module-junit4:1.6.2'
     testCompile 'org.springframework:spring-test:4.2.8.RELEASE'
 	testCompile 'com.github.springtestdbunit:spring-test-dbunit:1.2.0'
+
 }
 
 processResources {

@@ -7,9 +7,12 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.xpay.pay.util.CommonUtils;
 
+/**
+ * 商户表；
+ */
 public class Store {
 	private long id;
-	private String code;
+	private String code;//商户号
 	private String name;
 	private Float bail;
 	private Float nonBail;
@@ -34,6 +37,7 @@ public class Store {
 	private Long adminId;
 	private String notifyUrl;
 	private String returnUrl;
+	private String props; // 新增字段，存放支付通道信息{通道类型，商户配置信息}
 	
 	public long getId() {
 		return id;
@@ -304,5 +308,13 @@ public class Store {
 			return 0f;
 		}
 		return this.channels.get(0).getPaymentGateway().getBaseBailPercentage();
-	}	
+	}
+
+	public String getProps() {
+		return props;
+	}
+
+	public void setProps(String props) {
+		this.props = props;
+	}
 }

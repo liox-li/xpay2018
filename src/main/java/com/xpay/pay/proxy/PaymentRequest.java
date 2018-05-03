@@ -2,6 +2,7 @@ package com.xpay.pay.proxy;
 
 import com.xpay.pay.model.StoreChannel.ChannelProps;
 import com.xpay.pay.proxy.IPaymentProxy.PayChannel;
+import com.xpay.pay.proxy.IPaymentProxy.PayType;
 import com.xpay.pay.proxy.IPaymentProxy.TradeNoType;
 
 
@@ -28,6 +29,10 @@ public class PaymentRequest {
 	private String bankId;
 	private String cardType;
 	private boolean extH5;
+	
+	private String cmdId; //汇付支付的服务接口类型；
+	private PayType payType;//支付类型
+
 	
 	public String getExtStoreId() {
 		return extStoreId;
@@ -175,6 +180,21 @@ public class PaymentRequest {
 	public void setExtH5(boolean extH5) {
 		this.extH5 = extH5;
 	}
+
+	
+	public String getCmdId() {
+		return cmdId;
+	}
+	public void setCmdId(String cmdId) {
+		this.cmdId = cmdId;
+	}
+	public PayType getPayType() {
+		return payType;
+	}
+	public void setPayType(PayType payType) {
+		this.payType = payType;
+	}
+
 
 	public static class GoodsBean {
 		private String goodsId;

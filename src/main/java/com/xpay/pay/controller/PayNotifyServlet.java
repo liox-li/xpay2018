@@ -56,7 +56,7 @@ public class PayNotifyServlet extends HttpServlet {
 			if(request.getContentLength()>0) {
 				byte[] buffer = new byte[request.getContentLength()];
 				IOUtils.readFully(request.getInputStream(), buffer);
-				content = new String(buffer);
+				content = new String(buffer,"UTF-8");//TODO
 				logger.info("Notify from " + uri + " content: " + content);
 			} else {
 				logger.info("Notify from " + uri);

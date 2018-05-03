@@ -2,8 +2,11 @@ package com.xpay.pay.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -13,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.xpay.pay.MemoryCache;
 import com.xpay.pay.dao.OrderMapper;
 import com.xpay.pay.exception.Assert;
 import com.xpay.pay.model.Agent;
@@ -22,6 +26,8 @@ import com.xpay.pay.model.StoreChannel;
 import com.xpay.pay.model.StoreExtGoods;
 import com.xpay.pay.model.StoreGoods;
 import com.xpay.pay.model.StoreGoods.ExtGoods;
+import com.xpay.pay.po.StoreChannelInfo;
+import com.xpay.pay.po.SubChannelMatrix;
 import com.xpay.pay.proxy.IPaymentProxy.PayChannel;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.util.AppConfig;
@@ -126,19 +132,25 @@ public class OrderService {
 		}
 		StoreChannel channel = null;
 		if(!CollectionUtils.isEmpty(store.getChannels())) {
-			channel = findUnusedChannel(store.getChannels(), orderNo);
+			//channel = findUnusedChannel(store.getChannels(), orderNo); // 第1个版本的轮询实现
+			channel = this.findSmartStoreChannel(store.getChannels(), store.getId());// 第2个版本的轮询实现
 		} 
 
 		return channel;
 	}
 	
-	public StoreChannel findUnusedChannelByAgent(long agentId, String orderNo) {
+	public StoreChannel findUnusedChannelByAgent(long agentId,long storeId, String orderNo) {
 		List<StoreChannel> agentChannes = storeService.findChannelsByAgentId(agentId);
-		StoreChannel channel = findUnusedChannel(agentChannes, orderNo);
+		//StoreChannel channel = findUnusedChannel(agentChannes, orderNo);// 第1个版本的轮询实现
+		StoreChannel channel = this.findSmartStoreChannel(agentChannes, storeId);// 第2个版本的轮询实现
 		return channel;
 	}
 
+	/*
+	 * 根据订单号找出使用的支付渠道
+	 */
 	public StoreChannel findUnusedChannel(List<StoreChannel> channels, String orderNo) {
+		// FROM bill_order WHERE bill_order.order_no = #{orderNo}
 		List<Order> orders = this.findByOrderNo(orderNo);
 		List<Long> usedChannels = CollectionUtils.isEmpty(orders) ? null : orders
 				.stream().map(x -> x.getStoreChannelId())
@@ -223,6 +235,7 @@ public class OrderService {
 		
 		if(extGoods!=null) {
 			goods.setName(StringUtils.trim(goods.getName())+StringUtils.trim(extGoods.getNote()));
+			
 		}
 		
 		if(goodsLockTime>0) {
@@ -255,6 +268,7 @@ public class OrderService {
 		
 		if(extGoods!=null) {
 			goods.setName(StringUtils.trim(goods.getName())+StringUtils.trim(umsGoods.getNote()));
+			goods.setExtStoreId(StringUtils.trim(extGoods.getExtStoreId()));
 		}
 		
 		if(goodsLockTime>0) {
@@ -287,6 +301,67 @@ public class OrderService {
 
 	public List<Order> finByPayChannelAndTime(PayChannel payChannel, Date startTime, Date endTime) {
 		return orderMapper.findByPayChannelAndTime(payChannel.name(), startTime, endTime);
+	}
+	
+	/*
+	 * 根据一定的轮询算法获取支付渠道
+	 * channels - 商户配置可用的商户渠道列表
+	 */
+	public StoreChannel findSmartStoreChannel(List<StoreChannel> channels, long storeId) {
+		
+		if(channels == null || channels.size() == 0 || storeId <= 0){
+			return null;
+		}
+		StoreChannel resultStoreChannel = null;
+		/*List<StoreChannelInfo> sotreChannelInfo = orderMapper.findStoreChannelInfoByStoreId(storeId);
+		如果根据订单表获取不到支付渠道信息，那么返回商户的第一个配置渠道；
+		if(sotreChannelInfo == null || sotreChannelInfo.size() == 0){			
+			return channels.get(0);
+		}
+		
+		第一步：如果我配置的列表比使用过的列表多，从配置列表找出没使用过的渠道；
+		StringBuilder infoLog = new StringBuilder();
+		List<Long> channelInfoIdList = new ArrayList<Long>();
+		for(StoreChannelInfo item :sotreChannelInfo){
+			channelInfoIdList.add(item.getId());
+			infoLog.append(item.getId()+"-"+item.getCnt()+",");
+		}
+		logger.info(infoLog.toString());
+		resultStoreChannel = channels.stream().filter(x->!CommonUtils.in(channelInfoIdList,x.getId()) && !CommonUtils.in(MemoryCache.STORE_CHANNEL_BLACK_LIST,x.getId())).findFirst().orElse(null);
+		if(resultStoreChannel != null ){
+			logger.info("计算出商户:"+storeId+"应选择支付渠道:"+resultStoreChannel.getId()+",该渠道第一次被使用!");
+			return resultStoreChannel;
+		}
+		如果列表的所有渠道都被使用过了，那么会执行如下
+		List<Long> channelIdList = new ArrayList<Long>();
+		for(StoreChannel channel :channels){
+			channelIdList.add(channel.getId());
+		}
+		
+		StoreChannelInfo filterMap = sotreChannelInfo.stream().filter(x->CommonUtils.in(channelIdList,x.getId()) && !CommonUtils.in(MemoryCache.STORE_CHANNEL_BLACK_LIST,x.getId())
+				).sorted(Comparator.comparing(StoreChannelInfo::getCnt)).findFirst().orElse(null);
+		logger.info("计算出商户:"+storeId+"应选择支付渠道:"+filterMap.getId()+",该渠道共使用了:"+filterMap.getCnt());
+		
+		 resultStoreChannel =  channels.stream().filter(x->x.getId() == filterMap.getId()).findFirst().orElse(null);
+		*/
+		//一个平台的商户有可能配置多个支付渠道
+		resultStoreChannel = channels.stream().collect(Collectors.collectingAndThen(Collectors.toList(), collected -> {
+		      Collections.shuffle(collected);
+		      return collected.stream();
+		  })).findFirst().orElse(null);
+		
+		 return resultStoreChannel;
+	}
+	public static int handleTime = 100;
+	public void handleSubChannelMatrix(){
+		
+		if(handleTime -- <= 0 || MemoryCache.SUB_CHANNEL_MATRIX.size() == 0){
+
+			MemoryCache.SUB_CHANNEL_MATRIX =  orderMapper.listSubChannelMatrix();		
+			logger.info("from db query:"+MemoryCache.SUB_CHANNEL_MATRIX.size());
+			handleTime = 100;
+		}
+		
 	}
 	
 }

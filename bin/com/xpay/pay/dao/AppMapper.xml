@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xpay.pay.dao.AppMapper">
+
+  <resultMap id="AppResultMap" type="com.xpay.pay.model.App">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="app_key" jdbcType="VARCHAR" property="key" />
+    <result column="app_secret" jdbcType="VARCHAR" property="secret" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="token" jdbcType="VARCHAR" property="token" />
+    <result column="agent_id" jdbcType="BIGINT" property="agentId" />
+    <result column="update_date" jdbcType="VARCHAR" property="updateDate" />
+  </resultMap>
+  
+  <sql id="appColumns">
+    id,
+    app_key as key,
+    app_secret as secret,
+    name,
+    token,
+    agent_id,
+    update_date
+  </sql>
+
+  <select id="findById" resultMap="AppResultMap">
+    SELECT
+    <include refid="appColumns" />
+    FROM bill_app
+    WHERE bill_app.id = #{id} AND deleted = false
+  </select>
+  
+  <select id="findByKey" resultMap="AppResultMap">
+    SELECT
+    <include refid="appColumns" />
+    FROM bill_app
+    WHERE bill_app.app_key = #{key} AND deleted = false
+  </select>
+  
+  <select id="findByAgentId" resultMap="AppResultMap">
+    SELECT
+    <include refid="appColumns" />
+    FROM bill_app
+    WHERE bill_app.agent_id = #{agentId} AND deleted = false
+  </select>
+  
+   <select id="findAll" resultMap="AppResultMap">
+    SELECT
+    <include refid="appColumns" />
+    FROM bill_app
+    WHERE deleted = false
+  </select>
+  
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.App">
+    insert into bill_app
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+     app_key, app_secret, token, name, agent_id
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+     	#{key,jdbcType=VARCHAR},
+     	#{secret,jdbcType=VARCHAR},
+     	#{token,jdbcType=VARCHAR},
+     	#{name,jdbcType=VARCHAR},
+     	#{agentId,jdbcType=BIGINT}
+    </trim>
+  </insert>
+  
+  <update id="updateById" parameterType="com.xpay.pay.model.App">
+    update bill_app
+    <set>
+      <if test="key != null">
+        app_key = #{key,jdbcType=VARCHAR},
+      </if>
+      <if test="secret != null">
+        app_secret = #{secret,jdbcType=VARCHAR},
+      </if>
+      <if test="token != null">
+        token = #{token,jdbcType=VARCHAR},
+      </if>
+      update_date = now()
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+      and deleted = false
+  </update>
+  
+  <update id="deleteById">
+    update bill_app
+    <set>
+      deleted = true,
+      update_date = now()
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+      and deleted = false
+  </update>
+  
+</mapper>

@@ -10,6 +10,8 @@ import com.xpay.pay.proxy.ips.transfer.rsp.Body;
 import com.xpay.pay.service.OrderService;
 import com.xpay.pay.service.PaymentService;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -47,6 +49,9 @@ public class HtmlViewController {
 
   @Autowired
   private IpsProxy ipsProxy;
+  
+  private static String merCode = "205531";
+  private static String account = "2055310011";
 
   @RequestMapping(value = "/{orderNo}", method = RequestMethod.GET)
   public ModelAndView pay(@PathVariable("orderNo") String orderNo) {
@@ -77,9 +82,16 @@ public class HtmlViewController {
       @RequestParam("identityNo") String identityNo, @RequestParam("userName") String userName,
       @RequestParam("mobileNo") String mobileNo, HttpServletRequest request)
       throws IOException {
-
+	/* try{
+		 if(userName != null && !"".equals(userName)){
+			   userName = URLDecoder.decode(userName,"UTF-8");
+		   }
+	 }catch(Exception e){
+		 logger.info("URLdecode throw exception>>",e);
+	 } */
+    logger.info("ips>open>"+merCode+","+account+","+customerCode+","+userName+","+identityNo);
     String requestXml = ipsProxy
-        .buildOpenRequest(request.getRemoteAddr(), "204693", "2046930018", "2", customerCode, "1",
+        .buildOpenRequest(request.getRemoteAddr(), merCode, account, "2", customerCode, "1",
             identityNo, userName, "", "",
             mobileNo, "", "", "", "", "http://www.wfpay.xyz", "http://www.wfpay.xyz", "", "",
             "");
@@ -95,8 +107,14 @@ public class HtmlViewController {
       @RequestParam("collectionItemName") String collectionItemName, 
       HttpServletRequest request)
       throws IOException {
-
-    Body transferResponse = ipsProxy.transfer(request.getRemoteAddr(), "", "204693", "2046930018", customerCode, transferAmount, collectionItemName, "");
+	  /*try{
+			 if(collectionItemName != null && !"".equals(collectionItemName)){
+				 collectionItemName = URLDecoder.decode(collectionItemName,"UTF-8");
+			   }
+		 }catch(Exception e){
+			 
+		 }*/
+    Body transferResponse = ipsProxy.transfer(request.getRemoteAddr(), "", merCode, account, customerCode, transferAmount, collectionItemName, "");
 
     Map<String, String> model = new HashMap<>();
     model.put("resp", transferResponse.getTradeState());
@@ -139,11 +157,22 @@ public class HtmlViewController {
       throws IOException {
 
     String requestXml = ipsProxy
-        .buildWithdrawalRequest(request.getRemoteAddr(), "", "204693", customerCode,
+        .buildWithdrawalRequest(request.getRemoteAddr(), "", merCode, customerCode,
             "http://www.wfpay.xyz", "http://www.wfpay.xyz", bankCard, bankCode);
 
     Map<String, String> model = new HashMap<>();
     model.put("ipsRequest", requestXml);
     return new ModelAndView("ips_withdraw", model);
+  }
+  
+  
+  public static void main(String args[]){
+	  try {
+		String  userName = URLDecoder.decode("%E5%88%98%E6%99%B4%E6%99%B4","UTF-8");
+		System.out.println(userName);
+	} catch (UnsupportedEncodingException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
   }
 }

@@ -28,8 +28,8 @@ public class IpsProxyTest extends BaseSpringJunitTest {
 
   @Test
   public void transfer() throws Exception {
-    ipsProxy
-        .transfer("203.156.236.194", "", "204693", "2046930018", "test", "3", "ShengTest", "test");
+   /* ipsProxy
+        .transfer("203.156.236.194", "", "204693", "2046930018", "test", "3", "ShengTest", "test");*/
   }
 
   @Test

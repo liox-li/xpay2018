@@ -6,6 +6,8 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.xpay.pay.model.Order;
+import com.xpay.pay.po.StoreChannelInfo;
+import com.xpay.pay.po.SubChannelMatrix;
 
 public interface OrderMapper extends BaseMapper<Order> {
 	List<Order> findByOrderNo(String orderNo);
@@ -23,4 +25,7 @@ public interface OrderMapper extends BaseMapper<Order> {
 	Order findLastByGoodsId(long goodsId);
 	
 	List<Order> findLastByExtStoreCode(@Param("extStoreCode")String extStoreCode,  @Param("subject")String subject, @Param("startTime")Date startTime, @Param("endTime")Date endTime);
+	
+	List<StoreChannelInfo> findStoreChannelInfoByStoreId(@Param("storeId") long storeId);
+	List<SubChannelMatrix> listSubChannelMatrix();
 }

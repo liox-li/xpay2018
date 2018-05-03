@@ -2,6 +2,9 @@ package com.xpay.pay.rest.contract;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.xpay.pay.model.Agent;
 import com.xpay.pay.model.App;
 import com.xpay.pay.model.StoreChannel;

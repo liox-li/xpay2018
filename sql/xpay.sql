@@ -99,6 +99,7 @@ CREATE INDEX idx_ext_order_no ON bill_order(ext_order_no);
 CREATE INDEX idx_seller_order_no ON bill_order(seller_order_no); 
 CREATE INDEX idx_order_store_id ON bill_order(store_id, update_date); 
 ALTER TABLE bill_order ADD COLUMN target_order_no varchar(64);
+ALTER TABLE bill_order ADD COLUMN sub_channel BIGINT;
 CREATE INDEX idx_target_order_no ON bill_order(target_order_no); 
 CREATE INDEX idx_order_store_channel ON bill_order(store_channel); 
 
@@ -313,3 +314,15 @@ ALTER TABLE bill_ext_goods ADD COLUMN amount NUMERIC;
 ALTER TABLE bill_store_goods ALTER COLUMN ext_store_id drop not null;
 
 ALTER TABLE bill_ext_goods RENAME COLUMN store_id TO admin_id;
+
+drop table bill_sub_channel;
+CREATE TABLE IF NOT EXISTS bill_sub_channel (
+	id BIGSERIAL PRIMARY KEY,
+	payment_gateway varchar(16) NOT NULL,	
+	pool_type varchar(16) NOT NULL,
+	props varchar(4096) NOT NULL,
+	name varchar(100) NOT NULL,
+	status varchar(16) NOT NULL,
+	create_date TIMESTAMP WITH TIME ZONE NOT NULL default now(), 
+	update_date TIMESTAMP WITH TIME ZONE NOT NULL default now()
+);

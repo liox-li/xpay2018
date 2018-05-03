@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xpay.pay.dao.SubChannelMapper">
+
+  <resultMap id="SubChannelResultMap" type="com.xpay.pay.model.SubChannel">
+    <result column="id" jdbcType="BIGINT" property="id" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="pool_type" jdbcType="VARCHAR" property="poolType" />
+    <result column="payment_gateway" jdbcType="VARCHAR" property="paymentGateway" />
+    <result column="props" jdbcType="VARCHAR" property="props" />
+     <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="create_date" jdbcType="VARCHAR" property="createDate" />
+    <result column="update_date" jdbcType="VARCHAR" property="updateDate" />
+  </resultMap>
+  
+  <sql id="subChannelColumns">
+  	id,
+    status,
+    pool_type,
+    payment_gateway,
+    create_date,
+    props,
+    name,
+    update_date
+  </sql>
+
+  <select id="findById" resultMap="SubChannelResultMap">
+    SELECT
+    <include refid="subChannelColumns" />
+    FROM bill_sub_channel
+    WHERE bill_sub_channel.id = #{id} 
+  </select>
+
+  <select id="findAll" resultMap="SubChannelResultMap">
+    SELECT
+    <include refid="subChannelColumns" />
+    FROM bill_sub_channel
+  </select>
+  <select id="findIpsAll" resultMap="SubChannelResultMap">
+    SELECT
+    <include refid="subChannelColumns" />
+    FROM bill_sub_channel WHERE payment_gateway in ('IPSSCAN','IPSQUICK') 
+  </select>
+  
+   <select id="findByStatus" resultMap="SubChannelResultMap">
+    SELECT
+    <include refid="subChannelColumns" />
+    FROM bill_sub_channel WHERE status = #{status,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="findByPoolType" resultMap="SubChannelResultMap">
+    SELECT
+    <include refid="subChannelColumns" />
+    FROM bill_sub_channel WHERE pool_type = #{poolType,jdbcType=VARCHAR}
+  </select>
+  
+  
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.SubChannel">
+    insert into bill_sub_channel
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+     status, pool_type, payment_gateway,
+     <if test="props != null">
+     	props,
+     </if>
+      <if test="name != null">
+     	name,
+     </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+     	#{status,jdbcType=VARCHAR},
+     	#{poolType,jdbcType=VARCHAR},
+     	#{paymentGateway,jdbcType=VARCHAR},
+     	<if test="props != null">
+     		#{props,jdbcType=VARCHAR},
+     	</if>
+     	<if test="name != null">
+     		#{name,jdbcType=VARCHAR},
+     	</if>
+    </trim>
+  </insert>
+  
+  <update id="updateById" parameterType="com.xpay.pay.model.SubChannel">
+    update bill_sub_channel
+     <set>
+      <if test="status != null">
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="poolType != null">
+        pool_type = #{poolType,jdbcType=VARCHAR},
+      </if>
+      <if test="paymentGateway != null">
+       payment_gateway =  #{paymentGateway,jdbcType=VARCHAR},
+      </if>
+       <if test="props != null">
+       props =  #{props,jdbcType=VARCHAR},
+      </if>
+       <if test="name != null">
+       name =  #{props,jdbcType=VARCHAR},
+      </if>
+      update_date = now()
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <update id="deleteById">
+    update bill_sub_channel
+    <set>
+      status = 'DISABLE',
+      update_date = now()
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <update id="changeSubChannelStatus">
+    update bill_sub_channel
+    <set>
+      status = #{status,jdbcType=VARCHAR},
+      update_date = now()
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+</mapper>

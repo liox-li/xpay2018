@@ -21,6 +21,7 @@ import com.xpay.pay.model.Bill;
 import com.xpay.pay.model.Order;
 import com.xpay.pay.model.OrderRequest;
 import com.xpay.pay.model.Store;
+import com.xpay.pay.model.StoreChannel.PaymentGateway;
 import com.xpay.pay.proxy.IPaymentProxy.PayChannel;
 import com.xpay.pay.rest.contract.BaseResponse;
 import com.xpay.pay.rest.contract.OrderResponse;
@@ -58,6 +59,7 @@ public class PaymentRestService extends AuthRestService {
 			@RequestParam(required = false) String subject,
 			@RequestParam(required = false) String storeChannel,
 			@RequestParam(required = false) String uid,
+			@RequestParam(required = false) String subChannelId,
 			@RequestBody(required = false) OrderRequest payload) {
 		if(StringUtils.isBlank(storeId)) {
 			Assert.notNull(payload, "Order request can not be null");
@@ -73,6 +75,7 @@ public class PaymentRestService extends AuthRestService {
 			notifyUrl = payload.getNotifyUrl();
 			returnUrl = payload.getReturnUrl();
 			uid = payload.getUid();
+			subChannelId = payload.getSubChannelId();
 	    }
 		Assert.isTrue(StringUtils.isNoneBlank(storeId, payChannel, totalFee, orderTime), "StoreId, payChannel, totalFee and orderTime can not be null");
 		Assert.isTrue(StringUtils.isNotBlank(deviceId) || StringUtils.isNotBlank(ip), "DeviceId or ip must be provided");
@@ -81,21 +84,35 @@ public class PaymentRestService extends AuthRestService {
 		float fee = CommonUtils.toFloat(totalFee);
 		Assert.isTrue(fee>=0.01f && fee<=3000, String.format("Invalid total fee: %s, sellerOrderNo: %s",totalFee, StringUtils.trimToEmpty(sellerOrderNo)));
 		String orderDate = validateOrderTime(orderTime);
+
 		Store store = storeService.findByCode(storeId);
 		paymentService.validateQuota(store);
 		
 		paymentService.validateStoreLink(store, returnUrl);
 		
 //		Assert.isTrue(riskCheckService.checkFee(store, CommonUtils.toFloat(totalFee)), String.format("Invalid total fee: %s, sellerOrderNo: %s",totalFee, StringUtils.trimToEmpty(sellerOrderNo)));
-		
-
+		/*float minus=(float)(Math.random()*1);
+		minus = (float)(Math.round(minus*10))/10;
+		if(minus <= 0f){
+			minus = 0.11f;
+		}
+		fee = fee -minus;
+		if(fee <= 0f){
+			fee = 0.1f;
+		}*/
 		App app = getApp();
 		String orderNo = IDGenerator.buildOrderNo(app.getId().intValue(), store.getId());
 		BaseResponse<OrderResponse> response = new BaseResponse<OrderResponse>();
 		Order order = null;
 		Bill bill = null;
+		int loop = 3; //如果遇到GatewayException 时，我们最多访问3次后退出
+		// 同一个orderNo 会有多笔订单
+		Long subChanId = null;
+		if(subChannelId != null && !subChannelId.equals("")){
+			subChanId = Long.parseLong(subChannelId);
+		}
 		do {
-			order = paymentService.createOrder(app, uid, orderNo, store, channel, deviceId, ip, fee, orderDate, sellerOrderNo, attach, notifyUrl, returnUrl, subject, storeChannel);
+			order = paymentService.createOrder(app, uid, orderNo, store, channel, deviceId, ip, fee, orderDate, sellerOrderNo, attach, notifyUrl, returnUrl, subject, storeChannel,subChanId);
 			Assert.notNull(order,"Create order failed");
 			
 			try {
@@ -109,6 +126,9 @@ public class PaymentRestService extends AuthRestService {
 				response.setStatus(ApplicationConstants.STATUS_BAD_GATEWAY);
 				response.setCode(e.getCode());
 				response.setMessage(e.getMessage());
+				if(--loop <= 0){
+					break;
+				}
 			} catch (ApplicationException e) {
 				response.setStatus(ApplicationConstants.STATUS_INTERNAL_SERVER_ERROR);
 				response.setCode(e.getCode());

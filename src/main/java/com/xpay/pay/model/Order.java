@@ -15,7 +15,9 @@ public class Order {
 	private Long appId;
 	private long storeId;
 	private StoreChannel storeChannel;
-	private Long storeChannelId;	private Float totalFee;
+	private Long storeChannelId;
+	private Long subChannelId;
+	private Float totalFee;
 	private String orderTime;
 	private String refundTime;
 	private String sellerOrderNo;
@@ -271,4 +273,11 @@ public class Order {
 	public void setGoods(StoreGoods goods) {
 		this.goods = goods;
 	}
+	public Long getSubChannelId() {
+		return subChannelId;
+	}
+	public void setSubChannelId(Long subChannelId) {
+		this.subChannelId = subChannelId;
+	}
+	
 }

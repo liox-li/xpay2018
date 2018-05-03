@@ -1,5 +1,8 @@
 package com.xpay.pay.rest;
 
+import static com.xpay.pay.ApplicationConstants.CODE_COMMON;
+import static com.xpay.pay.ApplicationConstants.STATUS_BAD_REQUEST;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -33,12 +36,15 @@ import com.xpay.pay.model.StoreChannel.PaymentGateway;
 import com.xpay.pay.model.StoreGoods;
 import com.xpay.pay.model.StoreTransaction;
 import com.xpay.pay.model.StoreTransaction.TransactionType;
+import com.xpay.pay.model.SubChannel.Status;
+import com.xpay.pay.model.SubChannel;
 import com.xpay.pay.proxy.IPaymentProxy.PayChannel;
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.rest.contract.BaseResponse;
 import com.xpay.pay.rest.contract.CreateAppRequest;
 import com.xpay.pay.rest.contract.CreateStoreChannelRequest;
 import com.xpay.pay.rest.contract.CreateStoreRequest;
+import com.xpay.pay.rest.contract.CreateSubChannel;
 import com.xpay.pay.rest.contract.LoginRequest;
 import com.xpay.pay.rest.contract.QuickCreateStoreRequest;
 import com.xpay.pay.rest.contract.RechargeRequest;
@@ -438,7 +444,7 @@ public class AgentRestService extends AdminRestService {
 		} else {
 			Assert.isTrue(request!=null && request.getAmount()>=100f, "Recharge amount must be greater than 100");
 			
-			Order order = paymentService.createOrder(app, null, orderNo, store, request.getChannel(), null, "127.0.0.1", request.getAmount(), IDGenerator.formatTime(new Date(), IDGenerator.TimePattern14), "", null, null, null, subject, null);
+			Order order = paymentService.createOrder(app, null, orderNo, store, request.getChannel(), null, "127.0.0.1", request.getAmount(), IDGenerator.formatTime(new Date(), IDGenerator.TimePattern14), "", null, null, null, subject, null,null);
 			Assert.notNull(order,"Create order failed");
 			Bill bill = null;
 			BaseResponse<RechargeResponse> response = new BaseResponse<RechargeResponse>();
@@ -657,6 +663,94 @@ public class AgentRestService extends AdminRestService {
 		response.setData(order);
 		return response;
 
+	}
+	
+	@RequestMapping(value = "/addSubChannel", method = RequestMethod.PUT)
+	public BaseResponse<SubChannel> addSubChannel(@RequestBody(required = true)CreateSubChannel request) {
+		//this.assertAdmin();
+		
+		Assert.isTrue(StringUtils.isNoneBlank(request.getCompanyName(), request.getMertCode(),request.getPoolType()),
+				"商户公司名称、商户编号、商户池类型不能为空！");
+		
+		if(request.getPoolType().indexOf("pool") < 0){
+			throw new ApplicationException(STATUS_BAD_REQUEST, CODE_COMMON, "商户类型格式正确，pool*！");
+		}
+		
+		SubChannel subChannel = new SubChannel();
+		StringBuilder sb = new StringBuilder("");
+		if(request.getGoodNameList() != null){
+			int count = 0;
+			int size = request.getGoodNameList().length;
+			for(String item : request.getGoodNameList()){
+				count ++;
+				if(item.indexOf("," )>= 0){
+					throw new ApplicationException(STATUS_BAD_REQUEST, CODE_COMMON, "商品名称不能带,>>"+item);
+				}
+				sb.append(item);
+				if(count < size){
+					sb.append(",");
+				}
+			}
+		}
+		String props ="{\"merType\":1,\"subMerCode\":\""+request.getMertCode()
+		+"\",\"goodNames\":\""+sb.toString()+"\"}";
+		subChannel.setName(request.getCompanyName());
+		subChannel.setPaymentGateway(PaymentGateway.IPSSCAN);
+		subChannel.setPoolType(request.getPoolType());
+		subChannel.setStatus(Status.NORMAL);
+		subChannel.setProps(props);
+		storeService.createSubChannel(subChannel);
+		BaseResponse<SubChannel> response = new BaseResponse<SubChannel>();
+		response.setData(subChannel);
+		
+		return response;
+	}
+	
+	@RequestMapping(value = "/listAllSubChannel", method = RequestMethod.GET)
+	public BaseResponse<List<SubChannel>> listAllSubChannel() {
+		//this.assertAdmin();		
+		List<SubChannel> subChannel  = storeService.listSubChannel(null);
+		BaseResponse<List<SubChannel>> response = new BaseResponse<List<SubChannel>>();
+		response.setData(subChannel);
+		if(CollectionUtils.isNotEmpty(subChannel)) {
+			response.setCount(subChannel.size());
+		}
+		return response;
+	}
+	
+	@RequestMapping(value = "/listAllSubChannelByStatus/{status}", method = RequestMethod.GET)
+	public BaseResponse<List<SubChannel>> listAllSubChannelByStatus(@PathVariable String status) {
+		//this.assertAdmin();		
+		Status s = Status.getStatusByName(status);
+		List<SubChannel> subChannel  = storeService.listSubChannel(s);
+		BaseResponse<List<SubChannel>> response = new BaseResponse<List<SubChannel>>();
+		response.setData(subChannel);
+		if(CollectionUtils.isNotEmpty(subChannel)) {
+			response.setCount(subChannel.size());
+		}
+		return response;
+	}
+	
+	@RequestMapping(value = "/listAllSubChannelByPoolType/{poolType}", method = RequestMethod.GET)
+	public BaseResponse<List<SubChannel>> listAllSubChannelByPoolType(@PathVariable String poolType) {
+		//this.assertAdmin();		
+		List<SubChannel> subChannel  = storeService.listSubChannelByPoolType(poolType);
+		BaseResponse<List<SubChannel>> response = new BaseResponse<List<SubChannel>>();
+		response.setData(subChannel);
+		if(CollectionUtils.isNotEmpty(subChannel)) {
+			response.setCount(subChannel.size());
+		}
+		return response;
+	}
+	
+	@RequestMapping(value = "/changeSubChannelStatus/{subChannelId}/{status}", method = RequestMethod.GET)
+	public BaseResponse<String> changeSubChannelStatus(@PathVariable Long subChannelId,@PathVariable String status) {
+		//this.assertAdmin();		
+		Status s = Status.getStatusByName(status);
+		this.storeService.changeSubChannelStatus(subChannelId,s);
+		BaseResponse<String> response = new BaseResponse<String>();
+		response.setData("修改成功！");		
+		return response;
 	}
 
 	private StoreResponse toStoreResponse(Store store) {

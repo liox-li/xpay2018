@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.xpay.pay.model.StoreChannel.PaymentGateway;
+import com.xpay.pay.proxy.chinapnr.ChinaPnrProxy;
 import com.xpay.pay.proxy.chinaums.ChinaUmsProxy;
 import com.xpay.pay.proxy.chinaumsh5.ChinaUmsH5Proxy;
 import com.xpay.pay.proxy.chinaumsv2.ChinaUmsV2Proxy;
@@ -58,6 +59,9 @@ public class PaymentProxyFactory {
   private IpsWxProxy ipsWxProxy;
   @Autowired
   private HmProxy hmProxy;
+  
+  @Autowired
+  private ChinaPnrProxy chinaPnrProxy;
 
   public IPaymentProxy getPaymentProxy(PaymentGateway channel) {
     switch (channel) {
@@ -93,6 +97,8 @@ public class PaymentProxyFactory {
         return ipsWxProxy;
       case HM:
         return hmProxy;
+      case CHINA_PNR:
+          return chinaPnrProxy;
       default:
         return chinaUmsH5Proxy;
     }

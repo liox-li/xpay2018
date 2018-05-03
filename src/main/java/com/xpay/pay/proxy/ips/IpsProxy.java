@@ -17,6 +17,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Date;
+
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import org.apache.logging.log4j.LogManager;
@@ -45,9 +46,9 @@ public class IpsProxy {
   private static final String OPEN_URL = "https://ebp.ips.com.cn/fpms-access/action/user/open";
   private static final String TRANSFER_URL = "https://ebp.ips.com.cn/fpms-access/action/trade/transfer.do";
   private static final String WITHDRAWAL_URL = "https://ebp.ips.com.cn/fpms-access/action/withdrawal/withdrawal.html";
-  private static final String MD5_SIGNATURE = "wmm7x3LwJdEPgmOQxcpBugQOmQewxXjwQD5ASRbKcFq7QTK6kOolYMpG9Ov5qt8RfNwaCoXX5edKt9HWbyxL5Qr1Z32oZE85Env04BUq4bX7RCHdxhT8u0rEX5BqCDsg";
-  private static final String DES_IV = "2BBNEs28";
-  private static final String DES_KEY = "oov94m6YhhFxAySqF99MoLRV";
+  private static final String MD5_SIGNATURE = "jBTSbBLE3HFBhm81FhAVVFl79TUVaDNhoQrVhBUvzv0738ZaYeLYaFNOuNVHwgbtoXhRweNdmR3dtnHTGMoSMvkGsoZTKKHKdPCe8dXUCaAZqDDAJBd8kUYdW5H3FCpy";//"wmm7x3LwJdEPgmOQxcpBugQOmQewxXjwQD5ASRbKcFq7QTK6kOolYMpG9Ov5qt8RfNwaCoXX5edKt9HWbyxL5Qr1Z32oZE85Env04BUq4bX7RCHdxhT8u0rEX5BqCDsg";
+  private static final String DES_IV = "pz2E1tme";//"2BBNEs28";
+  private static final String DES_KEY = "lUhBAfw8BhKZw0He7tbYRbvJ";//"oov94m6YhhFxAySqF99MoLRV";
 
   protected final Logger logger = LogManager.getLogger(getClass());
 
@@ -132,7 +133,7 @@ public class IpsProxy {
 
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     marshaller.marshal(body, new StreamResult(os));
-    String bodyStr = os.toString();
+    String bodyStr = new String(os.toByteArray(),"UTF-8");//TODO
     bodyStr = bodyStr.substring(bodyStr.indexOf("<body>"));
     logger.info("signature body: " + bodyStr + MD5_SIGNATURE);
     String signature = CryptoUtils.md5(bodyStr + MD5_SIGNATURE);
@@ -149,12 +150,12 @@ public class IpsProxy {
     ipsRequest.setArgMerCode(merCode);
     os = new ByteArrayOutputStream();
     marshaller.marshal(openUserReqXml, new StreamResult(os));
-    String arg3DesXmlPara = CryptoUtils.encryptDESede(DES_KEY, DES_IV, os.toString());
+    String arg3DesXmlPara = CryptoUtils.encryptDESede(DES_KEY, DES_IV, new String(os.toByteArray(),"UTF-8"));//TODO
     logger.info("open account des xml[3des]:" + arg3DesXmlPara);
     ipsRequest.setArg3DesXmlPara(arg3DesXmlPara);
     os = new ByteArrayOutputStream();
     marshaller.marshal(ipsRequest, new StreamResult(os));
-    return os.toString();
+    return new String(os.toByteArray(),"UTF-8");//TODO
   }
 
 
@@ -173,7 +174,7 @@ public class IpsProxy {
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     marshaller.marshal(body, new StreamResult(os));
 
-    String bodyStr = os.toString();
+    String bodyStr = new String(os.toByteArray(),"UTF-8");//TODO os.toString();
     bodyStr = bodyStr.substring(bodyStr.indexOf("<body>"));
     logger.info("signature body: " + bodyStr + MD5_SIGNATURE);
     String signature = CryptoUtils.md5(bodyStr + MD5_SIGNATURE);
@@ -189,12 +190,12 @@ public class IpsProxy {
     ipsRequest.setArgMerCode(merCode);
     os = new ByteArrayOutputStream();
     marshaller.marshal(transferReqXml, new StreamResult(os));
-    String arg3DesXmlPara = CryptoUtils.encryptDESede(DES_KEY, DES_IV, os.toString());
+    String arg3DesXmlPara = CryptoUtils.encryptDESede(DES_KEY, DES_IV, new String(os.toByteArray(),"UTF-8"));//TODO
     logger.info("transfer des xml[3des]:" + arg3DesXmlPara);
     ipsRequest.setArg3DesXmlPara(arg3DesXmlPara);
     os = new ByteArrayOutputStream();
     marshaller.marshal(ipsRequest, new StreamResult(os));
-    String request = os.toString();
+    String request = new String(os.toByteArray(),"UTF-8");//TODO os.toString();
     logger.info("transfer request: " + request);
     MultiValueMap<String, String> keyPairs = new LinkedMultiValueMap<>();
     keyPairs.add("ipsRequest", request);
@@ -407,4 +408,5 @@ public class IpsProxy {
       this.withdrawalFailMsg = withdrawalFailMsg;
     }
   }
+  
 }

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapping PUBLIC "-//EXOLAB/Castor Mapping DTD Version 1.0//EN"
+  "http://castor.org/mapping.dtd">
+
+<mapping>
+
+  <class name="com.xpay.pay.proxy.ips.useropen.rsp.OpenUserRespXml">
+    <map-to xml="openUserRespXml"/>
+    <field name="head" nillable="true" required="true" type="com.xpay.pay.proxy.ips.common.ResponseHead">
+      <bind-xml name="head" node="element"/>
+    </field>
+    <field name="body" nillable="true" required="true" type="com.xpay.pay.proxy.ips.useropen.rsp.Body">
+      <bind-xml name="body" node="element"/>
+    </field>
+  </class>
+
+  <class name="com.xpay.pay.proxy.ips.useropen.rsp.Body">
+    <map-to xml="body"/>
+    <field name="ipsUserName" nillable="true" required="true" type="string">
+      <bind-xml name="ipsUserName" node="element"/>
+    </field>
+    <field name="status" nillable="true" required="true" type="string">
+      <bind-xml name="status" node="element"/>
+    </field>
+    <field name="merAcctNo" nillable="true" required="true" type="string">
+      <bind-xml name="merAcctNo" node="element"/>
+    </field>
+    <field name="userType" nillable="true" required="true" type="string">
+      <bind-xml name="userType" node="element"/>
+    </field>
+    <field name="customerCode" nillable="true" required="true" type="string">
+      <bind-xml name="customerCode" node="element"/>
+    </field>
+    <field name="identityType" nillable="true" required="true" type="string">
+      <bind-xml name="identityType" node="element"/>
+    </field>
+    <field name="identityNo" nillable="true" required="true" type="string">
+      <bind-xml name="identityNo" node="element"/>
+    </field>
+    <field name="userName" nillable="true" required="true" type="string">
+      <bind-xml name="userName" node="element"/>
+    </field>
+    <field name="legalName" nillable="true" required="true" type="string">
+      <bind-xml name="legalName" node="element"/>
+    </field>
+    <field name="legalCardNo" nillable="true" required="true" type="string">
+      <bind-xml name="legalCardNo" node="element"/>
+    </field>
+    <field name="mobiePhoneNo" nillable="true" required="true" type="string">
+      <bind-xml name="mobiePhoneNo" node="element"/>
+    </field>
+    <field name="telPhoneNo" nillable="true" required="true" type="string">
+      <bind-xml name="telPhoneNo" node="element"/>
+    </field>
+    <field name="email" nillable="true" required="true" type="string">
+      <bind-xml name="email" node="element"/>
+    </field>
+    <field name="contactAddress" nillable="true" required="true" type="string">
+      <bind-xml name="contactAddress" node="element"/>
+    </field>
+    <field name="remark" nillable="true" required="true" type="string">
+      <bind-xml name="remark" node="element"/>
+    </field>
+    <field name="directSell" nillable="true" required="true" type="string">
+      <bind-xml name="directSell" node="element"/>
+    </field>
+    <field name="stmsAcctNo" nillable="true" required="true" type="string">
+      <bind-xml name="stmsAcctNo" node="element"/>
+    </field>
+  </class>
+
+</mapping>

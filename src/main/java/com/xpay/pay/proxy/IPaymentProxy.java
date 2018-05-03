@@ -20,8 +20,17 @@ public interface IPaymentProxy {
 	
 	public PaymentResponse refund(PaymentRequest request);
 	
+	public default void init(String props){
+		return ;
+	}
 	public enum PayChannel {
-		ALL(0), ALIPAY(1), WECHAT(2), CASH(3), CREDITCARD(4), XIAOWEI(5), XIAOWEI_H5(6);
+		ALL(0),//
+		ALIPAY(1),//
+		WECHAT(2),//
+		CASH(3), //
+		CREDITCARD(4),//
+		XIAOWEI(5), //
+		XIAOWEI_H5(6);//
 		
 		String id;
 		
@@ -39,6 +48,15 @@ public interface IPaymentProxy {
 		}
 	}
 	
+	public enum PayType{
+		WECHAT_SCAN,//微信正扫
+	    WECHAT_APP,//微信app支付
+	    WECHAT_GZH,//微信公众号
+	    ALIPAY,//支付宝统一下单
+		ALIPAY_SCAN,//支付宝正扫
+		APPLE_PAY,//苹果支付
+		
+	}
 	public enum TradeNoType {
 		MiaoFu(1), Gateway(2);
 		

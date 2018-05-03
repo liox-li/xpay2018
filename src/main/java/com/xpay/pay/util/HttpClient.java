@@ -75,15 +75,17 @@ public class HttpClient {
     String result = null;
     long l = System.currentTimeMillis();
     try {
-      StringEntity entityParams = new StringEntity(body, "utf-8");
+      StringEntity entityParams = new StringEntity(body, "UTF-8");
+      
       HttpPost httpPost = new HttpPost(url);
+      
       httpPost.setConfig(defaultRequestConfig);
       httpPost.setEntity(entityParams);
       logger.info("Post: " + url + ", content: " + body);
 
       client = HttpClients.custom()
           .setDefaultRequestConfig(defaultRequestConfig).build();
-
+      
       response = client.execute(httpPost);
 
       if (response != null && response.getEntity() != null) {

@@ -60,4 +60,5 @@ public class RspHead {
   public void setSignature(String signature) {
     this.signature = signature;
   }
+  
 }

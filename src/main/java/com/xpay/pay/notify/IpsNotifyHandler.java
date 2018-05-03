@@ -2,6 +2,8 @@ package com.xpay.pay.notify;
 
 import com.xpay.pay.proxy.PaymentResponse.OrderStatus;
 import com.xpay.pay.proxy.ips.notify.Ips;
+import com.xpay.pay.service.OrderService;
+
 import java.io.ByteArrayInputStream;
 import java.net.URLDecoder;
 import javax.xml.transform.stream.StreamSource;
@@ -20,10 +22,14 @@ public class IpsNotifyHandler extends AbstractNotifyHandler {
   @Qualifier("notifyUnmarshaller")
   @Autowired
   Unmarshaller unmarshaller;
+  
+  @Autowired
+  private OrderService orderService;
 
   @Override
   protected NotifyBody extractNotifyBody(String url, String content) {
     logger.info("ips body: " + content);
+
     String paymentResult = null;
     try {
       String decoded = URLDecoder.decode(content, "utf-8");
@@ -58,6 +64,12 @@ public class IpsNotifyHandler extends AbstractNotifyHandler {
         "Y".equals(notify.getGateWayRsp().getBody().getStatus()) ? OrderStatus.SUCCESS
             : OrderStatus.PAYERROR;
     int totalFee =(int) (Float.valueOf(notify.getGateWayRsp().getBody().getAmount()) * 100);
+    try{
+    	orderService.handleSubChannelMatrix();
+    	logger.info("ips支付回调，刷新SubChannelMatrix成功！");
+    }catch(Exception e){
+    	logger.info("刷新SubChannelMatrix异常>>"+e.toString());
+    }
     return new NotifyBody(billNo, notify.getGateWayRsp().getBody().getIpsBillNo(), status, totalFee,
         null);
   }

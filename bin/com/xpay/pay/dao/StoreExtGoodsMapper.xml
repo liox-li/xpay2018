@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xpay.pay.dao.StoreExtGoodsMapper">
+
+  <resultMap id="StoreExtGoodsResultMap" type="com.xpay.pay.model.StoreExtGoods">
+    <result column="id" jdbcType="BIGINT" property="id" />
+    <result column="goods_id" jdbcType="BIGINT" property="goodsId" />
+    <result column="admin_id" jdbcType="BIGINT" property="adminId" />
+    <result column="ext_store_id" jdbcType="VARCHAR" property="extStoreId" />
+    <result column="ext_store_name" jdbcType="VARCHAR" property="extStoreName" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="amount" jdbcType="NUMERIC" property="amount" />
+    <result column="ext_goods" jdbcType="VARCHAR" property="extGoods" />
+    <result column="update_date" jdbcType="VARCHAR" property="updateDate" />
+  </resultMap>
+  
+  <sql id="extStoreGoodsColumns"> 
+  	id,
+  	goods_id,
+  	admin_id,
+    ext_store_id,
+    ext_store_name,
+    name,
+    amount,
+    ext_goods,
+    update_date
+  </sql>
+
+  <select id="findById" resultMap="StoreExtGoodsResultMap">
+    SELECT
+    <include refid="extStoreGoodsColumns" />
+    FROM bill_ext_goods
+    WHERE id = #{id} AND deleted = false
+  </select>
+
+  <select id="findByAdminId" resultMap="StoreExtGoodsResultMap">
+    SELECT
+    <include refid="extStoreGoodsColumns" />
+    FROM bill_ext_goods
+    WHERE admin_id=#{adminId} AND deleted = false
+  </select>
+  
+  <select id="findByGoodsId" resultMap="StoreExtGoodsResultMap">
+    SELECT
+    <include refid="extStoreGoodsColumns" />
+    FROM bill_ext_goods
+    WHERE goods_id = #{goodsId} and deleted = false
+  </select>
+  
+  <select id="findByExtStoreId" resultMap="StoreExtGoodsResultMap">
+    SELECT
+    <include refid="extStoreGoodsColumns" />
+    FROM bill_ext_goods
+    WHERE ext_store_id = #{extStoreId} and deleted = false
+  </select>
+  
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xpay.pay.model.StoreExtGoods">
+    insert into bill_ext_goods
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+     <if test="goodsId != null">
+       goods_id,
+     </if>
+     admin_id, 
+     ext_store_id,
+     ext_store_name,
+     <if test="name != null">
+       name,
+     </if>
+     <if test="amount != null">
+       amount,
+     </if>
+     <if test="extGoods != null">
+       ext_goods,
+     </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+    	<if test="goodsId != null">
+        	#{goodsId,jdbcType=BIGINT},
+      	</if>
+     	#{adminId,jdbcType=BIGINT},
+     	#{extStoreId,jdbcType=VARCHAR},
+     	#{extStoreName,jdbcType=VARCHAR},
+     	<if test="name != null">
+        	#{name,jdbcType=VARCHAR},
+      	</if>
+      	<if test="amount != null">
+        	#{amount,jdbcType=NUMERIC},
+      	</if>
+     	<if test="extGoods != null">
+        	#{extGoods,jdbcType=VARCHAR},
+      	</if>
+     </trim>
+  </insert>
+  
+  <update id="updateById" parameterType="com.xpay.pay.model.StoreExtGoods">
+    update bill_ext_goods
+     <set>
+       <if test="goodsId != null">
+        goods_id = #{goodsId,jdbcType=BIGINT},
+       </if>
+      <if test="extStoreId != null">
+        ext_store_id = #{extStoreId,jdbcType=VARCHAR},
+      </if>
+      <if test="extStoreName != null">
+       ext_store_name =  #{extStoreName,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+       name =  #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null">
+       amount =  #{amount,jdbcType=NUMERIC},
+      </if>
+      <if test="extGoods != null">
+       ext_goods =  #{extGoods,jdbcType=VARCHAR},
+      </if>
+      update_date = now()
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+        and deleted = false
+  </update>
+  
+  <update id="deleteById">
+    update bill_ext_goods
+    <set>
+      deleted = true,
+      update_date = now()
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+        and deleted = false
+  </update>
+  
+  <update id="deleteByExtStoreId">
+    update bill_ext_goods
+    <set>
+      deleted = true,
+      update_date = now()
+    </set>
+    where ext_store_id = #{extStoreId,jdbcType=VARCHAR}
+        and deleted = false
+  </update>
+  
+</mapper>

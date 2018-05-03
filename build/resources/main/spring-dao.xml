@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans     
+        http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-4.0.xsd
+        http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
+    
+    <bean id="dataSource" class="org.apache.ibatis.datasource.pooled.PooledDataSource">
+		<property name="driver" value="org.postgresql.Driver" />
+		<property name="url" value="jdbc:postgresql://106.14.47.193:5432/xpay" />
+		<property name="username" value="xpay" />
+		<property name="password" value="QWE!@poi" />
+		<property name="poolMaximumIdleConnections" value="50" />
+		<property name="poolMaximumActiveConnections" value="50" />
+		<property name="poolTimeToWait" value="1000" />
+		<property name="poolPingQuery" value="select current_time" />
+		<property name="poolPingEnabled" value="true" />
+		<property name="poolPingConnectionsNotUsedFor" value="3600000" />
+		
+	</bean>
+	
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="mapperLocations" value="classpath*:com/xpay/pay/dao/*.xml"></property>
+	</bean>
+		
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.xpay.pay.dao" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+	</bean>
+	
+</beans>

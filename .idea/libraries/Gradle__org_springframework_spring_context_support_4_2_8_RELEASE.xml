@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.springframework:spring-context-support:4.2.8.RELEASE">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework/spring-context-support/4.2.8.RELEASE/a319ebc06429dacd16abdc8b927b1aad96f29f95/spring-context-support-4.2.8.RELEASE.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework/spring-context-support/4.2.8.RELEASE/6ec1487141dd5435830f16b84300646bb37a08bd/spring-context-support-4.2.8.RELEASE-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

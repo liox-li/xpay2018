@@ -67,7 +67,6 @@ public class GoodsQrCodeServlet extends HttpServlet {
 			response.sendError(400, "无效商品");
 			return;
 		}
-
 		String uid = request.getParameter("uid");
 		if(StringUtils.isBlank(uid)) {
 			response.sendError(400, "uid不能为空");

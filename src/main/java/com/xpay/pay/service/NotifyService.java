@@ -24,6 +24,8 @@ public class NotifyService {
 	@Autowired
 	private NotifyProxy notifyProxy;
 	
+	
+	
 	private static final Executor executor = Executors.newFixedThreadPool(80);
 	@SuppressWarnings("rawtypes")
 	public void notify(final Order order) {
